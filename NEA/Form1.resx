@@ -120,60 +120,11 @@
   <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 29</value>
-  </data>
-  <data name="tsFile.Text" xml:space="preserve">
-    <value>&amp;File</value>
-  </data>
-  <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 29</value>
-  </data>
-  <data name="tsEdit.Text" xml:space="preserve">
-    <value>&amp;Edit</value>
-  </data>
-  <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 29</value>
-  </data>
-  <data name="tsView.Text" xml:space="preserve">
-    <value>&amp;View</value>
-  </data>
-  <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>82, 29</value>
-  </data>
-  <data name="tsDebug.Text" xml:space="preserve">
-    <value>&amp;Debug</value>
-  </data>
-  <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1898, 33</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="menuStrip.Text" xml:space="preserve">
-    <value>menuStrip1</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Name" xml:space="preserve">
-    <value>menuStrip</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.ZOrder" xml:space="preserve">
-    <value>10</value>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="tsFileNew.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+N</value>
   </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="tsFileNew.Size" type="System.Drawing.Size, System.Drawing">
     <value>285, 34</value>
   </data>
@@ -216,11 +167,17 @@
   <data name="tsFileExit.Text" xml:space="preserve">
     <value>E&amp;xit</value>
   </data>
+  <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>54, 29</value>
+  </data>
+  <data name="tsFile.Text" xml:space="preserve">
+    <value>&amp;File</value>
+  </data>
   <data name="tsEditCut.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+X</value>
   </data>
   <data name="tsEditCut.Size" type="System.Drawing.Size, System.Drawing">
-    <value>218, 34</value>
+    <value>270, 34</value>
   </data>
   <data name="tsEditCut.Text" xml:space="preserve">
     <value>Cut</value>
@@ -229,7 +186,7 @@
     <value>Ctrl+C</value>
   </data>
   <data name="tsEditCopy.Size" type="System.Drawing.Size, System.Drawing">
-    <value>218, 34</value>
+    <value>270, 34</value>
   </data>
   <data name="tsEditCopy.Text" xml:space="preserve">
     <value>Copy</value>
@@ -238,10 +195,16 @@
     <value>Ctrl+V</value>
   </data>
   <data name="tsEditPaste.Size" type="System.Drawing.Size, System.Drawing">
-    <value>218, 34</value>
+    <value>270, 34</value>
   </data>
   <data name="tsEditPaste.Text" xml:space="preserve">
     <value>Paste</value>
+  </data>
+  <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 29</value>
+  </data>
+  <data name="tsEdit.Text" xml:space="preserve">
+    <value>&amp;Edit</value>
   </data>
   <data name="tsViewConsoleView.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Alt+C</value>
@@ -251,6 +214,12 @@
   </data>
   <data name="tsViewConsoleView.Text" xml:space="preserve">
     <value>Internal/External Console</value>
+  </data>
+  <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 29</value>
+  </data>
+  <data name="tsView.Text" xml:space="preserve">
+    <value>&amp;View</value>
   </data>
   <data name="tsDebugTraceTable.Size" type="System.Drawing.Size, System.Drawing">
     <value>264, 34</value>
@@ -270,33 +239,40 @@
   <data name="tsDebugBreakpoints.Text" xml:space="preserve">
     <value>Enable Breakpoints</value>
   </data>
+  <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>82, 29</value>
+  </data>
+  <data name="tsDebug.Text" xml:space="preserve">
+    <value>&amp;Debug</value>
+  </data>
+  <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1898, 33</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="menuStrip.Text" xml:space="preserve">
+    <value>menuStrip1</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Name" xml:space="preserve">
+    <value>menuStrip</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
   <metadata name="toolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>263, 26</value>
   </metadata>
-  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 33</value>
-  </data>
-  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1898, 41</value>
-  </data>
-  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="toolStrip.Text" xml:space="preserve">
-    <value>toolStrip1</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
-    <value>toolStrip</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
-    <value>9</value>
-  </data>
   <data name="stripUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -400,9 +376,45 @@
   <data name="stripComment.Text" xml:space="preserve">
     <value>Comment</value>
   </data>
+  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 33</value>
+  </data>
+  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1898, 41</value>
+  </data>
+  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="toolStrip.Text" xml:space="preserve">
+    <value>toolStrip1</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
+    <value>toolStrip</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
   <metadata name="statusBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>320, 17</value>
   </metadata>
+  <data name="statusLineInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 25</value>
+  </data>
+  <data name="statusLineInfo.Text" xml:space="preserve">
+    <value>Line: 1</value>
+  </data>
+  <data name="statusColumnInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>93, 25</value>
+  </data>
+  <data name="statusColumnInfo.Text" xml:space="preserve">
+    <value>Column: 1</value>
+  </data>
   <data name="statusBar.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 992</value>
   </data>
@@ -426,18 +438,6 @@
   </data>
   <data name="&gt;&gt;statusBar.ZOrder" xml:space="preserve">
     <value>3</value>
-  </data>
-  <data name="statusLineInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 25</value>
-  </data>
-  <data name="statusLineInfo.Text" xml:space="preserve">
-    <value>Line: 1</value>
-  </data>
-  <data name="statusColumnInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>93, 25</value>
-  </data>
-  <data name="statusColumnInfo.Text" xml:space="preserve">
-    <value>Column: 1</value>
   </data>
   <data name="btnClear.Font" type="System.Drawing.Font, System.Drawing">
     <value>Courier New, 12pt</value>

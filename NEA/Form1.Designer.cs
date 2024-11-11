@@ -131,6 +131,7 @@ namespace NEA
             // 
             this.tsEditCut.Name = "tsEditCut";
             resources.ApplyResources(this.tsEditCut, "tsEditCut");
+            this.tsEditCut.Click += new System.EventHandler(this.tsEditCut_Click);
             // 
             // tsEditCopy
             // 

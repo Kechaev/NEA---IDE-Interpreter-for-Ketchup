@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Threading;
+using System.Reflection;
 
 namespace NEA
 {
@@ -117,19 +118,16 @@ namespace NEA
 
         private void stripUndo_Click(object sender, EventArgs e)
         {
-            ConsoleWrite("Attempted Function <UNDO>");
             Undo();
         }
 
         private void stripRedo_Click(object sender, EventArgs e)
         {
-            ConsoleWrite("Attempted Function <REDO>");
             Redo();
         }
 
         private void stripRun_Click(object sender, EventArgs e)
         {
-            ConsoleWrite("Attempted Function <RUN>");
             Run();
         }
         
@@ -141,7 +139,6 @@ namespace NEA
 
         private void stripComment_Click(object sender, EventArgs e)
         {
-            ConsoleWrite("Attempted Function <COMMENT>");
             Comment();
         }
 
@@ -210,30 +207,26 @@ namespace NEA
 
                 txtCodeField.Lines = lines;
                 txtCodeField.Select(selectionStart + selectionLength + totalAddedChars, 0);
+            }
+        }
 
-                //int offset = 0;
+        private void Cut()
+        {
+            string[] lines = txtCodeField.Lines;
+            int selectionStart = txtCodeField.SelectionStart;
+            int selectionLength = txtCodeField.SelectionLength;
 
-                //string text = txtCodeField.Text;
-                //for (int i = firstLine; i < lastLine + 1; i++)
-                //{
-                //    int currentFirstCharOfLine = txtCodeField.GetFirstCharIndexFromLine(i) + offset;
-                //    text = text.Insert(currentFirstCharOfLine, "# ");
-
-                //    offset += 2;
-                //}
-
-                //if (index + selectionLength == txtCodeField.Text.Length - 1)
-                //{
-                //    isLastLine = true;
-                //}
-
-                //if (isLastLine)
-                //{
-                //    offset -= 2;
-                //}
-
-                //txtCodeField.Text = text;
-                //txtCodeField.Select(index + selectionLength + offset + 1, 0);
+            if (selectionLength == 0)
+            {
+                int line = txtCodeField.GetLineFromCharIndex(selectionStart);
+                List<string> linesAsList = new List<string>(lines);
+                linesAsList.Remove(lines[line]);
+                txtCodeField.Lines = linesAsList.ToArray();
+                txtCodeField.SelectionStart = selectionStart;
+            }
+            else
+            {
+                txtCodeField.Text.Remove(selectionStart, selectionLength);
             }
         }
 
@@ -352,6 +345,11 @@ namespace NEA
         private void txtCodeField_SelectionChanged(object sender, EventArgs e)
         {
             UpdateCaretPosition();
+        }
+
+        private void tsEditCut_Click(object sender, EventArgs e)
+        {
+            Cut();
         }
     }
 }
