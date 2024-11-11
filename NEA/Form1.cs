@@ -277,6 +277,7 @@ namespace NEA
 
         private void btnPlusFont_Click(object sender, EventArgs e)
         {
+            // Andreas is a real cool guy
             txtConsole.Font = new Font("Courier New", txtConsole.Font.Size + 1);
         }
 
