@@ -637,6 +637,46 @@ namespace NEA
                             i += 2;
                         }
                         break;
+                    case TokenType.REASSIGNMENT:
+                        type = "STRING";
+                        noType = true;
+                        if (tokens[i + 1].GetTokenType() == TokenType.VARIABLE)
+                        {
+                            variableName = tokens[i + 1].GetLiteral();
+                            if (tokens[i + 2].GetTokenType() == TokenType.TO)
+                            {
+                                expression = new List<Token>();
+                                j = 1;
+                                while (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 2].GetLine() == token.GetLine() && tokens[i + j + 2].GetTokenType() != TokenType.AS)
+                                {
+                                    expression.Add(tokens[i + j + 2]);
+                                    j++;
+                                }
+                                if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetTokenType() == TokenType.AS && tokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
+                                {
+                                    type = tokens[i + j + 4].GetLiteral();
+                                }
+                                else if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetLine() == token.GetLine())
+                                {
+                                    throw new Exception("ERROR: No data type mentioned");
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception("ERROR: No value was mentioned for assignment");
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("ERROR: When assigning no variable was found");
+                        }
+                        intermediateList.AddRange(MapReassignment(variableName, expression, type));
+                        i += j + 2;
+                        if (!noType)
+                        {
+                            i += 2;
+                        }
+                        break;
                     case TokenType.DECLARATION:
                         type = "STRING";
                         noType = true;
