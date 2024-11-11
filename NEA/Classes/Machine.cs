@@ -403,6 +403,8 @@ namespace NEA
                     // Beginning keyword for the structure
                 }
             }
+
+            return new int[0];
         }
 
         #endregion
