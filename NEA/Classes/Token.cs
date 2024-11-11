@@ -10,11 +10,12 @@ namespace NEA.Classes
     {
         private TokenType type;
         private string literal;
-
-        public Token(TokenType type, string literal)
+        private int line;
+        public Token(TokenType type, string literal, int line)
         {
             this.type = type;
             this.literal = literal;
+            this.line = line;
         }
 
         public TokenType GetTokenType()
@@ -25,6 +26,11 @@ namespace NEA.Classes
         public string GetLiteral()
         {
             return literal;
+        }
+
+        public int GetLine()
+        {
+            return line;
         }
     }
 }

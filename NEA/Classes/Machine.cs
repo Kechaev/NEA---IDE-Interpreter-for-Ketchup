@@ -2,7 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.SqlClient;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net.Configuration;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,11 +30,12 @@ namespace NEA
 
         // Fields for Translation into Intermediate Code
         private string[] intermediate;
-        private List<string[]> intermediateList;
+        private List<string> intermediateList;
         private List<string[]> intermediateSubroutines;
         private Dictionary<string, int> subroutineDict;
         private List<Variable> variables;
-        private Dictionary<string, int> variablesDict;
+        private Dictionary<string, int> variablesDict = new Dictionary<string, int>();
+        private int counterVar;
 
         // Fields for Execution
         private int PC;
@@ -49,23 +54,39 @@ namespace NEA
 
         public string Interpret()
         {
+            // Tokenization
             tokens = Tokenize();
 
             variables = new List<Variable>();
 
+            OrganiseVariables();
+
             // Testing
-            string tokenString = "";
+            string String = "";
 
             foreach (Token token in tokens)
             {
-                tokenString += token.GetTokenType().ToString()+"\r\n";
+                String += token.GetTokenType().ToString()+"\r\n";
             }
 
             char[] endTrim = { '\r', '\n' };
-            return tokenString.TrimEnd(endTrim);
 
+            // Translation
 
-            // intermediate = TokensToIntermediate();
+            intermediate = TokensToIntermediate();
+
+            String += "\r\nIntermediate\r\n";
+
+            // Testing
+            foreach (string line in intermediate)
+            {
+                String += line + "\r\n";
+            }
+
+            return String;
+
+            // Execution
+
             // Execute();
         }
 
@@ -137,6 +158,10 @@ namespace NEA
                     return TokenType.MUL;
                 case "/":
                     return TokenType.DIV;
+                case "%":
+                    return TokenType.MOD;
+                case "^":
+                    return TokenType.EXP;
                 case "CREATE":
                     return TokenType.DECLARATION;
                 case "SET":
@@ -232,6 +257,21 @@ namespace NEA
         }
         #endregion
 
+        private void OrganiseVariables()
+        {
+            int counter = 0;
+            foreach (Token token in tokens)
+            {
+                if (token.GetTokenType() == TokenType.VARIABLE)
+                {
+                    if (!variablesDict.ContainsKey(token.GetLiteral()))
+                    {
+                        variablesDict.Add(token.GetLiteral(), counter++);
+                    }
+                }
+            }
+        }
+
         private string GetWord()
         {
             while (IsAlphaNumeric(Peek()))
@@ -262,7 +302,7 @@ namespace NEA
 
             string value = sourceCode.Substring(start, current - start);
 
-            return new Token(type, value);
+            return new Token(type, value, line);
         }
 
         private Token GetString()
@@ -285,7 +325,7 @@ namespace NEA
 
             string text = sourceCode.Substring(start + 1, current - start - 2);
 
-            return new Token(TokenType.STR_LITERAL, text);
+            return new Token(TokenType.STR_LITERAL, text, line);
         }
 
         private void SkipToEndOfLine()
@@ -314,7 +354,7 @@ namespace NEA
         private Token[] Tokenize()
         {
             List<Token> tokensList = new List<Token>();
-            char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/' };
+            char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^' };
             string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
 
             string[] subroutineNames = FindSubroutineNames();
@@ -325,16 +365,15 @@ namespace NEA
                 char c = sourceCode[current++];
                 if (singleCharKeyword.Contains(c))
                 {
-                    tokensList.Add(new Token(GetTokenType(c.ToString()), c.ToString()));
+                    tokensList.Add(new Token(GetTokenType(c.ToString()), c.ToString(), line));
                 }
                 else if (c == '\n')
                 {
                     line++;
-                    tokensList.Add(new Token(TokenType.NEWLINE, "\n"));
                 }
                 else if (c == '\t')
                 {
-                    tokensList.Add(new Token(TokenType.TABSPACE, "\t"));
+                    continue;
                 }
                 else if (c == '"')
                 {
@@ -349,19 +388,19 @@ namespace NEA
                     string word = GetWord();
                     if (keyword.Contains(word.ToUpper()))
                     {
-                        tokensList.Add(new Token(GetTokenType(word), word));
+                        tokensList.Add(new Token(GetTokenType(word), word, line));
                     }
                     else if (dataTypes.Contains(word.ToUpper()))
                     {
-                        tokensList.Add(new Token(TokenType.DATA_TYPE, word));
+                        tokensList.Add(new Token(TokenType.DATA_TYPE, word, line));
                     }
                     else if (subroutineNames.Contains(word))
                     {
-                        tokensList.Add(new Token(TokenType.SUBROUTINE_NAME, word));
+                        tokensList.Add(new Token(TokenType.SUBROUTINE_NAME, word, line));
                     }
                     else
                     {
-                        tokensList.Add(new Token(TokenType.VARIABLE, word));
+                        tokensList.Add(new Token(TokenType.VARIABLE, word, line));
                     }
                 }
                 else if (IsDigit(c))
@@ -374,7 +413,7 @@ namespace NEA
                 }
             }
 
-            tokensList.Add(new Token(TokenType.EOF, null));
+            tokensList.Add(new Token(TokenType.EOF, null, line));
 
             return tokensList.ToArray();
         }
@@ -382,11 +421,165 @@ namespace NEA
 
         #region Translation into Intermdiate
 
-        private int[] TokensToIntermediate()
+        // Shunting Yard Algorithm
+        // Converts list of tokens
+        // To intermediate code in postfix
+        private string[] ConvertToPostfix(List<Token> tokens)
+        {
+            List<string> output = new List<string>();
+            Stack<Token> stack = new Stack<Token>();
+
+            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
+                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
+                                     TokenType.BOOL_LITERAL };
+            TokenType[] operators = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
+                                      TokenType.DIV, TokenType.MOD, TokenType.EXP };
+
+            foreach (var e in tokens)
+            {
+                if (literals.Contains(e.GetTokenType()))
+                {
+                    output.Add("LOAD_CONST " + e.GetLiteral());
+                }
+                else if (e.GetTokenType() == TokenType.VARIABLE)
+                {
+                    output.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
+                }
+                else if (e.GetTokenType() == TokenType.LEFT_BRACKET)
+                {
+                    stack.Push(e);
+                }
+                else if (e.GetTokenType() == TokenType.RIGHT_BRACKET)
+                {
+                    while (stack.Count > 0 && stack.Peek().GetTokenType() != TokenType.LEFT_BRACKET)
+                    {
+                        var topToken = stack.Pop();
+                        if (operators.Contains(topToken.GetTokenType()))
+                        {
+                            output.Add(topToken.GetTokenType().ToString());
+                        }
+                    }
+                    stack.Pop();
+                }
+                else
+                {
+                    while (stack.Count > 0 && stack.Peek().GetTokenType() != TokenType.LEFT_BRACKET &&
+                           Precedence(stack.Peek().GetTokenType()) >= Precedence(e.GetTokenType()))
+                    {
+                        var topToken = stack.Pop();
+                        if (operators.Contains(topToken.GetTokenType()))
+                        {
+                            output.Add(topToken.GetTokenType().ToString());
+                        }
+                    }
+                    stack.Push(e);
+                }
+            }
+
+            while (stack.Count > 0)
+            {
+                var topToken = stack.Pop();
+                if (operators.Contains(topToken.GetTokenType()))
+                {
+                    output.Add(topToken.GetTokenType().ToString());
+                }
+                else if (literals.Contains(topToken.GetTokenType()))
+                {
+                    output.Add("LOAD_CONST " + topToken.GetLiteral());
+                }
+                else if (topToken.GetTokenType() == TokenType.VARIABLE)
+                {
+                    output.Add("LOAD_VAR " + variablesDict[topToken.GetLiteral()]);
+                }
+            }
+
+            return output.ToArray();
+        }
+
+        private int Precedence(TokenType type)
+        {
+            switch (type)
+            {
+                case TokenType.ADD:
+                    return 1;
+                case TokenType.SUB: 
+                    return 1;
+                case TokenType.MUL:
+                    return 2;
+                case TokenType.DIV:
+                    return 2;
+                case TokenType.MOD:
+                    return 2;
+                case TokenType.EXP:
+                    return 3;
+                // Add comparison operators
+            }
+            return -1;
+        }
+
+        private string[] MapAssignment(string variable, List<Token> expression, string type)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            instrLine = "LOAD_VAR " + counterVar.ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(ConvertToPostfix(expression));
+
+            instrLine = "ADJUST_TYPE " + type;
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + counterVar.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "DECLARE_VAR " + counterVar.ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapReassignment(string variable, List<Token> expression, string type)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            instructions.AddRange(ConvertToPostfix(expression));
+
+            instrLine = "ADJUST_TYPE " + type;
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + counterVar.ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapDeclaration(string variable, string type)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            instrLine = "LOAD_VAR " + counterVar.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "ADJUST_TYPE " + type;
+            instructions.Add(instrLine);
+
+            instrLine = "DECLARE_VAR " + counterVar.ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
+        private string[] TokensToIntermediate()
         {
             if (intermediate == null)
             {
-                intermediateList = new List<string[]>();
+                intermediateList = new List<string>();
             }
 
             int i = 0;
@@ -394,19 +587,93 @@ namespace NEA
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
 
+            string type, variableName;
+            bool noType;
+            List<Token> expression;
+            int j;
+
             while (i < tokens.Length)
             {
                 Token token = tokens[i];
-
                 switch (token.GetTokenType())
                 {
-                    // Beginning keyword for the structure
+                    case TokenType.ASSIGNMENT:
+                        type = "STRING";
+                        noType = true;
+                        if (tokens[i + 1].GetTokenType() == TokenType.VARIABLE)
+                        {
+                            variableName = tokens[i + 1].GetLiteral();
+                            if (tokens[i + 2].GetTokenType() == TokenType.TO)
+                            {
+                                expression = new List<Token>();
+                                j = 1;
+                                while (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 2].GetLine() == token.GetLine() && tokens[i + j + 2].GetTokenType() != TokenType.AS)
+                                {
+                                    expression.Add(tokens[i + j + 2]);
+                                    j++;
+                                }
+                                if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetTokenType() == TokenType.AS && tokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
+                                {
+                                    type = tokens[i + j + 4].GetLiteral();
+                                }
+                                else if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetLine() == token.GetLine())
+                                {
+                                    throw new Exception("ERROR: No data type mentioned");
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception("ERROR: No value was mentioned for assignment");
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("ERROR: When assigning no variable was found");
+                        }
+                        intermediateList.AddRange(MapAssignment(variableName, expression, type));
+                        i += j + 2;
+                        if (!noType)
+                        {
+                            i += 2;
+                        }
+                        break;
+                    case TokenType.DECLARATION:
+                        type = "STRING";
+                        noType = true;
+                        if (tokens[i + 1].GetTokenType() == TokenType.VARIABLE)
+                        {
+                            variableName = tokens[i + 1].GetLiteral();
+                            if (tokens[i + 2].GetTokenType() == TokenType.AS &&
+                                tokens[i + 3].GetTokenType() == TokenType.DATA_TYPE)
+                            {
+                                noType = false;
+                                type = tokens[i + 3].GetLiteral();
+                            }
+                            else if (tokens[i + 2].GetLine() == token.GetLine() && tokens[i + 2].GetTokenType() != TokenType.EOF)
+                            {
+                                throw new Exception("ERROR: No data type mentioned.");
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("ERROR: When creating no variable was found.");
+                        }
+                        intermediateList.AddRange(MapDeclaration(variableName, type));
+                        i += 2;
+                        if (!noType)
+                        {
+                            i += 2;
+                        }
+                        break;
+                    case TokenType.EOF:
+                        intermediateList.Add("HALT");
+                        i++;
+                        break;
                 }
             }
 
-            return new int[0];
+            return intermediateList.ToArray();
         }
-
         #endregion
     }
 }
