@@ -72,7 +72,7 @@ namespace NEA
 
             //// Translation
 
-            intermediate = TokensToIntermediate();
+            intermediate = TokensToIntermediate(tokens);
 
             //String += "\r\nIntermediate\r\n";
 
@@ -611,12 +611,16 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] TokensToIntermediate()
+        private string[] MapIfStatement(List<Token> mainExpression)
         {
-            if (intermediate == null)
-            {
-                intermediateList = new List<string>();
-            }
+
+
+            return new string[0];
+        }
+
+        private string[] TokensToIntermediate(Token[] tokens)
+        {
+            intermediateList = new List<string>();
 
             int i = 0;
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
@@ -648,7 +652,6 @@ namespace NEA
                         {
                             throw new Exception("ERROR: No valid text expression following print command");
                         }
-                        //Add MapPrintStatement for text expressions: "Hello " name "."
                         intermediateList.AddRange(MapPrintStatement(expression));
                         i += j + 1;
                         break;

@@ -49,12 +49,6 @@ namespace NEA
                 lineNumbers += "\n" + i.ToString();
             }
 
-            // Old version using a label, rather than a Rich Text Box
-            //string[] lines = lineNumbers.Split('\n');
-            //lineNumberMagnitude = (int)Math.Log10(Convert.ToInt32(lines[lines.Length - 1]));
-            //lblLineNumber.Left = 13 - 10 * lineNumberMagnitude;
-            //lblLineNumber.Text = lineNumbers;
-
             txtLineNumber.Text = lineNumbers;
 
             // Update Scroll
@@ -277,7 +271,6 @@ namespace NEA
 
         private void btnPlusFont_Click(object sender, EventArgs e)
         {
-            // Andreas is a real cool guy
             txtConsole.Font = new Font("Courier New", txtConsole.Font.Size + 1);
         }
 
