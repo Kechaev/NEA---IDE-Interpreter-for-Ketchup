@@ -516,6 +516,43 @@ namespace NEA
             return -1;
         }
 
+        private string[] MapPrintStatement(List<Token> expression)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine = "ERROR";
+            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
+                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
+                                     TokenType.BOOL_LITERAL };
+
+            foreach (Token e in expression)
+            {
+                if (e.GetTokenType() == TokenType.VARIABLE)
+                {
+                    instrLine = "LOAD_VAR " + e.GetLiteral();
+                }
+                else if (literals.Contains(e.GetTokenType()))
+                {
+                    instrLine = "LOAD_CONST " + e.GetLiteral();
+                }
+                else
+                {
+                    throw new Exception("ERROR: Invalid token in string");
+                }
+                instructions.Add(instrLine);
+            }
+
+            for (int i = 0; i < expression.Count - 1; i++)
+            {
+                instrLine = "ADD";
+                instructions.Add(instrLine);
+            }
+
+            instrLine = "CALL PRINT";
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
         private string[] MapAssignment(string variable, List<Token> expression, string type)
         {
             List<string> instructions = new List<string>();
@@ -594,9 +631,27 @@ namespace NEA
             while (i < tokens.Length)
             {
                 Token token = tokens[i];
-                MessageBox.Show($"Entered loop\ni = {i}\ntokens.Length = {tokens.Length}");
                 switch (token.GetTokenType())
                 {
+                    case TokenType.PRINT:
+                        if (tokens[i + 1].GetTokenType() != TokenType.EOF && tokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(tokens[i + 1].GetTokenType()))
+                        {
+                            expression = new List<Token>();
+                            j = 1;
+                            while (tokens[i + j].GetTokenType() != TokenType.EOF && tokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(tokens[i + j].GetTokenType()))
+                            {
+                                expression.Add(tokens[i + j]);
+                                j++;
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("ERROR: No valid text expression following print command");
+                        }
+                        //Add MapPrintStatement for text expressions: "Hello " name "."
+                        intermediateList.AddRange(MapPrintStatement(expression));
+                        i += j + 1;
+                        break;
                     case TokenType.ASSIGNMENT:
                         type = "STRING";
                         noType = true;
@@ -654,11 +709,13 @@ namespace NEA
                                     expression.Add(tokens[i + j + 2]);
                                     j++;
                                 }
+                                j = expression.Count;
                                 if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetTokenType() == TokenType.AS && tokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
                                 {
                                     type = tokens[i + j + 4].GetLiteral();
+                                    noType = false;
                                 }
-                                else if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetLine() == token.GetLine())
+                                else if (tokens[i + j + 3].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetLine() == token.GetLine())
                                 {
                                     throw new Exception("ERROR: No data type mentioned");
                                 }
@@ -673,7 +730,7 @@ namespace NEA
                             throw new Exception("ERROR: When assigning no variable was found");
                         }
                         intermediateList.AddRange(MapReassignment(variableName, expression, type));
-                        i += j + 2;
+                        i += j + 3;
                         if (!noType)
                         {
                             i += 2;
