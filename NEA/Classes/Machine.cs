@@ -611,7 +611,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] MapIfStatement(List<Token> mainExpression)
+        private string[] MapIfStatement(Token[] mainExpression, Token[] mainBody, List<Token[]> elseExpression, List<Token[]>, bool isElse, Token[] elseBody)
         {
 
 
