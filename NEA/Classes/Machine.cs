@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
+using System.ComponentModel.Design;
 
 namespace NEA
 {
@@ -26,7 +27,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "EQUAL",
-                                     "GREATER", "LESS", "THAN", "INPUT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF" };
+                                     "GREATER", "LESS", "THAN", "INPUT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", };
         private int current, start, line, counter;
 
         // Fields for Translation into Intermediate Code
@@ -161,6 +162,19 @@ namespace NEA
                     return TokenType.MOD;
                 case "^":
                     return TokenType.EXP;
+                case "=":
+                    return TokenType.EQUAL;
+                case ">":
+                    return TokenType.GREATER;
+                case "<":
+                    return TokenType.LESS;
+                case ">=":
+                    return TokenType.GREATER_EQUAL;
+                case "<=":
+                    return TokenType.LESS_EQUAL;
+                // Temporary testing-purpose implementation
+                case "!=":
+                    return TokenType.NOT_EQUAL;
                 case "CREATE":
                     return TokenType.DECLARATION;
                 case "SET":
@@ -271,6 +285,16 @@ namespace NEA
             }
         }
 
+        private string GetComparisonOperator()
+        {
+            while (IsComparisonOperatorChar(Peek()))
+            {
+                current++;
+            }
+
+            return sourceCode.Substring(start, current - start);
+        }
+
         private string GetWord()
         {
             while (IsAlphaNumeric(Peek()))
@@ -335,6 +359,11 @@ namespace NEA
             }
         }
 
+        private bool IsComparisonOperatorChar(char c)
+        {
+            return c == '=' || /*/ Temp /*/ c == '!' || c == '>' || c == '<';
+        }
+
         private string[] FindSubroutineNames()
         {
             List<string> subroutineNames = new List<string>();
@@ -354,6 +383,7 @@ namespace NEA
         {
             List<Token> tokensList = new List<Token>();
             char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^' };
+            string[] multiCharKeywords = {"=", /*/ Temp /*/ "!=", ">", "<", ">=", "<=" };
             string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
 
             string[] subroutineNames = FindSubroutineNames();
@@ -402,6 +432,11 @@ namespace NEA
                         tokensList.Add(new Token(TokenType.VARIABLE, word, line));
                     }
                 }
+                else if (IsComparisonOperatorChar(c))
+                {
+                    string op = GetComparisonOperator();
+                    tokensList.Add(new Token(GetTokenType(op), op, line));
+                }
                 else if (IsDigit(c))
                 {
                     tokensList.Add(GetNumber());
@@ -423,6 +458,8 @@ namespace NEA
         // Shunting Yard Algorithm
         // Converts list of tokens
         // To intermediate code in postfix
+
+        // Potential Optimization - Change List<Token> to Token[]
         private string[] ConvertToPostfix(List<Token> tokens)
         {
             List<string> output = new List<string>();
@@ -432,7 +469,9 @@ namespace NEA
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
             TokenType[] operators = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
-                                      TokenType.DIV, TokenType.MOD, TokenType.EXP };
+                                      TokenType.DIV, TokenType.MOD, TokenType.EXP,  
+                                      TokenType.EQUAL, TokenType.NOT_EQUAL, TokenType.GREATER,
+                                      TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL };
 
             foreach (var e in tokens)
             {
@@ -499,6 +538,18 @@ namespace NEA
         {
             switch (type)
             {
+                case TokenType.EQUAL:
+                    return 0;
+                case TokenType.NOT_EQUAL:
+                    return 0;
+                case TokenType.GREATER:
+                    return 0;
+                case TokenType.LESS:
+                    return 0;
+                case TokenType.GREATER_EQUAL:
+                    return 0;
+                case TokenType.LESS_EQUAL:
+                    return 0;
                 case TokenType.ADD:
                     return 1;
                 case TokenType.SUB: 
@@ -611,11 +662,77 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] MapIfStatement(Token[] mainExpression, Token[] mainBody, List<Token[]> elseExpression, List<Token[]>, bool isElse, Token[] elseBody)
+        private string[] MapIfStatement(Token[] mainExpression, Token[] mainBody, List<Token[]> elseIfExpression, List<Token[]> elseIfBodies, bool isElse, Token[] elseBody)
         {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            int length = elseIfExpression.Count;
+            if (isElse)
+            {
+                length++;
+            }
 
+            instructions.AddRange(ConvertToPostfix(mainExpression.ToList()));
 
-            return new string[0];
+            instrLine = "JUMP_FALSE " + counter;
+            instructions.Add(instrLine);
+
+            string[] statements = TokensToIntermediate(mainBody);
+            instructions.AddRange(statements);
+
+            instrLine = "JUMP " + (counter + length).ToString();
+            instructions.Add(instrLine);
+
+            int i;
+
+            for (i = 0; i < elseIfExpression.Count; i++)
+            {
+                instrLine = "LABEL " + (counter + i);
+                instructions.Add(instrLine);
+
+                instructions.AddRange(ConvertToPostfix(elseIfExpression[i].ToList()));
+
+                statements = TokensToIntermediate(elseIfBodies[i]);
+                instructions.AddRange(statements);
+
+                instrLine = "JUMP " + (counter + length).ToString();
+                instructions.Add(instrLine);
+            }
+
+            if (isElse)
+            {
+                instrLine = "JUMP " + (counter + length).ToString();
+                instructions.Add(instrLine);
+
+                statements = TokensToIntermediate(elseBody);
+                instructions.AddRange(statements);
+            }
+
+            instrLine = "LABEL " + (counter + length).ToString();
+            instructions.Add(instrLine);
+
+            counter += length + 1;
+
+            return instructions.ToArray();
+        }
+
+        private int FindRelevantEndIndex(int index)
+        {
+            int nestCounter = 0;
+            do
+            {
+                if (tokens[index].GetTokenType() == TokenType.BEGIN)
+                {
+                    nestCounter++;
+                }
+                else if (tokens[index].GetTokenType() == TokenType.END)
+                {
+                    nestCounter--;
+                }
+                index++;
+            }
+            while (!(index == 0 || index >= tokens.Length - 1));
+            return index;
         }
 
         private string[] TokensToIntermediate(Token[] tokens)
@@ -631,6 +748,16 @@ namespace NEA
             bool noType;
             List<Token> expression;
             int j;
+
+            // Testing
+            string String = "";
+
+            foreach (Token t in tokens)
+            {
+                String += t.GetTokenType() + "\r\n";
+            }
+
+            MessageBox.Show(String);
 
             while (i < tokens.Length)
             {
@@ -766,6 +893,58 @@ namespace NEA
                         {
                             i += 2;
                         }
+                        break;
+                    case TokenType.IF:
+                        j = 1;
+                        List<Token> tokensList = tokens.ToList();
+                        List<Token> mainExpression = new List<Token>();
+                        List<Token[]> elseIfExpressions = new List<Token[]>();
+                        List<Token> mainBody = new List<Token>();
+                        List<Token[]> elseIfBodies = new List<Token[]>();
+                        List<Token> body = new List<Token>();
+                        List<Token> elseBody = new List<Token>();
+                        expression = new List<Token>();
+                        while (tokens[i + j].GetLine() == token.GetLine() && tokens[i + j].GetTokenType() != TokenType.THEN)
+                        {
+                            mainExpression.Add(tokens[i + j]);
+                            j++;
+                        }
+                        int bodyStart = i + j + 2;
+                        int bodyEnd = FindRelevantEndIndex(bodyStart);
+                        MessageBox.Show($"bodyStart = {bodyStart}\nbodyEnd = {bodyEnd}");
+                        mainBody = tokensList.GetRange(bodyStart + 1, bodyEnd - 1);
+                        i = bodyEnd + 1;
+                        if (tokens[i].GetTokenType() == TokenType.ELSE && tokens[i + 1].GetTokenType() == TokenType.IF)
+                        {
+                            j = 1;
+                            while (tokens[i + j].GetLine() == token.GetLine() && tokens[i + j].GetTokenType() != TokenType.THEN)
+                            {
+                                expression.Add(tokens[i + j]);
+                                j++;
+                            }
+                            if (tokens[i + j + 1].GetTokenType() != TokenType.THEN)
+                            {
+                                throw new Exception("ERROR: Missing \"THEN\"");
+                            }
+                            bodyStart = i + j + 2;
+                            bodyEnd = FindRelevantEndIndex(bodyStart);
+                            body = tokensList.GetRange(bodyStart + 1, bodyEnd - 1);
+                            elseIfBodies.Add(body.ToArray());
+                            elseIfExpressions.Add(expression.ToArray());
+                            expression = new List<Token>();
+                        }
+                        i = bodyEnd + 1;
+                        bool isElse = false;
+                        elseBody = null;
+                        if (tokens[i].GetTokenType() == TokenType.ELSE)
+                        {
+                            isElse = true;
+                            bodyStart = i + 1;
+                            bodyEnd = FindRelevantEndIndex(bodyStart);
+                            elseBody = tokensList.GetRange(bodyStart + 1, bodyEnd - 1);
+                            i = bodyEnd + 1;
+                        }
+                        intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
