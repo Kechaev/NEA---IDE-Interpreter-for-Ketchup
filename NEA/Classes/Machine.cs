@@ -10,6 +10,7 @@ using System.Net.Configuration;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -64,18 +65,16 @@ namespace NEA
             // Testing
             string String = "";
 
-            foreach (Token token in tokens)
-            {
-                String += token.GetTokenType().ToString()+"\r\n";
-            }
+            //foreach (Token token in tokens)
+            //{
+            //    String += token.GetTokenType().ToString() + "\r\n";
+            //}
 
-            char[] endTrim = { '\r', '\n' };
-
-            // Translation
+            //// Translation
 
             intermediate = TokensToIntermediate();
 
-            String += "\r\nIntermediate\r\n";
+            //String += "\r\nIntermediate\r\n";
 
             // Testing
             foreach (string line in intermediate)
@@ -595,6 +594,7 @@ namespace NEA
             while (i < tokens.Length)
             {
                 Token token = tokens[i];
+                MessageBox.Show($"Entered loop\ni = {i}\ntokens.Length = {tokens.Length}");
                 switch (token.GetTokenType())
                 {
                     case TokenType.ASSIGNMENT:
@@ -612,11 +612,13 @@ namespace NEA
                                     expression.Add(tokens[i + j + 2]);
                                     j++;
                                 }
+                                j = expression.Count;
                                 if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetTokenType() == TokenType.AS && tokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
                                 {
                                     type = tokens[i + j + 4].GetLiteral();
+                                    noType = false;
                                 }
-                                else if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetLine() == token.GetLine())
+                                else if (tokens[i + j + 3].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetLine() == token.GetLine())
                                 {
                                     throw new Exception("ERROR: No data type mentioned");
                                 }
@@ -631,7 +633,7 @@ namespace NEA
                             throw new Exception("ERROR: When assigning no variable was found");
                         }
                         intermediateList.AddRange(MapAssignment(variableName, expression, type));
-                        i += j + 2;
+                        i += j + 3;
                         if (!noType)
                         {
                             i += 2;
