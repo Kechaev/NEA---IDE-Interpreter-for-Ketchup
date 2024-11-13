@@ -736,8 +736,10 @@ namespace NEA
 
             int nestCounter = 1;
 
-            while (nestCounter != 0)
+            while (nestCounter > 0 && index < tokens.Length)
             {
+                index++;
+
                 if (tokens[index].GetTokenType() == TokenType.BEGIN)
                 {
                     nestCounter++;
@@ -746,7 +748,6 @@ namespace NEA
                 {
                     nestCounter--;
                 }
-                index++;
             }
 
             return index;
@@ -918,6 +919,7 @@ namespace NEA
                         }
                         break;
                     case TokenType.IF:
+                        // Declare necessary variables
                         j = 1;
                         List<Token> internalTokensList = internalTokens.ToList();
                         List<Token> mainExpression = new List<Token>();
@@ -927,40 +929,73 @@ namespace NEA
                         List<Token> body = new List<Token>();
                         List<Token> elseBody = new List<Token>();
                         expression = new List<Token>();
+                        // Get Main If Expression
                         while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.THEN)
                         {
                             mainExpression.Add(internalTokens[i + j]);
                             j++;
                         }
+                        // Capture Main If Body
                         int bodyStart = i + j + 2;
                         int bodyEnd = FindRelevantEndIndex(bodyStart);
-                        mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart -1);
+                        MessageBox.Show($"i = {i}\nbodyStart = {bodyStart}\nbodyEnd = {bodyEnd}");
+                        mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
+                        // Set i to next section
                         i = bodyEnd;
+
+                        // Test
                         MessageBox.Show($"If - Updated i: {i}");
+                        String = "";
+                        foreach (Token t in mainExpression)
+                        {
+                            String += t.GetTokenType() + "\n";
+                        }
+                        MessageBox.Show($"{String}");
+
+                        // Identify if Else If statement(s) is present
                         if (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
                         {
+                            // Get Else If 1 Expression
                             j = 1;
-                            while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.THEN)
+                            while (internalTokens[i + j + 1].GetLine() == internalTokens[i + 1].GetLine() && internalTokens[i + j + 1].GetTokenType() != TokenType.THEN)
                             {
-                                MessageBox.Show($"line = {internalTokens[i + j].GetLine()}\ntoken type = {internalTokens[i + j].GetTokenType()}");
-                                expression.Add(internalTokens[i + j]);
                                 j++;
+                                expression.Add(internalTokens[i + j]);
                             }
-                            MessageBox.Show($"internalTokens[i + j + 1] = {internalTokens[i + j + 1].GetTokenType()}\ni = {i}\nj = {j}");
                             if (internalTokens[i + j + 1].GetTokenType() != TokenType.THEN)
                             {
                                 throw new Exception("ERROR: Missing \"THEN\"");
                             }
+                            // Capture Else If 1 Body
                             bodyStart = i + j + 2;
                             bodyEnd = FindRelevantEndIndex(bodyStart);
-                            body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - 1);
+                            body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+                            // Add body & expresison to lists
                             elseIfBodies.Add(body.ToArray());
                             elseIfExpressions.Add(expression.ToArray());
+                            // Reset expression
                             expression = new List<Token>();
+                            // Set i to next section
                             i = bodyEnd;
+
+                            // Test
                             MessageBox.Show($"Else if - Updated i: {i}");
+                            String = "";
+                            int counterTest = 1;
+                            foreach (Token[] e in elseIfExpressions)
+                            {
+                                String += $"Else if {counterTest}\n";
+                                foreach (Token t in e)
+                                {
+                                    String += t.GetTokenType() + "\n";
+                                }
+                            }
+                            MessageBox.Show($"{String}");
+
                         }
+                        // Set up Else statement
                         bool isElse = false;
+                        // Identify if Else statement is present
                         if (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE)
                         {
                             isElse = true;
