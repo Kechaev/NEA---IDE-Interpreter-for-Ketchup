@@ -27,7 +27,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "EQUAL",
-                                     "GREATER", "LESS", "THAN", "INPUT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", };
+                                     "GREATER", "LESS", "THAN", "INPUT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
         private int current, start, line, counter;
 
         // Fields for Translation into Intermediate Code
@@ -172,8 +172,7 @@ namespace NEA
                     return TokenType.GREATER_EQUAL;
                 case "<=":
                     return TokenType.LESS_EQUAL;
-                // Temporary testing-purpose implementation
-                case "!=":
+                case "<>":
                     return TokenType.NOT_EQUAL;
                 case "CREATE":
                     return TokenType.DECLARATION;
@@ -383,7 +382,7 @@ namespace NEA
         {
             List<Token> tokensList = new List<Token>();
             char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^' };
-            string[] multiCharKeywords = {"=", /*/ Temp /*/ "!=", ">", "<", ">=", "<=" };
+            string[] multiCharKeywords = {"=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
             string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
 
             string[] subroutineNames = FindSubroutineNames();
@@ -417,7 +416,12 @@ namespace NEA
                     string word = GetWord();
                     if (keyword.Contains(word.ToUpper()))
                     {
-                        tokensList.Add(new Token(GetTokenType(word), word, line));
+                        TokenType type = GetTokenType(word);
+                        if (type == TokenType.END)
+                        {
+                            tokensList.Add(new Token(TokenType.EON, word, line));
+                        }
+                        tokensList.Add(new Token(type, word, line));
                     }
                     else if (dataTypes.Contains(word.ToUpper()))
                     {
@@ -677,8 +681,10 @@ namespace NEA
             instrLine = "JUMP_FALSE " + counter;
             instructions.Add(instrLine);
 
+            MessageBox.Show($"Statement added.");
             string[] statements = TokensToIntermediate(mainBody);
             instructions.AddRange(statements);
+            MessageBox.Show($"Statement ended.");
 
             instrLine = "JUMP " + (counter + length).ToString();
             instructions.Add(instrLine);
@@ -713,6 +719,15 @@ namespace NEA
 
             counter += length + 1;
 
+
+            string String = "";
+            foreach (string instr in instructions)
+            {
+                String += instr + "\n";
+            }
+
+            MessageBox.Show($"Returning\n{String}");
+
             return instructions.ToArray();
         }
 
@@ -735,7 +750,12 @@ namespace NEA
             return index;
         }
 
-        private string[] TokensToIntermediate(Token[] tokens)
+        private Token[] GetTokens()
+        {
+            return tokens;
+        }
+
+        private string[] TokensToIntermediate(Token[] internalTokens)
         {
             intermediateList = new List<string>();
 
@@ -752,26 +772,35 @@ namespace NEA
             // Testing
             string String = "";
 
-            foreach (Token t in tokens)
+            foreach (Token t in internalTokens)
             {
                 String += t.GetTokenType() + "\r\n";
             }
 
-            MessageBox.Show(String);
+            String += "Class global tokens:\n";
 
-            while (i < tokens.Length)
+            Token[] frozenTokens = tokens;
+
+            foreach (Token t in frozenTokens)
             {
-                Token token = tokens[i];
+                String += t.GetTokenType() + "\r\n";
+            }
+
+            MessageBox.Show($"{String}\nLength: {tokens.Length}");
+
+            while (i < internalTokens.Length)
+            {
+                Token token = internalTokens[i];
                 switch (token.GetTokenType())
                 {
                     case TokenType.PRINT:
-                        if (tokens[i + 1].GetTokenType() != TokenType.EOF && tokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(tokens[i + 1].GetTokenType()))
+                        if (internalTokens[i + 1].GetTokenType() != TokenType.EOF && internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + 1].GetTokenType()))
                         {
                             expression = new List<Token>();
                             j = 1;
-                            while (tokens[i + j].GetTokenType() != TokenType.EOF && tokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(tokens[i + j].GetTokenType()))
+                            while (internalTokens[i + j].GetTokenType() != TokenType.EOF && internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()))
                             {
-                                expression.Add(tokens[i + j]);
+                                expression.Add(internalTokens[i + j]);
                                 j++;
                             }
                         }
@@ -785,25 +814,25 @@ namespace NEA
                     case TokenType.ASSIGNMENT:
                         type = "STRING";
                         noType = true;
-                        if (tokens[i + 1].GetTokenType() == TokenType.VARIABLE)
+                        if (internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE)
                         {
-                            variableName = tokens[i + 1].GetLiteral();
-                            if (tokens[i + 2].GetTokenType() == TokenType.TO)
+                            variableName = internalTokens[i + 1].GetLiteral();
+                            if (internalTokens[i + 2].GetTokenType() == TokenType.TO)
                             {
                                 expression = new List<Token>();
                                 j = 1;
-                                while (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 2].GetLine() == token.GetLine() && tokens[i + j + 2].GetTokenType() != TokenType.AS)
+                                while (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 2].GetLine() == token.GetLine() && internalTokens[i + j + 2].GetTokenType() != TokenType.AS)
                                 {
-                                    expression.Add(tokens[i + j + 2]);
+                                    expression.Add(internalTokens[i + j + 2]);
                                     j++;
                                 }
                                 j = expression.Count;
-                                if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetTokenType() == TokenType.AS && tokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
+                                if (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
                                 {
-                                    type = tokens[i + j + 4].GetLiteral();
+                                    type = internalTokens[i + j + 4].GetLiteral();
                                     noType = false;
                                 }
-                                else if (tokens[i + j + 3].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetLine() == token.GetLine())
+                                else if (internalTokens[i + j + 3].GetTokenType() != TokenType.EOF && internalTokens[i + j + 3].GetLine() == token.GetLine())
                                 {
                                     throw new Exception("ERROR: No data type mentioned");
                                 }
@@ -827,25 +856,25 @@ namespace NEA
                     case TokenType.REASSIGNMENT:
                         type = "STRING";
                         noType = true;
-                        if (tokens[i + 1].GetTokenType() == TokenType.VARIABLE)
+                        if (internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE)
                         {
-                            variableName = tokens[i + 1].GetLiteral();
-                            if (tokens[i + 2].GetTokenType() == TokenType.TO)
+                            variableName = internalTokens[i + 1].GetLiteral();
+                            if (internalTokens[i + 2].GetTokenType() == TokenType.TO)
                             {
                                 expression = new List<Token>();
                                 j = 1;
-                                while (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 2].GetLine() == token.GetLine() && tokens[i + j + 2].GetTokenType() != TokenType.AS)
+                                while (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 2].GetLine() == token.GetLine() && internalTokens[i + j + 2].GetTokenType() != TokenType.AS)
                                 {
-                                    expression.Add(tokens[i + j + 2]);
+                                    expression.Add(internalTokens[i + j + 2]);
                                     j++;
                                 }
                                 j = expression.Count;
-                                if (tokens[i + j + 2].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetTokenType() == TokenType.AS && tokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
+                                if (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
                                 {
-                                    type = tokens[i + j + 4].GetLiteral();
+                                    type = internalTokens[i + j + 4].GetLiteral();
                                     noType = false;
                                 }
-                                else if (tokens[i + j + 3].GetTokenType() != TokenType.EOF && tokens[i + j + 3].GetLine() == token.GetLine())
+                                else if (internalTokens[i + j + 3].GetTokenType() != TokenType.EOF && internalTokens[i + j + 3].GetLine() == token.GetLine())
                                 {
                                     throw new Exception("ERROR: No data type mentioned");
                                 }
@@ -869,16 +898,16 @@ namespace NEA
                     case TokenType.DECLARATION:
                         type = "STRING";
                         noType = true;
-                        if (tokens[i + 1].GetTokenType() == TokenType.VARIABLE)
+                        if (internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE)
                         {
-                            variableName = tokens[i + 1].GetLiteral();
-                            if (tokens[i + 2].GetTokenType() == TokenType.AS &&
-                                tokens[i + 3].GetTokenType() == TokenType.DATA_TYPE)
+                            variableName = internalTokens[i + 1].GetLiteral();
+                            if (internalTokens[i + 2].GetTokenType() == TokenType.AS &&
+                                internalTokens[i + 3].GetTokenType() == TokenType.DATA_TYPE)
                             {
                                 noType = false;
-                                type = tokens[i + 3].GetLiteral();
+                                type = internalTokens[i + 3].GetLiteral();
                             }
-                            else if (tokens[i + 2].GetLine() == token.GetLine() && tokens[i + 2].GetTokenType() != TokenType.EOF)
+                            else if (internalTokens[i + 2].GetLine() == token.GetLine() && internalTokens[i + 2].GetTokenType() != TokenType.EOF)
                             {
                                 throw new Exception("ERROR: No data type mentioned.");
                             }
@@ -896,7 +925,7 @@ namespace NEA
                         break;
                     case TokenType.IF:
                         j = 1;
-                        List<Token> tokensList = tokens.ToList();
+                        List<Token> internalTokensList = internalTokens.ToList();
                         List<Token> mainExpression = new List<Token>();
                         List<Token[]> elseIfExpressions = new List<Token[]>();
                         List<Token> mainBody = new List<Token>();
@@ -904,50 +933,58 @@ namespace NEA
                         List<Token> body = new List<Token>();
                         List<Token> elseBody = new List<Token>();
                         expression = new List<Token>();
-                        while (tokens[i + j].GetLine() == token.GetLine() && tokens[i + j].GetTokenType() != TokenType.THEN)
+                        while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.THEN)
                         {
-                            mainExpression.Add(tokens[i + j]);
+                            mainExpression.Add(internalTokens[i + j]);
                             j++;
                         }
                         int bodyStart = i + j + 2;
                         int bodyEnd = FindRelevantEndIndex(bodyStart);
-                        MessageBox.Show($"bodyStart = {bodyStart}\nbodyEnd = {bodyEnd}");
-                        mainBody = tokensList.GetRange(bodyStart + 1, bodyEnd - 1);
-                        i = bodyEnd + 1;
-                        if (tokens[i].GetTokenType() == TokenType.ELSE && tokens[i + 1].GetTokenType() == TokenType.IF)
+                        mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart -1);
+                        i = bodyEnd;
+                        if (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
                         {
                             j = 1;
-                            while (tokens[i + j].GetLine() == token.GetLine() && tokens[i + j].GetTokenType() != TokenType.THEN)
+                            while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.THEN)
                             {
-                                expression.Add(tokens[i + j]);
+                                expression.Add(internalTokens[i + j]);
                                 j++;
                             }
-                            if (tokens[i + j + 1].GetTokenType() != TokenType.THEN)
+                            if (internalTokens[i + j + 1].GetTokenType() != TokenType.THEN)
                             {
                                 throw new Exception("ERROR: Missing \"THEN\"");
                             }
                             bodyStart = i + j + 2;
                             bodyEnd = FindRelevantEndIndex(bodyStart);
-                            body = tokensList.GetRange(bodyStart + 1, bodyEnd - 1);
+                            body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - 1);
                             elseIfBodies.Add(body.ToArray());
                             elseIfExpressions.Add(expression.ToArray());
                             expression = new List<Token>();
+                            i = bodyEnd;
                         }
-                        i = bodyEnd + 1;
                         bool isElse = false;
-                        elseBody = null;
-                        if (tokens[i].GetTokenType() == TokenType.ELSE)
+                        if (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE)
                         {
                             isElse = true;
                             bodyStart = i + 1;
                             bodyEnd = FindRelevantEndIndex(bodyStart);
-                            elseBody = tokensList.GetRange(bodyStart + 1, bodyEnd - 1);
+                            elseBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - 1);
                             i = bodyEnd + 1;
                         }
                         intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
+                        String = "";
+                        foreach (string s in intermediateList)
+                        {
+                            String += s + "\n";
+                        }
+                        MessageBox.Show($"After IfStatement:\n{String}");
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
+                        i++;
+                        break;
+                    case TokenType.EON:
+                        intermediateList.Add("EON");
                         i++;
                         break;
                 }
