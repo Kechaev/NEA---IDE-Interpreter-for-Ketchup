@@ -43,6 +43,7 @@ namespace NEA
         private Stack<object> stack;
         private Stack<StackFrame> callStack;
         private bool validProgram;
+        private bool isRunning = false;
 
         public Machine(string sourceCode)
         {
@@ -96,7 +97,7 @@ namespace NEA
 
             // Execution
 
-            // Execute();
+            StartExecution();
         }
 
         #region Tokenization
@@ -1033,6 +1034,24 @@ namespace NEA
 
         #region Execution
 
+        private void StartExecution()
+        {
+            isRunning = validProgram;
+            while (isRunning)
+            {
+
+            }
+        }
+
+        private void FetchExecute()
+        {
+
+        }
+
+        private void Fetch()
+        {
+
+        }
         #endregion
     }
 }
