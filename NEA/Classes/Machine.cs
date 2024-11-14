@@ -679,8 +679,6 @@ namespace NEA
 
             int localCounter = counter;
 
-            MessageBox.Show($"counter: {localCounter}");
-
             instructions.AddRange(ConvertToPostfix(mainExpression.ToList()));
 
             if (elseIfExpression.Count > 0)
@@ -709,9 +707,14 @@ namespace NEA
 
                 instructions.AddRange(ConvertToPostfix(elseIfExpression[i].ToList()));
 
-                if (i == elseIfExpression.Count - 1)
+                MessageBox.Show($"IMPORTANT VERY\ni = {i} && elseIfExpression.Count - 1 = {elseIfExpression.Count - 1}\n isElse = {isElse}");
+                if (i == elseIfExpression.Count - 1 && !isElse)
                 {
                     instrLine = "JUMP_FALSE " + (localCounter - length).ToString();
+                }
+                else if (isElse)
+                {
+                    instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
                 }
                 else
                 {
@@ -753,8 +756,6 @@ namespace NEA
 
         private int FindRelevantEndIndex(int index, Token[] tokens)
         {
-            // This does not work as intended
-
             int nestCounter = 1;
 
             while (nestCounter > 0 && index < tokens.Length)
@@ -772,11 +773,6 @@ namespace NEA
             }
 
             return index;
-        }
-
-        private Token[] GetTokens()
-        {
-            return tokens;
         }
 
         private string[] TokensToIntermediate(Token[] internalTokens)
@@ -966,7 +962,7 @@ namespace NEA
                         int bodyStart = i + j + 2;
                         int bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         MessageBox.Show($"i = {i}\nbodyStart = {bodyStart}\nbodyEnd = {bodyEnd}");
-                        mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
+                        mainBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         // Set i to next section
                         i = bodyEnd + 1;
 
@@ -1004,7 +1000,7 @@ namespace NEA
                             bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                             MessageBox.Show($"i = {i}\nbodyStart = {bodyStart}\nbodyEnd = {bodyEnd}");
                             // Encountering off-by-one error starting on BEGIN but ending at the correct token
-                            body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
+                            body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                             // Add body & expresison to lists
                             elseIfBodies.Add(body.ToArray());
                             elseIfExpressions.Add(expression.ToArray());
@@ -1036,7 +1032,7 @@ namespace NEA
                             isElse = true;
                             bodyStart = i + 1;
                             bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
-                            elseBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd);
+                            elseBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                             i = bodyEnd + 1;
                             MessageBox.Show($"Else - Updated i: {i}");
                         }
