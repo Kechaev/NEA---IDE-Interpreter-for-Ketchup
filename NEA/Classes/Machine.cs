@@ -53,6 +53,16 @@ namespace NEA
             validProgram = true;
         }
 
+        public void ConsoleWrite(IDE_MainWindow form, string text)
+        {
+            form.txtConsole.Text += text + "\r\n";
+        }
+
+        public void ClearConsole(IDE_MainWindow form)
+        {
+            form.txtConsole.Text = "";
+        }
+
         public string Interpret()
         {
             // Tokenization
@@ -578,11 +588,12 @@ namespace NEA
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
 
+
             foreach (Token e in expression)
             {
                 if (e.GetTokenType() == TokenType.VARIABLE)
                 {
-                    instrLine = "LOAD_VAR " + e.GetLiteral();
+                    instrLine = "LOAD_VAR " + variablesDict[e.GetLiteral()];
                 }
                 else if (literals.Contains(e.GetTokenType()))
                 {
@@ -705,7 +716,6 @@ namespace NEA
 
             for (i = 0; i < elseIfExpression.Count; i++)
             {
-                MessageBox.Show($"Else if {0}");
                 instrLine = "LABEL " + (localCounter - length + i + 1);
                 instructions.Add(instrLine);
 
@@ -738,7 +748,6 @@ namespace NEA
 
             if (isElse)
             {
-                MessageBox.Show($"Else");
                 instrLine = "LABEL " + (localCounter - 1).ToString();
                 instructions.Add(instrLine);
 
@@ -748,15 +757,6 @@ namespace NEA
 
             instrLine = "LABEL " + (localCounter - length).ToString();
             instructions.Add(instrLine);
-
-
-            string String = "";
-            foreach (string instr in instructions)
-            {
-                String += instr + "\n";
-            }
-
-            MessageBox.Show($"Returning\n{String}");
 
             return instructions.ToArray();
         }
@@ -782,6 +782,14 @@ namespace NEA
             return index;
         }
 
+        // Implemented list:
+        // PRINT
+        // ASSIGNMENT
+        // REASSIGNMENT
+        // DECLARATION
+        // IF
+        // EON (End of Nest)
+        // EOF (End of File)
         private string[] TokensToIntermediate(Token[] internalTokens)
         {
             List<string> intermediateList = new List<string>();
@@ -804,11 +812,8 @@ namespace NEA
                 String += t.GetTokenType() + "\r\n";
             }
 
-            MessageBox.Show($"{String}\nLength: {internalTokens.Length}");
-
             while (i < internalTokens.Length)
             {
-                MessageBox.Show($"i = {i}");
                 Token token = internalTokens[i];
                 switch (token.GetTokenType())
                 {
@@ -817,7 +822,6 @@ namespace NEA
                         {
                             expression = new List<Token>();
                             j = 1;
-                            MessageBox.Show($"length = {internalTokens.Length}\ni = {i}\nj = {j}");
                             while ((internalTokens[i + j].GetTokenType() != TokenType.EOF || internalTokens[i + j].GetTokenType() != TokenType.EON) && internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()))
                             {
                                 expression.Add(internalTokens[i + j]);
@@ -960,7 +964,6 @@ namespace NEA
                             j++;
                             mainExpression.Add(internalTokens[i + j]);
                         }
-                        MessageBox.Show($"IMPORTANT: {internalTokens[i + j + 1].GetTokenType()}");
                         if (internalTokens[i + j + 1].GetTokenType() != TokenType.THEN)
                         {
                             throw new Exception("ERROR: Missing \"THEN\"");
@@ -968,21 +971,9 @@ namespace NEA
                         // Capture Main If Body
                         int bodyStart = i + j + 2;
                         int bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
-                        MessageBox.Show($"i = {i}\nbodyStart = {bodyStart}\nbodyEnd = {bodyEnd}");
                         mainBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         // Set i to next section
                         i = bodyEnd + 1;
-
-                        // Test
-                        MessageBox.Show($"If - Updated i: {i}");
-                        String = "";
-                        foreach (Token t in mainExpression)
-                        {
-                            String += t.GetTokenType() + "\n";
-                        }
-                        MessageBox.Show($"{String}");
-
-                        // IMPORTANT Make this a loop to allow for multiple else if's
 
                         // Identify if Else If statement(s) is present
                         while (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
@@ -996,7 +987,6 @@ namespace NEA
                                 j++;
                                 expression.Add(internalTokens[i + j + 1]);
                             }
-                            MessageBox.Show($"IMPORTANT: {internalTokens[i + j + 2].GetTokenType()}");
                             // + 2 is used in this case because the program is checking for the next token after the final expression token
                             if (internalTokens[i + j + 2].GetTokenType() != TokenType.THEN)
                             {
@@ -1005,8 +995,6 @@ namespace NEA
                             // Capture Else If 1 Body
                             bodyStart = i + j + 3;
                             bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
-                            MessageBox.Show($"i = {i}\nbodyStart = {bodyStart}\nbodyEnd = {bodyEnd}");
-                            // Encountering off-by-one error starting on BEGIN but ending at the correct token
                             body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                             // Add body & expresison to lists
                             elseIfBodies.Add(body.ToArray());
@@ -1015,21 +1003,6 @@ namespace NEA
                             expression = new List<Token>();
                             // Set i to next section
                             i = bodyEnd + 1;
-
-                            // Test
-                            MessageBox.Show($"Else if - Updated i: {i}");
-                            String = "";
-                            int counterTest = 1;
-                            foreach (Token[] e in elseIfExpressions)
-                            {
-                                String += $"Else if {counterTest}\n";
-                                foreach (Token t in e)
-                                {
-                                    String += t.GetTokenType() + "\n";
-                                }
-                            }
-                            MessageBox.Show($"{String}");
-
                         }
                         // Set up Else statement
                         bool isElse = false;
@@ -1037,17 +1010,14 @@ namespace NEA
                         if (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE)
                         {
                             isElse = true;
-                            bodyStart = i + 1;
+                            bodyStart = i;
                             bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                             elseBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                             i = bodyEnd + 1;
-                            MessageBox.Show($"Else - Updated i: {i}");
                         }
                         intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
-                        MessageBox.Show($"End of If: i = {i}");
                         break;
                     case TokenType.EOF:
-                        MessageBox.Show($"EOF - pre-i = {i}");
                         intermediateList.Add("HALT");
                         i++;
                         break;
@@ -1059,6 +1029,10 @@ namespace NEA
 
             return intermediateList.ToArray();
         }
+        #endregion
+
+        #region Execution
+
         #endregion
     }
 }

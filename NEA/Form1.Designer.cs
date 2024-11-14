@@ -358,10 +358,10 @@ namespace NEA
         private System.Windows.Forms.Button btnMinusFont;
         private System.Windows.Forms.Button btnPlusFont;
         private System.Windows.Forms.Button btnReset;
-        private TextBox txtConsole;
         private Label label1;
         private RichTextBox txtLineNumber;
         private RichTextBox txtCodeField;
+        internal TextBox txtConsole;
     }
 }
 

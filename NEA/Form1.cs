@@ -37,6 +37,12 @@ namespace NEA
         {
             undoStack.Push("");
         }
+        
+        private void Run()
+        {
+            Machine m = new Machine(txtCodeField.Text);
+            ConsoleWrite(m.Interpret());
+        }
 
         private void UpdateLineNumbers()
         {
@@ -125,11 +131,6 @@ namespace NEA
             Run();
         }
         
-        private void Run()
-        {
-            Machine m = new Machine(txtCodeField.Text);
-            ConsoleWrite(m.Interpret());
-        }
 
         private void stripComment_Click(object sender, EventArgs e)
         {
