@@ -1,8 +1,8 @@
+# Ketchup - IDE & Programming Language
 Project Start June-July 2024
 Project End Approx. April-May 2025
 
-Project Name: Ketchup Programming Language + IDE
-Using Visual Studio - Windows Forms (C#)
+Project is written in Visual Studio using Windows Forms (C#)
 
 Objectives:
 Core:
