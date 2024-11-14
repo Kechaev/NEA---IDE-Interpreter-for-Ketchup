@@ -685,6 +685,10 @@ namespace NEA
             {
                 instrLine = "JUMP_FALSE " + (localCounter - length + 1).ToString();
             }
+            else if (isElse)
+            {
+                instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
+            }
             else
             {
                 instrLine = "JUMP_FALSE " + (localCounter - length).ToString();
@@ -707,19 +711,22 @@ namespace NEA
 
                 instructions.AddRange(ConvertToPostfix(elseIfExpression[i].ToList()));
 
-                MessageBox.Show($"IMPORTANT VERY\ni = {i} && elseIfExpression.Count - 1 = {elseIfExpression.Count - 1}\n isElse = {isElse}");
-                if (i == elseIfExpression.Count - 1 && !isElse)
+                // JUMP_FALSE to the next Else If
+                if (i < elseIfExpression.Count - 1)
                 {
-                    instrLine = "JUMP_FALSE " + (localCounter - length).ToString();
+                    instrLine = "JUMP_FALSE " + (localCounter - length + i + 2).ToString();
                 }
+                // JUMP_FALSE to the Else statement
                 else if (isElse)
                 {
                     instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
                 }
+                // JUMP_FALSE to the end
                 else
                 {
-                    instrLine = "JUMP_FALSE " + (localCounter - length + i + 2).ToString();
+                    instrLine = "JUMP_FALSE " + (localCounter - length).ToString();
                 }
+
                 instructions.Add(instrLine);
 
                 statements = TokensToIntermediate(elseIfBodies[i]);
@@ -978,7 +985,7 @@ namespace NEA
                         // IMPORTANT Make this a loop to allow for multiple else if's
 
                         // Identify if Else If statement(s) is present
-                        if (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
+                        while (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
                         {
                             // Get Else If 1 Expression
                             // The while statements have + 2 because the j variable has not been updated yet
