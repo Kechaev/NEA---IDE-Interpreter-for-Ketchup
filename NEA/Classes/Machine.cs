@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 using System.ComponentModel.Design;
 using System.Reflection.Emit;
+using System.Xml.Schema;
 
 namespace NEA
 {
@@ -53,6 +54,7 @@ namespace NEA
             counter = 0;
             PC = 0;
             validProgram = true;
+            stack = new Stack<object>();
         }
 
         public void ConsoleWrite(IDE_MainWindow form, string text)
@@ -65,7 +67,7 @@ namespace NEA
             form.txtConsole.Text = "";
         }
 
-        public string Interpret()
+        public void Interpret()
         {
             // Tokenization
             tokens = Tokenize();
@@ -94,7 +96,7 @@ namespace NEA
                 String += line + "\r\n";
             }
 
-            return String;
+            //return String;
 
             // Execution
 
@@ -1046,15 +1048,22 @@ namespace NEA
 
         private void FetchExecute(string[] intermediateCode)
         {
-            string line = Fetch(intermediateCode);
-            string[] parts = line.Split(' ');
-            string opcode = parts[0];
-            string operand = null;
-            if (parts.Length == 2)
+            if (PC < intermediateCode.Length - 1)
             {
-                operand = parts[1];
+                string line = Fetch(intermediateCode);
+                string[] parts = line.Split(' ');
+                string opcode = parts[0];
+                string operand = null;
+                if (parts.Length == 2)
+                {
+                    operand = parts[1];
+                }
+                Execute(opcode, operand, intermediateCode);
             }
-            Execute(opcode, operand, intermediateCode);
+            else
+            {
+                isRunning = false;
+            }
         }
 
         private string Fetch(string[] intermediateCode)
@@ -1100,7 +1109,25 @@ namespace NEA
             // Opcodes involving an operand in the instruction
             else
             {
-
+                switch (opcode)
+                {
+                    case "CALL":
+                        if (operand == "PRINT")
+                        {
+                            object object1 = stack.Pop();
+                            MessageBox.Show($"Printed: {object1}");
+                            // ConsoleWrite the object
+                        }
+                        else
+                        {
+                            int index = subroutineDict[operand];
+                            StartExecution(intermediateSubroutines[index]);
+                        }
+                        break;
+                    case "LOAD_CONST":
+                        stack.Push(operand);
+                        break;
+                }
             }
         }
 
@@ -1143,9 +1170,25 @@ namespace NEA
 
         private DataType GetDataTypeFrom(object object1, object object2)
         {
+            DataType t1 = IdentifyDataType(object1);
+            DataType t2 = IdentifyDataType(object2);
 
-
-            return new DataType();
+            if (t1 == t2)
+            {
+                return t1;
+            }
+            else if (t1 == DataType.STRING || t2 == DataType.STRING)
+            {
+                return DataType.STRING;
+            }
+            else if (t1 == DataType.INTEGER && t2 == DataType.DECIMAL || t1 == DataType.DECIMAL && t2 == DataType.INTEGER)
+            {
+                return DataType.DECIMAL;
+            }
+            else
+            {
+                return DataType.STRING;
+            }
         }
         #endregion
     }

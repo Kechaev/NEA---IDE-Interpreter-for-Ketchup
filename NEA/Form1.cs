@@ -41,7 +41,8 @@ namespace NEA
         private void Run()
         {
             Machine m = new Machine(txtCodeField.Text);
-            ConsoleWrite(m.Interpret());
+            //ConsoleWrite(m.Interpret());
+            m.Interpret();
         }
 
         private void UpdateLineNumbers()
