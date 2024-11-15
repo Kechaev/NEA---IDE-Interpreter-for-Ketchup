@@ -16,6 +16,8 @@ using static System.Net.Mime.MediaTypeNames;
 using System.ComponentModel.Design;
 using System.Reflection.Emit;
 using System.Xml.Schema;
+using System.Runtime.CompilerServices;
+using Microsoft.VisualBasic;
 
 namespace NEA
 {
@@ -29,7 +31,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "EQUAL",
-                                     "GREATER", "LESS", "THAN", "INPUT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
+                                     "GREATER", "LESS", "THAN", "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
         private int current, start, line, counter;
 
         // Fields for Translation into Intermediate Code
@@ -55,6 +57,11 @@ namespace NEA
             PC = 0;
             validProgram = true;
             stack = new Stack<object>();
+        }
+
+        public string[] GetIntermediateCode()
+        {
+            return intermediate;
         }
 
         public void ConsoleWrite(IDE_MainWindow form, string text)
@@ -96,11 +103,7 @@ namespace NEA
                 String += line + "\r\n";
             }
 
-            //return String;
-
-            // Execution
-
-            StartExecution(intermediate);
+            //MessageBox.Show($"Intermediate Code\n{String}");
         }
 
         #region Tokenization
@@ -261,6 +264,8 @@ namespace NEA
                     return TokenType.THAN;
                 case "INPUT":
                     return TokenType.INPUT;
+                case "PROMPT":
+                    return TokenType.PROMPT;
                 case "OR":
                     return TokenType.OR;
                 case "AND":
@@ -475,6 +480,7 @@ namespace NEA
         // Shunting Yard Algorithm
         // Converts list of tokens
         // To intermediate code in postfix
+        // https://en.wikipedia.org/wiki/Shunting_yard_algorithm
 
         // Potential Optimization - Change List<Token> to Token[]
         private string[] ConvertToPostfix(List<Token> tokens)
@@ -1037,7 +1043,7 @@ namespace NEA
 
         #region Execution
 
-        private void StartExecution(string[] intermediateCode)
+        public void StartExecution(string[] intermediateCode)
         {
             isRunning = validProgram;
             while (isRunning)
@@ -1046,19 +1052,38 @@ namespace NEA
             }
         }
 
-        private void FetchExecute(string[] intermediateCode)
+        public void FetchExecute(string[] intermediateCode)
         {
-            if (PC < intermediateCode.Length - 1)
+            if (PC < intermediateCode.Length)
             {
                 string line = Fetch(intermediateCode);
-                string[] parts = line.Split(' ');
-                string opcode = parts[0];
-                string operand = null;
-                if (parts.Length == 2)
+                //MessageBox.Show($"Fetched: {line}");
+                string opcode = "";
+                int i;
+                bool firstWord = true;
+                for (i = 0; i < line.Length && firstWord; i++)
                 {
-                    operand = parts[1];
+                    if (line[i] != ' ')
+                    {
+                        opcode += line[i];
+                    }
+                    else
+                    {
+                        firstWord = false;
+                    }
                 }
+                string operand = null;
+                if (line.Length > opcode.Length)
+                {
+                    operand = "";
+                    for (; i < line.Length; i++)
+                    {
+                        operand += line[i];
+                    }
+                }
+
                 Execute(opcode, operand, intermediateCode);
+                //MessageBox.Show($"Executed:\nopcode = {opcode}\noperand = {operand}\noperand null = {operand == null}");
             }
             else
             {
@@ -1081,8 +1106,8 @@ namespace NEA
                 switch (opcode)
                 {
                     case "ADD":
-                        object object1 = stack.Pop();
                         object object2 = stack.Pop();
+                        object object1 = stack.Pop();
                         object result;
                         DataType type = GetDataTypeFrom(object1, object2);
                         switch (type)
@@ -1102,7 +1127,10 @@ namespace NEA
                             case DataType.BOOLEAN:
                                 result = Convert.ToBoolean(object1) | Convert.ToBoolean(object2);
                                 break;
+                            default:
+                                throw new Exception("ERROR: unknown data type");
                         }
+                        stack.Push(result);
                         break;
                 }
             }
@@ -1118,6 +1146,13 @@ namespace NEA
                             MessageBox.Show($"Printed: {object1}");
                             // ConsoleWrite the object
                         }
+                        else if (operand == "INPUT")
+                        {
+                            // IMPORTANT ADD TRANSLATION TO INTERMEDIATE FOR "INPUT WITH PROMPT"
+                            string prompt = stack.Pop().ToString();
+                            string input = ShowInputDialog(ref prompt).ToString();
+                            stack.Push(input);
+                        }
                         else
                         {
                             int index = subroutineDict[operand];
@@ -1129,6 +1164,47 @@ namespace NEA
                         break;
                 }
             }
+        }
+
+        // Input Dialog Box
+        // https://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputbox
+        private static DialogResult ShowInputDialog(ref string input)
+        {
+            System.Drawing.Size size = new System.Drawing.Size(200, 70);
+            Form inputBox = new Form();
+
+            inputBox.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            inputBox.ClientSize = size;
+            inputBox.Text = "Name";
+
+            System.Windows.Forms.TextBox textBox = new TextBox();
+            textBox.Size = new System.Drawing.Size(size.Width - 10, 23);
+            textBox.Location = new System.Drawing.Point(5, 5);
+            textBox.Text = input;
+            inputBox.Controls.Add(textBox);
+
+            Button okButton = new Button();
+            okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            okButton.Name = "okButton";
+            okButton.Size = new System.Drawing.Size(75, 23);
+            okButton.Text = "&OK";
+            okButton.Location = new System.Drawing.Point(size.Width - 80 - 80, 39);
+            inputBox.Controls.Add(okButton);
+
+            Button cancelButton = new Button();
+            cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            cancelButton.Name = "cancelButton";
+            cancelButton.Size = new System.Drawing.Size(75, 23);
+            cancelButton.Text = "&Cancel";
+            cancelButton.Location = new System.Drawing.Point(size.Width - 80, 39);
+            inputBox.Controls.Add(cancelButton);
+
+            inputBox.AcceptButton = okButton;
+            inputBox.CancelButton = cancelButton;
+
+            DialogResult result = inputBox.ShowDialog();
+            input = textBox.Text;
+            return result;
         }
 
         private DataType IdentifyDataType(object object1)

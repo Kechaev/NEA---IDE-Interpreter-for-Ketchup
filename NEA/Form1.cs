@@ -13,6 +13,8 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Threading;
 using System.Reflection;
+using NEA.Classes;
+using System.Collections;
 
 namespace NEA
 {
@@ -22,6 +24,7 @@ namespace NEA
         private Stack<int> undoStackCaretPosition = new Stack<int>();
         private Stack<string> redoStack = new Stack<string>();
         private Stack<int> redoStackCaretPosition = new Stack<int>();
+        private Machine machine;
 
         // IntelliSense Hack 101
         // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
@@ -40,9 +43,22 @@ namespace NEA
         
         private void Run()
         {
-            Machine m = new Machine(txtCodeField.Text);
+            machine = new Machine(txtCodeField.Text);
             //ConsoleWrite(m.Interpret());
-            m.Interpret();
+            machine.Interpret();
+
+            string[] intermediate = machine.GetIntermediateCode();
+
+            string String = "";
+
+            foreach (string line in intermediate)
+            {
+                String += line + "\n";
+            }
+
+            MessageBox.Show($"Intermediate:\n{String}");
+
+            machine.StartExecution(intermediate);
         }
 
         private void UpdateLineNumbers()
