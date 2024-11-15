@@ -14,6 +14,7 @@ using System.Threading;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 using System.ComponentModel.Design;
+using System.Reflection.Emit;
 
 namespace NEA
 {
@@ -97,7 +98,7 @@ namespace NEA
 
             // Execution
 
-            StartExecution();
+            StartExecution(intermediate);
         }
 
         #region Tokenization
@@ -1034,23 +1035,117 @@ namespace NEA
 
         #region Execution
 
-        private void StartExecution()
+        private void StartExecution(string[] intermediateCode)
         {
             isRunning = validProgram;
             while (isRunning)
+            {
+                FetchExecute(intermediateCode);
+            }
+        }
+
+        private void FetchExecute(string[] intermediateCode)
+        {
+            string line = Fetch(intermediateCode);
+            string[] parts = line.Split(' ');
+            string opcode = parts[0];
+            string operand = null;
+            if (parts.Length == 2)
+            {
+                operand = parts[1];
+            }
+            Execute(opcode, operand, intermediateCode);
+        }
+
+        private string Fetch(string[] intermediateCode)
+        {
+            string line = intermediateCode[PC];
+            PC++;
+            return line;
+        }
+
+        private void Execute(string opcode, string operand, string[] intermediateCode)
+        {
+            // Opcodes not involving an operand in the instruction
+            if (operand == null)
+            {
+                switch (opcode)
+                {
+                    case "ADD":
+                        object object1 = stack.Pop();
+                        object object2 = stack.Pop();
+                        object result;
+                        DataType type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) + Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) + Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                result = Convert.ToChar(object1) + Convert.ToChar(object2);
+                                break;
+                            case DataType.STRING:
+                                result = object1.ToString() + object2.ToString();
+                                break;
+                            case DataType.BOOLEAN:
+                                result = Convert.ToBoolean(object1) | Convert.ToBoolean(object2);
+                                break;
+                        }
+                        break;
+                }
+            }
+            // Opcodes involving an operand in the instruction
+            else
             {
 
             }
         }
 
-        private void FetchExecute()
+        private DataType IdentifyDataType(object object1)
         {
-
+            try
+            {
+                Convert.ToBoolean(object1);
+                return DataType.BOOLEAN;
+            }
+            catch
+            {
+                try
+                {
+                    Convert.ToInt32(object1);
+                    try
+                    {
+                        Convert.ToDouble(object1);
+                        return DataType.DECIMAL;
+                    }
+                    catch
+                    {
+                        return DataType.INTEGER;
+                    }
+                }
+                catch
+                {
+                    try
+                    {
+                        Convert.ToChar(object1);
+                        return DataType.CHARACTER;
+                    }
+                    catch
+                    {
+                        return DataType.STRING;
+                    }
+                }
+            }
         }
 
-        private void Fetch()
+        private DataType GetDataTypeFrom(object object1, object object2)
         {
 
+
+            return new DataType();
         }
         #endregion
     }

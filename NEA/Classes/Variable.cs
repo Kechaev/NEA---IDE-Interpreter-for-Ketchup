@@ -8,5 +8,6 @@ namespace NEA.Classes
 {
     class Variable
     {
+
     }
 }
