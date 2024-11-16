@@ -633,38 +633,60 @@ namespace NEA
 
         private string[] MapPrintStatement(List<Token> expression)
         {
+            MessageBox.Show($"Mapping Print");
             List<string> instructions = new List<string>();
-            string instrLine = "ERROR";
+            List<string> instrLine;
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
 
 
-            foreach (Token e in expression)
+            for (int i = 0; i < expression.Count; i++)
             {
+                instrLine = new List<string>();
+                Token e = expression[i];
+                MessageBox.Show($"Print function: e = {e.GetLiteral()}");
                 if (e.GetTokenType() == TokenType.VARIABLE)
                 {
-                    instrLine = "LOAD_VAR " + variablesDict[e.GetLiteral()];
+                    instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
                 }
                 else if (literals.Contains(e.GetTokenType()))
                 {
-                    instrLine = "LOAD_CONST " + e.GetLiteral();
+                    instrLine.Add("LOAD_CONST " + e.GetLiteral());
+                }
+                else if (e.GetTokenType() == TokenType.INPUT)
+                {
+                    List<Token> inputPrompt = new List<Token>();
+
+                    i++;
+
+                    inputPrompt.Add(expression[i]);
+
+                    MessageBox.Show($"Calling input map");
+                    string[] inputStatement = MapInputStatement(inputPrompt);
+
+                    foreach (string statement in inputStatement)
+                    {
+                        instrLine.Add(statement);
+                    }
                 }
                 else
                 {
                     throw new Exception("ERROR: Invalid token in string");
                 }
-                instructions.Add(instrLine);
+                instructions.AddRange(instrLine);
             }
 
             for (int i = 0; i < expression.Count - 1; i++)
             {
-                instrLine = "ADD";
-                instructions.Add(instrLine);
+                instrLine = new List<string>();
+                instrLine.Add("ADD");
+                instructions.AddRange(instrLine);
             }
 
-            instrLine = "CALL PRINT";
-            instructions.Add(instrLine);
+            instrLine = new List<string>();
+            instrLine.Add("CALL PRINT");
+            instructions.AddRange(instrLine);
 
             return instructions.ToArray();
         }
@@ -873,10 +895,20 @@ namespace NEA
                         {
                             expression = new List<Token>();
                             j = 1;
-                            while ((internalTokens[i + j].GetTokenType() != TokenType.EOF || internalTokens[i + j].GetTokenType() != TokenType.EON) && internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()))
+                            while ((internalTokens[i + j].GetTokenType() != TokenType.EOF && internalTokens[i + j].GetTokenType() != TokenType.EON))
                             {
-                                expression.Add(internalTokens[i + j]);
-                                j++;
+                                if (internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()))
+                                {
+                                    expression.Add(internalTokens[i + j]);
+                                    j++;
+                                }
+                                // Limitation: in an if statement the prompt cannot contain multiple strings or variables
+                                // Format without punctuation does not support this
+                                else if (internalTokens[i + j].GetTokenType() == TokenType.INPUT)
+                                {
+                                    expression.Add(internalTokens[i + j]);
+                                    j += 3;
+                                }
                             }
                         }
                         else
@@ -1211,7 +1243,6 @@ namespace NEA
                         }
                         else if (operand == "INPUT")
                         {
-                            // IMPORTANT ADD TRANSLATION TO INTERMEDIATE FOR "INPUT WITH PROMPT"
                             string prompt = stack.Pop().ToString();
                             string input = ShowInputDialog(ref prompt).ToString();
                             stack.Push(input);
@@ -1231,6 +1262,7 @@ namespace NEA
 
         // Input Dialog Box
         // https://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputbox
+        // Make this a correct size using the prompt length
         private static DialogResult ShowInputDialog(ref string input)
         {
             System.Drawing.Size size = new System.Drawing.Size(200, 100);
