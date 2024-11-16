@@ -619,6 +619,7 @@ namespace NEA
                 instructions.Add(instrLine);
             }
 
+            
             for (int i = 0; i < promptExpression.Count - 1; i++)
             {
                 instrLine = "ADD";
@@ -639,7 +640,7 @@ namespace NEA
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
-
+            int expressionLength = expression.Count;
 
             for (int i = 0; i < expression.Count; i++)
             {
@@ -656,6 +657,8 @@ namespace NEA
                 }
                 else if (e.GetTokenType() == TokenType.INPUT)
                 {
+                    expressionLength--;
+
                     List<Token> inputPrompt = new List<Token>();
 
                     i++;
@@ -677,7 +680,7 @@ namespace NEA
                 instructions.AddRange(instrLine);
             }
 
-            for (int i = 0; i < expression.Count - 1; i++)
+            for (int i = 0; i < expressionLength - 1; i++)
             {
                 instrLine = new List<string>();
                 instrLine.Add("ADD");
@@ -1202,6 +1205,7 @@ namespace NEA
                 {
                     case "ADD":
                         object object2 = stack.Pop();
+                        MessageBox.Show($"object2 = {object2.ToString()}");
                         object object1 = stack.Pop();
                         object result;
                         DataType type = GetDataTypeFrom(object1, object2);
@@ -1243,9 +1247,13 @@ namespace NEA
                         }
                         else if (operand == "INPUT")
                         {
+                            Tuple<DialogResult, string> result = new Tuple<DialogResult, string>(DialogResult.Cancel, null);
                             string prompt = stack.Pop().ToString();
-                            string input = ShowInputDialog(ref prompt).ToString();
-                            stack.Push(input);
+                            while (result.Item1 != DialogResult.OK)
+                            {
+                                result = ShowInputDialog(ref prompt);
+                            }
+                            stack.Push(result.Item2);
                         }
                         else
                         {
@@ -1263,7 +1271,7 @@ namespace NEA
         // Input Dialog Box
         // https://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputbox
         // Make this a correct size using the prompt length
-        private static DialogResult ShowInputDialog(ref string input)
+        private static Tuple<DialogResult, string> ShowInputDialog(ref string input)
         {
             System.Drawing.Size size = new System.Drawing.Size(200, 100);
             Form inputBox = new Form();
@@ -1302,8 +1310,10 @@ namespace NEA
             inputBox.AcceptButton = okButton;
             inputBox.CancelButton = cancelButton;
 
-            DialogResult result = inputBox.ShowDialog();
+            DialogResult dialogResult = inputBox.ShowDialog();
             input = textBox.Text;
+
+            Tuple<DialogResult, string> result = new Tuple<DialogResult, string>(dialogResult, input);
             return result;
         }
 
