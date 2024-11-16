@@ -49,15 +49,6 @@ namespace NEA
 
             string[] intermediate = machine.GetIntermediateCode();
 
-            string String = "";
-
-            foreach (string line in intermediate)
-            {
-                String += line + "\n";
-            }
-
-            MessageBox.Show($"Intermediate:\n{String}");
-
             machine.StartExecution(intermediate);
         }
 

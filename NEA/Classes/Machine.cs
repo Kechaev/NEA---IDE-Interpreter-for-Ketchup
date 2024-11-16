@@ -86,12 +86,12 @@ namespace NEA
             // Testing
             string String = "";
 
-            foreach (Token token in tokens)
-            {
-                String += token.GetTokenType().ToString() + "\r\n";
-            }
+            //foreach (Token token in tokens)
+            //{
+            //    String += token.GetTokenType().ToString() + "\r\n";
+            //}
 
-            MessageBox.Show($"Tokens:\n{String}");
+            //MessageBox.Show($"Tokens:\n{String}");
 
             // Translation
 
@@ -100,14 +100,14 @@ namespace NEA
             //String += "\r\nIntermediate\r\n";
 
             // Testing
-            String = "";
+            //String = "";
 
-            foreach (string line in intermediate)
-            {
-                String += line + "\r\n";
-            }
+            //foreach (string line in intermediate)
+            //{
+            //    String += line + "\r\n";
+            //}
 
-            MessageBox.Show($"Intermediate Code:\n{String}");
+            //MessageBox.Show($"Intermediate Code:\n{String}");
         }
 
         #region Tokenization
@@ -634,7 +634,6 @@ namespace NEA
 
         private string[] MapPrintStatement(List<Token> expression)
         {
-            MessageBox.Show($"Mapping Print");
             List<string> instructions = new List<string>();
             List<string> instrLine;
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
@@ -646,7 +645,6 @@ namespace NEA
             {
                 instrLine = new List<string>();
                 Token e = expression[i];
-                MessageBox.Show($"Print function: e = {e.GetLiteral()}");
                 if (e.GetTokenType() == TokenType.VARIABLE)
                 {
                     instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
@@ -665,7 +663,6 @@ namespace NEA
 
                     inputPrompt.Add(expression[i]);
 
-                    MessageBox.Show($"Calling input map");
                     string[] inputStatement = MapInputStatement(inputPrompt);
 
                     foreach (string statement in inputStatement)
@@ -1205,7 +1202,6 @@ namespace NEA
                 {
                     case "ADD":
                         object object2 = stack.Pop();
-                        MessageBox.Show($"object2 = {object2.ToString()}");
                         object object1 = stack.Pop();
                         object result;
                         DataType type = GetDataTypeFrom(object1, object2);
