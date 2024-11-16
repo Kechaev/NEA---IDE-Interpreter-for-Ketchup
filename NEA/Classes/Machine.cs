@@ -86,24 +86,28 @@ namespace NEA
             // Testing
             string String = "";
 
-            //foreach (Token token in tokens)
-            //{
-            //    String += token.GetTokenType().ToString() + "\r\n";
-            //}
+            foreach (Token token in tokens)
+            {
+                String += token.GetTokenType().ToString() + "\r\n";
+            }
 
-            //// Translation
+            MessageBox.Show($"Tokens:\n{String}");
+
+            // Translation
 
             intermediate = TokensToIntermediate(tokens);
 
             //String += "\r\nIntermediate\r\n";
 
             // Testing
+            String = "";
+
             foreach (string line in intermediate)
             {
                 String += line + "\r\n";
             }
 
-            //MessageBox.Show($"Intermediate Code\n{String}");
+            MessageBox.Show($"Intermediate Code:\n{String}");
         }
 
         #region Tokenization
@@ -901,7 +905,7 @@ namespace NEA
                                 expression.Add(defaultPrompt);
                             }
                         }
-                        intermediateList.AddRange(MapPrintStatement(expression));
+                        intermediateList.AddRange(MapInputStatement(expression));
                         i += j + 3;
                         break;
                     case TokenType.ASSIGNMENT:
@@ -1229,17 +1233,22 @@ namespace NEA
         // https://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputbox
         private static DialogResult ShowInputDialog(ref string input)
         {
-            System.Drawing.Size size = new System.Drawing.Size(200, 70);
+            System.Drawing.Size size = new System.Drawing.Size(200, 100);
             Form inputBox = new Form();
 
             inputBox.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             inputBox.ClientSize = size;
-            inputBox.Text = "Name";
+            inputBox.Text = "Program Prompt";
 
-            System.Windows.Forms.TextBox textBox = new TextBox();
+            System.Windows.Forms.Label lblPrompt = new System.Windows.Forms.Label();
+            lblPrompt.Size = new System.Drawing.Size(size.Width - 10, 23);
+            lblPrompt.Location = new System.Drawing.Point(5, 5);
+            lblPrompt.Text = input;
+            inputBox.Controls.Add(lblPrompt);
+
+            TextBox textBox = new TextBox();
             textBox.Size = new System.Drawing.Size(size.Width - 10, 23);
-            textBox.Location = new System.Drawing.Point(5, 5);
-            textBox.Text = input;
+            textBox.Location = new System.Drawing.Point(5, 30);
             inputBox.Controls.Add(textBox);
 
             Button okButton = new Button();
@@ -1247,7 +1256,7 @@ namespace NEA
             okButton.Name = "okButton";
             okButton.Size = new System.Drawing.Size(75, 23);
             okButton.Text = "&OK";
-            okButton.Location = new System.Drawing.Point(size.Width - 80 - 80, 39);
+            okButton.Location = new System.Drawing.Point(size.Width - 80 - 80, 62);
             inputBox.Controls.Add(okButton);
 
             Button cancelButton = new Button();
@@ -1255,7 +1264,7 @@ namespace NEA
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new System.Drawing.Size(75, 23);
             cancelButton.Text = "&Cancel";
-            cancelButton.Location = new System.Drawing.Point(size.Width - 80, 39);
+            cancelButton.Location = new System.Drawing.Point(size.Width - 80, 62);
             inputBox.Controls.Add(cancelButton);
 
             inputBox.AcceptButton = okButton;
