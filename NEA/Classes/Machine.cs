@@ -590,6 +590,43 @@ namespace NEA
             return -1;
         }
 
+        private string[] MapInputStatement(List<Token> promptExpression)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine = "ERROR";
+            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
+                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
+                                     TokenType.BOOL_LITERAL };
+
+            foreach (Token e in promptExpression)
+            {
+                if (e.GetTokenType() == TokenType.VARIABLE)
+                {
+                    instrLine = "LOAD_VAR " + variablesDict[e.GetLiteral()];
+                }
+                else if (literals.Contains(e.GetTokenType()))
+                {
+                    instrLine = "LOAD_CONST " + e.GetLiteral();
+                }
+                else
+                {
+                    throw new Exception("ERROR: Invalid token in string");
+                }
+                instructions.Add(instrLine);
+            }
+
+            for (int i = 0; i < promptExpression.Count - 1; i++)
+            {
+                instrLine = "ADD";
+                instructions.Add(instrLine);
+            }
+
+            instrLine = "CALL INPUT";
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
         private string[] MapPrintStatement(List<Token> expression)
         {
             List<string> instructions = new List<string>();
@@ -844,6 +881,28 @@ namespace NEA
                         }
                         intermediateList.AddRange(MapPrintStatement(expression));
                         i += j + 1;
+                        break;
+                    case TokenType.INPUT:
+                        expression = new List<Token>();
+                        j = 1;
+                        if (internalTokens[i + 1].GetTokenType() == TokenType.WITH && internalTokens[i + 2].GetTokenType() == TokenType.PROMPT)
+                        {
+                            if (internalTokens[i + 3].GetTokenType() != TokenType.EOF && internalTokens[i + 3].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + 3].GetTokenType()))
+                            {
+                                while ((internalTokens[i + j + 2].GetTokenType() != TokenType.EOF || internalTokens[i + j + 2].GetTokenType() != TokenType.EON) && internalTokens[i + j + 2].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j + 2].GetTokenType()))
+                                {
+                                    expression.Add(internalTokens[i + j + 2]);
+                                    j++;
+                                }
+                            }
+                            else
+                            {
+                                Token defaultPrompt = new Token(TokenType.STR_LITERAL, "Input: ", internalTokens[i].GetLine());
+                                expression.Add(defaultPrompt);
+                            }
+                        }
+                        intermediateList.AddRange(MapPrintStatement(expression));
+                        i += j + 3;
                         break;
                     case TokenType.ASSIGNMENT:
                         type = "STRING";
@@ -1128,7 +1187,7 @@ namespace NEA
                                 result = Convert.ToBoolean(object1) | Convert.ToBoolean(object2);
                                 break;
                             default:
-                                throw new Exception("ERROR: unknown data type");
+                                throw new Exception("ERROR: Unknown data type");
                         }
                         stack.Push(result);
                         break;
