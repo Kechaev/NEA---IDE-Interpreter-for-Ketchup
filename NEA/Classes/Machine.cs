@@ -1604,7 +1604,6 @@ namespace NEA
 
         private DataType IdentifyDataType(object object1)
         {
-            MessageBox.Show($"Literal = {object1.ToString()}");
             if (object1.ToString().ToUpper() == "TRUE" || object1.ToString().ToUpper() == "FALSE")
             {
                 return DataType.BOOLEAN;
