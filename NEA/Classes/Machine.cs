@@ -102,14 +102,14 @@ namespace NEA
             //String += "\r\nIntermediate\r\n";
 
             // Testing
-            String = "";
+            //String = "";
 
-            foreach (string line in intermediate)
-            {
-                String += line + "\r\n";
-            }
+            //foreach (string line in intermediate)
+            //{
+            //    String += line + "\r\n";
+            //}
 
-            MessageBox.Show($"Intermediate Code:\n{String}");
+            //MessageBox.Show($"Intermediate Code:\n{String}");
         }
 
         #region Tokenization
@@ -576,21 +576,21 @@ namespace NEA
                 }
             }
 
-            string String = "";
+            //string String = "";
 
-            foreach (string s in output)
-            {
-                String += $"{s}\n";
-            }
+            //foreach (string s in output)
+            //{
+            //    String += $"{s}\n";
+            //}
 
-            String += "\n";
+            //String += "\n";
 
-            foreach (Token t in tokens)
-            {
-                String += $"{t.GetTokenType()}\n";
-            }
+            //foreach (Token t in tokens)
+            //{
+            //    String += $"{t.GetTokenType()}\n";
+            //}
 
-            MessageBox.Show($"Converted to RPN:\n{String}");
+            //MessageBox.Show($"Converted to RPN:\n{String}");
             return output.ToArray();
         }
 
@@ -699,14 +699,14 @@ namespace NEA
             int expressionStart = 0, expressionEnd = 0;
             bool inExpression = false;
 
-            string String = "";
+            //string String = "";
 
-            foreach (Token t in expression)
-            {
-                String += $"{t.GetTokenType()}\n";
-            }
+            //foreach (Token t in expression)
+            //{
+            //    String += $"{t.GetTokenType()}\n";
+            //}
 
-            MessageBox.Show($"Tokens:\n{String}");
+            //MessageBox.Show($"Tokens:\n{String}");
 
             for (int i = 0; i < expression.Count; i++)
             {
@@ -714,26 +714,18 @@ namespace NEA
                 Token e = expression[i];
 
                 if (convertToRPN)
-                {
+                {                
                     if (e.GetTokenType() != TokenType.STR_LITERAL && !inExpression)
                     {
-                        MessageBox.Show($"Expression start: {i}");
                         expressionStart = i;
                         inExpression = true;
                     }
                     else if (inExpression && e.GetTokenType() == TokenType.STR_LITERAL && expression[i - 1].GetTokenType() != TokenType.INPUT)
                     {
-                        MessageBox.Show($"Expression end: {i}");
-                        expressionEnd = i;
+                        expressionEnd = i - 1;
                         inExpression = false;
                     }
-                    if (inExpression)
-                    {
-                        MessageBox.Show($"Expression ends: {expression.Count - 1}");
-                        expressionEnd = expression.Count - 1;
-                        // End loop
-                        i = expression.Count;
-                    }
+                    
                 }
                 else
                 {
@@ -768,6 +760,11 @@ namespace NEA
                     }
                     instructions.AddRange(instrLine);
                 }
+            }
+            
+            if (inExpression)
+            {
+                expressionEnd = expression.Count - 1;
             }
 
             if (convertToRPN)
@@ -805,7 +802,6 @@ namespace NEA
                     }
                     else
                     {
-                        MessageBox.Show($"{e.GetTokenType()}");
                         throw new Exception("ERROR: Invalid token in string");
                     }
                     instructions.AddRange(instrLine);
@@ -1399,13 +1395,14 @@ namespace NEA
             // Opcodes not involving an operand in the instruction
             if (operand == null)
             {
+                object object2, object1, result;
+                DataType type;
                 switch (opcode)
                 {
                     case "ADD":
-                        object object2 = stack.Pop();
-                        object object1 = stack.Pop();
-                        object result;
-                        DataType type = GetDataTypeFrom(object1, object2);
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
                         switch (type)
                         {
                             case DataType.INTEGER:
@@ -1422,6 +1419,30 @@ namespace NEA
                                 break;
                             case DataType.BOOLEAN:
                                 result = Convert.ToBoolean(object1) | Convert.ToBoolean(object2);
+                                break;
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "MUL":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) * Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) * Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                throw new Exception("ERROR: Cannot multiply two character together");
+                            case DataType.STRING:
+                                throw new Exception("ERROR: Cannot multiply two strings together");
+                            case DataType.BOOLEAN:
+                                result = Convert.ToBoolean(object1) & Convert.ToBoolean(object2);
                                 break;
                             default:
                                 throw new Exception("ERROR: Unknown data type");
@@ -1450,6 +1471,7 @@ namespace NEA
                             {
                                 result = ShowInputDialog(ref prompt);
                             }
+                            console.Text += $"INPUT: {result.Item2}\r\n";
                             stack.Push(result.Item2);
                         }
                         else
@@ -1563,7 +1585,6 @@ namespace NEA
             DataType t1 = IdentifyDataType(object1);
             DataType t2 = IdentifyDataType(object2);
 
-            MessageBox.Show($"t1 = {t1.ToString()}\nt2 = {t2.ToString()}");
 
             if (t1 == t2)
             {
