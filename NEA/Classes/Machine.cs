@@ -725,39 +725,10 @@ namespace NEA
                         expressionEnd = i - 1;
                         inExpression = false;
                     }
-                    
                 }
                 else
                 {
-                    if (e.GetTokenType() == TokenType.VARIABLE)
-                    {
-                        instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
-                    }
-                    else if (literals.Contains(e.GetTokenType()))
-                    {
-                        instrLine.Add("LOAD_CONST " + e.GetLiteral());
-                    }
-                    else if (e.GetTokenType() == TokenType.INPUT)
-                    {
-                        expressionLength--;
-
-                        List<Token> inputPrompt = new List<Token>();
-
-                        i++;
-
-                        inputPrompt.Add(expression[i]);
-
-                        string[] inputStatement = MapInputStatement(inputPrompt);
-
-                        foreach (string statement in inputStatement)
-                        {
-                            instrLine.Add(statement);
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("ERROR: Invalid token in string");
-                    }
+                    instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
                     instructions.AddRange(instrLine);
                 }
             }
@@ -775,35 +746,7 @@ namespace NEA
                     instrLine = new List<string>();
                     Token e = expression[i];
 
-                    if (e.GetTokenType() == TokenType.VARIABLE)
-                    {
-                        instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
-                    }
-                    else if (literals.Contains(e.GetTokenType()))
-                    {
-                        instrLine.Add("LOAD_CONST " + e.GetLiteral());
-                    }
-                    else if (e.GetTokenType() == TokenType.INPUT)
-                    {
-                        expressionLength--;
-
-                        List<Token> inputPrompt = new List<Token>();
-
-                        i++;
-
-                        inputPrompt.Add(expression[i]);
-
-                        string[] inputStatement = MapInputStatement(inputPrompt);
-
-                        foreach (string statement in inputStatement)
-                        {
-                            instrLine.Add(statement);
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("ERROR: Invalid token in string");
-                    }
+                    instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
                     instructions.AddRange(instrLine);
                 }
                 // Expression
@@ -818,35 +761,7 @@ namespace NEA
                     instrLine = new List<string>();
                     Token e = expression[i];
 
-                    if (e.GetTokenType() == TokenType.VARIABLE)
-                    {
-                        instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
-                    }
-                    else if (literals.Contains(e.GetTokenType()))
-                    {
-                        instrLine.Add("LOAD_CONST " + e.GetLiteral());
-                    }
-                    else if (e.GetTokenType() == TokenType.INPUT)
-                    {
-                        expressionLength--;
-
-                        List<Token> inputPrompt = new List<Token>();
-
-                        i++;
-
-                        inputPrompt.Add(expression[i]);
-
-                        string[] inputStatement = MapInputStatement(inputPrompt);
-
-                        foreach (string statement in inputStatement)
-                        {
-                            instrLine.Add(statement);
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("ERROR: Invalid token in string");
-                    }
+                    instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
                     instructions.AddRange(instrLine);
                 }
 
@@ -872,6 +787,46 @@ namespace NEA
             instructions.AddRange(instrLine);
 
             return instructions.ToArray();
+        }
+
+        private List<string> GetInstructions(Token e, ref int i, List<Token> expression, ref int expressionLength)
+        {
+            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
+                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
+                                     TokenType.BOOL_LITERAL };
+            List<string> instrLine = new List<string>();
+
+            if (e.GetTokenType() == TokenType.VARIABLE)
+            {
+                instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
+            }
+            else if (literals.Contains(e.GetTokenType()))
+            {
+                instrLine.Add("LOAD_CONST " + e.GetLiteral());
+            }
+            else if (e.GetTokenType() == TokenType.INPUT)
+            {
+                expressionLength--;
+
+                List<Token> inputPrompt = new List<Token>();
+
+                i++;
+
+                inputPrompt.Add(expression[i]);
+
+                string[] inputStatement = MapInputStatement(inputPrompt);
+
+                foreach (string statement in inputStatement)
+                {
+                    instrLine.Add(statement);
+                }
+            }
+            else
+            {
+                throw new Exception("ERROR: Invalid token in string");
+            }
+
+            return instrLine;
         }
 
         private string[] MapAssignment(string variable, List<Token> expression, string type)
