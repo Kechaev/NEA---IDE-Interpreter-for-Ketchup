@@ -686,6 +686,7 @@ namespace NEA
 
             bool convertToRPN = false;
 
+            // Does the print statement have an expression
             foreach (TokenType t in mathematicalOperations)
             {
                 if (tokenTypeExpression.Contains(t))
@@ -695,6 +696,17 @@ namespace NEA
             }
 
             List<Token> expressionForRPN = new List<Token>();
+            int expressionStart = 0, expressionEnd = 0;
+            bool inExpression = false;
+
+            string String = "";
+
+            foreach (Token t in expression)
+            {
+                String += $"{t.GetTokenType()}\n";
+            }
+
+            MessageBox.Show($"Tokens:\n{String}");
 
             for (int i = 0; i < expression.Count; i++)
             {
@@ -703,7 +715,25 @@ namespace NEA
 
                 if (convertToRPN)
                 {
-                    expressionForRPN.Add(e);
+                    if (e.GetTokenType() != TokenType.STR_LITERAL && !inExpression)
+                    {
+                        MessageBox.Show($"Expression start: {i}");
+                        expressionStart = i;
+                        inExpression = true;
+                    }
+                    else if (inExpression && e.GetTokenType() == TokenType.STR_LITERAL && expression[i - 1].GetTokenType() != TokenType.INPUT)
+                    {
+                        MessageBox.Show($"Expression end: {i}");
+                        expressionEnd = i;
+                        inExpression = false;
+                    }
+                    if (inExpression)
+                    {
+                        MessageBox.Show($"Expression ends: {expression.Count - 1}");
+                        expressionEnd = expression.Count - 1;
+                        // End loop
+                        i = expression.Count;
+                    }
                 }
                 else
                 {
@@ -742,7 +772,94 @@ namespace NEA
 
             if (convertToRPN)
             {
+                // Strings before expression
+                for (int i = 0; i < expressionStart; i++)
+                {
+                    instrLine = new List<string>();
+                    Token e = expression[i];
+
+                    if (e.GetTokenType() == TokenType.VARIABLE)
+                    {
+                        instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
+                    }
+                    else if (literals.Contains(e.GetTokenType()))
+                    {
+                        instrLine.Add("LOAD_CONST " + e.GetLiteral());
+                    }
+                    else if (e.GetTokenType() == TokenType.INPUT)
+                    {
+                        expressionLength--;
+
+                        List<Token> inputPrompt = new List<Token>();
+
+                        i++;
+
+                        inputPrompt.Add(expression[i]);
+
+                        string[] inputStatement = MapInputStatement(inputPrompt);
+
+                        foreach (string statement in inputStatement)
+                        {
+                            instrLine.Add(statement);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show($"{e.GetTokenType()}");
+                        throw new Exception("ERROR: Invalid token in string");
+                    }
+                    instructions.AddRange(instrLine);
+                }
+                // Expression
+                for (int i = expressionStart; i <= expressionEnd; i++)
+                {
+                    expressionForRPN.Add(expression[i]);
+                }
                 instructions.AddRange(ConvertToPostfix(expressionForRPN));
+                // Strings after expression
+                for (int i = expressionEnd + 1; i < expression.Count; i++)
+                {
+                    instrLine = new List<string>();
+                    Token e = expression[i];
+
+                    if (e.GetTokenType() == TokenType.VARIABLE)
+                    {
+                        instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
+                    }
+                    else if (literals.Contains(e.GetTokenType()))
+                    {
+                        instrLine.Add("LOAD_CONST " + e.GetLiteral());
+                    }
+                    else if (e.GetTokenType() == TokenType.INPUT)
+                    {
+                        expressionLength--;
+
+                        List<Token> inputPrompt = new List<Token>();
+
+                        i++;
+
+                        inputPrompt.Add(expression[i]);
+
+                        string[] inputStatement = MapInputStatement(inputPrompt);
+
+                        foreach (string statement in inputStatement)
+                        {
+                            instrLine.Add(statement);
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("ERROR: Invalid token in string");
+                    }
+                    instructions.AddRange(instrLine);
+                }
+
+                for (int i = 0; i < expressionLength - (expressionEnd - expressionStart) - 1; i++)
+                {
+                    instrLine = new List<string>();
+                    instrLine.Add("ADD");
+                    instructions.AddRange(instrLine);
+                }
             }
             else
             {
@@ -1322,7 +1439,7 @@ namespace NEA
                         if (operand == "PRINT")
                         {
                             object object1 = stack.Pop();
-                            console.Text += $"{object1}\n";
+                            console.Text += $"{object1}\r\n";
                             // ConsoleWrite the object
                         }
                         else if (operand == "INPUT")
@@ -1408,7 +1525,7 @@ namespace NEA
             }
             try
             {
-                Convert.ToInt32(object1);
+                Convert.ToDouble(object1);
                 bool isDecimal = false;
                 foreach (char c in object1.ToString())
                 {
@@ -1445,6 +1562,8 @@ namespace NEA
         {
             DataType t1 = IdentifyDataType(object1);
             DataType t2 = IdentifyDataType(object2);
+
+            MessageBox.Show($"t1 = {t1.ToString()}\nt2 = {t2.ToString()}");
 
             if (t1 == t2)
             {
