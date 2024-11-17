@@ -364,5 +364,11 @@ namespace NEA
         {
             Cut();
         }
+
+        private void intermediateCodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IntermediateView intermediateForm = new IntermediateView(machine.GetIntermediateCode());
+            intermediateForm.ShowDialog();
+        }
     }
 }

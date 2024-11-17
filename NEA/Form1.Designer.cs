@@ -64,6 +64,7 @@ namespace NEA
             this.label1 = new System.Windows.Forms.Label();
             this.txtLineNumber = new System.Windows.Forms.RichTextBox();
             this.txtCodeField = new System.Windows.Forms.RichTextBox();
+            this.intermediateCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -148,7 +149,8 @@ namespace NEA
             // tsView
             // 
             this.tsView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsViewConsoleView});
+            this.tsViewConsoleView,
+            this.intermediateCodeToolStripMenuItem});
             this.tsView.Name = "tsView";
             resources.ApplyResources(this.tsView, "tsView");
             // 
@@ -299,6 +301,12 @@ namespace NEA
             this.txtCodeField.TextChanged += new System.EventHandler(this.txtCodeField_TextChanged);
             this.txtCodeField.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
             // 
+            // intermediateCodeToolStripMenuItem
+            // 
+            this.intermediateCodeToolStripMenuItem.Name = "intermediateCodeToolStripMenuItem";
+            resources.ApplyResources(this.intermediateCodeToolStripMenuItem, "intermediateCodeToolStripMenuItem");
+            this.intermediateCodeToolStripMenuItem.Click += new System.EventHandler(this.intermediateCodeToolStripMenuItem_Click);
+            // 
             // IDE_MainWindow
             // 
             resources.ApplyResources(this, "$this");
@@ -362,6 +370,7 @@ namespace NEA
         private RichTextBox txtLineNumber;
         private RichTextBox txtCodeField;
         internal TextBox txtConsole;
+        private ToolStripMenuItem intermediateCodeToolStripMenuItem;
     }
 }
 

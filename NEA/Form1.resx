@@ -215,6 +215,15 @@
   <data name="tsViewConsoleView.Text" xml:space="preserve">
     <value>Internal/External Console</value>
   </data>
+  <data name="intermediateCodeToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+I</value>
+  </data>
+  <data name="intermediateCodeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>406, 34</value>
+  </data>
+  <data name="intermediateCodeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Intermediate Code</value>
+  </data>
   <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 29</value>
   </data>
@@ -329,16 +338,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIUSURBVGhD7ZmxSxthGMavdqzg4lJoSQ4dxEH8GwpdOusm
-        gqMoFFxKC4WuKnQuLqVLWxwUBXFRUBS0dCq4uhW6NdpSupiczxPfF17Ce8l3wUjwux/8IN+TO8n7XO67
-        gElJSUlJiSVLsyRLHsgqQpoFwFp6JUlkaAFqY+SpvBMJrQWo0eANr16lp3LUPcYbvNXu2IPb8Cv8JH6A
-        y3AC9gnewHkW4zfkOXkuwD7AG7StlUk5sxO2gDX4Dm6ZjE+dPnj8ukMG2BlbwGMGwhnU/BkD8Br+EhcZ
-        CJr9bK6S5Am8EL/DefgD1uERHIMF8YYLtV7hPZ5HXgHnkBm/AQ8ZABagx84xEDS7bK5uCtCMQ+trdRMW
-        xBusqD62gFeQV+ujyWx5toBZBoJmXgEscgXOmKwBC95W3kBF9Wm3Ce5CSzcF7DMQNqDmVQbheAMFmwzI
-        X/GwBfA+/W/Wb6BlCep7oQUcMBC+QM1HGYTjDtbBP+k/ObsdrXvAtFlTrhU+EjUPLeCYgfAZat7jAsLx
-        NsFVqBmtQDIFNeM+MQxfmMwr4ISBsA4171kBfI4XwSuAHELN/zIA41AzT68APgaVHah5DwrojrwCeNXt
-        fvANkvdQM/rSvO5UAPcDzW+zgPFBOequ4Id/Dh81Vz5DRsXLAvEGr6X8kREJrcNHhw7eqL6VJDKivOol
-        cZJlWbuf7vcbDB/x/z5KlCS5BnWscpj2lIrYAAAAAElFTkSuQmCC
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAITSURBVGhD7ZmxSxthGMavOlZw6SJYkqMOxUH6NwgunXUT
+        wVEsFFykBaGrFpylS+nSFgdFQVwsKAoqnQRXt0K30FpKF835PPF94SW8l3wXGgn57gc/yPfkTvI+l/su
+        YFJSUlJSYsnSLMmSR7KKkEYBsJbeSBIZWoBaf/ZU3omE5gLUaPCGV2/SMzmqj/EGb7YzDuAu/Ao/iRtw
+        FU7AHsEbOM9i1CDPyXMR9gDeoC2tvJAz22EL+ADfwR2T8anTA49fd8gA22MLGGEgXELNJxmAN/Cn+IqB
+        oNmPxipJRuEv8TtcgBfwFh7D57Ag3nCh3lZ4j+eRV8AVZMZvwCADwAL02HkGgma/G6v7AjTj0Ppa3YYF
+        8QYrqo8tYBnyan00mS3PFjDHQNDMK4BFrsFZk9VhwdvKG6ioPq02wX1o6aSAbwyELah5lUE43kDBJgPy
+        VzxsAbxP/5n1W2hZgvpeaAGHDIQvUPMxBuG4g7XxOv0rZ7eieQ+YMWvKtcJHouahBZwwED5DzbtcQDje
+        JvgeakYrkExDzbhPPIEvTeYVcMpA2ISad60APseL4BVAjqDmfxiAcaiZp1cAH4PKHtS8CwV0Rl4BvOp2
+        PziHZB1qRl+b1+0K4H6g+f8sYHxIjnoo+OGn4OPGymfYqHhZIN7gtZQ/MiKhefjo0MHr1RVJIiPKq14S
+        J1mWtfrp3t9g+Ij/91GiJMkdUslylkrAdXwAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -907,6 +916,12 @@
   </data>
   <data name="&gt;&gt;statusColumnInfo.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;intermediateCodeToolStripMenuItem.Name" xml:space="preserve">
+    <value>intermediateCodeToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;intermediateCodeToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>IDE_MainWindow</value>

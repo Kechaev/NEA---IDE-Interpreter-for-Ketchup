@@ -60,9 +60,18 @@
     <Compile Include="Classes\Machine.cs" />
     <Compile Include="Classes\Program.cs" />
     <Compile Include="Classes\NativeScroller.cs" />
+    <Compile Include="IntermediateView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IntermediateView.Designer.cs">
+      <DependentUpon>IntermediateView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IntermediateView.resx">
+      <DependentUpon>IntermediateView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
