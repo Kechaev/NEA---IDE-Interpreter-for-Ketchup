@@ -31,7 +31,7 @@ namespace NEA
         private Token[] tokens;
         private string[] keyword = { "CREATE", "SET", "CHANGE", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF", 
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
-                                     "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL",
+                                     "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "EQUAL",
                                      "GREATER", "LESS", "THAN", "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
         private int current, start, line, counter;
@@ -260,6 +260,10 @@ namespace NEA
                     return TokenType.NEWLINE;
                 case "\t":
                     return TokenType.TABSPACE;
+                case "TRUE":
+                    return TokenType.BOOL_LITERAL;
+                case "FALSE":
+                    return TokenType.BOOL_LITERAL;
                 case "EQUAL":
                     return TokenType.EQUAL;
                 case "GREATER":
@@ -699,6 +703,7 @@ namespace NEA
             int expressionStart = 0, expressionEnd = 0;
             bool inExpression = false;
 
+            // Test
             //string String = "";
 
             //foreach (Token t in expression)
@@ -789,6 +794,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Returns the correct intermediate code instruction
         private List<string> GetInstructions(Token e, ref int i, List<Token> expression, ref int expressionLength)
         {
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
@@ -829,6 +835,7 @@ namespace NEA
             return instrLine;
         }
 
+        // Add inputs for assignment and reassignment
         private string[] MapAssignment(string variable, List<Token> expression, string type)
         {
             List<string> instructions = new List<string>();
@@ -1373,8 +1380,32 @@ namespace NEA
                                 result = object1.ToString() + object2.ToString();
                                 break;
                             case DataType.BOOLEAN:
+                                // Logical addition - OR
                                 result = Convert.ToBoolean(object1) | Convert.ToBoolean(object2);
                                 break;
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "SUB":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) - Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) - Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                throw new Exception("ERROR: Cannot subtract two characters");
+                            case DataType.STRING:
+                                throw new Exception("ERROR: Cannot subtract two strings");
+                            case DataType.BOOLEAN:
+                                throw new Exception("ERROR: Cannot subtract two strings");
                             default:
                                 throw new Exception("ERROR: Unknown data type");
                         }
@@ -1393,12 +1424,89 @@ namespace NEA
                                 result = Convert.ToDouble(object1) * Convert.ToDouble(object2);
                                 break;
                             case DataType.CHARACTER:
-                                throw new Exception("ERROR: Cannot multiply two character together");
+                                throw new Exception("ERROR: Cannot multiply two characters together");
                             case DataType.STRING:
                                 throw new Exception("ERROR: Cannot multiply two strings together");
                             case DataType.BOOLEAN:
+                                // Logical multiplication - AND
                                 result = Convert.ToBoolean(object1) & Convert.ToBoolean(object2);
                                 break;
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "DIV":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) / Convert.ToInt32(object2);
+                                double doubleResult = Convert.ToDouble(object1) / Convert.ToDouble(object2);
+                                // Make the result a decimal
+                                // Language is designed for intuitiveness, not computer scientific shenanigans
+                                if (Convert.ToDouble(result) != doubleResult)
+                                {
+                                    result = doubleResult;
+                                }
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) / Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                throw new Exception("ERROR: Cannot divide characters");
+                            case DataType.STRING:
+                                throw new Exception("ERROR: Cannot divide strings");
+                            case DataType.BOOLEAN:
+                                throw new Exception("ERROR: Cannot divide booleans");
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "MOD":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) % Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) % Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                throw new Exception("ERROR: Cannot apply modulo to characters");
+                            case DataType.STRING:
+                                throw new Exception("ERROR: Cannot apply modulo to strings");
+                            case DataType.BOOLEAN:
+                                throw new Exception("ERROR: Cannot apply modulo to booleans");
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "EXP":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Math.Pow(Convert.ToInt32(object1), Convert.ToInt32(object2));
+                                break;
+                            case DataType.DECIMAL:
+                                result = Math.Pow(Convert.ToDouble(object1), Convert.ToDouble(object2));
+                                break;
+                            case DataType.CHARACTER:
+                                throw new Exception("ERROR: Cannot apply exponents to characters");
+                            case DataType.STRING:
+                                throw new Exception("ERROR: Cannot apply exponents to strings");
+                            case DataType.BOOLEAN:
+                                throw new Exception("ERROR: Cannot apply exponents to booleans");
                             default:
                                 throw new Exception("ERROR: Unknown data type");
                         }
@@ -1496,6 +1604,7 @@ namespace NEA
 
         private DataType IdentifyDataType(object object1)
         {
+            MessageBox.Show($"Literal = {object1.ToString()}");
             if (object1.ToString().ToUpper() == "TRUE" || object1.ToString().ToUpper() == "FALSE")
             {
                 return DataType.BOOLEAN;
