@@ -39,6 +39,7 @@ namespace NEA
         private void InitializeStacks()
         {
             undoStack.Push("");
+            undoStackCaretPosition.Push(0);
         }
         
         private void Run()
@@ -49,7 +50,16 @@ namespace NEA
 
             string[] intermediate = machine.GetIntermediateCode();
 
-            machine.StartExecution(intermediate);
+            StartExecution(intermediate);
+        }
+
+        public void StartExecution(string[] intermediateCode)
+        {
+            machine.SetRunningStatus(machine.GetValidity());
+            while (machine.GetRunningStatus())
+            {
+                machine.FetchExecute(intermediateCode, ref txtConsole);
+            }
         }
 
         private void UpdateLineNumbers()
@@ -66,6 +76,7 @@ namespace NEA
             txtLineNumber.Text = lineNumbers;
 
             // Update Scroll
+            // https://stackoverflow.com/questions/1827323/synchronize-scroll-position-of-two-richtextboxes
 
             int nPos = NativeScroller.GetScrollPos(txtCodeField.Handle, 1);
             nPos <<= 16;
@@ -139,7 +150,6 @@ namespace NEA
             Run();
         }
         
-
         private void stripComment_Click(object sender, EventArgs e)
         {
             Comment();

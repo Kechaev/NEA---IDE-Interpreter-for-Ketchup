@@ -18,6 +18,7 @@ using System.Reflection.Emit;
 using System.Xml.Schema;
 using System.Runtime.CompilerServices;
 using Microsoft.VisualBasic;
+using System.Drawing;
 
 namespace NEA
 {
@@ -871,6 +872,9 @@ namespace NEA
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
+            TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL, 
+                                                   TokenType.DIV, TokenType.MOD, TokenType.EXP };
+            TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
 
             string type, variableName;
             bool noType;
@@ -891,7 +895,7 @@ namespace NEA
                 switch (token.GetTokenType())
                 {
                     case TokenType.PRINT:
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.EOF && internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + 1].GetTokenType()))
+                        if (internalTokens[i + 1].GetTokenType() != TokenType.EOF && internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + 1].GetTokenType()) || internalTokens[i + 1].GetTokenType() == TokenType.INPUT)
                         {
                             expression = new List<Token>();
                             j = 1;
@@ -1138,16 +1142,22 @@ namespace NEA
 
         #region Execution
 
-        public void StartExecution(string[] intermediateCode)
+        public void SetRunningStatus(bool status)
         {
-            isRunning = validProgram;
-            while (isRunning)
-            {
-                FetchExecute(intermediateCode);
-            }
+            isRunning = status;
         }
 
-        public void FetchExecute(string[] intermediateCode)
+        public bool GetRunningStatus()
+        {
+            return isRunning;
+        }
+
+        public bool GetValidity()
+        {
+            return validProgram;
+        }
+
+        public void FetchExecute(string[] intermediateCode, ref TextBox console)
         {
             if (PC < intermediateCode.Length)
             {
@@ -1177,7 +1187,7 @@ namespace NEA
                     }
                 }
 
-                Execute(opcode, operand, intermediateCode);
+                Execute(opcode, operand, intermediateCode, ref console);
                 //MessageBox.Show($"Executed:\nopcode = {opcode}\noperand = {operand}\noperand null = {operand == null}");
             }
             else
@@ -1193,7 +1203,7 @@ namespace NEA
             return line;
         }
 
-        private void Execute(string opcode, string operand, string[] intermediateCode)
+        private void Execute(string opcode, string operand, string[] intermediateCode, ref TextBox console)
         {
             // Opcodes not involving an operand in the instruction
             if (operand == null)
@@ -1238,7 +1248,7 @@ namespace NEA
                         if (operand == "PRINT")
                         {
                             object object1 = stack.Pop();
-                            MessageBox.Show($"Printed: {object1}");
+                            console.Text += $"{object1}\n";
                             // ConsoleWrite the object
                         }
                         else if (operand == "INPUT")
@@ -1253,8 +1263,9 @@ namespace NEA
                         }
                         else
                         {
+                            // Subroutines ???
                             int index = subroutineDict[operand];
-                            StartExecution(intermediateSubroutines[index]);
+                            //StartExecution(intermediateSubroutines[index]);
                         }
                         break;
                     case "LOAD_CONST":
@@ -1271,10 +1282,12 @@ namespace NEA
         {
             System.Drawing.Size size = new System.Drawing.Size(200, 100);
             Form inputBox = new Form();
-
+            
+            Point location = new Point(250, 250);
+            inputBox.Location = location;
             inputBox.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             inputBox.ClientSize = size;
-            inputBox.Text = "Program Prompt";
+            inputBox.Text = "Prompt";
 
             System.Windows.Forms.Label lblPrompt = new System.Windows.Forms.Label();
             lblPrompt.Size = new System.Drawing.Size(size.Width - 10, 23);
