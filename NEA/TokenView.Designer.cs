@@ -70,15 +70,17 @@
             // lblName
             // 
             this.lblName.AutoSize = true;
+            this.lblName.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblName.Location = new System.Drawing.Point(3, 432);
             this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(129, 20);
+            this.lblName.Size = new System.Drawing.Size(300, 44);
             this.lblName.TabIndex = 5;
             this.lblName.Text = "[Click on a token]";
             // 
             // txtDescription
             // 
             this.txtDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtDescription.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtDescription.Location = new System.Drawing.Point(3, 465);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
