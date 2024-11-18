@@ -8,13 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace NEA
+namespace NEA.Classes
 {
     public partial class TokenView : Form
     {
+        private Token[] tokens;
+
         public TokenView()
         {
             InitializeComponent();
+        }
+
+        private void TokenView_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

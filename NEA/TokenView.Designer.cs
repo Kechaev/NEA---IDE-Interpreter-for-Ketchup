@@ -1,4 +1,4 @@
-﻿namespace NEA
+﻿namespace NEA.Classes
 {
     partial class TokenView
     {
@@ -41,13 +41,13 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Controls.Add(this.txtIntermediateCode, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(8, 8);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 5);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(785, 435);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(502, 685);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // txtIntermediateCode
@@ -60,7 +60,7 @@
             this.txtIntermediateCode.Name = "txtIntermediateCode";
             this.txtIntermediateCode.ReadOnly = true;
             this.txtIntermediateCode.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtIntermediateCode.Size = new System.Drawing.Size(779, 426);
+            this.txtIntermediateCode.Size = new System.Drawing.Size(496, 426);
             this.txtIntermediateCode.TabIndex = 4;
             this.txtIntermediateCode.Text = "";
             // 
@@ -68,12 +68,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(533, 300);
+            this.ClientSize = new System.Drawing.Size(512, 695);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TokenView";
             this.Padding = new System.Windows.Forms.Padding(5);
             this.Text = "Token View";
+            this.Load += new System.EventHandler(this.TokenView_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
