@@ -13,7 +13,7 @@ namespace NEA
     public partial class IntermediateView : Form
     {
         private string[] intermediate;
-        private Button[] buttons;
+        private Panel[] panels;
 
         // Add support for explaining what the individual words mean
         public IntermediateView(string[] intermediate)
@@ -42,6 +42,7 @@ namespace NEA
                 txtIntermediateCode.Width = maxLength * 10;
                 txtDescription.Width = maxLength * 10;
             }
+            txtIntermediateCode.TabIndex = 1;
             txtIntermediateCode.Lines = intermediate;
             txtIntermediateCode.Select(intermediateString.Length,0);
             GenerateButtons();
@@ -53,26 +54,40 @@ namespace NEA
             int counter = 0;
             int yCoord = 10;
 
-            buttons = new Button[lines];
+            panels = new Panel[lines];
             foreach (string line in intermediate)
             {
                 int width = line.Length * 10;
                 int height = 18;
-
-                Button button = new Button()
+                Panel panel = new Panel()
                 {
-                    Text = $"B{counter + 1}",
+                    Text = $"{line}",
                     Width = width,
                     Height = height,
-                    Location = new Point(0, yCoord)
+                    Location = new Point(10, yCoord),
+                    TabIndex = 0,
+                    BorderStyle = 0,
+                    BackColor = Color.Transparent,
+                    ForeColor = Color.Transparent,
+                    //Visible = false
                 };
+                // ???
+                panel.Click += Panel_Click();
                 yCoord += height;
 
-                buttons[counter] = button;
-                Controls.Add(button);
+                panels[counter] = panel;
+                Controls.Add(panel);
+
+                panel.BringToFront();
 
                 counter++;
             }
+        }
+
+        private void Panel_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show($"Panel clicked");
+            throw new NotImplementedException();
         }
     }
 }
