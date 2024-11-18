@@ -12,16 +12,17 @@ namespace NEA.Classes
 {
     public partial class TokenView : Form
     {
-        private Token[] tokens;
+        private string[] tokens;
 
-        public TokenView()
+        public TokenView(string[] tokens)
         {
             InitializeComponent();
+            this.tokens = tokens;
         }
 
         private void TokenView_Load(object sender, EventArgs e)
         {
-
+            txtTokenView.Lines = tokens;
         }
     }
 }

@@ -30,7 +30,9 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TokenView));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtIntermediateCode = new System.Windows.Forms.RichTextBox();
+            this.txtTokenView = new System.Windows.Forms.RichTextBox();
+            this.lblName = new System.Windows.Forms.Label();
+            this.txtDescription = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -39,7 +41,9 @@
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Controls.Add(this.txtIntermediateCode, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtTokenView, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblName, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.txtDescription, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 5);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -50,19 +54,38 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(502, 685);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // txtIntermediateCode
+            // txtTokenView
             // 
-            this.txtIntermediateCode.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.txtIntermediateCode.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtIntermediateCode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtIntermediateCode.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtIntermediateCode.Location = new System.Drawing.Point(3, 3);
-            this.txtIntermediateCode.Name = "txtIntermediateCode";
-            this.txtIntermediateCode.ReadOnly = true;
-            this.txtIntermediateCode.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtIntermediateCode.Size = new System.Drawing.Size(496, 426);
-            this.txtIntermediateCode.TabIndex = 4;
-            this.txtIntermediateCode.Text = "";
+            this.txtTokenView.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.txtTokenView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtTokenView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtTokenView.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTokenView.Location = new System.Drawing.Point(3, 3);
+            this.txtTokenView.Name = "txtTokenView";
+            this.txtTokenView.ReadOnly = true;
+            this.txtTokenView.Size = new System.Drawing.Size(496, 426);
+            this.txtTokenView.TabIndex = 4;
+            this.txtTokenView.Text = "";
+            // 
+            // lblName
+            // 
+            this.lblName.AutoSize = true;
+            this.lblName.Location = new System.Drawing.Point(3, 432);
+            this.lblName.Name = "lblName";
+            this.lblName.Size = new System.Drawing.Size(129, 20);
+            this.lblName.TabIndex = 5;
+            this.lblName.Text = "[Click on a token]";
+            // 
+            // txtDescription
+            // 
+            this.txtDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtDescription.Location = new System.Drawing.Point(3, 465);
+            this.txtDescription.Multiline = true;
+            this.txtDescription.Name = "txtDescription";
+            this.txtDescription.ReadOnly = true;
+            this.txtDescription.Size = new System.Drawing.Size(496, 217);
+            this.txtDescription.TabIndex = 6;
+            this.txtDescription.Text = "Lorum Ipsum";
             // 
             // TokenView
             // 
@@ -76,6 +99,7 @@
             this.Text = "Token View";
             this.Load += new System.EventHandler(this.TokenView_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -83,6 +107,8 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.RichTextBox txtIntermediateCode;
+        private System.Windows.Forms.RichTextBox txtTokenView;
+        private System.Windows.Forms.Label lblName;
+        private System.Windows.Forms.TextBox txtDescription;
     }
 }

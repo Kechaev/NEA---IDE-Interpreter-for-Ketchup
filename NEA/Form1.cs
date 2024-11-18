@@ -373,5 +373,21 @@ namespace NEA
             IntermediateView intermediateForm = new IntermediateView(machine.GetIntermediateCode());
             intermediateForm.ShowDialog();
         }
+
+        private void tsTokenView_Click(object sender, EventArgs e)
+        {
+            machine = new Machine(txtCodeField.Text);
+            Token[] tokens = machine.Tokenize();
+
+            string[] tokensString = new string[tokens.Length];
+
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                tokensString[i] = tokens[i].GetTokenType().ToString();
+            }
+
+            TokenView tokenForm = new TokenView(tokensString);
+            tokenForm.ShowDialog();
+        }
     }
 }

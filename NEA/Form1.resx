@@ -348,15 +348,15 @@
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIUSURBVGhD7ZmxSxthGMavdqzg4lJoSQ4dxEH8GwpdOusm
-        gqMoFFxKC4WuKnQuLqVLWxwUBXFRUBS0dCq4uhVKlqItpYvJ+TzxfeElvJd8F4wEv/vBD/I9uZO8z+W+
-        C5iUlJSUlFiyNEuy5IGsIqRZAKylV5JEhhagNkaeyjuR0FqAGg3e8OpVeipH3WO8wVvtjj24Db/CT+IH
-        uAwnYJ/gDZxnMX5DnpPnAuwDvEHbWpmUMzthC1iD7+CWyfjU6YPHrztkgJ2xBTxmIJxBzZ8xAK/hL3GR
-        gaDZz+YqSZ7AC/E7nIc/YB0ewTFYEG+4UOsV3uN55BVwDpnxG/CQAWABeuwcA0Gzy+bqpgDNOLS+Vjdh
-        QbzBiupjC3gFebU+msyWZwuYZSBo5hXAIlfgjMkasOBt5Q1UVJ92m+AutHRTwD4DYQNqXmUQjjdQsMmA
-        /BUPWwDv0/9m/QZalqC+F1rAAQPhC9R8lEE47mAd/JP+k7Pb0boHTJs15VrhI1Hz0AKOGQifoeY9LiAc
-        bxNchZrRCiRTUDPuE8Pwhcm8Ak4YCOtQ854VwOd4EbwCyCHU/C8DMA418/QK4GNQ2YGa96CA7sgrgFfd
-        7gffIHkPNaMvzetOBXA/0Pw2CxgflKPuCn745/BRc+UzZFS8LBBv8FrKHxmR0Dp8dOjgjepbSSIjyqte
-        EidZlrX76X6/wfAR/++jREmSa6RLcozutt4jAAAAAElFTkSuQmCC
+        gqMoFFxKC4WuKnQuLqVLWxwUBXFRUBS0dCq4uhWaqWhL6WJyPk98X3gJ7yXfBSPB737wg3xP7iTvc7nv
+        AiYlJSUlJZYszZIseSCrCGkWAGvplSSRoQWojZGn8k4ktBagRoM3vHqVnspR9xhv8Fa7Yw9uw6/wk/gB
+        LsMJ2Cd4A+dZjN+Q5+S5APsAb9C2ViblzE7YAtbgO7hlMj51+uDx6w4ZYGdsAY8ZCGdQ82cMwGv4S1xk
+        IGj2s7lKkifwQvwO5+EPWIdHcAwWxBsu1HqF93geeQWcQ2b8BjxkAFiAHjvHQNDssrm6KUAzDq2v1U1Y
+        EG+wovrYAl5BXq2PJrPl2QJmGQiaeQWwyBU4Y7IGLHhbeQMV1afdJrgLLd0UsM9A2ICaVxmE4w0UbDIg
+        f8XDFsD79L9Zv4GWJajvhRZwwED4AjUfZRCOO1gH/6T/5Ox2tO4B02ZNuVb4SNQ8tIBjBsJnqHmPCwjH
+        2wRXoWa0AskU1Iz7xDB8YTKvgBMGwjrUvGcF8DleBK8Acgg1/8sAjEPNPL0C+BhUdqDmPSigO/IK4FW3
+        +8E3SN5DzehL87pTAdwPNL/NAsYH5ai7gh/+OXzUXPkMGRUvC8QbvJbyR0YktA4fHTp4o/pWksiI8qqX
+        xEmWZe1+ut9vMHzE//soUZLkGoFocooTleyHAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -869,6 +869,12 @@
   <data name="&gt;&gt;tsIntermediateCodeView.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;tsTokenView.Name" xml:space="preserve">
+    <value>tsTokenView</value>
+  </data>
+  <data name="&gt;&gt;tsTokenView.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;tsDebug.Name" xml:space="preserve">
     <value>tsDebug</value>
   </data>
@@ -928,12 +934,6 @@
   </data>
   <data name="&gt;&gt;statusColumnInfo.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tsTokenView.Name" xml:space="preserve">
-    <value>tsTokenView</value>
-  </data>
-  <data name="&gt;&gt;tsTokenView.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>IDE_MainWindow</value>

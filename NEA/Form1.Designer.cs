@@ -45,6 +45,7 @@ namespace NEA
             this.tsView = new System.Windows.Forms.ToolStripMenuItem();
             this.tsViewConsoleView = new System.Windows.Forms.ToolStripMenuItem();
             this.tsIntermediateCodeView = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsTokenView = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebug = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebugTraceTable = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebugSyntaxCheck = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +65,6 @@ namespace NEA
             this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.lblConsole = new System.Windows.Forms.Label();
-            this.tsTokenView = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -168,6 +168,12 @@ namespace NEA
             this.tsIntermediateCodeView.Name = "tsIntermediateCodeView";
             resources.ApplyResources(this.tsIntermediateCodeView, "tsIntermediateCodeView");
             this.tsIntermediateCodeView.Click += new System.EventHandler(this.intermediateCodeToolStripMenuItem_Click);
+            // 
+            // tsTokenView
+            // 
+            this.tsTokenView.Name = "tsTokenView";
+            resources.ApplyResources(this.tsTokenView, "tsTokenView");
+            this.tsTokenView.Click += new System.EventHandler(this.tsTokenView_Click);
             // 
             // tsDebug
             // 
@@ -304,11 +310,6 @@ namespace NEA
             // 
             resources.ApplyResources(this.lblConsole, "lblConsole");
             this.lblConsole.Name = "lblConsole";
-            // 
-            // tsTokenView
-            // 
-            this.tsTokenView.Name = "tsTokenView";
-            resources.ApplyResources(this.tsTokenView, "tsTokenView");
             // 
             // IDE_MainWindow
             // 

@@ -42,7 +42,6 @@ namespace NEA
                 txtIntermediateCode.Width = maxLength * 10;
                 txtDescription.Width = maxLength * 10;
             }
-            txtIntermediateCode.TabIndex = 1;
             txtIntermediateCode.Lines = intermediate;
             txtIntermediateCode.Select(intermediateString.Length,0);
             GeneratePanels();
