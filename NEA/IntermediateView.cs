@@ -13,6 +13,7 @@ namespace NEA
     public partial class IntermediateView : Form
     {
         private string[] intermediate;
+        private Button[] buttons;
 
         // Add support for explaining what the individual words mean
         public IntermediateView(string[] intermediate)
@@ -33,18 +34,45 @@ namespace NEA
                 {
                     maxLength = length;
                 }
-                intermediateString += $"{line}\r\n";
             }
-
-            MessageBox.Show($"max = {maxLength}");
 
             if (maxLength > 20)
             {
-                this.Width = maxLength * 12 + 30;
-                txtIntermediateCode.Width = maxLength * 12;
+                this.Width = maxLength * 10 + 35;
+                txtIntermediateCode.Width = maxLength * 10;
+                txtDescription.Width = maxLength * 10;
             }
-            txtIntermediateCode.Text = intermediateString;
+            txtIntermediateCode.Lines = intermediate;
             txtIntermediateCode.Select(intermediateString.Length,0);
+            GenerateButtons();
+        }
+
+        private void GenerateButtons()
+        {
+            int lines = txtIntermediateCode.Lines.Length;
+            int counter = 0;
+            int yCoord = 10;
+
+            buttons = new Button[lines];
+            foreach (string line in intermediate)
+            {
+                int width = line.Length * 10;
+                int height = 18;
+
+                Button button = new Button()
+                {
+                    Text = $"B{counter + 1}",
+                    Width = width,
+                    Height = height,
+                    Location = new Point(0, yCoord)
+                };
+                yCoord += height;
+
+                buttons[counter] = button;
+                Controls.Add(button);
+
+                counter++;
+            }
         }
     }
 }

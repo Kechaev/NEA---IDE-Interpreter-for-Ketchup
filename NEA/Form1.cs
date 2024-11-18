@@ -45,7 +45,6 @@ namespace NEA
         private void Run()
         {
             machine = new Machine(txtCodeField.Text);
-            //ConsoleWrite(m.Interpret());
             machine.Interpret();
 
             string[] intermediate = machine.GetIntermediateCode();
@@ -367,6 +366,11 @@ namespace NEA
 
         private void intermediateCodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            machine = new Machine(txtCodeField.Text);
+            machine.Interpret();
+
+            string[] intermediate = machine.GetIntermediateCode();
+
             IntermediateView intermediateForm = new IntermediateView(machine.GetIntermediateCode());
             intermediateForm.ShowDialog();
         }

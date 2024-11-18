@@ -1530,7 +1530,7 @@ namespace NEA
                         {
                             Tuple<DialogResult, string> result = new Tuple<DialogResult, string>(DialogResult.Cancel, null);
                             string prompt = stack.Pop().ToString();
-                            while (result.Item1 != DialogResult.OK)
+                            while (result.Item1 != DialogResult.OK || result.Item2 == "")
                             {
                                 result = ShowInputDialog(ref prompt);
                             }
