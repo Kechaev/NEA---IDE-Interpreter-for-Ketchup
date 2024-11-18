@@ -75,6 +75,11 @@ namespace NEA.Classes
             this.type = type;
         }
 
+        public void SetValue(object value)
+        {
+            this.value = value;
+        }
+
         public int GetID()
         {
             return ID;

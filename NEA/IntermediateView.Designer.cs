@@ -78,7 +78,7 @@
             this.Controls.Add(this.txtIntermediateCode);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "IntermediateView";
-            this.Text = "Intermediate";
+            this.Text = "Intermediate View";
             this.Load += new System.EventHandler(this.IntermediateView_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

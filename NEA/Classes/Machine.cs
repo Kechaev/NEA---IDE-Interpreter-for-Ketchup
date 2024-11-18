@@ -40,7 +40,7 @@ namespace NEA
         private string[] intermediate;
         private List<string[]> intermediateSubroutines;
         private Dictionary<string, int> subroutineDict;
-        private List<Variable> variables;
+        private Variable[] variables;
         private Dictionary<string, int> variablesDict = new Dictionary<string, int>();
         private int counterVar;
 
@@ -81,7 +81,7 @@ namespace NEA
             // Tokenization
             tokens = Tokenize();
 
-            variables = new List<Variable>();
+            variables = new Variable[GetNoVariables()];
 
             OrganiseVariables();
 
@@ -310,6 +310,10 @@ namespace NEA
                     }
                 }
             }
+            for (int i = 0; i < variables.Length; i++)
+            {
+                variables[i] = new Variable(KeyByValue(i), null);
+            }
         }
 
         private string GetComparisonOperator()
@@ -406,7 +410,7 @@ namespace NEA
             return subroutineNames.ToArray();
         }
 
-        private Token[] Tokenize()
+        public Token[] Tokenize()
         {
             List<Token> tokensList = new List<Token>();
             char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^' };
@@ -713,10 +717,13 @@ namespace NEA
 
             //MessageBox.Show($"Tokens:\n{String}");
 
+            List<Tuple<int, int>> beginEndIndexes = new List<Tuple<int, int>>();
+
             for (int i = 0; i < expression.Count; i++)
             {
                 instrLine = new List<string>();
                 Token e = expression[i];
+                
 
                 if (convertToRPN)
                 {                
@@ -729,6 +736,7 @@ namespace NEA
                     {
                         expressionEnd = i - 1;
                         inExpression = false;
+                        beginEndIndexes.Add(new Tuple<int, int>(expressionStart, expressionEnd));
                     }
                 }
                 else
@@ -741,33 +749,72 @@ namespace NEA
             if (inExpression)
             {
                 expressionEnd = expression.Count - 1;
+                beginEndIndexes.Add(new Tuple<int, int>(expressionStart, expressionEnd));
+            }
+
+            MessageBox.Show($"Expressions:");
+            foreach (var v in beginEndIndexes)
+            {
+                MessageBox.Show($"Begin: {v.Item1}\nEnd: {v.Item2}");
             }
 
             if (convertToRPN)
             {
-                // Strings before expression
-                for (int i = 0; i < expressionStart; i++)
+                MessageBox.Show($"Total counter: {beginEndIndexes.Count}");
+                for (int counter = 0; counter < beginEndIndexes.Count; counter++)
                 {
-                    instrLine = new List<string>();
-                    Token e = expression[i];
+                    var v = beginEndIndexes[counter];
 
-                    instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
-                    instructions.AddRange(instrLine);
-                }
-                // Expression
-                for (int i = expressionStart; i <= expressionEnd; i++)
-                {
-                    expressionForRPN.Add(expression[i]);
-                }
-                instructions.AddRange(ConvertToPostfix(expressionForRPN));
-                // Strings after expression
-                for (int i = expressionEnd + 1; i < expression.Count; i++)
-                {
-                    instrLine = new List<string>();
-                    Token e = expression[i];
+                    int begin = v.Item1;
+                    int end = v.Item2;
 
-                    instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
-                    instructions.AddRange(instrLine);
+                    int nextBegin;
+                    if (counter < beginEndIndexes.Count - 1)
+                    {
+                        nextBegin = beginEndIndexes[counter + 1].Item1;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"End of expression");
+                        nextBegin = expression.Count;
+                    }
+                    int lastEnd;
+                    if (counter > 0)
+                    {
+                        lastEnd = beginEndIndexes[counter - 1].Item2 + 1;
+                    }
+                    else
+                    {
+                        lastEnd = 0;
+                    }
+
+                    // Before
+                    MessageBox.Show($"{counter}:\nBefore:\nBegin: {lastEnd}\nEnd: {begin}\nRun: {lastEnd < begin && counter == 0}");
+                    for (int i = lastEnd; i < begin && counter == 0; i++)
+                    {
+                        instrLine = new List<string>();
+                        Token e = expression[i];
+
+                        instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
+                        instructions.AddRange(instrLine);
+                    }
+                    // Expression
+                    MessageBox.Show($"{counter}:\nExpression:\nBegin: {begin}\nEnd: {end}");
+                    for (int i = begin; i <= end; i++)
+                    {
+                        expressionForRPN.Add(expression[i]);
+                    }
+                    instructions.AddRange(ConvertToPostfix(expressionForRPN));
+                    // After
+                    MessageBox.Show($"{counter}:\nAfter:\nBegin: {end + 1}\nEnd: {nextBegin}");
+                    for (int i = end + 1; i < nextBegin; i++)
+                    {
+                        instrLine = new List<string>();
+                        Token e = expression[i];
+
+                        instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
+                        instructions.AddRange(instructions);
+                    }
                 }
 
                 for (int i = 0; i < expressionLength - (expressionEnd - expressionStart) - 1; i++)
@@ -829,6 +876,7 @@ namespace NEA
             }
             else
             {
+                MessageBox.Show($"Pre-crash: {e.GetTokenType()}");
                 throw new Exception("ERROR: Invalid token in string");
             }
 
@@ -842,7 +890,7 @@ namespace NEA
             string instrLine;
             counterVar = variablesDict[variable];
 
-            instrLine = "LOAD_VAR " + counterVar.ToString();
+            instrLine = "DECLARE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
             instructions.AddRange(ConvertToPostfix(expression));
@@ -853,8 +901,7 @@ namespace NEA
             instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            instrLine = "DECLARE_VAR " + counterVar.ToString();
-            instructions.Add(instrLine);
+            
 
             return instructions.ToArray();
         }
@@ -882,14 +929,18 @@ namespace NEA
             string instrLine;
             counterVar = variablesDict[variable];
 
-            instrLine = "LOAD_VAR " + counterVar.ToString();
-            instructions.Add(instrLine);
-
-            instrLine = "ADJUST_TYPE " + type;
-            instructions.Add(instrLine);
-
             instrLine = "DECLARE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
+
+            // Figure out a type system in the intermediate language
+
+            //instrLine = "LOAD_VAR " + counterVar.ToString();
+            //instructions.Add(instrLine);
+
+            //instrLine = "ADJUST_TYPE " + type;
+            //instructions.Add(instrLine);
+
+            
 
             return instructions.ToArray();
         }
@@ -1517,6 +1568,7 @@ namespace NEA
             // Opcodes involving an operand in the instruction
             else
             {
+                int intOp;
                 switch (opcode)
                 {
                     case "CALL":
@@ -1547,8 +1599,62 @@ namespace NEA
                     case "LOAD_CONST":
                         stack.Push(operand);
                         break;
+                    case "LOAD_VAR":
+                        intOp = Convert.ToInt32(operand);
+                        if (variables[intOp].IsDeclared())
+                        {
+                            stack.Push(variables[intOp].GetValue());
+                        }
+                        break;
+                    case "STORE_VAR":
+                        intOp = Convert.ToInt32(operand);
+                        if (variables[intOp].IsDeclared())
+                        {
+                            variables[intOp].SetValue(stack.Pop());
+                        }
+                        break;
+                    case "DECLARE_VAR":
+                        variables[Convert.ToInt32(operand)].Declare();
+                        break;
+                    case "ADJUST_TYPE":
+                        // Figure out what to do with the value in the stack or the variable???
+                        DataType type = GetDataType(operand);
+                        break;
                 }
             }
+        }
+
+        private DataType GetDataType(string dataType)
+        {
+            switch (dataType)
+            {
+                case "STRING":
+                    return DataType.STRING;
+                case "CHARACTER":
+                    return DataType.CHARACTER;
+                case "INTEGER":
+                    return DataType.INTEGER;
+                case "DECIMAL":
+                    return DataType.DECIMAL;
+                case "BOOLEAN:":
+                    return DataType.BOOLEAN;
+                default:
+                    throw new Exception("ERROR: Invalid data type parsed");
+            }
+        }
+
+        // Get the variable name from its index
+        // https://stackoverflow.com/questions/2444033/get-dictionary-key-by-value
+        private string KeyByValue(int value)
+        {
+            foreach (KeyValuePair<string, int> pair in variablesDict)
+            {
+                if (pair.Value == value)
+                {
+                    return pair.Key;
+                }
+            }
+            return null;
         }
 
         // Input Dialog Box

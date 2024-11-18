@@ -44,7 +44,7 @@ namespace NEA
             this.tsEditPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.tsView = new System.Windows.Forms.ToolStripMenuItem();
             this.tsViewConsoleView = new System.Windows.Forms.ToolStripMenuItem();
-            this.intermediateCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsIntermediateCodeView = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebug = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebugTraceTable = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebugSyntaxCheck = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,6 +64,7 @@ namespace NEA
             this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.lblConsole = new System.Windows.Forms.Label();
+            this.tsTokenView = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -152,7 +153,8 @@ namespace NEA
             // 
             this.tsView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsViewConsoleView,
-            this.intermediateCodeToolStripMenuItem});
+            this.tsIntermediateCodeView,
+            this.tsTokenView});
             this.tsView.Name = "tsView";
             resources.ApplyResources(this.tsView, "tsView");
             // 
@@ -161,11 +163,11 @@ namespace NEA
             this.tsViewConsoleView.Name = "tsViewConsoleView";
             resources.ApplyResources(this.tsViewConsoleView, "tsViewConsoleView");
             // 
-            // intermediateCodeToolStripMenuItem
+            // tsIntermediateCodeView
             // 
-            this.intermediateCodeToolStripMenuItem.Name = "intermediateCodeToolStripMenuItem";
-            resources.ApplyResources(this.intermediateCodeToolStripMenuItem, "intermediateCodeToolStripMenuItem");
-            this.intermediateCodeToolStripMenuItem.Click += new System.EventHandler(this.intermediateCodeToolStripMenuItem_Click);
+            this.tsIntermediateCodeView.Name = "tsIntermediateCodeView";
+            resources.ApplyResources(this.tsIntermediateCodeView, "tsIntermediateCodeView");
+            this.tsIntermediateCodeView.Click += new System.EventHandler(this.intermediateCodeToolStripMenuItem_Click);
             // 
             // tsDebug
             // 
@@ -272,6 +274,7 @@ namespace NEA
             this.txtCodeField.BorderStyle = System.Windows.Forms.BorderStyle.None;
             resources.ApplyResources(this.txtCodeField, "txtCodeField");
             this.txtCodeField.Name = "txtCodeField";
+            this.tableCodeSpace.SetRowSpan(this.txtCodeField, 2);
             this.txtCodeField.VScroll += new System.EventHandler(this.txtCodeField_VScroll);
             this.txtCodeField.TextChanged += new System.EventHandler(this.txtCodeField_TextChanged);
             this.txtCodeField.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
@@ -301,6 +304,11 @@ namespace NEA
             // 
             resources.ApplyResources(this.lblConsole, "lblConsole");
             this.lblConsole.Name = "lblConsole";
+            // 
+            // tsTokenView
+            // 
+            this.tsTokenView.Name = "tsTokenView";
+            resources.ApplyResources(this.tsTokenView, "tsTokenView");
             // 
             // IDE_MainWindow
             // 
@@ -357,11 +365,12 @@ namespace NEA
         private RichTextBox txtLineNumber;
         private RichTextBox txtCodeField;
         internal TextBox txtConsole;
-        private ToolStripMenuItem intermediateCodeToolStripMenuItem;
+        private ToolStripMenuItem tsIntermediateCodeView;
         private TableLayoutPanel tableMain;
         private TableLayoutPanel tableCodeSpace;
         private TableLayoutPanel tableConsole;
         private Label lblConsole;
+        private ToolStripMenuItem tsTokenView;
     }
 }
 

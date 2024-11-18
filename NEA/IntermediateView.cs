@@ -45,10 +45,10 @@ namespace NEA
             txtIntermediateCode.TabIndex = 1;
             txtIntermediateCode.Lines = intermediate;
             txtIntermediateCode.Select(intermediateString.Length,0);
-            GenerateButtons();
+            GeneratePanels();
         }
 
-        private void GenerateButtons()
+        private void GeneratePanels()
         {
             int lines = txtIntermediateCode.Lines.Length;
             int counter = 0;
@@ -76,7 +76,7 @@ namespace NEA
                 yCoord += height;
 
                 panels[counter] = panel;
-                Controls.Add(panel);
+                //Controls.Add(panel);
 
                 panel.BringToFront();
 
