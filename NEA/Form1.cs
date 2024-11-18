@@ -32,7 +32,6 @@ namespace NEA
         {
             InitializeComponent();
             InitializeStacks();
-            WindowState = FormWindowState.Maximized;
             txtCodeField.Select();
         }
 

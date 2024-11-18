@@ -72,7 +72,7 @@ namespace NEA
                     //Visible = false
                 };
                 // ???
-                panel.Click += Panel_Click();
+                //panel.Click += Panel_Click();
                 yCoord += height;
 
                 panels[counter] = panel;

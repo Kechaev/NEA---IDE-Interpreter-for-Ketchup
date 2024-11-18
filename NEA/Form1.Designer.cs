@@ -44,6 +44,7 @@ namespace NEA
             this.tsEditPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.tsView = new System.Windows.Forms.ToolStripMenuItem();
             this.tsViewConsoleView = new System.Windows.Forms.ToolStripMenuItem();
+            this.intermediateCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebug = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebugTraceTable = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebugSyntaxCheck = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,18 +57,19 @@ namespace NEA
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.statusLineInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusColumnInfo = new System.Windows.Forms.ToolStripStatusLabel();
-            this.btnClear = new System.Windows.Forms.Button();
-            this.btnMinusFont = new System.Windows.Forms.Button();
-            this.btnPlusFont = new System.Windows.Forms.Button();
-            this.btnReset = new System.Windows.Forms.Button();
             this.txtConsole = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.txtLineNumber = new System.Windows.Forms.RichTextBox();
             this.txtCodeField = new System.Windows.Forms.RichTextBox();
-            this.intermediateCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tableMain = new System.Windows.Forms.TableLayoutPanel();
+            this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
+            this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
+            this.lblConsole = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
+            this.tableMain.SuspendLayout();
+            this.tableCodeSpace.SuspendLayout();
+            this.tableConsole.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -159,6 +161,12 @@ namespace NEA
             this.tsViewConsoleView.Name = "tsViewConsoleView";
             resources.ApplyResources(this.tsViewConsoleView, "tsViewConsoleView");
             // 
+            // intermediateCodeToolStripMenuItem
+            // 
+            this.intermediateCodeToolStripMenuItem.Name = "intermediateCodeToolStripMenuItem";
+            resources.ApplyResources(this.intermediateCodeToolStripMenuItem, "intermediateCodeToolStripMenuItem");
+            this.intermediateCodeToolStripMenuItem.Click += new System.EventHandler(this.intermediateCodeToolStripMenuItem_Click);
+            // 
             // tsDebug
             // 
             this.tsDebug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -241,34 +249,6 @@ namespace NEA
             this.statusColumnInfo.Name = "statusColumnInfo";
             resources.ApplyResources(this.statusColumnInfo, "statusColumnInfo");
             // 
-            // btnClear
-            // 
-            resources.ApplyResources(this.btnClear, "btnClear");
-            this.btnClear.Name = "btnClear";
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // btnMinusFont
-            // 
-            resources.ApplyResources(this.btnMinusFont, "btnMinusFont");
-            this.btnMinusFont.Name = "btnMinusFont";
-            this.btnMinusFont.UseVisualStyleBackColor = true;
-            this.btnMinusFont.Click += new System.EventHandler(this.btnMinusFont_Click);
-            // 
-            // btnPlusFont
-            // 
-            resources.ApplyResources(this.btnPlusFont, "btnPlusFont");
-            this.btnPlusFont.Name = "btnPlusFont";
-            this.btnPlusFont.UseVisualStyleBackColor = true;
-            this.btnPlusFont.Click += new System.EventHandler(this.btnPlusFont_Click);
-            // 
-            // btnReset
-            // 
-            resources.ApplyResources(this.btnReset, "btnReset");
-            this.btnReset.Name = "btnReset";
-            this.btnReset.UseVisualStyleBackColor = true;
-            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
-            // 
             // txtConsole
             // 
             this.txtConsole.BackColor = System.Drawing.SystemColors.MenuBar;
@@ -276,11 +256,6 @@ namespace NEA
             resources.ApplyResources(this.txtConsole, "txtConsole");
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;
-            // 
-            // label1
-            // 
-            resources.ApplyResources(this.label1, "label1");
-            this.label1.Name = "label1";
             // 
             // txtLineNumber
             // 
@@ -301,27 +276,40 @@ namespace NEA
             this.txtCodeField.TextChanged += new System.EventHandler(this.txtCodeField_TextChanged);
             this.txtCodeField.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
             // 
-            // intermediateCodeToolStripMenuItem
+            // tableMain
             // 
-            this.intermediateCodeToolStripMenuItem.Name = "intermediateCodeToolStripMenuItem";
-            resources.ApplyResources(this.intermediateCodeToolStripMenuItem, "intermediateCodeToolStripMenuItem");
-            this.intermediateCodeToolStripMenuItem.Click += new System.EventHandler(this.intermediateCodeToolStripMenuItem_Click);
+            resources.ApplyResources(this.tableMain, "tableMain");
+            this.tableMain.Controls.Add(this.tableCodeSpace, 1, 1);
+            this.tableMain.Controls.Add(this.tableConsole, 1, 2);
+            this.tableMain.Name = "tableMain";
+            // 
+            // tableCodeSpace
+            // 
+            resources.ApplyResources(this.tableCodeSpace, "tableCodeSpace");
+            this.tableCodeSpace.Controls.Add(this.txtLineNumber, 0, 0);
+            this.tableCodeSpace.Controls.Add(this.txtCodeField, 1, 0);
+            this.tableCodeSpace.Name = "tableCodeSpace";
+            // 
+            // tableConsole
+            // 
+            resources.ApplyResources(this.tableConsole, "tableConsole");
+            this.tableConsole.Controls.Add(this.txtConsole, 0, 1);
+            this.tableConsole.Controls.Add(this.lblConsole, 0, 0);
+            this.tableConsole.Name = "tableConsole";
+            // 
+            // lblConsole
+            // 
+            resources.ApplyResources(this.lblConsole, "lblConsole");
+            this.lblConsole.Name = "lblConsole";
             // 
             // IDE_MainWindow
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.txtCodeField);
-            this.Controls.Add(this.txtLineNumber);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.statusBar);
-            this.Controls.Add(this.btnPlusFont);
-            this.Controls.Add(this.btnMinusFont);
-            this.Controls.Add(this.btnReset);
-            this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.txtConsole);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.menuStrip);
+            this.Controls.Add(this.tableMain);
             this.MainMenuStrip = this.menuStrip;
             this.Name = "IDE_MainWindow";
             this.menuStrip.ResumeLayout(false);
@@ -330,6 +318,10 @@ namespace NEA
             this.toolStrip.PerformLayout();
             this.statusBar.ResumeLayout(false);
             this.statusBar.PerformLayout();
+            this.tableMain.ResumeLayout(false);
+            this.tableCodeSpace.ResumeLayout(false);
+            this.tableConsole.ResumeLayout(false);
+            this.tableConsole.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -362,15 +354,14 @@ namespace NEA
         private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel statusLineInfo;
         private System.Windows.Forms.ToolStripStatusLabel statusColumnInfo;
-        private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Button btnMinusFont;
-        private System.Windows.Forms.Button btnPlusFont;
-        private System.Windows.Forms.Button btnReset;
-        private Label label1;
         private RichTextBox txtLineNumber;
         private RichTextBox txtCodeField;
         internal TextBox txtConsole;
         private ToolStripMenuItem intermediateCodeToolStripMenuItem;
+        private TableLayoutPanel tableMain;
+        private TableLayoutPanel tableCodeSpace;
+        private TableLayoutPanel tableConsole;
+        private Label lblConsole;
     }
 }
 
