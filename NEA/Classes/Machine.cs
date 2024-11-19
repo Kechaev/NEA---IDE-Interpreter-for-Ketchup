@@ -32,8 +32,8 @@ namespace NEA
         private string[] keyword = { "CREATE", "SET", "CHANGE", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF", 
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
-                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "EQUAL",
-                                     "GREATER", "LESS", "THAN", "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
+                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", 
+                                     "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
         private int current, start, line, counter;
 
         // Fields for Translation into Intermediate Code
@@ -582,19 +582,22 @@ namespace NEA
                     return 0;
                 case TokenType.LESS_EQUAL:
                     return 0;
+                case TokenType.OR:
+                    return 1;
+                case TokenType.AND:
+                    return 2;
                 case TokenType.ADD:
-                    return 1;
-                case TokenType.SUB: 
-                    return 1;
-                case TokenType.MUL:
-                    return 2;
-                case TokenType.DIV:
-                    return 2;
-                case TokenType.MOD:
-                    return 2;
-                case TokenType.EXP:
                     return 3;
-                // Add comparison operators
+                case TokenType.SUB: 
+                    return 3;
+                case TokenType.MUL:
+                    return 4;
+                case TokenType.DIV:
+                    return 4;
+                case TokenType.MOD:
+                    return 4;
+                case TokenType.EXP:
+                    return 5;
             }
             return -1;
         }
@@ -767,6 +770,13 @@ namespace NEA
 
                         instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
                         instructions.AddRange(instrLine);
+
+                        String = "";
+                        foreach (string l in instrLine)
+                        {
+                            String += $"{l}\n";
+                        }
+                        MessageBox.Show($"Added\n{String}");
                     }
                     // Expression
                     MessageBox.Show($"{counter}:\nExpression:\nBegin: {begin}\nEnd: {end}");
@@ -775,6 +785,14 @@ namespace NEA
                         expressionForRPN.Add(expression[i]);
                     }
                     instructions.AddRange(ConvertToPostfix(expressionForRPN));
+
+                    String = "";
+                    foreach (Token t in expressionForRPN)
+                    {
+                        String += $"{t.GetLiteral()}\n";
+                    }
+                    MessageBox.Show($"Added\n{String}");
+
                     // After
                     MessageBox.Show($"{counter}:\nAfter:\nBegin: {end + 1}\nEnd: {nextBegin}");
                     for (int i = end + 1; i < nextBegin; i++)
@@ -784,6 +802,14 @@ namespace NEA
 
                         instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
                         instructions.AddRange(instructions);
+
+
+                        String = "";
+                        foreach (string l in instrLine)
+                        {
+                            String += $"{l}\n";
+                        }
+                        MessageBox.Show($"Added\n{String}");
                     }
                 }
 
@@ -1576,10 +1602,38 @@ namespace NEA
                     case "DECLARE_VAR":
                         variables[Convert.ToInt32(operand)].Declare();
                         break;
+                    case "JUMP":
+                        intOp = Convert.ToInt32(operand);
+                        PC = intOp;
+                        break;
+                    case "JUMP_FALSE":
+                        object value = stack.Pop();
+                        try
+                        {
+                            bool toJump = Convert.ToBoolean(value);
+                            if (toJump)
+                            {
+                                intOp = Convert.ToInt32(operand);
+                                PC = intOp;
+                            }
+                        }
+                        catch
+                        {
+                            throw new Exception("ERROR: When attempting \"JUMP_FALSE\" stack was not prepped. Top of stack was not a boolean value");
+                        }
+                        break;
                     case "ADJUST_TYPE":
                         // Figure out what to do with the value in the stack or the variable???
+                        // Move the adjust type after storing the variable and apply it to the variable
+                        // By reading the previous variable assigned
+                        //
+                        // LOAD_CONST 5
+                        // STORE_VAR 0
+                        // ADJUST_TYPE INTEGER
+                        // adjust the Data Type of variables[0]
                         DataType type = GetDataType(operand);
                         break;
+
                 }
             }
         }
