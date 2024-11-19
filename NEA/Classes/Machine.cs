@@ -563,22 +563,6 @@ namespace NEA
                     output.Add("LOAD_VAR " + variablesDict[topToken.GetLiteral()]);
                 }
             }
-
-            //string String = "";
-
-            //foreach (string s in output)
-            //{
-            //    String += $"{s}\n";
-            //}
-
-            //String += "\n";
-
-            //foreach (Token t in tokens)
-            //{
-            //    String += $"{t.GetTokenType()}\n";
-            //}
-
-            //MessageBox.Show($"Converted to RPN:\n{String}");
             return output.ToArray();
         }
 
@@ -729,17 +713,26 @@ namespace NEA
                 beginEndIndexes.Add(new Tuple<int, int>(expressionStart, expressionEnd));
             }
 
-            MessageBox.Show($"Expressions:");
+            string String = "";
+
             foreach (var v in beginEndIndexes)
             {
-                MessageBox.Show($"Begin: {v.Item1}\nEnd: {v.Item2}");
+                String += $"Begin: {v.Item1} & End: {v.Item2}";
             }
+            String += "\n";
+            for (int i = 0; i < expression.Count; i++)
+            {
+                String += $"{i}. {expression[i].GetTokenType()}\n";
+            }
+
+            MessageBox.Show($"Expressions:\n{String}");
 
             if (convertToRPN)
             {
                 MessageBox.Show($"Total counter: {beginEndIndexes.Count}");
                 for (int counter = 0; counter < beginEndIndexes.Count; counter++)
                 {
+                    MessageBox.Show($"Loop number: {counter}");
                     var v = beginEndIndexes[counter];
 
                     int begin = v.Item1;
@@ -1331,7 +1324,6 @@ namespace NEA
             if (PC < intermediateCode.Length)
             {
                 string line = Fetch(intermediateCode);
-                //MessageBox.Show($"Fetched: {line}");
                 string opcode = "";
                 int i;
                 bool firstWord = true;
@@ -1357,7 +1349,6 @@ namespace NEA
                 }
 
                 Execute(opcode, operand, intermediateCode, ref console);
-                //MessageBox.Show($"Executed:\nopcode = {opcode}\noperand = {operand}\noperand null = {operand == null}");
             }
             else
             {
