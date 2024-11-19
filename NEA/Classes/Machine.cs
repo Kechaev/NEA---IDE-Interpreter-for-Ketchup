@@ -85,31 +85,11 @@ namespace NEA
 
             OrganiseVariables();
 
-            // Testing
             string String = "";
-
-            //foreach (Token token in tokens)
-            //{
-            //    String += token.GetTokenType().ToString() + "\r\n";
-            //}
-
-            //MessageBox.Show($"Tokens:\n{String}");
 
             // Translation
 
             intermediate = TokensToIntermediate(tokens);
-
-            //String += "\r\nIntermediate\r\n";
-
-            // Testing
-            //String = "";
-
-            //foreach (string line in intermediate)
-            //{
-            //    String += line + "\r\n";
-            //}
-
-            //MessageBox.Show($"Intermediate Code:\n{String}");
         }
 
         #region Tokenization
@@ -673,6 +653,30 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        private bool ContainsExpressions(List<Token> expression)
+        {
+            TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
+                                                   TokenType.DIV, TokenType.MOD, TokenType.EXP };
+
+            List<TokenType> tokenTypeExpression = new List<TokenType>();
+
+            foreach (Token e in expression)
+            {
+                tokenTypeExpression.Add(e.GetTokenType());
+            }
+
+            // Does the print statement have an expression
+            foreach (TokenType t in mathematicalOperations)
+            {
+                if (tokenTypeExpression.Contains(t))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private string[] MapPrintStatement(List<Token> expression)
         {
             List<string> instructions = new List<string>();
@@ -685,37 +689,10 @@ namespace NEA
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
             int expressionLength = expression.Count;
 
-            List<TokenType> tokenTypeExpression = new List<TokenType>();
-
-            foreach (Token e in expression)
-            {
-                tokenTypeExpression.Add(e.GetTokenType());
-            }
-
-            bool convertToRPN = false;
-
-            // Does the print statement have an expression
-            foreach (TokenType t in mathematicalOperations)
-            {
-                if (tokenTypeExpression.Contains(t))
-                {
-                    convertToRPN = true;
-                }
-            }
-
+            bool convertToRPN = ContainsExpressions(expression);
             List<Token> expressionForRPN = new List<Token>();
             int expressionStart = 0, expressionEnd = 0;
             bool inExpression = false;
-
-            // Test
-            //string String = "";
-
-            //foreach (Token t in expression)
-            //{
-            //    String += $"{t.GetTokenType()}\n";
-            //}
-
-            //MessageBox.Show($"Tokens:\n{String}");
 
             List<Tuple<int, int>> beginEndIndexes = new List<Tuple<int, int>>();
 
@@ -1075,14 +1052,6 @@ namespace NEA
             bool noType;
             List<Token> expression;
             int j;
-
-            // Testing
-            string String = "";
-
-            foreach (Token t in internalTokens)
-            {
-                String += t.GetTokenType() + "\r\n";
-            }
 
             while (i < internalTokens.Length)
             {

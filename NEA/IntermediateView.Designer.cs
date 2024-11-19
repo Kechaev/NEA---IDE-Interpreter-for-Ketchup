@@ -44,8 +44,8 @@
             this.txtDescription.Location = new System.Drawing.Point(3, 514);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
-            this.txtDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtDescription.Size = new System.Drawing.Size(542, 194);
+            this.txtDescription.ReadOnly = true;
+            this.txtDescription.Size = new System.Drawing.Size(644, 194);
             this.txtDescription.TabIndex = 2;
             this.txtDescription.Text = "Lorum Ipsum";
             this.txtDescription.Visible = false;
@@ -60,7 +60,7 @@
             this.txtIntermediateCode.Name = "txtIntermediateCode";
             this.txtIntermediateCode.ReadOnly = true;
             this.txtIntermediateCode.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtIntermediateCode.Size = new System.Drawing.Size(542, 475);
+            this.txtIntermediateCode.Size = new System.Drawing.Size(644, 475);
             this.txtIntermediateCode.TabIndex = 3;
             this.txtIntermediateCode.Text = "";
             // 
@@ -78,16 +78,17 @@
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
-            this.tableMain.Size = new System.Drawing.Size(548, 711);
+            this.tableMain.Size = new System.Drawing.Size(650, 711);
             this.tableMain.TabIndex = 4;
             // 
             // lblName
             // 
             this.lblName.AutoSize = true;
+            this.lblName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblName.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblName.Location = new System.Drawing.Point(3, 481);
+            this.lblName.Location = new System.Drawing.Point(5, 722);
             this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(266, 44);
+            this.lblName.Size = new System.Drawing.Size(966, 45);
             this.lblName.TabIndex = 4;
             this.lblName.Text = "[Click on a line]";
             // 
@@ -95,7 +96,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(548, 711);
+            this.ClientSize = new System.Drawing.Size(650, 711);
             this.Controls.Add(this.tableMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "IntermediateView";
