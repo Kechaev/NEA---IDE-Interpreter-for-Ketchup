@@ -675,78 +675,100 @@ namespace NEA
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
                                                    TokenType.DIV, TokenType.MOD, TokenType.EXP };
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
-            int expressionLength = expression.Count;
 
             List<int> begins = new List<int>();
             List<int> ends = new List<int>();
             bool inExpression = false;
             int expressionTotalMembers = 0;
 
-            for (int i = 0; i < expression.Count; i++)
+            MessageBox.Show($"Contains expression: {ContainsExpressions(expression)}");
+
+            if (ContainsExpressions(expression))
             {
-                if (expression[i].GetTokenType() != TokenType.STR_LITERAL)
+                for (int i = 0; i < expression.Count; i++)
                 {
-                    begins.Add(i);
-                    inExpression = true;
-                    for (; i < expression.Count && inExpression; i++)
+                    if (expression[i].GetTokenType() != TokenType.STR_LITERAL)
                     {
-                        if (expression[i].GetTokenType() == TokenType.STR_LITERAL && expression[i].GetTokenType() != TokenType.INPUT)
+                        begins.Add(i);
+                        inExpression = true;
+                        for (; i < expression.Count && inExpression; i++)
                         {
-                            ends.Add(i);
-                            inExpression = false;
-                        }
-                        if (inExpression)
-                        {
-                            expressionTotalMembers++;
+                            if (expression[i].GetTokenType() == TokenType.STR_LITERAL && expression[i].GetTokenType() != TokenType.INPUT)
+                            {
+                                ends.Add(i);
+                                inExpression = false;
+                            }
+                            if (inExpression)
+                            {
+                                expressionTotalMembers++;
+                            }
                         }
                     }
                 }
-            }
-            if (begins.Count != ends.Count)
-            {
-                ends.Add(expression.Count);
-            }
+                if (begins.Count != ends.Count)
+                {
+                    ends.Add(expression.Count);
+                }
 
-            List<Token> expressionForRPN;
+                List<Token> expressionForRPN;
 
-            for (int counter = 0; counter < begins.Count; counter++)
+                for (int counter = 0; counter < begins.Count; counter++)
+                {
+                    expressionForRPN = new List<Token>();
+                    for (int i = 0; i < begins[counter] & counter == 0; i++)
+                    {
+                        instrLine = new List<string>();
+                        Token e = expression[i];
+
+                        instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionTotalMembers));
+                        instructions.AddRange(instrLine);
+                    }
+                    for (int i = begins[counter]; i < ends[counter]; i++)
+                    {
+                        Token e = expression[i];
+
+                        expressionForRPN.Add(e);
+                    }
+                    instructions.AddRange(ConvertToPostfix(expressionForRPN));
+                    for (int i = ends[counter]; counter != ends.Count - 1 && i < begins[counter + 1]; i++)
+                    {
+                        instrLine = new List<string>();
+                        Token e = expression[i];
+
+                        instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionTotalMembers));
+                        instructions.AddRange(instrLine);
+                    }
+                }
+
+                instrLine = new List<string>();
+                for (int i = 0; i < expression.Count() - expressionTotalMembers; i++)
+                {
+                    instrLine.Add("ADD");
+                    instructions.AddRange(instrLine);
+                }
+            }
+            else
             {
-                expressionForRPN = new List<Token>();
-                for (int i = 0; i < begins[counter] & counter == 0; i++)
+                instructions = new List<string>();
+                for (int i = 0; i < expression.Count; i++)
                 {
                     instrLine = new List<string>();
                     Token e = expression[i];
 
-                    instrLine.AddRange(GetInstructions(e, ref i, expression));
+                    instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionTotalMembers));
                     instructions.AddRange(instrLine);
                 }
-                for (int i = begins[counter]; i < ends[counter]; i++)
-                {
-                    Token e = expression[i];
-
-                    expressionForRPN.Add(e);
-                }
-                instructions.AddRange(ConvertToPostfix(expressionForRPN));
-                for (int i = ends[counter]; counter != ends.Count - 1 && i < begins[counter + 1]; i++)
+                for (int i = 0; i < expression.Count - expressionTotalMembers - 1; i++)
                 {
                     instrLine = new List<string>();
-                    Token e = expression[i];
-
-                    instrLine.AddRange(GetInstructions(e, ref i, expression));
+                    instrLine.Add("ADD");
                     instructions.AddRange(instrLine);
                 }
             }
 
-            instrLine = new List<string>();
-            for (int i = 0; i < expression.Count() - expressionTotalMembers; i++)
-            {
-                instrLine.Add("ADD");
-                instructions.AddRange(instrLine);
-            }
+            instructions.Add("CALL PRINT");
 
-
-
-
+            return instructions.ToArray();
 
             //List<Tuple<int, int>> beginEndIndexes = new List<Tuple<int, int>>();
 
@@ -901,11 +923,11 @@ namespace NEA
             //instrLine.Add("CALL PRINT");
             //instructions.AddRange(instrLine);
 
-            return instructions.ToArray();
+            
         }
 
         // Returns the correct intermediate code instruction
-        private List<string> GetInstructions(Token e, ref int i, List<Token> expression)
+        private List<string> GetInstructions(Token e, ref int i, List<Token> expression, ref int expressionTotalMembers)
         {
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
@@ -934,6 +956,8 @@ namespace NEA
                 {
                     instrLine.Add(statement);
                 }
+
+                expressionTotalMembers++;
             }
             else
             {

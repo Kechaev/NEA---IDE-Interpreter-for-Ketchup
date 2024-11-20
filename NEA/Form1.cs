@@ -152,6 +152,12 @@ namespace NEA
         private void stripComment_Click(object sender, EventArgs e)
         {
             Comment();
+            if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
+            {
+                undoStack.Push(txtCodeField.Text);
+                undoStackCaretPosition.Push(txtCodeField.SelectionStart);
+            }
+            UpdateCaretPosition();
         }
 
         private void Comment()
