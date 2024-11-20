@@ -664,6 +664,7 @@ namespace NEA
             return false;
         }
 
+        // Rewrite the expression handling
         private string[] MapPrintStatement(List<Token> expression)
         {
             List<string> instructions = new List<string>();
