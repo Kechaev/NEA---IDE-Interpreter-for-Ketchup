@@ -279,6 +279,7 @@ namespace NEA
             this.txtCodeField.BorderStyle = System.Windows.Forms.BorderStyle.None;
             resources.ApplyResources(this.txtCodeField, "txtCodeField");
             this.txtCodeField.Name = "txtCodeField";
+            this.tableCodeSpace.SetRowSpan(this.txtCodeField, 2);
             this.txtCodeField.VScroll += new System.EventHandler(this.txtCodeField_VScroll);
             this.txtCodeField.TextChanged += new System.EventHandler(this.txtCodeField_TextChanged);
             this.txtCodeField.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
