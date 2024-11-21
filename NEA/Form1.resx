@@ -120,11 +120,42 @@
   <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1893, 33</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="menuStrip.Text" xml:space="preserve">
+    <value>menuStrip1</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Name" xml:space="preserve">
+    <value>menuStrip</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>54, 29</value>
+  </data>
+  <data name="tsFile.Text" xml:space="preserve">
+    <value>&amp;File</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="tsFileNew.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+N</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="tsFileNew.Size" type="System.Drawing.Size, System.Drawing">
     <value>285, 34</value>
   </data>
@@ -167,11 +198,11 @@
   <data name="tsFileExit.Text" xml:space="preserve">
     <value>E&amp;xit</value>
   </data>
-  <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 32</value>
+  <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 29</value>
   </data>
-  <data name="tsFile.Text" xml:space="preserve">
-    <value>&amp;File</value>
+  <data name="tsEdit.Text" xml:space="preserve">
+    <value>&amp;Edit</value>
   </data>
   <data name="tsEditCut.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+X</value>
@@ -200,11 +231,11 @@
   <data name="tsEditPaste.Text" xml:space="preserve">
     <value>Paste</value>
   </data>
-  <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 32</value>
+  <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 29</value>
   </data>
-  <data name="tsEdit.Text" xml:space="preserve">
-    <value>&amp;Edit</value>
+  <data name="tsView.Text" xml:space="preserve">
+    <value>&amp;View</value>
   </data>
   <data name="tsViewConsoleView.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Alt+C</value>
@@ -233,11 +264,11 @@
   <data name="tsTokenView.Text" xml:space="preserve">
     <value>View Token</value>
   </data>
-  <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 32</value>
+  <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>82, 29</value>
   </data>
-  <data name="tsView.Text" xml:space="preserve">
-    <value>&amp;View</value>
+  <data name="tsDebug.Text" xml:space="preserve">
+    <value>&amp;Debug</value>
   </data>
   <data name="tsDebugTraceTable.Size" type="System.Drawing.Size, System.Drawing">
     <value>264, 34</value>
@@ -257,61 +288,66 @@
   <data name="tsDebugBreakpoints.Text" xml:space="preserve">
     <value>Enable Breakpoints</value>
   </data>
-  <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>82, 32</value>
+  <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
+    <value>92, 29</value>
   </data>
-  <data name="tsDebug.Text" xml:space="preserve">
-    <value>&amp;Debug</value>
+  <data name="tsConsole.Text" xml:space="preserve">
+    <value>&amp;Console</value>
   </data>
-  <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+  <data name="tsClear.Size" type="System.Drawing.Size, System.Drawing">
+    <value>270, 34</value>
   </data>
-  <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1893, 36</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="menuStrip.Text" xml:space="preserve">
-    <value>menuStrip1</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Name" xml:space="preserve">
-    <value>menuStrip</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.ZOrder" xml:space="preserve">
-    <value>2</value>
+  <data name="tsClear.Text" xml:space="preserve">
+    <value>Clear</value>
   </data>
   <metadata name="toolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>263, 26</value>
   </metadata>
+  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 33</value>
+  </data>
+  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1893, 41</value>
+  </data>
+  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="toolStrip.Text" xml:space="preserve">
+    <value>toolStrip1</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
+    <value>toolStrip</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
   <data name="stripUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAPlSURBVFhH7ZNrTJNnFMeBZWZXF7NpXLZlyS7OOTP1w8Km
-        BqEFlAIKzMp1FyeDTVwGImUIoVUGM8RNC4jMtmo7BBmW2lJa6UDHmAMH7RgtUKUUvC0z7MNc9v2/c97W
-        Jg6YcfPLkv6TX/Lkfc57zv8553lCggoqqKD+TwoTlRul0XvNjbGVZ4bXf/YNZqAw/x6zt8MsVpiKXsvT
-        Pu7/7z8rTCw35ERVdl6R1vRgZ7MDVeZR1J3zoPasBzWEkjjY7UGVxY3iU8PYqupHfHU32Oy6T3QvUI5Q
-        X6q7U2hE0YkXRRWW7zMO9UJhdAkFP+1wY3vTEFJVA0hVDyBNM4h0jR3pRx3IbXKisG0MlZ0eVFjHkasd
-        RGSV7aao3JBL+cJ8aWfXPG4hO6b1fUTo2kJdOP9c0OSAkk63S+/CxvoLiFH2Iba2HxvqLiDu0I+Q1A8g
-        oWEQiV/asemIA0mqISRrfkZOyxjKrV4Un76IFOV3EO0x1ftzz6oFbGCbuh/RClPz6zsOr4nf13WzzODC
-        no6L2KwaDBSMP3yroIMK/oQkta/gm0eHsfmYE1uOu5CqG0HaV6PIanIj3+hFqWUSyWRCLD+9j2rNamIR
-        G6i2jQvz4/XuNhe5d2MTnSyhwY6NXFDlK5hYRzM+0AvJ5z0B4r/oQcLBXiRRl9K0Lrx9chzvtHiwtXUC
-        O4yXUWK9Akn1WUTImjOo3oxxCAZqv50S5lesH4GMWscFk6lgCp/w2DCSGgYQx0lKWlwr08sOLNmQXbwk
-        7n2ZAK352xt59SZRaeukZP85SI/Yka2fxAfGqyiwXMdHhgnEyK3Xlknli/11AxIMVJyZQKbOiZJ2D1K1
-        TkipnVu01E7dKBKV58GJX5LkFFF8OLGMeJ54zg+vlxIridWLV6zLWlOg7mbDWdSRj603IOuaRobajqjS
-        1v0Uc9soBANlFq+vIM0vvXEMmSfcNEfqRO0PiCrXe+c//cp6iuVnxW/8IWLe33iQeJTg/WeJVU+uEGdG
-        7m5xptT1odA2jZ2dNxAt7/yD9h4mAhIMyMyTyGq+hLdOXhLm9+7X3JERxMqNf85/ZnkMxT1FPEDc6V3z
-        /v3EYwQbCV+dr+lKrjmPDM0QIooazfRtARGQYCC/fQrvnfJiG80tu20KOYbLqOmbpvfsQGRpaxvF8Qnv
-        RmyEO7OIWLW28LiNofVy4hEiIMFAnukqcunCfGi6hu3t15HX8Qt22X5FVe9vyKTZ8ROl2Dnf8j+I/3mC
-        eNkPr2/Ls1Cs0I+ziTtBsTzjfyMuyPeGmXEIntWrRBQhngPe4xiOvee6dWEWEjyvueCLwzMNKqiggrpH
-        Cgn5C7fIWwxNNIReAAAAAElFTkSuQmCC
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAPlSURBVFhH7ZNtTJNXFMeBZWavLmbTuGzLErc558zUDwub
+        GpAWUAooMCuve3Ey2MRlIFKGEIoymCFuWkBktlXbIciw1JbSSgc6xhw4aMdogSql4NuiwQ+67Pt/5zyt
+        TRww4+aXJf0nv+Tmuec553/PuTcooIACCuj/pBBRqUEaucfUEF1xemjdl99jGnLjrag97SZxmbHgzRzN
+        077//rNCxHJ9VkRFx2VpdTd2NNlRaRpB7Vk3as64UU0oiANdblSaXSg8OYQtyj7EVnWBzYZ/rn2ZcgR7
+        U92fgsMKjr8iKjf/lHawB2UGp1Dwi3YXtjUOIlnZj2RVP1LUA0hV25B6xI7sRgfyW0dR0eFGuWUM2ZoB
+        hFdab4tK9dmUL8SbdmbN4RayY1o/RASvydeG8s95jXYo6HQ7dU5sqDuPKEUvomv6sL72PGIO/gJJXT/i
+        6gcQ/40NGw/bkaAcRKL6N2Q1j6LU4kHhqQtIUvwI0W5jnS/3jJrHBraq+hBZZmx6a/uh1bF7O2+X6J3Y
+        3X4Bm5QD/oKxh+4UtFPBX5Gg8hZ858gQNh11YPMxJ5K1w0j5dgQZjS7kGjwoNk8gkUyI5af2Uq0ZTSxg
+        A1XWMWF+vN7V6iT3Lmykk8XV27CBCyq9BeNracb7eyD5qttP7NfdiDvQgwTqUorGifdOjOH9Zje2tIxj
+        u+ESiiyXIak6gzBZUxrVmzYOwUDND5PC/Ap1w5BR67hgIhVM4hMeHUJCfT9iOElRs3NFasn+xeszCxfH
+        fCQToDV/ezunzigqbpmQ7DsL6WEbMnUT+NhwBXnma/hUP44oueXqUql8oa+uX4KB8tPjSNc6UNTmRrLG
+        ASm1c7OG2qkdQbziHDjxq5KsAooPJZYSLxGLfPB6CbGCWLVweXjG6jxVFxvOoI58ZrkBWecU0lQ2RBS3
+        7KOYu0YhGCgxe7wFaX6pDaNIP+6iOVInan5GRKnOM/f519dRLD8rfuOPEXP+xqPEkwTvv0isfHa5OH3t
+        rmZHUm0v8q1T2NFxA5Hyjj9o73HCL8GAzDSBjKaLePfERWF+H3zHHRlGtFz/59wXlkVR3HPEI8S93jXv
+        P0w8RbCR0FW56s7E6nNIUw8irKDBRN/mEX4JBnLbJvHhSQ+20twyWyeRpb+E6t4pes92rC1uaaU4PuH9
+        iI1wZxYQK9fkH7MytF5GPEH4JRjIMV5BNl2YT4xXsa3tGnLaf8dO63VU9txEOs2OnyjFzvqW/0H8zzPE
+        az54fVee+eIy3RibuBcUyzP+N+KCfG+YaYfgWb1BRBDiWeA9juHYB647F2Y+wfOaDb44PNOAAgoooAek
+        oKC/AHP2WwXE+KNBAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripUndo.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -330,22 +366,22 @@
     <value>
         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
-        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
+        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
         AABJRU5ErkJggg==
 </value>
   </data>
@@ -365,15 +401,15 @@
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAITSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
-        YBkUBBtREGxVsJY0IU0SUhgMBBsFg4KKlZA2lUI6SRSx0R3P2dwLl+XO7pvFlcU3H3yw7+yM7D2z82bB
-        pKSkpKTEkqVZkiXPZBUhtQLgWXorSWRoAWp1oE/eiYT6AtRo8IZXb9MjOeoJ4w1eb2vswO/wC/wobsAV
-        OAI7BG/gPItxAXlOntOwA/AGbWhlVM5shi3gPVyGWybjU6cDHr/ukAE2xxbwioHwC2o+xgAswD/iDANB
-        s/PaKkl64V/xBL6Dp/AO7sMhWBBvuFDvKrzH88gr4Ddkxm/AcwaABeixUwwEzf7VVv8L0IxD62v1GyyI
-        N1hRfWwB85BX64PJbHm2gEkGgmZeASxyFU6YrAoL3lbeQEX1abQJbkNLKwXsMhA2oeb9DMLxBgo26ZK/
-        4mEL4H16Y9aL0DIH9b3QAvYYCJ+h5oMMwnEHa+Jlei1nN6J+D3hr1pRrhY9EzUMLOGAgfIKat7mAcLxN
-        cA1qRiuQvIGacZ94CcdN5hVwyED4CjVvWwF8jhfBK4D8hJpfMQDDUDNPrwA+BpUfUPM2FNAaeQXwqtv9
-        4BiSdagZnTWvmxXA/UDzhyxguFuOeiz44V/DF7WVT49R8bJAvMHPUv7IiIT64aNDB6/2L0kSGVFe9ZI4
-        ybKs0U/3pw2Gj/h/HyVKktwD0upygHMuaGUAAAAASUVORK5CYII=
+        YBkUBBtREGxVsJY0IU0SUhgMBBsFg4KKlZA2hSCkk0QRG93xnM29cFnu7L5ZXFl888EH+87OyN4zO28W
+        TEpKSkpKLFmaJVnyTFYRUisAnqW3kkSGFqBWB/rknUioL0CNBm949TY9kqOeMN7g9bbGDvwOv8CP4gZc
+        gSOwQ/AGzrMYF5Dn5DkNOwBv0IZWRuXMZtgC3sNluGUyPnU64PHrDhlgc2wBrxgIv6DmYwzAAvwjzjAQ
+        NDuvrZKkF/4VT+A7eArv4D4cggXxhgv1rsJ7PI+8An5DZvwGPGcAWIAeO8VA0OxfbfW/AM04tL5Wv8GC
+        eIMV1ccWMA95tT6YzJZnC5hkIGjmFcAiV+GEyaqw4G3lDVRUn0ab4Da0tFLALgNhE2rezyAcb6Bgky75
+        Kx62AN6nN2a9CC1zUN8LLWCPgfAZaj7IIBx3sCZeptdydiPq94C3Zk25VvhI1Dy0gAMGwieoeZsLCMfb
+        BNegZrQCyRuoGfeJl3DcZF4BhwyEr1DzthXA53gRvALIT6j5FQMwDDXz9ArgY1D5ATVvQwGtkVcAr7rd
+        D44hWYea0VnzulkB3A80f8gChrvlqMeCH/41fFFb+fQYFS8LxBv8LOWPjEioHz46dPBq/5IkkRHlVS+J
+        kyzLGv10f9pg+Ij/91GiJMk9jSRyfH17A4IAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -411,45 +447,9 @@
   <data name="stripComment.Text" xml:space="preserve">
     <value>Comment Line</value>
   </data>
-  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 36</value>
-  </data>
-  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1893, 41</value>
-  </data>
-  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="toolStrip.Text" xml:space="preserve">
-    <value>toolStrip1</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
-    <value>toolStrip</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <metadata name="statusBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>320, 17</value>
   </metadata>
-  <data name="statusLineInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 25</value>
-  </data>
-  <data name="statusLineInfo.Text" xml:space="preserve">
-    <value>Line: 1</value>
-  </data>
-  <data name="statusColumnInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>93, 25</value>
-  </data>
-  <data name="statusColumnInfo.Text" xml:space="preserve">
-    <value>Column: 1</value>
-  </data>
   <data name="statusBar.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 992</value>
   </data>
@@ -474,6 +474,18 @@
   <data name="&gt;&gt;statusBar.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="statusLineInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 25</value>
+  </data>
+  <data name="statusLineInfo.Text" xml:space="preserve">
+    <value>Line: 1</value>
+  </data>
+  <data name="statusColumnInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>93, 25</value>
+  </data>
+  <data name="statusColumnInfo.Text" xml:space="preserve">
+    <value>Column: 1</value>
+  </data>
   <data name="txtConsole.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
@@ -490,7 +502,7 @@
     <value>Vertical</value>
   </data>
   <data name="txtConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1876, 207</value>
+    <value>1876, 206</value>
   </data>
   <data name="txtConsole.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -523,7 +535,7 @@
     <value>None</value>
   </data>
   <data name="txtLineNumber.Size" type="System.Drawing.Size, System.Drawing">
-    <value>34, 600</value>
+    <value>34, 598</value>
   </data>
   <data name="txtLineNumber.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -565,7 +577,7 @@
     <value>2</value>
   </data>
   <data name="tableCodeSpace.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1882, 636</value>
+    <value>1882, 634</value>
   </data>
   <data name="tableCodeSpace.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -585,11 +597,8 @@
   <data name="tableCodeSpace.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
     <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="txtLineNumber" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="txtCodeField" Row="0" RowSpan="2" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,40,Percent,100" /&gt;&lt;Rows Styles="Percent,100,Absolute,30" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
-  <data name="txtCodeField.ScrollBars" type="System.Windows.Forms.RichTextBoxScrollBars, System.Windows.Forms">
-    <value>ForcedBoth</value>
-  </data>
   <data name="txtCodeField.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1836, 630</value>
+    <value>1836, 628</value>
   </data>
   <data name="txtCodeField.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
@@ -649,13 +658,13 @@
     <value>Fill</value>
   </data>
   <data name="tableConsole.Location" type="System.Drawing.Point, System.Drawing">
-    <value>8, 745</value>
+    <value>8, 743</value>
   </data>
   <data name="tableConsole.RowCount" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
   <data name="tableConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1882, 243</value>
+    <value>1882, 242</value>
   </data>
   <data name="tableConsole.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -703,7 +712,7 @@
     <value>3</value>
   </data>
   <data name="tableMain.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="tableCodeSpace" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="tableConsole" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,5,AutoSize,0" /&gt;&lt;Rows Styles="Absolute,100,Percent,69.5,Percent,27,Percent,3.5" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="tableCodeSpace" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="tableConsole" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,5,AutoSize,0" /&gt;&lt;Rows Styles="Absolute,100,Percent,72.02073,Percent,27.97927,Absolute,35" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -911,6 +920,18 @@
     <value>tsDebugBreakpoints</value>
   </data>
   <data name="&gt;&gt;tsDebugBreakpoints.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tsConsole.Name" xml:space="preserve">
+    <value>tsConsole</value>
+  </data>
+  <data name="&gt;&gt;tsConsole.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tsClear.Name" xml:space="preserve">
+    <value>tsClear</value>
+  </data>
+  <data name="&gt;&gt;tsClear.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;stripUndo.Name" xml:space="preserve">

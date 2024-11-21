@@ -423,5 +423,10 @@ namespace NEA
             TokenView tokenForm = new TokenView(tokensString);
             tokenForm.ShowDialog();
         }
+
+        private void tsClear_Click(object sender, EventArgs e)
+        {
+            ClearConsole();
+        }
     }
 }
