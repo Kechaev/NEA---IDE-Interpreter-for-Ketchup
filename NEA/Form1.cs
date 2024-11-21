@@ -41,9 +41,36 @@ namespace NEA
             undoStack.Push("");
             undoStackCaretPosition.Push(0);
         }
+
+        private int GetMaxLineLength()
+        {
+            string[] lines = txtConsole.Lines;
+            int max = 0;
+
+            foreach (string line in lines)
+            {
+                int length = line.Length;
+                if (length > max)
+                {
+                    max = length;
+                }
+            }
+
+            return Math.Max(max,10);
+        }
         
         private void Run()
         {
+            if (txtConsole.Text.Length > 0)
+            {
+                string newExecuteSeparator = "";
+                for (int i = 0; i < GetMaxLineLength(); i++)
+                {
+                    newExecuteSeparator += "=";
+                }
+                txtConsole.Text += $"{newExecuteSeparator}\r\n";
+            }
+
             machine = new Machine(txtCodeField.Text);
             machine.Interpret();
 
