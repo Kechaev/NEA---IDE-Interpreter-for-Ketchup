@@ -490,6 +490,13 @@ namespace NEA
             TokenType[] comparisonOperators = { TokenType.EQUAL, TokenType.NOT_EQUAL, TokenType.GREATER,
                                                 TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL };
 
+            string String = "";
+
+            foreach (Token t in tokens)
+            {
+                String += $"{t.GetTokenType()}\n";
+            }
+
             for (int i = 0; i < tokens.Count; i++)
             {
                 Token e = tokens[i];
@@ -504,7 +511,6 @@ namespace NEA
                 else if (e.GetTokenType() == TokenType.INPUT)
                 {
                     List<Token> inputPrompt = new List<Token>();
-
                     i++;
 
                     inputPrompt.Add(tokens[i]);
@@ -681,8 +687,6 @@ namespace NEA
             bool inExpression = false;
             int expressionTotalMembers = 0;
 
-            MessageBox.Show($"Contains expression: {ContainsExpressions(expression)}");
-
             if (ContainsExpressions(expression))
             {
                 for (int i = 0; i < expression.Count; i++)
@@ -693,7 +697,7 @@ namespace NEA
                         inExpression = true;
                         for (; i < expression.Count && inExpression; i++)
                         {
-                            if (expression[i].GetTokenType() == TokenType.STR_LITERAL && expression[i].GetTokenType() != TokenType.INPUT)
+                            if (expression[i].GetTokenType() == TokenType.STR_LITERAL && expression[i - 1].GetTokenType() != TokenType.INPUT)
                             {
                                 ends.Add(i);
                                 inExpression = false;
@@ -768,162 +772,7 @@ namespace NEA
 
             instructions.Add("CALL PRINT");
 
-            return instructions.ToArray();
-
-            //List<Tuple<int, int>> beginEndIndexes = new List<Tuple<int, int>>();
-
-            //for (int i = 0; i < expression.Count; i++)
-            //{
-            //    instrLine = new List<string>();
-            //    Token e = expression[i];
-                
-
-            //    if (convertToRPN)
-            //    {                
-            //        if (e.GetTokenType() != TokenType.STR_LITERAL && !inExpression)
-            //        {
-            //            expressionStart = i;
-            //            inExpression = true;
-            //        }
-            //        else if (inExpression && e.GetTokenType() == TokenType.STR_LITERAL && expression[i - 1].GetTokenType() != TokenType.INPUT)
-            //        {
-            //            expressionEnd = i - 1;
-            //            inExpression = false;
-            //            beginEndIndexes.Add(new Tuple<int, int>(expressionStart, expressionEnd));
-            //        }
-            //    }
-            //    else
-            //    {
-            //        instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
-            //        instructions.AddRange(instrLine);
-            //    }
-            //}
-            
-            //if (inExpression)
-            //{
-            //    expressionEnd = expression.Count - 1;
-            //    beginEndIndexes.Add(new Tuple<int, int>(expressionStart, expressionEnd));
-            //}
-
-            //string String = "";
-
-            //foreach (var v in beginEndIndexes)
-            //{
-            //    String += $"Begin: {v.Item1} & End: {v.Item2}";
-            //}
-            //String += "\n";
-            //for (int i = 0; i < expression.Count; i++)
-            //{
-            //    String += $"{i}. {expression[i].GetTokenType()}\n";
-            //}
-
-            //MessageBox.Show($"Expressions:\n{String}");
-
-            //if (convertToRPN)
-            //{
-            //    //MessageBox.Show($"Total counter: {beginEndIndexes.Count}");
-            //    //for (int counter = 0; counter < beginEndIndexes.Count; counter++)
-            //    //{
-            //    //    MessageBox.Show($"Loop number: {counter}");
-            //    //    var v = beginEndIndexes[counter];
-
-            //    //    int begin = v.Item1;
-            //    //    int end = v.Item2;
-
-            //    //    int nextBegin;
-            //    //    if (counter < beginEndIndexes.Count - 1)
-            //    //    {
-            //    //        nextBegin = beginEndIndexes[counter + 1].Item1;
-            //    //    }
-            //    //    else
-            //    //    {
-            //    //        MessageBox.Show($"End of expression");
-            //    //        nextBegin = expression.Count;
-            //    //    }
-            //    //    int lastEnd;
-            //    //    if (counter > 0)
-            //    //    {
-            //    //        lastEnd = beginEndIndexes[counter - 1].Item2 + 1;
-            //    //    }
-            //    //    else
-            //    //    {
-            //    //        lastEnd = 0;
-            //    //    }
-
-            //    //    // Before
-            //    //    MessageBox.Show($"{counter}:\nBefore:\nBegin: {lastEnd}\nEnd: {begin}\nRun: {lastEnd < begin && counter == 0}");
-            //    //    for (int i = lastEnd; i < begin && counter == 0; i++)
-            //    //    {
-            //    //        instrLine = new List<string>();
-            //    //        Token e = expression[i];
-
-            //    //        instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
-            //    //        instructions.AddRange(instrLine);
-
-            //    //        String = "";
-            //    //        foreach (string l in instrLine)
-            //    //        {
-            //    //            String += $"{l}\n";
-            //    //        }
-            //    //        MessageBox.Show($"Added\n{String}");
-            //    //    }
-            //    //    // Expression
-            //    //    MessageBox.Show($"{counter}:\nExpression:\nBegin: {begin}\nEnd: {end}");
-            //    //    for (int i = begin; i <= end; i++)
-            //    //    {
-            //    //        expressionForRPN.Add(expression[i]);
-            //    //    }
-            //    //    instructions.AddRange(ConvertToPostfix(expressionForRPN));
-
-            //    //    String = "";
-            //    //    foreach (Token t in expressionForRPN)
-            //    //    {
-            //    //        String += $"{t.GetLiteral()}\n";
-            //    //    }
-            //    //    MessageBox.Show($"Added\n{String}");
-
-            //    //    // After
-            //    //    MessageBox.Show($"{counter}:\nAfter:\nBegin: {end + 1}\nEnd: {nextBegin}");
-            //    //    for (int i = end + 1; i < nextBegin; i++)
-            //    //    {
-            //    //        instrLine = new List<string>();
-            //    //        Token e = expression[i];
-
-            //    //        instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionLength));
-            //    //        instructions.AddRange(instructions);
-
-
-            //    //        String = "";
-            //    //        foreach (string l in instrLine)
-            //    //        {
-            //    //            String += $"{l}\n";
-            //    //        }
-            //    //        MessageBox.Show($"Added\n{String}");
-            //    //    }
-            //    }
-
-            //    for (int i = 0; i < expressionLength - (expressionEnd - expressionStart) - 1; i++)
-            //    {
-            //        instrLine = new List<string>();
-            //        instrLine.Add("ADD");
-            //        instructions.AddRange(instrLine);
-            //    }
-            //}
-            //else
-            //{
-            //    for (int i = 0; i < expressionLength - 1; i++)
-            //    {
-            //        instrLine = new List<string>();
-            //        instrLine.Add("ADD");
-            //        instructions.AddRange(instrLine);
-            //    }
-            //}
-
-            //instrLine = new List<string>();
-            //instrLine.Add("CALL PRINT");
-            //instructions.AddRange(instrLine);
-
-            
+            return instructions.ToArray();   
         }
 
         // Returns the correct intermediate code instruction
