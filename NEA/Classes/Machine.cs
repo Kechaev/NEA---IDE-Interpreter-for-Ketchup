@@ -85,8 +85,6 @@ namespace NEA
 
             OrganiseVariables();
 
-            string String = "";
-
             // Translation
 
             intermediate = TokensToIntermediate(tokens);
@@ -710,9 +708,6 @@ namespace NEA
                     numberOfExpressions++;
                     nonExpressionTotalMembers--;
                 }
-
-                MessageBox.Show($"Number of expressions: {numberOfExpressions}");
-                MessageBox.Show($"Number of non expression tokens: {nonExpressionTotalMembers}");
 
                 List<Token> expressionForRPN;
 
