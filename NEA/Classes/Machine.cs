@@ -637,6 +637,17 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        
+
+        private string[] MapPrintStatement(List<Token> expression)
+        {
+            List<string> instructions = new List<string>();
+            instructions.AddRange(GetIntermediateFromExpression(expression));
+            instructions.Add("CALL PRINT");
+
+            return instructions.ToArray();
+        }
+        
         private bool ContainsExpressions(List<Token> expression)
         {
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
@@ -661,8 +672,7 @@ namespace NEA
             return false;
         }
 
-        // Rewrite the expression handling
-        private string[] MapPrintStatement(List<Token> expression)
+        private string[] GetIntermediateFromExpression(List<Token> expression)
         {
             List<string> instructions = new List<string>();
             List<string> instrLine;
@@ -697,6 +707,7 @@ namespace NEA
                             }
                             if (!inExpression)
                             {
+                                i--;
                                 numberOfExpressions++;
                             }
                         }
@@ -708,6 +719,8 @@ namespace NEA
                     numberOfExpressions++;
                     nonExpressionTotalMembers--;
                 }
+
+                MessageBox.Show($"number of expressions: {numberOfExpressions}\nnon expression: {nonExpressionTotalMembers}");
 
                 List<Token> expressionForRPN;
 
@@ -729,7 +742,13 @@ namespace NEA
                         expressionForRPN.Add(e);
                     }
                     instructions.AddRange(ConvertToPostfix(expressionForRPN));
-                    for (int i = ends[counter]; counter != ends.Count - 1 && i < begins[counter + 1]; i++)
+                    // i < expression.Count 
+                    // Ensures that the last token is added in the case that it is by itself.
+                    // counter < begins.Count - 1
+                    // Ensures i < begins[counter + 1] does not crash for being out of bound.
+                    // i < begins[counter + 1]
+                    // Ensures the tokens after the expression go up until the beginning of the next expression.
+                    for (int i = ends[counter]; i < expression.Count || counter < begins.Count - 1 && i < begins[counter + 1]; i++)
                     {
                         instrLine = new List<string>();
                         Token e = expression[i];
@@ -771,8 +790,6 @@ namespace NEA
                     instructions.AddRange(instrLine);
                 }
             }
-
-            instructions.Add("CALL PRINT");
 
             return instructions.ToArray();   
         }
