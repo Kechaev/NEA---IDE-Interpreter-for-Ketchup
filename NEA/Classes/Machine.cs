@@ -633,13 +633,6 @@ namespace NEA
                 instructions.Add(instrLine);
             }
 
-            
-            for (int i = 0; i < promptExpression.Count - 1; i++)
-            {
-                instrLine = "ADD";
-                instructions.Add(instrLine);
-            }
-
             instrLine = "CALL INPUT";
             instructions.Add(instrLine);
 
@@ -685,12 +678,14 @@ namespace NEA
             List<int> begins = new List<int>();
             List<int> ends = new List<int>();
             bool inExpression = false;
-            int expressionTotalMembers = 0;
+            int nonExpressionTotalMembers = 0;
+            int numberOfExpressions = 0;
 
             if (ContainsExpressions(expression))
             {
                 for (int i = 0; i < expression.Count; i++)
                 {
+                    nonExpressionTotalMembers++;
                     if (expression[i].GetTokenType() != TokenType.STR_LITERAL)
                     {
                         begins.Add(i);
@@ -702,9 +697,9 @@ namespace NEA
                                 ends.Add(i);
                                 inExpression = false;
                             }
-                            if (inExpression)
+                            if (!inExpression)
                             {
-                                expressionTotalMembers++;
+                                numberOfExpressions++;
                             }
                         }
                     }
@@ -712,7 +707,12 @@ namespace NEA
                 if (begins.Count != ends.Count)
                 {
                     ends.Add(expression.Count);
+                    numberOfExpressions++;
+                    nonExpressionTotalMembers--;
                 }
+
+                MessageBox.Show($"Number of expressions: {numberOfExpressions}");
+                MessageBox.Show($"Number of non expression tokens: {nonExpressionTotalMembers}");
 
                 List<Token> expressionForRPN;
 
@@ -724,7 +724,7 @@ namespace NEA
                         instrLine = new List<string>();
                         Token e = expression[i];
 
-                        instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionTotalMembers));
+                        instrLine.AddRange(GetInstructions(e, ref i, expression));
                         instructions.AddRange(instrLine);
                     }
                     for (int i = begins[counter]; i < ends[counter]; i++)
@@ -739,30 +739,37 @@ namespace NEA
                         instrLine = new List<string>();
                         Token e = expression[i];
 
-                        instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionTotalMembers));
+                        instrLine.AddRange(GetInstructions(e, ref i, expression));
                         instructions.AddRange(instrLine);
                     }
                 }
 
                 instrLine = new List<string>();
-                for (int i = 0; i < expression.Count() - expressionTotalMembers; i++)
+                for (int i = 0; i < nonExpressionTotalMembers + numberOfExpressions - 1; i++)
                 {
+                    instrLine = new List<string>();
                     instrLine.Add("ADD");
                     instructions.AddRange(instrLine);
                 }
             }
             else
             {
+                int inputOffset = 0;
                 instructions = new List<string>();
                 for (int i = 0; i < expression.Count; i++)
                 {
                     instrLine = new List<string>();
                     Token e = expression[i];
 
-                    instrLine.AddRange(GetInstructions(e, ref i, expression, ref expressionTotalMembers));
+                    if (e.GetTokenType() == TokenType.INPUT)
+                    {
+                        inputOffset++;
+                    }
+
+                    instrLine.AddRange(GetInstructions(e, ref i, expression));
                     instructions.AddRange(instrLine);
                 }
-                for (int i = 0; i < expression.Count - expressionTotalMembers - 1; i++)
+                for (int i = 0; i < expression.Count - inputOffset - 1; i++)
                 {
                     instrLine = new List<string>();
                     instrLine.Add("ADD");
@@ -776,7 +783,7 @@ namespace NEA
         }
 
         // Returns the correct intermediate code instruction
-        private List<string> GetInstructions(Token e, ref int i, List<Token> expression, ref int expressionTotalMembers)
+        private List<string> GetInstructions(Token e, ref int i, List<Token> expression)
         {
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
@@ -805,8 +812,6 @@ namespace NEA
                 {
                     instrLine.Add(statement);
                 }
-
-                expressionTotalMembers++;
             }
             else
             {
