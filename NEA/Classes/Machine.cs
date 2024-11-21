@@ -637,8 +637,6 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        
-
         private string[] MapPrintStatement(List<Token> expression)
         {
             List<string> instructions = new List<string>();
@@ -844,7 +842,7 @@ namespace NEA
             instrLine = "DECLARE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            instructions.AddRange(ConvertToPostfix(expression));
+            instructions.AddRange(GetIntermediateFromExpression(expression));
 
             instrLine = "ADJUST_TYPE " + type;
             instructions.Add(instrLine);
@@ -1095,14 +1093,28 @@ namespace NEA
                             variableName = internalTokens[i + 1].GetLiteral();
                             if (internalTokens[i + 2].GetTokenType() == TokenType.TO)
                             {
+                                // Get the expression tokens
                                 expression = new List<Token>();
                                 j = 1;
+                                int inputOffset = 0;
                                 while (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 2].GetLine() == token.GetLine() && internalTokens[i + j + 2].GetTokenType() != TokenType.AS)
                                 {
-                                    expression.Add(internalTokens[i + j + 2]);
-                                    j++;
+                                    // Limitation: in an if statement the prompt cannot contain multiple strings or variables
+                                    // Format without punctuation does not support this
+                                    if (internalTokens[i + j + 2].GetTokenType() == TokenType.INPUT)
+                                    {
+                                        expression.Add(internalTokens[i + j + 2]);
+                                        j += 3;
+                                        inputOffset += 2;
+                                    }
+                                    else
+                                    {
+                                        expression.Add(internalTokens[i + j + 2]);
+                                        j++;
+                                    }
                                 }
-                                j = expression.Count;
+                                j = expression.Count + inputOffset;
+                                // Data Type identification
                                 if (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
                                 {
                                     type = internalTokens[i + j + 4].GetLiteral();
@@ -1139,12 +1151,24 @@ namespace NEA
                             {
                                 expression = new List<Token>();
                                 j = 1;
+                                int inputOffset = 0;
                                 while (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 2].GetLine() == token.GetLine() && internalTokens[i + j + 2].GetTokenType() != TokenType.AS)
                                 {
-                                    expression.Add(internalTokens[i + j + 2]);
-                                    j++;
+                                    // Limitation: in an if statement the prompt cannot contain multiple strings or variables
+                                    // Format without punctuation does not support this
+                                    if (internalTokens[i + j + 2].GetTokenType() == TokenType.INPUT)
+                                    {
+                                        expression.Add(internalTokens[i + j + 2]);
+                                        j += 3;
+                                        inputOffset += 2;
+                                    }
+                                    else
+                                    {
+                                        expression.Add(internalTokens[i + j + 2]);
+                                        j++;
+                                    }
                                 }
-                                j = expression.Count;
+                                j = expression.Count + inputOffset;
                                 if (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
                                 {
                                     type = internalTokens[i + j + 4].GetLiteral();
