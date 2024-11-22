@@ -72,11 +72,18 @@ namespace NEA
             }
 
             machine = new Machine(txtCodeField.Text);
-            machine.Interpret();
+            try
+            {
+                machine.Interpret();
 
-            string[] intermediate = machine.GetIntermediateCode();
+                string[] intermediate = machine.GetIntermediateCode();
 
-            StartExecution(intermediate);
+                StartExecution(intermediate);
+            }
+            catch (Exception e)
+            {
+                ConsoleWrite(e.Message);
+            }
         }
 
         public void StartExecution(string[] intermediateCode)
@@ -108,83 +115,6 @@ namespace NEA
             nPos <<= 16;
             uint wParam = (uint)NativeScroller.ScrollBarCommands.SB_THUMBPOSITION | (uint)nPos;
             NativeScroller.SendMessage(txtLineNumber.Handle, (int)NativeScroller.Message.WM_VSCROLL, new IntPtr(wParam), new IntPtr(0));
-        }
-
-        private void txtCodeField_TextChanged(object sender, EventArgs e)
-        {
-            if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
-            {
-                undoStack.Push(txtCodeField.Text);
-                undoStackCaretPosition.Push(txtCodeField.SelectionStart);
-            }
-            UpdateCaretPosition();
-            UpdateLineNumbers();
-        }
-
-        private void txtCodeField_VScroll(object sender, EventArgs e)
-        {
-            UpdateLineNumbers();
-        }
-
-        private void tsEditCopy_Click(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
-            {
-                Clipboard.SetText(txtCodeField.SelectedText);
-            }
-            else
-            {
-                MessageBox.Show("Please select some text to copy.");
-            }
-        }
-
-        private void tsEditPaste_Click(object sender, EventArgs e)
-        {
-            if (Clipboard.ContainsText())
-            {
-                string toPaste = Clipboard.GetText();
-                int selectionStart = txtCodeField.SelectionStart;
-                int selectionLength = txtCodeField.SelectionLength;
-
-                if (selectionLength > 0)
-                {
-                    txtCodeField.Text = txtCodeField.Text.Remove(selectionStart, selectionLength);
-                }
-
-                txtCodeField.Text = txtCodeField.Text.Insert(selectionStart, toPaste);
-
-                txtCodeField.Select(selectionStart + toPaste.Length, 0);
-            }
-            else
-            {
-                MessageBox.Show("There is no text to paste.");
-            }
-        }
-
-        private void stripUndo_Click(object sender, EventArgs e)
-        {
-            Undo();
-        }
-
-        private void stripRedo_Click(object sender, EventArgs e)
-        {
-            Redo();
-        }
-
-        private void stripRun_Click(object sender, EventArgs e)
-        {
-            Run();
-        }
-        
-        private void stripComment_Click(object sender, EventArgs e)
-        {
-            Comment();
-            if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
-            {
-                undoStack.Push(txtCodeField.Text);
-                undoStackCaretPosition.Push(txtCodeField.SelectionStart);
-            }
-            UpdateCaretPosition();
         }
 
         private void Comment()
@@ -300,6 +230,26 @@ namespace NEA
             }
         }
 
+        private void UpdateCaretPosition()
+        {
+            int index = txtCodeField.SelectionStart;
+            int line = txtCodeField.GetLineFromCharIndex(index);
+            int column = index - txtCodeField.GetFirstCharIndexOfCurrentLine();
+
+            statusLineInfo.Text = $"Line: {line + 1}";
+            statusColumnInfo.Text = $"Column: {column + 1}";
+        }
+
+        private void AddTabSpace()
+        {
+            int selectionLength = txtCodeField.SelectionLength;
+            int selectionStart = txtCodeField.SelectionStart;
+
+            txtCodeField.Text = txtCodeField.Text.Remove(selectionStart, selectionLength).Insert(selectionStart, "\t");
+
+            txtCodeField.Select(selectionStart + 1, 0);
+        }
+
         public void ConsoleWrite(string text)
         {
             txtConsole.Text += text + "\r\n";
@@ -308,6 +258,83 @@ namespace NEA
         public void ClearConsole()
         {
             txtConsole.Text = "";
+        }
+
+        private void txtCodeField_TextChanged(object sender, EventArgs e)
+        {
+            if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
+            {
+                undoStack.Push(txtCodeField.Text);
+                undoStackCaretPosition.Push(txtCodeField.SelectionStart);
+            }
+            UpdateCaretPosition();
+            UpdateLineNumbers();
+        }
+
+        private void txtCodeField_VScroll(object sender, EventArgs e)
+        {
+            UpdateLineNumbers();
+        }
+
+        private void tsEditCopy_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
+            {
+                Clipboard.SetText(txtCodeField.SelectedText);
+            }
+            else
+            {
+                MessageBox.Show("Please select some text to copy.");
+            }
+        }
+
+        private void tsEditPaste_Click(object sender, EventArgs e)
+        {
+            if (Clipboard.ContainsText())
+            {
+                string toPaste = Clipboard.GetText();
+                int selectionStart = txtCodeField.SelectionStart;
+                int selectionLength = txtCodeField.SelectionLength;
+
+                if (selectionLength > 0)
+                {
+                    txtCodeField.Text = txtCodeField.Text.Remove(selectionStart, selectionLength);
+                }
+
+                txtCodeField.Text = txtCodeField.Text.Insert(selectionStart, toPaste);
+
+                txtCodeField.Select(selectionStart + toPaste.Length, 0);
+            }
+            else
+            {
+                MessageBox.Show("There is no text to paste.");
+            }
+        }
+
+        private void stripUndo_Click(object sender, EventArgs e)
+        {
+            Undo();
+        }
+
+        private void stripRedo_Click(object sender, EventArgs e)
+        {
+            Redo();
+        }
+
+        private void stripRun_Click(object sender, EventArgs e)
+        {
+            Run();
+        }
+        
+        private void stripComment_Click(object sender, EventArgs e)
+        {
+            Comment();
+            if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
+            {
+                undoStack.Push(txtCodeField.Text);
+                undoStackCaretPosition.Push(txtCodeField.SelectionStart);
+            }
+            UpdateCaretPosition();
         }
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -351,17 +378,7 @@ namespace NEA
                 Run();
             }
         }
-
-        private void UpdateCaretPosition()
-        {
-            int index = txtCodeField.SelectionStart;
-            int line = txtCodeField.GetLineFromCharIndex(index);
-            int column = index - txtCodeField.GetFirstCharIndexOfCurrentLine();
-
-            statusLineInfo.Text = $"Line: {line + 1}";
-            statusColumnInfo.Text = $"Column: {column + 1}";
-        }
-
+        
         // Fix for tab seleting elements of the applications
         // Overrides the ProcessCmdKey method
         // Injects new function of the tab and does not affect other Command Keys
@@ -375,16 +392,6 @@ namespace NEA
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
-        }
-
-        private void AddTabSpace()
-        {
-            int selectionLength = txtCodeField.SelectionLength;
-            int selectionStart = txtCodeField.SelectionStart;
-
-            txtCodeField.Text = txtCodeField.Text.Remove(selectionStart, selectionLength).Insert(selectionStart, "\t");
-
-            txtCodeField.Select(selectionStart + 1, 0);
         }
 
         private void txtCodeField_SelectionChanged(object sender, EventArgs e)
