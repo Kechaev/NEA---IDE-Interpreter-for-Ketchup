@@ -376,16 +376,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAITSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
-        YBkUBBtREGxVsJY0IU0SUhgMBBsFg4KKlZA22AjpJFHERnc8Z3MvXJY7u28WVxbffPDBvrMzsvfMzpsF
-        k5KSkpISS5ZmSZY8k1WE1AqAZ+mtJJGhBajVgT55JxLqC1CjwRtevU2P5KgnjDd4va2xA7/DL/CjuAFX
-        4AjsELyB8yzGBeQ5eU7DDsAbtKGVUTmzGbaA93AZbpmMT50OePy6QwbYHFvAKwbCL6j5GAOwAP+IMwwE
-        zc5rqyTphX/FE/gOnsI7uA+HYEG84UK9q/AezyOvgN+QGb8BzxkAFqDHTjEQNPtXW/0vQDMOra/Vb7Ag
-        3mBF9bEFzENerQ8ms+XZAiYZCJp5BbDIVThhsioseFt5AxXVp9EmuA0trRSwy0DYhJr3MwjHGyjYpEv+
-        ioctgPfpjVkvQssc1PdCC9hjIHyGmg8yCMcdrImX6bWc3Yj6PeCtWVOuFT4SNQ8t4ICB8Alq3uYCwvE2
-        wTWoGa1A8gZqxn3iJRw3mVfAIQPhK9S8bQXwOV4ErwDyE2p+xQAMQ808vQL4GFR+QM3bUEBr5BXAq273
-        g2NI1qFmdNa8blYA9wPNH7KA4W456rHgh38NX9RWPj1GxcsC8QY/S/kjIxLqh48OHbzavyRJZER51Uvi
-        JMuyRj/dnzYYPuL/fZQoSXIPR15yeNELLigAAAAASUVORK5CYII=
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIUSURBVGhD7Zm/SxthGMevOrbg0kWwJIcOJYP0bxC6dK5b
+        ERxFoeAiFgquWnCWLsXFlg6KBemioCjY0klwzSa4lf6guGjO7zd9HngIzyXvBSMh733gA3m/uZM838u9
+        FzApKSkpKbFkaZZkyQNZRUizAFhPryWJDC1AbYw/kXciobUANRq84dXr9JscNcB4g7faHfvwC/wEN8UN
+        uAonYZ/gDZxnMX5CnpPnPOwDvEHbWnkmZ3bCFvAersBdk/Gp0wePX3fIADtjCxhlIJxDzacYgGV4KS4w
+        EDS7aK6SZAz+En/AOXgGb+AxfAoL4g0X6k2F93geeQXUITN+A4YZABagx84yEDT73Vz9L0AzDq2v1R1Y
+        EG+wovrYApYgr9YHk9nybAEzDATNvAJY5Bp8ZbIGLHhbeQMV1afdJvgVWrop4ICBsA01rzIIxxso2GRI
+        /oqHLYD36ZVZv4GWRajvhRZwyED4CDWfYBCOO1gH/6T/5Ox2tO4B02ZNuVb4SNQ8tIATBsIW1LzHBYTj
+        bYLvoGa0AslLqBn3icfwhcm8Ak4ZCJ+h5j0rgM/xIngFkCOo+V8GoAY18/QK4GNQ2YOa96CA7sgrgFfd
+        7gffIVmHmtHX5nWnArgfaH6XBdQeyVH3BT/8c/iwufIZMSpeFog3eD3lj4xIaB0+OnTwRvWtJJER5VUv
+        iZMsy9r9dB9sMHzE//soUZLkFgGYcnRMESoXAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -502,7 +502,7 @@
     <value>Vertical</value>
   </data>
   <data name="txtConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1876, 209</value>
+    <value>1876, 204</value>
   </data>
   <data name="txtConsole.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -682,7 +682,7 @@
     <value>1</value>
   </data>
   <data name="tableConsole.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="txtConsole" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblConsole" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="Absolute,30,AutoSize,0,Absolute,25" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="txtConsole" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblConsole" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="Absolute,30,Percent,100,Absolute,5" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <data name="tableMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
