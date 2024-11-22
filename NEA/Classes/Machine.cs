@@ -1033,22 +1033,39 @@ namespace NEA
                 switch (token.GetTokenType())
                 {
                     case TokenType.PRINT:
+                        // Reject:
+                        // - End of file
+                        // Accept:
+                        // - Variable
+                        // - Any literal
+                        // - An input
                         if (internalTokens[i + 1].GetTokenType() != TokenType.EOF && internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + 1].GetTokenType()) || internalTokens[i + 1].GetTokenType() == TokenType.INPUT)
                         {
                             expression = new List<Token>();
                             j = 1;
+                            // Collect tokens for the expression
+                            // Accept while:
+                            // - On the same line as the print token
+                            // - NOT end of file
+                            // - NOT end of nest
                             while (internalTokens[i + j].GetTokenType() != TokenType.EOF && internalTokens[i + j].GetTokenType() != TokenType.EON && internalTokens[i + j].GetLine() == token.GetLine())
                             {
+                                // Add to list if:
+                                // - Variable
+                                // - Any literal
                                 if (internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()))
                                 {
                                     expression.Add(internalTokens[i + j]);
                                     j++;
                                 }
                                 // Limitation: in an if statement the prompt cannot contain multiple strings or variables
-                                // Format without punctuation does not support this
+                                // Add to list if:
+                                // - An input
                                 else if (internalTokens[i + j].GetTokenType() == TokenType.INPUT)
                                 {
                                     expression.Add(internalTokens[i + j]);
+                                    // Increment by 2 (1 + 2 = 3) more to skip filler "WITH PROMPT"
+                                    // Continue onto the following string prompt
                                     j += 3;
                                 }
                                 else if (mathematicalOperations.Contains(internalTokens[i + j].GetTokenType()))
