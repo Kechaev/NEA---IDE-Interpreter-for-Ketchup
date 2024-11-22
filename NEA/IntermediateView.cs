@@ -16,6 +16,8 @@ namespace NEA
         private int[,] map;
         private Dictionary<string, string> nameDescription = new Dictionary<string, string>()
         {
+            {"JUMP_FALSE", "In the case, that the top of the stack is false, then jump the execution to the label mentioned." },
+            {"JUMP", "Jumps the execution to the label mentioned" },
             {"ADJUST_TYPE", "Sets the data type of the variable to the mentioned type." },
             {"DECLARE_VAR", "Declares the variable mentioned." },
             {"STORE_VAR", "Stores the value at the top of the stack under the variable mentioned." },
