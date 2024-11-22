@@ -14,12 +14,27 @@ namespace NEA
     {
         private string[] intermediate;
         private int[,] map;
+        private Dictionary<string, string> nameDescription = new Dictionary<string, string>()
+        {
+
+            {"LOAD_VAR", "Loads the mentioned variable onto the stack." },
+            {"LOAD_CONST", "Loads the mentioned constant onto the stack." },
+            {"CALL", "Calls the function mentioned after the command. This can include built in functions such as PRINTING or INPUTING but can also call custom subroutines." },
+            {"ADD", "Adds the top two items off the stack and pushes the result back onto the stack.\r\nAlso responsible for adding characters and strings together, called concatenation." },
+            {"SUB", "Performs subtraction on the top two items of the stack and pushes the result back onto the stack." },
+            {"MUL", "Multiplies the top two items off the stack and pushes the result back onto the stack." },
+            {"DIV", "Performs division on the top two items of the stack and pushes the result back onto the stack." },
+            {"EXP", "Performs exponentiation on the top two items of the stack and pushes the result back onto the stack.\r\nExponentiation meaning raising the first number to the power of the second number." },
+            {"MOD", "Performs the modulo operation on the top two items off the stack and pushes the result back onto the stack.\r\nThe modulo operator divides the first number by the second and returns the remainder." },
+            {"HALT", "Indicates the end of the program and stops the execution of the program." },
+        };
 
         // Add support for explaining what the individual words mean
         public IntermediateView(string[] intermediate)
         {
             InitializeComponent();
             this.intermediate = intermediate;
+            txtIntermediateCode.Select();
         }
 
         private void IntermediateView_Load(object sender, EventArgs e)
@@ -62,10 +77,28 @@ namespace NEA
             {
                 if (map[i, 0] < p.Y && map[i + 1, 0] > p.Y)
                 {
-                    lblName.Text = txtIntermediateCode.Lines[i].ToString().Split(' ')[0];
+                    string keyword = txtIntermediateCode.Lines[i].Split(' ')[0];
+                    lblName.Text = RemoveUnderscore(keyword);
+                    txtDescription.Text = nameDescription[keyword];
                 }
             }
+        }
 
+        private string RemoveUnderscore(string underscored)
+        {
+            string output = "";
+            foreach (char c in underscored)
+            {
+                if (c == '_')
+                {
+                    output += " ";
+                }
+                else
+                {
+                    output += c;
+                }
+            }
+            return output;
         }
     }
 }
