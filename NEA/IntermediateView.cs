@@ -16,7 +16,9 @@ namespace NEA
         private int[,] map;
         private Dictionary<string, string> nameDescription = new Dictionary<string, string>()
         {
-
+            {"ADJUST_TYPE", "Sets the data type of the variable to the mentioned type." },
+            {"DECLARE_VAR", "Declares the variable mentioned." },
+            {"STORE_VAR", "Stores the value at the top of the stack under the variable mentioned." },
             {"LOAD_VAR", "Loads the mentioned variable onto the stack." },
             {"LOAD_CONST", "Loads the mentioned constant onto the stack." },
             {"CALL", "Calls the function mentioned after the command. This can include built in functions such as PRINTING or INPUTING but can also call custom subroutines." },
@@ -73,6 +75,9 @@ namespace NEA
         private void txtIntermediateCode_Click(object sender, EventArgs e)
         {
             Point p = PointToClient(new Point(MousePosition.X, MousePosition.Y));
+            lblName.Text = "HALT";
+            txtDescription.Text = nameDescription["HALT"];
+            txtIntermediateCode.Select(txtIntermediateCode.GetFirstCharIndexFromLine(txtIntermediateCode.Lines.Length - 1),4);
             for (int i = 0; i < txtIntermediateCode.Lines.Length - 1; i++)
             {
                 if (map[i, 0] < p.Y && map[i + 1, 0] > p.Y)
@@ -80,6 +85,7 @@ namespace NEA
                     string keyword = txtIntermediateCode.Lines[i].Split(' ')[0];
                     lblName.Text = RemoveUnderscore(keyword);
                     txtDescription.Text = nameDescription[keyword];
+                    txtIntermediateCode.Select(txtIntermediateCode.GetFirstCharIndexFromLine(i), txtIntermediateCode.Lines[i].Length);
                 }
             }
         }
