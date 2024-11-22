@@ -1063,7 +1063,7 @@ namespace NEA
                             throw new Exception("ERROR: No valid text expression following print command");
                         }
                         intermediateList.AddRange(MapPrintStatement(expression));
-                        i += j + 1;
+                        i += j;
                         break;
                     case TokenType.INPUT:
                         expression = new List<Token>();

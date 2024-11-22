@@ -14,7 +14,6 @@ namespace NEA
     {
         private string[] intermediate;
         private int[,] map;
-        // Add info to the clicked line
 
         // Add support for explaining what the individual words mean
         public IntermediateView(string[] intermediate)
@@ -47,19 +46,13 @@ namespace NEA
             txtIntermediateCode.Lines = intermediate;
             txtIntermediateCode.Select(intermediateString.Length,0);
             
-            map = new int[txtIntermediateCode.Lines.Length, 2];
+            map = new int[txtIntermediateCode.Lines.Length + 1, 2];
 
-            for (int i = 0; i < txtIntermediateCode.Lines.Length; i++)
+            for (int i = 0; i < txtIntermediateCode.Lines.Length + 1; i++)
             {
                 map[i, 0] = i * 18;
                 map[i, 1] = i * 18 + 18;
             }
-        }
-
-        private void Panel_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show($"Panel clicked");
-            throw new NotImplementedException();
         }
 
         private void txtIntermediateCode_Click(object sender, EventArgs e)
@@ -69,9 +62,10 @@ namespace NEA
             {
                 if (map[i, 0] < p.Y && map[i + 1, 0] > p.Y)
                 {
-                    MessageBox.Show($"i = {i}");
+                    lblName.Text = txtIntermediateCode.Lines[i].ToString().Split(' ')[0];
                 }
             }
+
         }
     }
 }
