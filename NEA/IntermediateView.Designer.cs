@@ -63,6 +63,7 @@
             this.txtIntermediateCode.Size = new System.Drawing.Size(644, 475);
             this.txtIntermediateCode.TabIndex = 3;
             this.txtIntermediateCode.Text = "";
+            this.txtIntermediateCode.Click += new System.EventHandler(this.txtIntermediateCode_Click);
             // 
             // tableMain
             // 
@@ -86,9 +87,9 @@
             this.lblName.AutoSize = true;
             this.lblName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblName.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblName.Location = new System.Drawing.Point(5, 722);
+            this.lblName.Location = new System.Drawing.Point(3, 481);
             this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(966, 45);
+            this.lblName.Size = new System.Drawing.Size(644, 30);
             this.lblName.TabIndex = 4;
             this.lblName.Text = "[Click on a line]";
             // 

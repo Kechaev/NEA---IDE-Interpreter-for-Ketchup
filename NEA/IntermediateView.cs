@@ -13,7 +13,8 @@ namespace NEA
     public partial class IntermediateView : Form
     {
         private string[] intermediate;
-        private Panel[] panels;
+        private int[,] map;
+        // Add info to the clicked line
 
         // Add support for explaining what the individual words mean
         public IntermediateView(string[] intermediate)
@@ -26,6 +27,7 @@ namespace NEA
         {
             string intermediateString = "";
             int maxLength = 0;
+            
 
             foreach (string line in intermediate)
             {
@@ -44,42 +46,13 @@ namespace NEA
             }
             txtIntermediateCode.Lines = intermediate;
             txtIntermediateCode.Select(intermediateString.Length,0);
-            GeneratePanels();
-        }
+            
+            map = new int[txtIntermediateCode.Lines.Length, 2];
 
-        private void GeneratePanels()
-        {
-            int lines = txtIntermediateCode.Lines.Length;
-            int counter = 0;
-            int yCoord = 10;
-
-            panels = new Panel[lines];
-            foreach (string line in intermediate)
+            for (int i = 0; i < txtIntermediateCode.Lines.Length; i++)
             {
-                int width = line.Length * 10;
-                int height = 18;
-                Panel panel = new Panel()
-                {
-                    Text = $"{line}",
-                    Width = width,
-                    Height = height,
-                    Location = new Point(10, yCoord),
-                    TabIndex = 0,
-                    BorderStyle = 0,
-                    BackColor = Color.Transparent,
-                    ForeColor = Color.Transparent,
-                    //Visible = false
-                };
-                // ???
-                //panel.Click += Panel_Click();
-                yCoord += height;
-
-                panels[counter] = panel;
-                //Controls.Add(panel);
-
-                panel.BringToFront();
-
-                counter++;
+                map[i, 0] = i * 18;
+                map[i, 1] = i * 18 + 18;
             }
         }
 
@@ -87,6 +60,18 @@ namespace NEA
         {
             MessageBox.Show($"Panel clicked");
             throw new NotImplementedException();
+        }
+
+        private void txtIntermediateCode_Click(object sender, EventArgs e)
+        {
+            Point p = PointToClient(new Point(MousePosition.X, MousePosition.Y));
+            for (int i = 0; i < txtIntermediateCode.Lines.Length - 1; i++)
+            {
+                if (map[i, 0] < p.Y && map[i + 1, 0] > p.Y)
+                {
+                    MessageBox.Show($"i = {i}");
+                }
+            }
         }
     }
 }
