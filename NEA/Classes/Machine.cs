@@ -89,6 +89,9 @@ namespace NEA
             // Translation
 
             intermediate = TokensToIntermediate(tokens);
+
+            // Execution is done from the form
+            // To acommodate for outputs (& later inputs)
         }
 
         #region Tokenization
@@ -1552,6 +1555,81 @@ namespace NEA
                         }
                         stack.Push(result);
                         break;
+                    case "LESS":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) < Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) < Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                result = Convert.ToInt32(object1) < Convert.ToInt32(object2);
+                                break;
+                            case DataType.STRING:
+                                result = object1.ToString().Length < object2.ToString().Length;
+                                break;
+                            case DataType.BOOLEAN:
+                                throw new Exception("ERROR: Cannot compare booleans");
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "GREATER_EQUAL":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) >= Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) >= Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                result = Convert.ToInt32(object1) >= Convert.ToInt32(object2);
+                                break;
+                            case DataType.STRING:
+                                result = object1.ToString().Length >= object2.ToString().Length;
+                                break;
+                            case DataType.BOOLEAN:
+                                throw new Exception("ERROR: Cannot compare booleans");
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "LESS_EQUAL":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) <= Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) <= Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                result = Convert.ToInt32(object1) <= Convert.ToInt32(object2);
+                                break;
+                            case DataType.STRING:
+                                result = object1.ToString().Length <= object2.ToString().Length;
+                                break;
+                            case DataType.BOOLEAN:
+                                throw new Exception("ERROR: Cannot compare booleans");
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
                     case "EQUAL":
                         object2 = stack.Pop();
                         object1 = stack.Pop();
@@ -1577,6 +1655,35 @@ namespace NEA
                                 throw new Exception("ERROR: Unknown data type");
                         }
                         stack.Push(result);
+                        break;
+                    case "NOT_EQUAL":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) != Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) != Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                result = Convert.ToChar(object1) != Convert.ToChar(object2);
+                                break;
+                            case DataType.STRING:
+                                result = object1.ToString() != object2.ToString();
+                                break;
+                            case DataType.BOOLEAN:
+                                result = Convert.ToBoolean(object1) != Convert.ToBoolean(object2);
+                                break;
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "HALT":
+                        isRunning = false;
                         break;
                 }
             }
