@@ -28,7 +28,7 @@ namespace NEA
             {"LESS", "Compares the top two items and pushes a boolean value to the stack, decided by whether the first item is less than the second." },
             {"EQUAL", "Compares the top two items and pushes a boolean value to the stack, decided by whether the first item is equal to the second one." },
             {"GREATER_EQUAL", "Compares the top two items and pushes a boolean value to the stack, decided by whether the first item is greater than or equal to the second one." },
-            {"LESS", "Compares the top two items and pushes a boolean value to the stack, decided by whether the first item is less than or equal to the second one." },
+            {"LESS_EQUAL", "Compares the top two items and pushes a boolean value to the stack, decided by whether the first item is less than or equal to the second one." },
             {"NOT_EQUAL", "Compares the top two items and pushes a boolean value to the stack, decided by whether the first item is not equal to the second one." },
             {"ADD", "Adds the top two items off the stack and pushes the result back onto the stack.\r\nAlso responsible for adding characters and strings together, called concatenation." },
             {"SUB", "Performs subtraction on the top two items of the stack and pushes the result back onto the stack." },

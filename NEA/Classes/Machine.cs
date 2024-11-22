@@ -1037,7 +1037,7 @@ namespace NEA
                         {
                             expression = new List<Token>();
                             j = 1;
-                            while ((internalTokens[i + j].GetTokenType() != TokenType.EOF && internalTokens[i + j].GetTokenType() != TokenType.EON))
+                            while (internalTokens[i + j].GetTokenType() != TokenType.EOF && internalTokens[i + j].GetTokenType() != TokenType.EON && internalTokens[i + j].GetLine() == token.GetLine())
                             {
                                 if (internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()))
                                 {
@@ -1769,7 +1769,6 @@ namespace NEA
                         // adjust the Data Type of variables[0]
                         DataType type = GetDataType(operand);
                         break;
-
                 }
             }
         }
