@@ -20,6 +20,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.VisualBasic;
 using System.Drawing;
 using System.Diagnostics.Tracing;
+using System.CodeDom;
 
 namespace NEA
 {
@@ -718,8 +719,6 @@ namespace NEA
                     nonExpressionTotalMembers--;
                 }
 
-                MessageBox.Show($"number of expressions: {numberOfExpressions}\nnon expression: {nonExpressionTotalMembers}");
-
                 List<Token> expressionForRPN;
 
                 for (int counter = 0; counter < begins.Count; counter++)
@@ -1286,7 +1285,7 @@ namespace NEA
                         if (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE)
                         {
                             isElse = true;
-                            bodyStart = i;
+                            bodyStart = i + 1;
                             bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                             elseBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                             i = bodyEnd + 1;
@@ -1528,6 +1527,57 @@ namespace NEA
                         }
                         stack.Push(result);
                         break;
+                    case "GREATER":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) > Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) > Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                result = Convert.ToInt32(object1) > Convert.ToInt32(object2);
+                                break;
+                            case DataType.STRING:
+                                result = object1.ToString().Length > object2.ToString().Length;
+                                break;
+                            case DataType.BOOLEAN:
+                                throw new Exception("ERROR: Cannot compare booleans");
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "EQUAL":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                result = Convert.ToInt32(object1) == Convert.ToInt32(object2);
+                                break;
+                            case DataType.DECIMAL:
+                                result = Convert.ToDouble(object1) == Convert.ToDouble(object2);
+                                break;
+                            case DataType.CHARACTER:
+                                result = Convert.ToChar(object1) == Convert.ToChar(object2);
+                                break;
+                            case DataType.STRING:
+                                result = object1.ToString() == object2.ToString();
+                                break;
+                            case DataType.BOOLEAN:
+                                result = Convert.ToBoolean(object1) == Convert.ToBoolean(object2);
+                                break;
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
                 }
             }
             // Opcodes involving an operand in the instruction
@@ -1583,17 +1633,17 @@ namespace NEA
                         break;
                     case "JUMP":
                         intOp = Convert.ToInt32(operand);
-                        PC = intOp;
+                        PC = GetLabelCounter(intOp);
                         break;
                     case "JUMP_FALSE":
                         object value = stack.Pop();
                         try
                         {
                             bool toJump = Convert.ToBoolean(value);
-                            if (toJump)
+                            if (!toJump)
                             {
                                 intOp = Convert.ToInt32(operand);
-                                PC = intOp;
+                                PC = GetLabelCounter(intOp);
                             }
                         }
                         catch
@@ -1615,6 +1665,22 @@ namespace NEA
 
                 }
             }
+        }
+
+        private int GetLabelCounter(int labelNumber)
+        {
+            for (int i = 0; i < intermediate.Length; i++)
+            {
+                string line = intermediate[i];
+                if (line.Split(' ')[0] == "LABEL")
+                {
+                    if (line.Split(' ')[1] == labelNumber.ToString())
+                    {
+                        return i;
+                    }
+                }
+            }
+            return -1;
         }
 
         private DataType GetDataType(string dataType)
