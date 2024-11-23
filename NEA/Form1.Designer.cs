@@ -108,6 +108,7 @@ namespace NEA
             // 
             this.tsFileOpen.Name = "tsFileOpen";
             resources.ApplyResources(this.tsFileOpen, "tsFileOpen");
+            this.tsFileOpen.Click += new System.EventHandler(this.tsFileOpen_Click);
             // 
             // tsFileSave
             // 

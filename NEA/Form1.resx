@@ -120,42 +120,11 @@
   <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1893, 33</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="menuStrip.Text" xml:space="preserve">
-    <value>menuStrip1</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Name" xml:space="preserve">
-    <value>menuStrip</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 29</value>
-  </data>
-  <data name="tsFile.Text" xml:space="preserve">
-    <value>&amp;File</value>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="tsFileNew.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+N</value>
   </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="tsFileNew.Size" type="System.Drawing.Size, System.Drawing">
     <value>285, 34</value>
   </data>
@@ -198,11 +167,11 @@
   <data name="tsFileExit.Text" xml:space="preserve">
     <value>E&amp;xit</value>
   </data>
-  <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 29</value>
+  <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>54, 29</value>
   </data>
-  <data name="tsEdit.Text" xml:space="preserve">
-    <value>&amp;Edit</value>
+  <data name="tsFile.Text" xml:space="preserve">
+    <value>&amp;File</value>
   </data>
   <data name="tsEditCut.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+X</value>
@@ -231,11 +200,11 @@
   <data name="tsEditPaste.Text" xml:space="preserve">
     <value>Paste</value>
   </data>
-  <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 29</value>
+  <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 29</value>
   </data>
-  <data name="tsView.Text" xml:space="preserve">
-    <value>&amp;View</value>
+  <data name="tsEdit.Text" xml:space="preserve">
+    <value>&amp;Edit</value>
   </data>
   <data name="tsViewConsoleView.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Alt+C</value>
@@ -264,11 +233,11 @@
   <data name="tsTokenView.Text" xml:space="preserve">
     <value>View Token</value>
   </data>
-  <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>82, 29</value>
+  <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 29</value>
   </data>
-  <data name="tsDebug.Text" xml:space="preserve">
-    <value>&amp;Debug</value>
+  <data name="tsView.Text" xml:space="preserve">
+    <value>&amp;View</value>
   </data>
   <data name="tsDebugTraceTable.Size" type="System.Drawing.Size, System.Drawing">
     <value>264, 34</value>
@@ -288,11 +257,11 @@
   <data name="tsDebugBreakpoints.Text" xml:space="preserve">
     <value>Enable Breakpoints</value>
   </data>
-  <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>92, 29</value>
+  <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>82, 29</value>
   </data>
-  <data name="tsConsole.Text" xml:space="preserve">
-    <value>&amp;Console</value>
+  <data name="tsDebug.Text" xml:space="preserve">
+    <value>&amp;Debug</value>
   </data>
   <data name="tsClear.Size" type="System.Drawing.Size, System.Drawing">
     <value>153, 34</value>
@@ -300,33 +269,40 @@
   <data name="tsClear.Text" xml:space="preserve">
     <value>Clear</value>
   </data>
+  <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
+    <value>92, 29</value>
+  </data>
+  <data name="tsConsole.Text" xml:space="preserve">
+    <value>&amp;Console</value>
+  </data>
+  <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1893, 33</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="menuStrip.Text" xml:space="preserve">
+    <value>menuStrip1</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Name" xml:space="preserve">
+    <value>menuStrip</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
   <metadata name="toolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>263, 26</value>
   </metadata>
-  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 33</value>
-  </data>
-  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1893, 41</value>
-  </data>
-  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="toolStrip.Text" xml:space="preserve">
-    <value>toolStrip1</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
-    <value>toolStrip</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <data name="stripUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -400,16 +376,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIUSURBVGhD7Zm/SxthGMevOrbg0kWwJIcOJYP0bxC6dK5b
-        ERxFoeAiFgquWnCWLsXFlg6KBemioCjY0klwzSa4lf6guGjO7zd9HngIzyXvBSMh733gA3m/uZM838u9
-        FzApKSkpKbFkaZZkyQNZRUizAFhPryWJDC1AbYw/kXciobUANRq84dXr9JscNcB4g7faHfvwC/wEN8UN
-        uAonYZ/gDZxnMX5CnpPnPOwDvEHbWnkmZ3bCFvAersBdk/Gp0wePX3fIADtjCxhlIJxDzacYgGV4KS4w
-        EDS7aK6SZAz+En/AOXgGb+AxfAoL4g0X6k2F93geeQXUITN+A4YZABagx84yEDT73Vz9L0AzDq2v1R1Y
-        EG+wovrYApYgr9YHk9nybAEzDATNvAJY5Bp8ZbIGLHhbeQMV1afdJvgVWrop4ICBsA01rzIIxxso2GRI
-        /oqHLYD36ZVZv4GWRajvhRZwyED4CDWfYBCOO1gH/6T/5Ox2tO4B02ZNuVb4SNQ8tIATBsIW1LzHBYTj
-        bYLvoGa0AslLqBn3icfwhcm8Ak4ZCJ+h5j0rgM/xIngFkCOo+V8GoAY18/QK4GNQ2YOa96CA7sgrgFfd
-        7gffIVmHmtHX5nWnArgfaH6XBdQeyVH3BT/8c/iwufIZMSpeFog3eD3lj4xIaB0+OnTwRvWtJJER5VUv
-        iZMsy9r9dB9sMHzE//soUZLkFgGYcnRMESoXAAAAAElFTkSuQmCC
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAITSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
+        YBkUBJugINiqYC1pQpokpDAYCDYKBgUVKyGldkI6SRSx0R3P2dwLl+XO7pvFlcU3H3yw7+yM7D2z82bB
+        pKSkpKTEkqVZkiXPZBUhtQLgaXorSWRoAWp1oE/eiYT6AtRo8IZXb9NDOeoJ4w1eb2tswx/wK/wkrsNl
+        OAI7BG/gPItxAXlOntOwA/AGbWhlVM5shi3gA1yCmybjU6cDHr/ukAE2xxbwioHwG2o+xgDMwz/iDANB
+        s/PaKkl64V/xGL6DJ/AO7sEhWBBvuFDvKrzH88gr4Awy4zfgOQPAAvTYKQaCZv9qq/8FaMah9bX6HRbE
+        G6yoPraA95BX66PJbHm2gEkGgmZeASxyBU6YrAoL3lbeQEX1abQJbkFLKwXsMBA2oOb9DMLxBgo26ZK/
+        4mEL4H16Y9YL0DIH9b3QAnYZCF+g5oMMwnEHa+Jlei1nN6J+D3hr1pRrhY9EzUML2GcgfIaat7mAcLxN
+        cBVqRiuQvIGacZ94CcdN5hVwwED4BjVvWwF8jhfBK4D8gppfMQDDUDNPrwA+BpWfUPM2FNAaeQXwqtv9
+        4AiSNagZnTWvmxXA/UDzhyxguFuOeiz44V/DF7WVT49R8bJAvMFPU/7IiIT64aNDB6/2L0oSGVFe9ZI4
+        ybKs0U/3pw2Gj/h/HyVKktwD3qZycmHvA+EAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -447,9 +423,45 @@
   <data name="stripComment.Text" xml:space="preserve">
     <value>Comment Line</value>
   </data>
+  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 33</value>
+  </data>
+  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1893, 41</value>
+  </data>
+  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="toolStrip.Text" xml:space="preserve">
+    <value>toolStrip1</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
+    <value>toolStrip</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
   <metadata name="statusBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>320, 17</value>
   </metadata>
+  <data name="statusLineInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 25</value>
+  </data>
+  <data name="statusLineInfo.Text" xml:space="preserve">
+    <value>Line: 1</value>
+  </data>
+  <data name="statusColumnInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>93, 25</value>
+  </data>
+  <data name="statusColumnInfo.Text" xml:space="preserve">
+    <value>Column: 1</value>
+  </data>
   <data name="statusBar.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 992</value>
   </data>
@@ -473,18 +485,6 @@
   </data>
   <data name="&gt;&gt;statusBar.ZOrder" xml:space="preserve">
     <value>0</value>
-  </data>
-  <data name="statusLineInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 25</value>
-  </data>
-  <data name="statusLineInfo.Text" xml:space="preserve">
-    <value>Line: 1</value>
-  </data>
-  <data name="statusColumnInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>93, 25</value>
-  </data>
-  <data name="statusColumnInfo.Text" xml:space="preserve">
-    <value>Column: 1</value>
   </data>
   <data name="txtConsole.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -627,6 +627,54 @@
   <data name="tableMain.ColumnCount" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
+  <data name="tableConsole.ColumnCount" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="lblConsole.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="lblConsole.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Courier New, 12pt</value>
+  </data>
+  <data name="lblConsole.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 0</value>
+  </data>
+  <data name="lblConsole.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 27</value>
+  </data>
+  <data name="lblConsole.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="lblConsole.Text" xml:space="preserve">
+    <value>Console</value>
+  </data>
+  <data name="&gt;&gt;lblConsole.Name" xml:space="preserve">
+    <value>lblConsole</value>
+  </data>
+  <data name="&gt;&gt;lblConsole.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblConsole.Parent" xml:space="preserve">
+    <value>tableConsole</value>
+  </data>
+  <data name="&gt;&gt;lblConsole.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="tableConsole.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="tableConsole.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 750</value>
+  </data>
+  <data name="tableConsole.RowCount" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="tableConsole.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1882, 245</value>
+  </data>
+  <data name="tableConsole.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
   <data name="&gt;&gt;tableConsole.Name" xml:space="preserve">
     <value>tableConsole</value>
   </data>
@@ -671,81 +719,6 @@
   </data>
   <data name="tableMain.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
     <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="tableCodeSpace" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="tableConsole" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,5,AutoSize,0" /&gt;&lt;Rows Styles="Absolute,100,Percent,72.02073,Percent,27.97927,Absolute,25" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
-  <data name="tableConsole.ColumnCount" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;lblConsole.Name" xml:space="preserve">
-    <value>lblConsole</value>
-  </data>
-  <data name="&gt;&gt;lblConsole.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblConsole.Parent" xml:space="preserve">
-    <value>tableConsole</value>
-  </data>
-  <data name="&gt;&gt;lblConsole.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="tableConsole.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="tableConsole.Location" type="System.Drawing.Point, System.Drawing">
-    <value>8, 750</value>
-  </data>
-  <data name="tableConsole.RowCount" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="tableConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1882, 245</value>
-  </data>
-  <data name="tableConsole.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
-  </data>
-  <data name="&gt;&gt;tableConsole.Name" xml:space="preserve">
-    <value>tableConsole</value>
-  </data>
-  <data name="&gt;&gt;tableConsole.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tableConsole.Parent" xml:space="preserve">
-    <value>tableMain</value>
-  </data>
-  <data name="&gt;&gt;tableConsole.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="tableConsole.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="txtConsole" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblConsole" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="Absolute,30,Percent,100,Absolute,5" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
-  <data name="lblConsole.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="lblConsole.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Courier New, 12pt</value>
-  </data>
-  <data name="lblConsole.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 0</value>
-  </data>
-  <data name="lblConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>110, 27</value>
-  </data>
-  <data name="lblConsole.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="lblConsole.Text" xml:space="preserve">
-    <value>Console</value>
-  </data>
-  <data name="&gt;&gt;lblConsole.Name" xml:space="preserve">
-    <value>lblConsole</value>
-  </data>
-  <data name="&gt;&gt;lblConsole.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblConsole.Parent" xml:space="preserve">
-    <value>tableConsole</value>
-  </data>
-  <data name="&gt;&gt;lblConsole.ZOrder" xml:space="preserve">
-    <value>1</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

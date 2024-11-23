@@ -435,5 +435,31 @@ namespace NEA
         {
             ClearConsole();
         }
+
+        private void tsFileOpen_Click(object sender, EventArgs e)
+        {
+            Stream st;
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                st = fileDialog.OpenFile();
+                if (st != null)
+                {
+                    string file = fileDialog.FileName;
+
+                    string[] fileNameArray = file.Split('.');
+                    if (fileNameArray[fileNameArray.Length - 1] == "ktch")
+                    {
+                        string str = File.ReadAllText(file);
+                        txtCodeField.Text = str;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Invalid file type .{fileNameArray[fileNameArray.Length - 1]}\nMake sure to use .ktch");
+                    }
+                    
+                }
+            }
+        }
     }
 }
