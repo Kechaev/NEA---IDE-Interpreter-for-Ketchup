@@ -26,6 +26,9 @@ namespace NEA
         private Stack<int> redoStackCaretPosition = new Stack<int>();
         private Machine machine;
 
+        private string currentFilePath = null;
+        private bool isSaved = true;
+
         // IntelliSense Hack 101
         // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
         public IDE_MainWindow()
@@ -438,28 +441,23 @@ namespace NEA
 
         private void tsFileOpen_Click(object sender, EventArgs e)
         {
-            Stream st;
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            if (fileDialog.ShowDialog() == DialogResult.OK)
+            OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                st = fileDialog.OpenFile();
-                if (st != null)
-                {
-                    string file = fileDialog.FileName;
+                Filter = "Ketchup Files (*.ktch)|*.ktch",
+                Title = "File Open"
+            };
 
-                    string[] fileNameArray = file.Split('.');
-                    if (fileNameArray[fileNameArray.Length - 1] == "ktch")
-                    {
-                        string str = File.ReadAllText(file);
-                        txtCodeField.Text = str;
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Invalid file type .{fileNameArray[fileNameArray.Length - 1]}\nMake sure to use .ktch");
-                    }
-                    
-                }
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                currentFilePath = openFileDialog.FileName;
+                txtCodeField.Text = File.ReadAllText(currentFilePath);
+                isSaved = true;
             }
+        }
+
+        private void tsFileSave_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

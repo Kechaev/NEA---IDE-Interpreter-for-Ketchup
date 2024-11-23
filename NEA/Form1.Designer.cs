@@ -114,6 +114,7 @@ namespace NEA
             // 
             this.tsFileSave.Name = "tsFileSave";
             resources.ApplyResources(this.tsFileSave, "tsFileSave");
+            this.tsFileSave.Click += new System.EventHandler(this.tsFileSave_Click);
             // 
             // tsFileSaveAs
             // 
