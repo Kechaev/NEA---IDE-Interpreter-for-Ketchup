@@ -441,6 +441,27 @@ namespace NEA
 
         private void tsFileOpen_Click(object sender, EventArgs e)
         {
+            if (PromptToSaveChanges())
+            {
+                OpenFile();
+            }
+        }
+
+        private void tsFileSave_Click(object sender, EventArgs e)
+        {
+            if (currentFilePath == null)
+            {
+                SaveFileAs();
+            }
+            else
+            {
+                File.WriteAllText(currentFilePath, txtCodeField.Text);
+                isSaved = true;
+            }
+        }
+
+        private void OpenFile()
+        {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Ketchup Files (*.ktch)|*.ktch",
@@ -455,9 +476,38 @@ namespace NEA
             }
         }
 
-        private void tsFileSave_Click(object sender, EventArgs e)
+        private void SaveFileAs()
         {
+            SaveFileDialog saveFileDialog = new SaveFileDialog()
+            {
+                Filter = "Custom Files (*.ktch)|*.ktch",
+                Title = "Save File As"
+            };
 
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                currentFilePath = saveFileDialog.FileName;
+                File.WriteAllText(currentFilePath, txtCodeField.Text);
+                isSaved = true;
+            }
+        }
+
+        private bool PromptToSaveChanges()
+        {
+            if (!isSaved)
+            {
+                var result = MessageBox.Show($"Do you want to save changes?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                if (result == DialogResult.Yes)
+                {
+                    SaveFile();
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
