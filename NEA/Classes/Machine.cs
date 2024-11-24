@@ -1064,6 +1064,7 @@ namespace NEA
         private string[] TokensToIntermediate(Token[] internalTokens)
         {
             List<string> intermediateList = new List<string>();
+            List<Token> internalTokensList = internalTokens.ToList();
 
             int i = 0;
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
@@ -1076,8 +1077,9 @@ namespace NEA
             string type, variableName;
             bool noType;
             List<Token> expression;
-            int j;
+            int j, k, l;
             int inputOffset;
+            
 
             while (i < internalTokens.Length)
             {
@@ -1267,7 +1269,7 @@ namespace NEA
                     case TokenType.IF:
                         // Declare necessary variables
                         j = 0;
-                        List<Token> internalTokensList = internalTokens.ToList();
+                        
                         List<Token> mainExpression = new List<Token>();
                         List<Token[]> elseIfExpressions = new List<Token[]>();
                         List<Token> mainBody = new List<Token>();
@@ -1333,6 +1335,58 @@ namespace NEA
                             i = bodyEnd + 1;
                         }
                         intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
+                        break;
+                    case TokenType.COUNT:
+                        if (tokens[i + 1].GetTokenType() != TokenType.WITH)
+                        {
+                            throw new Exception("ERROR: Missing \"WITH\" keyword");
+                        }
+                        if (tokens[i + 2].GetTokenType() != TokenType.VARIABLE)
+                        {
+                            throw new Exception("ERROR: Missing variable in \"COUNT WITH _\"");
+                        }
+                        if (tokens[i + 3].GetTokenType() != TokenType.FROM)
+                        {
+                            throw new Exception("ERROR: Missing \"FROM\" keyword");
+                        }
+                        List<Token> expression1 = new List<Token>();
+                        j = 1;
+                        while (tokens[i + j + 3].GetLine() == token.GetLine() && tokens[i + j + 3].GetTokenType() != TokenType.TO)
+                        {
+                            expression1.Add(tokens[i + j + 3]);
+                            j++;
+                        }
+                        if (tokens[i + j + 4].GetTokenType() != TokenType.TO)
+                        {
+                            throw new Exception("ERROR: Missing \"TO\" keyword");
+                        }
+                        List<Token> expression2 = new List<Token>();
+                        k = 1;
+                        while (tokens[i + j + k + 4].GetLine() == token.GetLine() && tokens[i + j + k + 4].GetTokenType() == TokenType.TO)
+                        {
+                            expression2.Add(tokens[i + j + k + 4]);
+                            k++;
+                        }
+                        List<Token> expression3 = new List<Token>();
+                        if (tokens[i + j + k + 5].GetLine() != token.GetLine())
+                        {
+                            expression3.Add(new Token(TokenType.INT_LITERAL, "1", token.GetLine()));
+                        }
+                        else if (tokens[i + j + k + 5].GetTokenType() != TokenType.BY)
+                        {
+                            throw new Exception("ERROR: Line contains wrong element, \"BY\" not found");
+                        }
+                        l = 1;
+                        while (tokens[i + j + k + l + 5].GetLine() == token.GetLine())
+                        {
+                            expression3.Add(tokens[i + j + k + l + 5]);
+                            l++;
+                        }
+                        string variable = tokens[i + 2].GetLiteral();
+                        bodyStart = i + j + k + l + 6;
+                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+                        body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+                        intermediateList.AddRange(MapForLoop(variable, expression1, expression2, expression3, body.ToArray()));
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
