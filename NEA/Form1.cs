@@ -75,18 +75,18 @@ namespace NEA
             }
 
             machine = new Machine(txtCodeField.Text);
-            try
-            {
+            //try
+            //{
                 machine.Interpret();
 
                 string[] intermediate = machine.GetIntermediateCode();
 
                 StartExecution(intermediate);
-            }
-            catch (Exception e)
-            {
-                ConsoleWrite(e.Message);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    ConsoleWrite(e.Message);
+            //}
         }
 
         public void StartExecution(string[] intermediateCode)

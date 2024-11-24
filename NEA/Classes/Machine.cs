@@ -68,16 +68,6 @@ namespace NEA
             return intermediate;
         }
 
-        public void ConsoleWrite(IDE_MainWindow form, string text)
-        {
-            form.txtConsole.Text += text + "\r\n";
-        }
-
-        public void ClearConsole(IDE_MainWindow form)
-        {
-            form.txtConsole.Text = "";
-        }
-
         public void Interpret()
         {
             // Tokenization
@@ -982,13 +972,15 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] MapForLoop(string variable, int startValue, int endValue, int stepValue, Token[] body)
+        private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
         {
             List<string> instructions = new List<string>();
             string instrLine;
             counterVar = variablesDict[variable];
 
-            instrLine = "LOAD_CONST " + startValue.ToString();
+            instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
+
+            instrLine = "DECLARE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
             instrLine = "STORE_VAR " + counterVar.ToString();
@@ -997,28 +989,43 @@ namespace NEA
             instrLine = "LABEL " + counter.ToString();
             instructions.Add(instrLine);
 
-            instrLine = "LOAD_VAR " + startValue.ToString();
+            instrLine = "LOAD_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            instrLine = "LOAD_CONST " + endValue.ToString();
-            instructions.Add(instrLine);
+            //string String = "";
+            //foreach (Token t in endExpression)
+            //{
+            //    String += $"{t.GetLiteral()}\n";
+            //}
 
-            instrLine = "LESS_THAN";
+            //MessageBox.Show($"Adding end expression.\n{String}");
+            instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
+
+            instrLine = "LESS_EQUAL";
             instructions.Add(instrLine);
 
             instrLine = "JUMP_FALSE " + (counter + 1).ToString();
             instructions.Add(instrLine);
 
             string[] statement = TokensToIntermediate(body);
+            string String = "";
+            foreach (string s in statement)
+            {
+                String += s + "\n";
+            }
+            MessageBox.Show($"Body:\n{String}");
+
             instructions.AddRange(statement);
 
             instrLine = "LOAD_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            instrLine = "LOAD_CONST " + stepValue.ToString();
-            instructions.Add(instrLine);
+            instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
 
             instrLine = "ADD";
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
             instrLine = "JUMP " + counter.ToString();
@@ -1356,37 +1363,39 @@ namespace NEA
                             expression1.Add(tokens[i + j + 3]);
                             j++;
                         }
-                        if (tokens[i + j + 4].GetTokenType() != TokenType.TO)
+                        if (tokens[i + j + 3].GetTokenType() != TokenType.TO)
                         {
                             throw new Exception("ERROR: Missing \"TO\" keyword");
                         }
                         List<Token> expression2 = new List<Token>();
                         k = 1;
-                        while (tokens[i + j + k + 4].GetLine() == token.GetLine() && tokens[i + j + k + 4].GetTokenType() == TokenType.TO)
+                        while (tokens[i + j + k + 3].GetLine() == token.GetLine() && tokens[i + j + k + 3].GetTokenType() != TokenType.BY)
                         {
-                            expression2.Add(tokens[i + j + k + 4]);
+                            expression2.Add(tokens[i + j + k + 3]);
                             k++;
                         }
                         List<Token> expression3 = new List<Token>();
-                        if (tokens[i + j + k + 5].GetLine() != token.GetLine())
+                        int stepOffset = 0;
+                        MessageBox.Show($"token = {tokens[i + j + k + 4].GetLiteral()}");
+                        if (tokens[i + j + k + 4].GetLine() != token.GetLine())
                         {
+                            MessageBox.Show($"No set step");
                             expression3.Add(new Token(TokenType.INT_LITERAL, "1", token.GetLine()));
                         }
-                        else if (tokens[i + j + k + 5].GetTokenType() != TokenType.BY)
-                        {
-                            throw new Exception("ERROR: Line contains wrong element, \"BY\" not found");
-                        }
                         l = 1;
-                        while (tokens[i + j + k + l + 5].GetLine() == token.GetLine())
+                        while (tokens[i + j + k + l + 4].GetLine() == token.GetLine())
                         {
-                            expression3.Add(tokens[i + j + k + l + 5]);
+                            expression3.Add(tokens[i + j + k + l + 4]);
                             l++;
+                            stepOffset++;
                         }
                         string variable = tokens[i + 2].GetLiteral();
-                        bodyStart = i + j + k + l + 6;
+                        bodyStart = i + j + k + l + 2 + stepOffset;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+                        MessageBox.Show($"Body start: {bodyStart}\nBody start: {tokens[bodyStart].GetLiteral()}\nBody end: {bodyEnd}");
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
-                        intermediateList.AddRange(MapForLoop(variable, expression1, expression2, expression3, body.ToArray()));
+                        intermediateList.AddRange(MapForLoop(variable, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
+                        i += bodyEnd + 1;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
