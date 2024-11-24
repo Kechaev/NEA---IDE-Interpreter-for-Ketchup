@@ -21,6 +21,7 @@ using Microsoft.VisualBasic;
 using System.Drawing;
 using System.Diagnostics.Tracing;
 using System.CodeDom;
+using System.Windows.Forms.VisualStyles;
 
 namespace NEA
 {
@@ -977,6 +978,56 @@ namespace NEA
 
             instrLine = "LABEL " + (localCounter - length).ToString();
             instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapForLoop(string variable, int startValue, int endValue, int stepValue, Token[] body)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            instrLine = "LOAD_CONST " + startValue.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + counterVar.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LABEL " + counter.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LOAD_VAR " + startValue.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LOAD_CONST " + endValue.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LESS_THAN";
+            instructions.Add(instrLine);
+
+            instrLine = "JUMP_FALSE " + (counter + 1).ToString();
+            instructions.Add(instrLine);
+
+            string[] statement = TokensToIntermediate(body);
+            instructions.AddRange(statement);
+
+            instrLine = "LOAD_VAR " + counterVar.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LOAD_CONST " + stepValue.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "ADD";
+            instructions.Add(instrLine);
+
+            instrLine = "JUMP " + counter.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LABEL " + (counter + 1).ToString();
+            instructions.Add(instrLine);
+
+            counter += 2;
 
             return instructions.ToArray();
         }
