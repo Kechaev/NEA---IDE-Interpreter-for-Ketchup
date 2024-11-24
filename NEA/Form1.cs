@@ -492,6 +492,19 @@ namespace NEA
             }
         }
 
+        private void SaveFile()
+        {
+            if (currentFilePath == null)
+            {
+                SaveFileAs();
+            }
+            else
+            {
+                File.WriteAllText(currentFilePath, txtCodeField.Text);
+                isSaved = true;
+            }
+        }
+
         private bool PromptToSaveChanges()
         {
             if (!isSaved)
@@ -508,6 +521,14 @@ namespace NEA
                 }
             }
             return true;
+        }
+
+        private void IDE_MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!PromptToSaveChanges())
+            {
+                e.Cancel = true;
+            }
         }
     }
 }

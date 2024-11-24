@@ -338,6 +338,7 @@ namespace NEA
             this.Controls.Add(this.tableMain);
             this.MainMenuStrip = this.menuStrip;
             this.Name = "IDE_MainWindow";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.IDE_MainWindow_FormClosing);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
