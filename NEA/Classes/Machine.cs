@@ -1361,24 +1361,23 @@ namespace NEA
                             expression2.Add(tokens[i + j + k + 3]);
                             k++;
                         }
+                        l = 0;
                         List<Token> expression3 = new List<Token>();
-                        int stepOffset = 0;
                         if (tokens[i + j + k + 4].GetLine() != token.GetLine())
                         {
                             expression3.Add(new Token(TokenType.INT_LITERAL, "1", token.GetLine()));
                         }
-                        l = 1;
-                        stepOffset++;
-                        while (tokens[i + j + k + l + 3].GetLine() == token.GetLine())
+                        else
                         {
-                            expression3.Add(tokens[i + j + k + l + 3]);
-                            l++;
-                            stepOffset++;
+                            l = 1;
+                            while (tokens[i + j + k + l + 3].GetLine() == token.GetLine())
+                            {
+                                expression3.Add(tokens[i + j + k + l + 3]);
+                                l++;
+                            }
                         }
-
-
                         string variable = tokens[i + 2].GetLiteral();
-                        bodyStart = i + j + k + l + 1 + stepOffset;
+                        bodyStart = i + j + k + l + 3;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         intermediateList.AddRange(MapForLoop(variable, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
@@ -1494,7 +1493,6 @@ namespace NEA
                                 throw new Exception("ERROR: Unknown data type");
                         }
                         stack.Push(result);
-                        MessageBox.Show($"{object1} + {object2} = {result}");
                         break;
                     case "SUB":
                         object2 = stack.Pop();
