@@ -12,6 +12,8 @@ namespace NEA
 {
     public partial class IntermediateView : Form
     {
+        // Think of a new implementation
+        // Doesn't work for scrollable text
         private string[] intermediate;
         private int[,] map;
         private Dictionary<string, string> nameDescription = new Dictionary<string, string>()

@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Diagnostics.Tracing;
 using System.CodeDom;
 using System.Windows.Forms.VisualStyles;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace NEA
 {
@@ -992,13 +993,6 @@ namespace NEA
             instrLine = "LOAD_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            //string String = "";
-            //foreach (Token t in endExpression)
-            //{
-            //    String += $"{t.GetLiteral()}\n";
-            //}
-
-            //MessageBox.Show($"Adding end expression.\n{String}");
             instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
 
             instrLine = "LESS_EQUAL";
@@ -1008,12 +1002,6 @@ namespace NEA
             instructions.Add(instrLine);
 
             string[] statement = TokensToIntermediate(body);
-            string String = "";
-            foreach (string s in statement)
-            {
-                String += s + "\n";
-            }
-            MessageBox.Show($"Body:\n{String}");
 
             instructions.AddRange(statement);
 
@@ -1043,10 +1031,9 @@ namespace NEA
         {
             int nestCounter = 1;
 
-            while (nestCounter > 0 && index < tokens.Length)
+            while (nestCounter > 0 && index < tokens.Length - 1)
             {
                 index++;
-
                 if (tokens[index].GetTokenType() == TokenType.BEGIN)
                 {
                     nestCounter++;
@@ -1376,23 +1363,23 @@ namespace NEA
                         }
                         List<Token> expression3 = new List<Token>();
                         int stepOffset = 0;
-                        MessageBox.Show($"token = {tokens[i + j + k + 4].GetLiteral()}");
                         if (tokens[i + j + k + 4].GetLine() != token.GetLine())
                         {
-                            MessageBox.Show($"No set step");
                             expression3.Add(new Token(TokenType.INT_LITERAL, "1", token.GetLine()));
                         }
                         l = 1;
-                        while (tokens[i + j + k + l + 4].GetLine() == token.GetLine())
+                        stepOffset++;
+                        while (tokens[i + j + k + l + 3].GetLine() == token.GetLine())
                         {
-                            expression3.Add(tokens[i + j + k + l + 4]);
+                            expression3.Add(tokens[i + j + k + l + 3]);
                             l++;
                             stepOffset++;
                         }
+
+
                         string variable = tokens[i + 2].GetLiteral();
-                        bodyStart = i + j + k + l + 2 + stepOffset;
+                        bodyStart = i + j + k + l + 1 + stepOffset;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
-                        MessageBox.Show($"Body start: {bodyStart}\nBody start: {tokens[bodyStart].GetLiteral()}\nBody end: {bodyEnd}");
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         intermediateList.AddRange(MapForLoop(variable, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
                         i += bodyEnd + 1;
@@ -1507,6 +1494,7 @@ namespace NEA
                                 throw new Exception("ERROR: Unknown data type");
                         }
                         stack.Push(result);
+                        MessageBox.Show($"{object1} + {object2} = {result}");
                         break;
                     case "SUB":
                         object2 = stack.Pop();
