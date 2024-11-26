@@ -240,19 +240,19 @@
     <value>&amp;View</value>
   </data>
   <data name="tsDebugTraceTable.Size" type="System.Drawing.Size, System.Drawing">
-    <value>270, 34</value>
+    <value>264, 34</value>
   </data>
   <data name="tsDebugTraceTable.Text" xml:space="preserve">
     <value>Trace Table</value>
   </data>
   <data name="tsDebugSyntaxCheck.Size" type="System.Drawing.Size, System.Drawing">
-    <value>270, 34</value>
+    <value>264, 34</value>
   </data>
   <data name="tsDebugSyntaxCheck.Text" xml:space="preserve">
     <value>Check Syntax</value>
   </data>
   <data name="tsDebugBreakpoints.Size" type="System.Drawing.Size, System.Drawing">
-    <value>270, 34</value>
+    <value>264, 34</value>
   </data>
   <data name="tsDebugBreakpoints.Text" xml:space="preserve">
     <value>Enable Breakpoints</value>
@@ -264,10 +264,16 @@
     <value>&amp;Debug</value>
   </data>
   <data name="tsClear.Size" type="System.Drawing.Size, System.Drawing">
-    <value>153, 34</value>
+    <value>264, 34</value>
   </data>
   <data name="tsClear.Text" xml:space="preserve">
     <value>Clear</value>
+  </data>
+  <data name="tsDelay.Size" type="System.Drawing.Size, System.Drawing">
+    <value>264, 34</value>
+  </data>
+  <data name="tsDelay.Text" xml:space="preserve">
+    <value>Add delay (100ms)</value>
   </data>
   <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
     <value>92, 29</value>
@@ -301,7 +307,7 @@
     <value>2</value>
   </data>
   <metadata name="toolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>263, 26</value>
+    <value>174, 16</value>
   </metadata>
   <data name="stripUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -376,16 +382,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAITSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
-        YBkUBJugINiqYC1pQpokpDAYCDYKBgUVKyHY2QnpJFHERnc8Z3MvXJY7u28WVxbffPDBvrMzsvfMzpsF
-        k5KSkpISS5ZmSZY8k1WE1AqAp+mtJJGhBajVgT55JxLqC1CjwRtevU0P5agnjDd4va2xDX/Ar/CTuA6X
-        4QjsELyB8yzGBeQ5eU7DDsAbtKGVUTmzGbaAD3AJbpqMT50OePy6QwbYHFvAKwbCb6j5GAMwD/+IMwwE
-        zc5rqyTphX/FY/gOnsA7uAeHYEG84UK9q/AezyOvgDPIjN+A5wwAC9BjpxgImv2rrf4XoBmH1tfqd1gQ
-        b7Ci+tgC3kNerY8ms+XZAiYZCJp5BbDIFThhsioseFt5AxXVp9EmuAUtrRSww0DYgJr3MwjHGyjYpEv+
-        ioctgPfpjVkvQMsc1PdCC9hlIHyBmg8yCMcdrImX6bWc3Yj6PeCtWVOuFT4SNQ8tYJ+B8Blq3uYCwvE2
-        wVWoGa1A8gZqxn3iJRw3mVfAAQPhG9S8bQXwOV4ErwDyC2p+xQAMQ808vQL4GFR+Qs3bUEBr5BXAq273
-        gyNI1qBmdNa8blYA9wPNH7KA4W456rHgh38NX9RWPj1GxcsC8QY/TfkjIxLqh48OHbzavyhJZER51Uvi
-        JMuyRj/dnzYYPuL/fZQoSXIPDVRyZtpd7h4AAAAASUVORK5CYII=
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAISSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
+        YBkUBJugINiqYC1pQpokpDAYCDYKBgUVK4mtnZBOEkVsdMdzNvfCZbmz+2ZxZfHNBx/sOzsje8/svFkw
+        KSkpKSmxZGmWZMkzWUVIrQB4mt5KEhlagFod6JN3IqG+ADUavOHV2/RQjnrCeIPX2xrb8Af8Cj+J63AZ
+        jsAOwRs4z2JcQJ6T5zTsALxBG1oZlTObYQv4AJfgpsn41OmAx687ZIDNsQW8YiCcQs3HGIB5+EecYSBo
+        dl5bJUkv/Csew3fwBN7BPTgEC+INF+pdhfd4HnkFnEFm/AY8ZwBYgB47xUDQ7F9t9b8AzTi0vla/w4J4
+        gxXVxxbwHvJqfTSZLc8WMMlA0MwrgEWuwAmTVWHB28obqKg+jTbBLWhppYAdBsIG1LyfQTjeQMEmXfJX
+        PGwBvE9vzHoBWuagvhdawC4D4QvUfJBBOO5gTbxMr+XsRtTvAW/NmnKt8JGoeWgB+wyEz1DzNhcQjrcJ
+        rkLNaAWSN1Az7hMv4bjJvAIOGAjfoOZtK4DP8SJ4BZBfUPMrBmAYaubpFcDHoPITat6GAlojrwBedbsf
+        HEGyBjWjs+Z1swK4H2j+kAUMd8tRjwU//Gv4orby6TEqXhaIN/jvlD8yIqF++OjQwav9i5JERpRXvSRO
+        sixr9NP9aYPhI/7fR4mSJPe+nHJhZhBHywAAAABJRU5ErkJggg==
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -938,6 +944,12 @@
     <value>tsClear</value>
   </data>
   <data name="&gt;&gt;tsClear.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tsDelay.Name" xml:space="preserve">
+    <value>tsDelay</value>
+  </data>
+  <data name="&gt;&gt;tsDelay.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;stripUndo.Name" xml:space="preserve">

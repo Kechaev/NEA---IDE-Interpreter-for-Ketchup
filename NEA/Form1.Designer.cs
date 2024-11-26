@@ -52,6 +52,7 @@ namespace NEA
             this.tsDebugBreakpoints = new System.Windows.Forms.ToolStripMenuItem();
             this.tsConsole = new System.Windows.Forms.ToolStripMenuItem();
             this.tsClear = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsDelay = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.stripUndo = new System.Windows.Forms.ToolStripButton();
             this.stripRedo = new System.Windows.Forms.ToolStripButton();
@@ -77,7 +78,6 @@ namespace NEA
             // 
             // menuStrip
             // 
-            this.menuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsFile,
@@ -210,7 +210,8 @@ namespace NEA
             // tsConsole
             // 
             this.tsConsole.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsClear});
+            this.tsClear,
+            this.tsDelay});
             this.tsConsole.Name = "tsConsole";
             resources.ApplyResources(this.tsConsole, "tsConsole");
             // 
@@ -219,6 +220,12 @@ namespace NEA
             this.tsClear.Name = "tsClear";
             resources.ApplyResources(this.tsClear, "tsClear");
             this.tsClear.Click += new System.EventHandler(this.tsClear_Click);
+            // 
+            // tsDelay
+            // 
+            this.tsDelay.Name = "tsDelay";
+            resources.ApplyResources(this.tsDelay, "tsDelay");
+            this.tsDelay.Click += new System.EventHandler(this.tsDelay_Click);
             // 
             // toolStrip
             // 
@@ -395,6 +402,7 @@ namespace NEA
         private ToolStripMenuItem tsTokenView;
         private ToolStripMenuItem tsConsole;
         private ToolStripMenuItem tsClear;
+        private ToolStripMenuItem tsDelay;
     }
 }
 

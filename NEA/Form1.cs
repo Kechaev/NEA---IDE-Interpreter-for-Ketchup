@@ -29,6 +29,8 @@ namespace NEA
         private string currentFilePath = null;
         private bool isSaved = true;
 
+        private int delayMS = 0;
+
         // IntelliSense Hack 101
         // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
         public IDE_MainWindow()
@@ -544,6 +546,33 @@ namespace NEA
         private void tsDebugBreakpoints_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Breakpoints");
+        }
+
+        private void tsDelay_Click(object sender, EventArgs e)
+        {
+            switch (delayMS)
+            {
+                case 0:
+                    tsDelay.Text = "Add Delay (200ms)";
+                    delayMS = 100;
+                    break;
+                case 100:
+                    tsDelay.Text = "Add Delay (500ms)";
+                    delayMS = 200;
+                    break;
+                case 200:
+                    tsDelay.Text = "Add Delay (1000ms)";
+                    delayMS = 500;
+                    break;
+                case 500:
+                    tsDelay.Text = "Add Delay (0ms)";
+                    delayMS = 1000;
+                    break;
+                case 1000:
+                    tsDelay.Text = "Add Delay (100ms)";
+                    delayMS = 0;
+                    break;
+            }
         }
     }
 }
