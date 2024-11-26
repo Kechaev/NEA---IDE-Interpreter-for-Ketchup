@@ -530,5 +530,20 @@ namespace NEA
                 e.Cancel = true;
             }
         }
+
+        private void tsDebugTraceTable_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Trace Table");
+        }
+
+        private void tsDebugBreakpoints_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Breakpoints");
+        }
+
+        private void tsDebugSyntaxCheck_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Check Syntax");
+        }
     }
 }

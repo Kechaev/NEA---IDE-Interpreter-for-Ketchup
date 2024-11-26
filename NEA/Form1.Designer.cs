@@ -193,16 +193,19 @@ namespace NEA
             // 
             this.tsDebugTraceTable.Name = "tsDebugTraceTable";
             resources.ApplyResources(this.tsDebugTraceTable, "tsDebugTraceTable");
+            this.tsDebugTraceTable.Click += new System.EventHandler(this.tsDebugTraceTable_Click);
             // 
             // tsDebugSyntaxCheck
             // 
             this.tsDebugSyntaxCheck.Name = "tsDebugSyntaxCheck";
             resources.ApplyResources(this.tsDebugSyntaxCheck, "tsDebugSyntaxCheck");
+            this.tsDebugSyntaxCheck.Click += new System.EventHandler(this.tsDebugSyntaxCheck_Click);
             // 
             // tsDebugBreakpoints
             // 
             this.tsDebugBreakpoints.Name = "tsDebugBreakpoints";
             resources.ApplyResources(this.tsDebugBreakpoints, "tsDebugBreakpoints");
+            this.tsDebugBreakpoints.Click += new System.EventHandler(this.tsDebugBreakpoints_Click);
             // 
             // tsConsole
             // 
