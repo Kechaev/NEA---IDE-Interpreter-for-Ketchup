@@ -536,14 +536,14 @@ namespace NEA
             MessageBox.Show("Trace Table");
         }
 
-        private void tsDebugBreakpoints_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Breakpoints");
-        }
-
         private void tsDebugSyntaxCheck_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Check Syntax");
+        }
+
+        private void tsDebugBreakpoints_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Breakpoints");
         }
     }
 }
