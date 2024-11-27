@@ -982,19 +982,20 @@ namespace NEA
             counter += 2;
 
             int localCounter = counter;
+            int localCounterVar = counterVar;
 
             instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
 
-            instrLine = "DECLARE_VAR " + counterVar.ToString();
+            instrLine = "DECLARE_VAR " + localCounterVar.ToString();
             instructions.Add(instrLine);
 
-            instrLine = "STORE_VAR " + counterVar.ToString();
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
             instructions.Add(instrLine);
 
             instrLine = "LABEL " + (localCounter - 2).ToString();
             instructions.Add(instrLine);
 
-            instrLine = "LOAD_VAR " + counterVar.ToString();
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
             instructions.Add(instrLine);
 
             instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
@@ -1009,7 +1010,7 @@ namespace NEA
 
             instructions.AddRange(statement);
 
-            instrLine = "LOAD_VAR " + counterVar.ToString();
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
             instructions.Add(instrLine);
 
             instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
@@ -1017,7 +1018,7 @@ namespace NEA
             instrLine = "ADD";
             instructions.Add(instrLine);
 
-            instrLine = "STORE_VAR " + counterVar.ToString();
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
             instructions.Add(instrLine);
 
             instrLine = "JUMP " + (localCounter - 2).ToString();
@@ -1458,7 +1459,6 @@ namespace NEA
         {
             string line = intermediateCode[PC];
             PC++;
-            MessageBox.Show($"line: {line}\nPC = {PC}");
             return line;
         }
 
@@ -1475,7 +1475,6 @@ namespace NEA
                         object2 = stack.Pop();
                         object1 = stack.Pop();
                         type = GetDataTypeFrom(object1, object2);
-                        MessageBox.Show($"object 1: {object1}\nobject 2: {object2}\ntype = {type}\n");
                         switch (type)
                         {
                             case DataType.INTEGER:
@@ -1823,12 +1822,11 @@ namespace NEA
                         break;
                     case "STORE_VAR":
                         intOp = Convert.ToInt32(operand);
-                        MessageBox.Show($"STORED VARIABLE {KeyByValue(intOp)}\nOld value value = {variables[intOp].GetValue()}");
                         if (variables[intOp].IsDeclared())
                         {
                             variables[intOp].SetValue(stack.Pop());
                         }
-                        MessageBox.Show($"STORED VARIABLE {KeyByValue(intOp)}\nNew value = {variables[intOp].GetValue()}");
+                        
                         break;
                     case "DECLARE_VAR":
                         variables[Convert.ToInt32(operand)].Declare();
