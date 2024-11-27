@@ -39,6 +39,7 @@ namespace NEA
             InitializeStacks();
             WindowState = FormWindowState.Maximized;
             txtCodeField.Select();
+            timer.Start();
         }
 
         private void InitializeStacks()
@@ -77,18 +78,18 @@ namespace NEA
             }
 
             machine = new Machine(txtCodeField.Text);
-            try
-            {
+            //try
+            //{
                 machine.Interpret();
 
                 string[] intermediate = machine.GetIntermediateCode();
 
                 StartExecution(intermediate);
-            }
-            catch (Exception e)
-            {
-                ConsoleWrite(e.Message);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    ConsoleWrite(e.Message);
+            //}
         }
 
         public void StartExecution(string[] intermediateCode)
@@ -257,6 +258,7 @@ namespace NEA
 
         public void ConsoleWrite(string text)
         {
+            // Add sleep from delayMS variable
             txtConsole.Text += text + "\r\n";
         }
 
@@ -550,6 +552,7 @@ namespace NEA
 
         private void tsDelay_Click(object sender, EventArgs e)
         {
+            // NOT IMPLEMENTED
             switch (delayMS)
             {
                 case 0:

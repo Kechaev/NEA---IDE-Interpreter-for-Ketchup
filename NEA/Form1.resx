@@ -383,7 +383,7 @@
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAISSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
-        YBkUBJugINiqYC1pQpokpDAYCDYKBgUVK4mtnZBOEkVsdMdzNvfCZbmz+2ZxZfHNBx/sOzsje8/svFkw
+        YBkUBJugINiqYC1pQpokpDAYCDYKBgUVK4OtnZBOEkVsdMdzNvfCZbmz+2ZxZfHNBx/sOzsje8/svFkw
         KSkpKSmxZGmWZMkzWUVIrQB4mt5KEhlagFod6JN3IqG+ADUavOHV2/RQjnrCeIPX2xrb8Af8Cj+J63AZ
         jsAOwRs4z2JcQJ6T5zTsALxBG1oZlTObYQv4AJfgpsn41OmAx687ZIDNsQW8YiCcQs3HGIB5+EecYSBo
         dl5bJUkv/Csew3fwBN7BPTgEC+INF+pdhfd4HnkFnEFm/AY8ZwBYgB47xUDQ7F9t9b8AzTi0vla/w4J4
@@ -391,7 +391,7 @@
         PGwBvE9vzHoBWuagvhdawC4D4QvUfJBBOO5gTbxMr+XsRtTvAW/NmnKt8JGoeWgB+wyEz1DzNhcQjrcJ
         rkLNaAWSN1Az7hMv4bjJvAIOGAjfoOZtK4DP8SJ4BZBfUPMrBmAYaubpFcDHoPITat6GAlojrwBedbsf
         HEGyBjWjs+Z1swK4H2j+kAUMd8tRjwU//Gv4orby6TEqXhaIN/jvlD8yIqF++OjQwav9i5JERpRXvSRO
-        sixr9NP9aYPhI/7fR4mSJPe+nHJhZhBHywAAAABJRU5ErkJggg==
+        sixr9NP9aYPhI/7fR4mSJPe1uXJgee9rOQAAAABJRU5ErkJggg==
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -726,6 +726,9 @@
   <data name="tableMain.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
     <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="tableCodeSpace" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="tableConsole" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,5,AutoSize,0" /&gt;&lt;Rows Styles="Absolute,100,Percent,72.02073,Percent,27.97927,Absolute,25" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
+  <metadata name="timer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>459, 17</value>
+  </metadata>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -987,6 +990,12 @@
   </data>
   <data name="&gt;&gt;statusColumnInfo.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;timer.Name" xml:space="preserve">
+    <value>timer</value>
+  </data>
+  <data name="&gt;&gt;timer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>IDE_MainWindow</value>

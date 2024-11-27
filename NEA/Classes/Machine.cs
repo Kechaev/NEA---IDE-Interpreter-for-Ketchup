@@ -471,7 +471,7 @@ namespace NEA
         // https://en.wikipedia.org/wiki/Shunting_yard_algorithm
 
         // Potential Optimization - Change List<Token> to Token[]
-        private string[] ConvertToPostfix(List<Token> tokens)
+         private string[] ConvertToPostfix(List<Token> tokens)
         {
             List<string> output = new List<string>();
             Stack<Token> stack = new Stack<Token>();
@@ -1289,7 +1289,8 @@ namespace NEA
                         i = bodyEnd + 1;
 
                         // Identify if Else If statement(s) is present
-                        while (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
+
+                        while (internalTokens[i].GetTokenType() != TokenType.EOF || internalTokens[i].GetTokenType() != TokenType.EON && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
                         {
                             // Get Else If 1 Expression
                             // The while statements have + 2 because the j variable has not been updated yet
@@ -1380,6 +1381,7 @@ namespace NEA
                         bodyStart = i + j + k + l + 3;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+
                         intermediateList.AddRange(MapForLoop(variable, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
                         i += bodyEnd + 1;
                         break;

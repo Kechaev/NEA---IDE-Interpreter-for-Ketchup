@@ -30,6 +30,7 @@ namespace NEA
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IDE_MainWindow));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.tsFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,6 +69,7 @@ namespace NEA
             this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.lblConsole = new System.Windows.Forms.Label();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -78,6 +80,7 @@ namespace NEA
             // 
             // menuStrip
             // 
+            this.menuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsFile,
@@ -338,6 +341,10 @@ namespace NEA
             resources.ApplyResources(this.lblConsole, "lblConsole");
             this.lblConsole.Name = "lblConsole";
             // 
+            // timer
+            // 
+            this.timer.Interval = 1;
+            // 
             // IDE_MainWindow
             // 
             resources.ApplyResources(this, "$this");
@@ -403,6 +410,7 @@ namespace NEA
         private ToolStripMenuItem tsConsole;
         private ToolStripMenuItem tsClear;
         private ToolStripMenuItem tsDelay;
+        private Timer timer;
     }
 }
 
