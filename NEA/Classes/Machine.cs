@@ -979,6 +979,10 @@ namespace NEA
             string instrLine;
             counterVar = variablesDict[variable];
 
+            counter += 2;
+
+            int localCounter = counter;
+
             instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
 
             instrLine = "DECLARE_VAR " + counterVar.ToString();
@@ -987,7 +991,7 @@ namespace NEA
             instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            instrLine = "LABEL " + counter.ToString();
+            instrLine = "LABEL " + (localCounter - 2).ToString();
             instructions.Add(instrLine);
 
             instrLine = "LOAD_VAR " + counterVar.ToString();
@@ -998,7 +1002,7 @@ namespace NEA
             instrLine = "LESS_EQUAL";
             instructions.Add(instrLine);
 
-            instrLine = "JUMP_FALSE " + (counter + 1).ToString();
+            instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
             string[] statement = TokensToIntermediate(body);
@@ -1016,13 +1020,11 @@ namespace NEA
             instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            instrLine = "JUMP " + counter.ToString();
+            instrLine = "JUMP " + (localCounter - 2).ToString();
             instructions.Add(instrLine);
 
-            instrLine = "LABEL " + (counter + 1).ToString();
+            instrLine = "LABEL " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
-
-            counter += 2;
 
             return instructions.ToArray();
         }
@@ -1288,9 +1290,8 @@ namespace NEA
                         // Set i to next section
                         i = bodyEnd + 1;
 
-                        // Identify if Else If statement(s) is present
-
-                        while (internalTokens[i].GetTokenType() != TokenType.EOF || internalTokens[i].GetTokenType() != TokenType.EON && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
+                        // Identify if Else If statement(s)
+                        while ((internalTokens[i].GetTokenType() != TokenType.EOF || internalTokens[i].GetTokenType() != TokenType.EON) && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
                         {
                             // Get Else If 1 Expression
                             // The while statements have + 2 because the j variable has not been updated yet
@@ -1457,6 +1458,7 @@ namespace NEA
         {
             string line = intermediateCode[PC];
             PC++;
+            MessageBox.Show($"line: {line}\nPC = {PC}");
             return line;
         }
 
@@ -1473,6 +1475,7 @@ namespace NEA
                         object2 = stack.Pop();
                         object1 = stack.Pop();
                         type = GetDataTypeFrom(object1, object2);
+                        MessageBox.Show($"object 1: {object1}\nobject 2: {object2}\ntype = {type}\n");
                         switch (type)
                         {
                             case DataType.INTEGER:
@@ -1820,10 +1823,12 @@ namespace NEA
                         break;
                     case "STORE_VAR":
                         intOp = Convert.ToInt32(operand);
+                        MessageBox.Show($"STORED VARIABLE {KeyByValue(intOp)}\nOld value value = {variables[intOp].GetValue()}");
                         if (variables[intOp].IsDeclared())
                         {
                             variables[intOp].SetValue(stack.Pop());
                         }
+                        MessageBox.Show($"STORED VARIABLE {KeyByValue(intOp)}\nNew value = {variables[intOp].GetValue()}");
                         break;
                     case "DECLARE_VAR":
                         variables[Convert.ToInt32(operand)].Declare();
