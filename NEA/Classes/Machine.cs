@@ -1454,12 +1454,38 @@ namespace NEA
                         i = bodyEnd + 1;
                         break;
                     case TokenType.LOOP:
-                        // DO
+                        // NOT FINAL SYNTAX
+
+                        // LOOP
                         // BEGIN
                         // statement
                         // END
-                        // WHILST condition
-                        
+                        // REPEAT IF condition
+                        if (internalTokens[i + 1].GetTokenType() != TokenType.BEGIN)
+                        {
+                            throw new Exception("ERROR: No \"BEGIN\" keyword found after \"LOOP\"");
+                        }
+                        bodyStart = i + 1;
+                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+                        body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+                        i = bodyEnd + 1;
+                        if (internalTokens[i].GetTokenType() != TokenType.REPEAT)
+                        {
+                            throw new Exception("ERROR: No \"REPEAT\" keyword found after the body");
+                        }
+                        if (internalTokens[i + 1].GetTokenType() != TokenType.IF)
+                        {
+                            throw new Exception("ERROR: No \"IF\" keyword found after \"REPEAT\"");
+                        }
+                        expression = new List<Token>();
+                        j = 1;
+                        while (internalTokens[i + j + 1].GetLine() == internalTokens[i].GetLine() && (internalTokens[i + j + 1].GetTokenType() == TokenType.EOF || internalTokens[i + j + 1].GetTokenType() == TokenType.EON))
+                        {
+                            expression.Add(internalTokens[i + j + 1]);
+                            j++;
+                        }
+                        intermediateList.AddRange(MapDoWhileLoop(expression.ToArray(), body.ToArray()));
+                        i = i + j + 1;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
