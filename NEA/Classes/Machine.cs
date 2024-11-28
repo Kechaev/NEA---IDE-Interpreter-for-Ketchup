@@ -1058,7 +1058,20 @@ namespace NEA
 
             int localCounter = counter;
 
-            instrLine = "LABEL " + (localCounter - 2).ToString()
+            instrLine = "LABEL " + (localCounter - 2).ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(TokensToIntermediate(body));
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instrLine = "JUMP_FALSE " + (counter - 1).ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "JUMP " + (counter - 2).ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
         }
 
         private int FindRelevantEndIndex(int index, Token[] tokens)
@@ -1419,6 +1432,10 @@ namespace NEA
                         i += bodyEnd + 1;
                         break;
                     case TokenType.WHILE:
+                        // WHILE condition THEN
+                        // BEGIN
+                        // statements
+                        // END
                         expression = new List<Token>();
                         j = 1;
                         while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.THEN)
@@ -1435,6 +1452,14 @@ namespace NEA
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         intermediateList.AddRange(MapWhileLoop(expression.ToArray(), body.ToArray()));
                         i = bodyEnd + 1;
+                        break;
+                    case TokenType.LOOP:
+                        // DO
+                        // BEGIN
+                        // statement
+                        // END
+                        // WHILST condition
+                        
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
