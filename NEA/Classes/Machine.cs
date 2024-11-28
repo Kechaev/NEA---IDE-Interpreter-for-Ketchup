@@ -838,13 +838,11 @@ namespace NEA
 
             instructions.AddRange(GetIntermediateFromExpression(expression));
 
-            instrLine = "ADJUST_TYPE " + type;
-            instructions.Add(instrLine);
-
             instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
-
             
+            instrLine = "ADJUST_TYPE " + type;
+            instructions.Add(instrLine);
 
             return instructions.ToArray();
         }
@@ -1826,7 +1824,7 @@ namespace NEA
                         {
                             variables[intOp].SetValue(stack.Pop());
                         }
-                        
+
                         break;
                     case "DECLARE_VAR":
                         variables[Convert.ToInt32(operand)].Declare();
@@ -1861,6 +1859,30 @@ namespace NEA
                         // ADJUST_TYPE INTEGER
                         // adjust the Data Type of variables[0]
                         DataType type = GetDataType(operand);
+                        //string lastLine = intermediateCode[PC - 2];
+                        //string lastOperand = "";
+                        //bool isOperator = true;
+                        //foreach (char c in lastLine)
+                        //{
+                        //    if (!isOperator)
+                        //    {
+                        //        lastOperand += c;
+                        //    }
+                        //    else if (c == ' ')
+                        //    {
+                        //        isOperator = false;
+                        //    }
+                        //}
+                        //int variableIndex = 0;
+                        //try
+                        //{
+                        //    variableIndex = Convert.ToInt32(lastOperand);
+                        //}
+                        //catch
+                        //{
+                        //    MessageBox.Show($"Pre-crash: {lastOperand}");
+                        //}
+                        //variables[variableIndex].SetDataType(type);
                         break;
                 }
             }

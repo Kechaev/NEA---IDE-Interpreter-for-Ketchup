@@ -21,7 +21,7 @@ namespace NEA.Classes
         {
             this.name = name;
             this.value = value;
-            type = DataType.STRING;
+            type = IdentifyBestDataType();
             declared = false;
         }
 
