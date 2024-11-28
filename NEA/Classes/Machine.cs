@@ -1065,10 +1065,13 @@ namespace NEA
 
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
-            instrLine = "JUMP_FALSE " + (counter - 1).ToString();
+            instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
-            instrLine = "JUMP " + (counter - 2).ToString();
+            instrLine = "JUMP " + (localCounter - 2).ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LABEL " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
             return instructions.ToArray();
@@ -1479,10 +1482,11 @@ namespace NEA
                         }
                         expression = new List<Token>();
                         j = 1;
-                        while (internalTokens[i + j + 1].GetLine() == internalTokens[i].GetLine() && (internalTokens[i + j + 1].GetTokenType() == TokenType.EOF || internalTokens[i + j + 1].GetTokenType() == TokenType.EON))
+                        while (internalTokens[i + j + 1].GetTokenType() != TokenType.EOF  && internalTokens[i + j + 1].GetLine() == internalTokens[i].GetLine())
                         {
                             expression.Add(internalTokens[i + j + 1]);
                             j++;
+                            //MessageBox.Show($"run next: {internalTokens[i + j + 1].GetTokenType() != TokenType.EOF}");
                         }
                         intermediateList.AddRange(MapDoWhileLoop(expression.ToArray(), body.ToArray()));
                         i = i + j + 1;
@@ -1558,6 +1562,7 @@ namespace NEA
         private string Fetch(string[] intermediateCode)
         {
             string line = intermediateCode[PC];
+            //MessageBox.Show($"Line: {line}\nPC = {PC}");
             PC++;
             return line;
         }
@@ -1926,7 +1931,6 @@ namespace NEA
                         {
                             variables[intOp].SetValue(stack.Pop());
                         }
-
                         break;
                     case "DECLARE_VAR":
                         variables[Convert.ToInt32(operand)].Declare();
