@@ -32,10 +32,10 @@ namespace NEA
 
         // Fields for Tokenization
         private Token[] tokens;
-        private string[] keyword = { "CREATE", "SET", "CHANGE", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF", 
+        private string[] keyword = { "CREATE", "SET", "CHANGE", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
-                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", 
+                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE",
                                      "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
         private int current, start, line, counter;
 
@@ -388,7 +388,7 @@ namespace NEA
         {
             List<Token> tokensList = new List<Token>();
             char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^' };
-            string[] multiCharKeywords = {"=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
+            string[] multiCharKeywords = { "=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
             string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
 
             string[] subroutineNames = FindSubroutineNames();
@@ -471,7 +471,7 @@ namespace NEA
         // https://en.wikipedia.org/wiki/Shunting_yard_algorithm
 
         // Potential Optimization - Change List<Token> to Token[]
-         private string[] ConvertToPostfix(List<Token> tokens)
+        private string[] ConvertToPostfix(List<Token> tokens)
         {
             List<string> output = new List<string>();
             Stack<Token> stack = new Stack<Token>();
@@ -588,7 +588,7 @@ namespace NEA
                     return 2;
                 case TokenType.ADD:
                     return 3;
-                case TokenType.SUB: 
+                case TokenType.SUB:
                     return 3;
                 case TokenType.MUL:
                     return 4;
@@ -641,7 +641,7 @@ namespace NEA
 
             return instructions.ToArray();
         }
-        
+
         private bool ContainsExpressions(List<Token> expression)
         {
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
@@ -783,7 +783,7 @@ namespace NEA
                 }
             }
 
-            return instructions.ToArray();   
+            return instructions.ToArray();
         }
 
         // Returns the correct intermediate code instruction
@@ -840,7 +840,7 @@ namespace NEA
 
             instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
-            
+
             instrLine = "ADJUST_TYPE " + type;
             instructions.Add(instrLine);
 
@@ -855,10 +855,10 @@ namespace NEA
 
             instructions.AddRange(ConvertToPostfix(expression));
 
-            instrLine = "ADJUST_TYPE " + type;
+            instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            instrLine = "STORE_VAR " + counterVar.ToString();
+            instrLine = "ADJUST_TYPE " + type;
             instructions.Add(instrLine);
 
             return instructions.ToArray();
@@ -873,15 +873,8 @@ namespace NEA
             instrLine = "DECLARE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            // Figure out a type system in the intermediate language
-
-            //instrLine = "LOAD_VAR " + counterVar.ToString();
-            //instructions.Add(instrLine);
-
-            //instrLine = "ADJUST_TYPE " + type;
-            //instructions.Add(instrLine);
-
-            
+            instrLine = "ADJUST_TYPE " + type;
+            instructions.Add(instrLine);
 
             return instructions.ToArray();
         }
@@ -1023,6 +1016,34 @@ namespace NEA
             instructions.Add(instrLine);
 
             instrLine = "LABEL " + (localCounter - 1).ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapWhileLoop(Token[] expression, Token[] body)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+
+            counter += 1;
+
+            int localCounter = counter;
+
+            instrLine = "LABEL " + (localCounter - 1).ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instrLine = "JUMP_FALSE " + localCounter.ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(TokensToIntermediate(body));
+
+            instrLine = "JUMP " + localCounter.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LABEL " + localCounter.ToString();
             instructions.Add(instrLine);
 
             return instructions.ToArray();
@@ -1859,30 +1880,30 @@ namespace NEA
                         // ADJUST_TYPE INTEGER
                         // adjust the Data Type of variables[0]
                         DataType type = GetDataType(operand);
-                        //string lastLine = intermediateCode[PC - 2];
-                        //string lastOperand = "";
-                        //bool isOperator = true;
-                        //foreach (char c in lastLine)
-                        //{
-                        //    if (!isOperator)
-                        //    {
-                        //        lastOperand += c;
-                        //    }
-                        //    else if (c == ' ')
-                        //    {
-                        //        isOperator = false;
-                        //    }
-                        //}
-                        //int variableIndex = 0;
-                        //try
-                        //{
-                        //    variableIndex = Convert.ToInt32(lastOperand);
-                        //}
-                        //catch
-                        //{
-                        //    MessageBox.Show($"Pre-crash: {lastOperand}");
-                        //}
-                        //variables[variableIndex].SetDataType(type);
+                        string lastLine = intermediateCode[PC - 2];
+                        string lastOperand = "";
+                        bool isOperator = true;
+                        foreach (char c in lastLine)
+                        {
+                            if (!isOperator)
+                            {
+                                lastOperand += c;
+                            }
+                            else if (c == ' ')
+                            {
+                                isOperator = false;
+                            }
+                        }
+                        int variableIndex = 0;
+                        try
+                        {
+                            variableIndex = Convert.ToInt32(lastOperand);
+                        }
+                        catch
+                        {
+                            MessageBox.Show($"Pre-crash: {lastOperand}");
+                        }
+                        variables[variableIndex].SetDataType(type);
                         break;
                 }
             }
