@@ -1040,7 +1040,7 @@ namespace NEA
 
             instructions.AddRange(TokensToIntermediate(body));
 
-            instrLine = "JUMP " + localCounter.ToString();
+            instrLine = "JUMP " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
             instrLine = "LABEL " + localCounter.ToString();
@@ -1405,6 +1405,24 @@ namespace NEA
 
                         intermediateList.AddRange(MapForLoop(variable, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
                         i += bodyEnd + 1;
+                        break;
+                    case TokenType.WHILE:
+                        expression = new List<Token>();
+                        j = 1;
+                        while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.THEN)
+                        {
+                            expression.Add(internalTokens[i + j]);
+                            j++;
+                        }
+                        if (internalTokens[i + j].GetTokenType() != TokenType.THEN)
+                        {
+                            throw new Exception("ERROR: Missing \"THEN\" in while loop");
+                        }
+                        bodyStart = i + j + 1;
+                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+                        body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+                        intermediateList.AddRange(MapWhileLoop(expression.ToArray(), body.ToArray()));
+                        i = bodyEnd + 1;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
