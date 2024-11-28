@@ -1026,27 +1026,39 @@ namespace NEA
             List<string> instructions = new List<string>();
             string instrLine;
 
-            counter += 1;
+            counter += 2;
 
             int localCounter = counter;
 
-            instrLine = "LABEL " + (localCounter - 1).ToString();
+            instrLine = "LABEL " + (localCounter - 2).ToString();
             instructions.Add(instrLine);
 
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
-            instrLine = "JUMP_FALSE " + localCounter.ToString();
+            instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
             instructions.AddRange(TokensToIntermediate(body));
 
-            instrLine = "JUMP " + (localCounter - 1).ToString();
+            instrLine = "JUMP " + (localCounter - 2).ToString();
             instructions.Add(instrLine);
 
-            instrLine = "LABEL " + localCounter.ToString();
+            instrLine = "LABEL " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
             return instructions.ToArray();
+        }
+
+        private string[] MapDoWhileLoop(Token[] expression, Token[] body)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+
+            counter += 2;
+
+            int localCounter = counter;
+
+            instrLine = "LABEL " + (localCounter - 2).ToString()
         }
 
         private int FindRelevantEndIndex(int index, Token[] tokens)
