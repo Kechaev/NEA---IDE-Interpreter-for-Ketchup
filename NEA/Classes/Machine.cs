@@ -35,7 +35,7 @@ namespace NEA
         private string[] keyword = { "CREATE", "SET", "CHANGE", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
-                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE",
+                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES",
                                      "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
         private int current, start, line, counter;
 
@@ -74,9 +74,15 @@ namespace NEA
             // Tokenization
             tokens = Tokenize();
 
-            variables = new Variable[GetNoVariables()];
+            variables = new Variable[GetNoVariables() + GetNoUnnamedVariables()];
 
             OrganiseVariables();
+
+            string String = "Variables\n";
+            foreach (Variable var in variables)
+            {
+                String += $"{var.GetID()}. {var.GetName()}\n";
+            }
 
             // Translation
 
@@ -102,6 +108,20 @@ namespace NEA
                 }
             }
             return variables.Count;
+        }
+
+        private int GetNoUnnamedVariables()
+        {
+            int counter = 0;
+            for (int i = 0; i < tokens.Length; i++) 
+            {
+                Token token = tokens[i];
+                if (token.GetTokenType() == TokenType.TIMES && tokens[i + 1].GetTokenType() == TokenType.BEGIN)
+                {
+                    counter++;
+                }
+            }
+            return counter;
         }
 
         private char Peek()
@@ -264,12 +284,13 @@ namespace NEA
                     return TokenType.PRINT;
                 case "RETURN":
                     return TokenType.RETURN;
+                case "TIMES":
+                    return TokenType.TIMES;
                 default:
                     validProgram = false;
                     throw new Exception($"Could NOT find token type\nToken: {token}");
             }
         }
-        #endregion
 
         private void OrganiseVariables()
         {
@@ -284,11 +305,17 @@ namespace NEA
                     }
                 }
             }
-            for (int i = 0; i < variables.Length; i++)
+            int noNormalVariables = GetNoVariables();
+            for (int i = 0; i < noNormalVariables; i++)
             {
                 variables[i] = new Variable(KeyByValue(i), null);
             }
+            for (int i = noNormalVariables; i < noNormalVariables + GetNoUnnamedVariables(); i++)
+            {
+                variables[i] = new Variable($"CounterVariable{i - noNormalVariables}", null);
+            }
         }
+        #endregion
 
         private string GetComparisonOperator()
         {
@@ -1077,6 +1104,63 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        private string[] MapFixedLengthLoop(string variable, Token[] expression,Token[] body)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            counter += 2;
+
+            int localCounter = counter;
+            int localCounterVar = counterVar;
+
+            instrLine = "LOAD_CONST 1";
+            instructions.Add(instrLine);
+
+            instrLine = "DECLARE_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LABEL " + (localCounter - 2).ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instrLine = "LESS_EQUAL";
+            instructions.Add(instrLine);
+
+            instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(TokensToIntermediate(body));
+
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LOAD_CONST 1";
+            instructions.Add(instrLine);
+
+            instrLine = "ADD";
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "JUMP " + (localCounter - 2).ToString();
+            instructions.Add(instrLine);
+
+            instrLine = "LABEL " + (localCounter - 1).ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
         private int FindRelevantEndIndex(int index, Token[] tokens)
         {
             int nestCounter = 1;
@@ -1472,13 +1556,6 @@ namespace NEA
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         i = bodyEnd + 1;
-
-                        string String = "";
-                        foreach (Token t in body)
-                        {
-                            String += $"{t.GetLiteral()}\n";
-                        }
-                        MessageBox.Show($"Body:\n{String}");
                         if (internalTokens[i - 1].GetTokenType() != TokenType.END)
                         {
                             throw new Exception("ERROR: No \"END\" keyword after the body");

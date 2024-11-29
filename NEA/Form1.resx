@@ -382,16 +382,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAISSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
-        YBkUBJugINiqYC1pQpokpDAYCDYKBgUVK4OtnZBOEkVsdMdzNvfCZbmz+2ZxZfHNBx/sOzsje8/svFkw
-        KSkpKSmxZGmWZMkzWUVIrQB4mt5KEhlagFod6JN3IqG+ADUavOHV2/RQjnrCeIPX2xrb8Af8Cj+J63AZ
-        jsAOwRs4z2JcQJ6T5zTsALxBG1oZlTObYQv4AJfgpsn41OmAx687ZIDNsQW8YiCcQs3HGIB5+EecYSBo
-        dl5bJUkv/Csew3fwBN7BPTgEC+INF+pdhfd4HnkFnEFm/AY8ZwBYgB47xUDQ7F9t9b8AzTi0vla/w4J4
-        gxXVxxbwHvJqfTSZLc8WMMlA0MwrgEWuwAmTVWHB28obqKg+jTbBLWhppYAdBsIG1LyfQTjeQMEmXfJX
-        PGwBvE9vzHoBWuagvhdawC4D4QvUfJBBOO5gTbxMr+XsRtTvAW/NmnKt8JGoeWgB+wyEz1DzNhcQjrcJ
-        rkLNaAWSN1Az7hMv4bjJvAIOGAjfoOZtK4DP8SJ4BZBfUPMrBmAYaubpFcDHoPITat6GAlojrwBedbsf
-        HEGyBjWjs+Z1swK4H2j+kAUMd8tRjwU//Gv4orby6TEqXhaIN/jvlD8yIqF++OjQwav9i5JERpRXvSRO
-        sixr9NP9aYPhI/7fR4mSJPe1uXJgee9rOQAAAABJRU5ErkJggg==
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAITSURBVGhD7ZkxSxxRFIUnpkzAxiZgWActxEL8DYJNau1C
+        IGVQENKIgYCtCtZiI2mSYKEYCGkiJBiIkmphWzvBTkxCsNEdzxnvhctyZ/fN4obFNx98sO/sjOw9s/Nm
+        waSioqKiwpKlWZIlD2QVIXkBsJFeSRIZWoDaHH0q70RCawFqNHjDq1fpkRx1j/EGb7U7vsJP8CN8J27C
+        VTgJ+wRv4CLLcQ55TpHzsA/wBm1rbUrO7IQtYAuuwH2T8anTB49fd8gAO2MLeMJAaEDNpxmAZXgmLjAQ
+        NDvNV0kyDC/EX/AVrMNreAjHYUm84UK9rvEeL6KogBPIjN+AhwwAC9BjXzIQNPudr24L0IxD62t1D5bE
+        G6ysPraAJcirtW0yW54t4AUDQTOvABa5Bp+brAlL3lbeQGX1abcJfoGWbgo4YCDsQs1HGITjDRRsMiB/
+        xcMWwPv00qzfQMtrqO+FFvCNgfABaj7GIBx3sA7+Sf/J2e1o3QPmzJpyrfCRqHloAT8YCO+h5j0uIBxv
+        E1yHmtEaJLNQM+4TQ/CZybwCfjIQdqDmPSuAz/EyeAWQ71DzvwzABNTM0yuAj0HlM9S8BwV0R1EBvOp2
+        PziGZANqRhfN604FcD/Q/C4LmHgsR/0v+OFn4KN85TNoVLwsEG/wesofGZHQOnx06ODNkbeSREaUV70i
+        TrIsa/fT/X6D4SP+30eFkiQ3rNZyX16UmkMAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">

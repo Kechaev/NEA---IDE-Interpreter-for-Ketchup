@@ -19,6 +19,7 @@ namespace NEA.Classes
         
         public Variable(string name, object value)
         {
+            ID = counter++;
             this.name = name;
             this.value = value;
             type = IdentifyBestDataType();
@@ -27,6 +28,7 @@ namespace NEA.Classes
 
         public Variable(string name, object value, DataType type)
         {
+            ID = counter++;
             this.name = name;
             this.value = value;
             this.type = type;
