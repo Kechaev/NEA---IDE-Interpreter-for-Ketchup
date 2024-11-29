@@ -35,7 +35,7 @@ namespace NEA
         private string[] keyword = { "CREATE", "SET", "CHANGE", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
-                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES",
+                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED",
                                      "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
         private int current, start, line, counter;
 
@@ -289,6 +289,8 @@ namespace NEA
                     return TokenType.RETURN;
                 case "TIMES":
                     return TokenType.TIMES;
+                case "DIVIDED":
+                    return TokenType.DIVIDED;
                 default:
                     validProgram = false;
                     throw new Exception($"Could NOT find token type\nToken: {token}");
@@ -1253,6 +1255,28 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        private string[] MapModulo(string variable, Token[] expression)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instrLine = "MOD";
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
         private int FindRelevantEndIndex(int index, Token[] tokens)
         {
             int nestCounter = 1;
@@ -1489,7 +1513,7 @@ namespace NEA
                     case TokenType.IF:
                         // Declare necessary variables
                         j = 0;
-                        
+
                         List<Token> mainExpression = new List<Token>();
                         List<Token[]> elseIfExpressions = new List<Token[]>();
                         List<Token> mainBody = new List<Token>();
@@ -1662,7 +1686,7 @@ namespace NEA
                         }
                         expression = new List<Token>();
                         j = 1;
-                        while (internalTokens[i + j + 1].GetTokenType() != TokenType.EOF  && internalTokens[i + j + 1].GetLine() == internalTokens[i].GetLine())
+                        while (internalTokens[i + j + 1].GetTokenType() != TokenType.EOF && internalTokens[i + j + 1].GetLine() == internalTokens[i].GetLine())
                         {
                             expression.Add(internalTokens[i + j + 1]);
                             j++;
@@ -1749,6 +1773,51 @@ namespace NEA
                         }
                         intermediateList.AddRange(MapDivision(variableName, expression.ToArray()));
                         i += j + 2;
+                        break;
+                    case TokenType.GET:
+                        // Allows for both of these syntaxes:
+                        // GET THE REMAINDER OF ...
+                        // GET REMAINDER OF...
+                        int theOffset = 0;
+                        if (internalTokens[i + 1].GetTokenType() != TokenType.THE)
+                        {
+                            theOffset = -1;
+                        }
+                        if (internalTokens[i + 2 + theOffset].GetTokenType() != TokenType.REMAINDER)
+                        {
+                            if (theOffset == 0)
+                            {
+                                throw new Exception("ERROR: No \"REMAINDER\" keyword after \"THE\"");
+                            }
+                            else
+                            {
+                                throw new Exception("ERROR: No \"REMAINDER\" keyword after \"GET\"");
+                            }
+                        }
+                        if (internalTokens[i + 3 + theOffset].GetTokenType() != TokenType.OF)
+                        {
+                            throw new Exception("ERROR: No \"OF\" keyword after \"REMAINDER\"");
+                        }
+                        variableName = internalTokens[i + 4 + theOffset].GetLiteral();
+                        // Current syntax
+                        // GET (THE) REMAINDER OF variable DIVDED BY expression
+                        if (internalTokens[i + 5 + theOffset].GetTokenType() != TokenType.DIVIDED)
+                        {
+                            throw new Exception($"ERROR: No \"DIVIDED\" keyword after \"{variableName}\"");
+                        }
+                        if (internalTokens[i + 6 + theOffset].GetTokenType() != TokenType.BY)
+                        {
+                            throw new Exception("ERROR: No \"BY\" keyword after \"DIVIDED\"");
+                        }
+                        expression = new List<Token>();
+                        j = 1;
+                        while ((internalTokens[i + j + 6 + theOffset].GetTokenType() != TokenType.EOF || internalTokens[i + j + 6 + theOffset].GetTokenType() != TokenType.EON) && internalTokens[i + j + 6 + theOffset].GetLine() == token.GetLine())
+                        {
+                            expression.Add(internalTokens[i + j + 6 + theOffset]);
+                            j++;
+                        }
+                        intermediateList.AddRange(MapModulo(variableName, expression.ToArray()));
+                        i += j + 6 + theOffset;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
