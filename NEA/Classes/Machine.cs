@@ -315,7 +315,6 @@ namespace NEA
             }
             for (int i = noNormalVariables; i < noNormalVariables + GetNoUnnamedVariables(); i++)
             {
-                MessageBox.Show($"Added CounterVariable{i - noNormalVariables}");
                 variablesDict.Add($"CounterVariable{i - noNormalVariables}", counter++);
                 variables[i] = new Variable($"CounterVariable{i - noNormalVariables}", null);
             }
@@ -1113,7 +1112,6 @@ namespace NEA
         {
             List<string> instructions = new List<string>();
             string instrLine;
-            MessageBox.Show($"Tried to access {variable}");
             counterVar = variablesDict[variable];
 
             counter += 2;
@@ -1218,6 +1216,7 @@ namespace NEA
             while (i < internalTokens.Length)
             {
                 Token token = internalTokens[i];
+                MessageBox.Show($"token = {token.GetTokenType()}\ni = {i}\nlocal length: {internalTokens.Length}");
                 switch (token.GetTokenType())
                 {
                     case TokenType.PRINT:
@@ -1471,58 +1470,58 @@ namespace NEA
                         intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
                         break;
                     case TokenType.COUNT:
-                        if (tokens[i + 1].GetTokenType() != TokenType.WITH)
+                        if (internalTokens[i + 1].GetTokenType() != TokenType.WITH)
                         {
                             throw new Exception("ERROR: Missing \"WITH\" keyword");
                         }
-                        if (tokens[i + 2].GetTokenType() != TokenType.VARIABLE)
+                        if (internalTokens[i + 2].GetTokenType() != TokenType.VARIABLE)
                         {
                             throw new Exception("ERROR: Missing variable in \"COUNT WITH _\"");
                         }
-                        if (tokens[i + 3].GetTokenType() != TokenType.FROM)
+                        if (internalTokens[i + 3].GetTokenType() != TokenType.FROM)
                         {
                             throw new Exception("ERROR: Missing \"FROM\" keyword");
                         }
                         List<Token> expression1 = new List<Token>();
                         j = 1;
-                        while (tokens[i + j + 3].GetLine() == token.GetLine() && tokens[i + j + 3].GetTokenType() != TokenType.TO)
+                        while (internalTokens[i + j + 3].GetLine() == token.GetLine() && internalTokens[i + j + 3].GetTokenType() != TokenType.TO)
                         {
-                            expression1.Add(tokens[i + j + 3]);
+                            expression1.Add(internalTokens[i + j + 3]);
                             j++;
                         }
-                        if (tokens[i + j + 3].GetTokenType() != TokenType.TO)
+                        if (internalTokens[i + j + 3].GetTokenType() != TokenType.TO)
                         {
                             throw new Exception("ERROR: Missing \"TO\" keyword");
                         }
                         List<Token> expression2 = new List<Token>();
                         k = 1;
-                        while (tokens[i + j + k + 3].GetLine() == token.GetLine() && tokens[i + j + k + 3].GetTokenType() != TokenType.BY)
+                        while (internalTokens[i + j + k + 3].GetLine() == token.GetLine() && internalTokens[i + j + k + 3].GetTokenType() != TokenType.BY)
                         {
-                            expression2.Add(tokens[i + j + k + 3]);
+                            expression2.Add(internalTokens[i + j + k + 3]);
                             k++;
                         }
                         l = 0;
                         List<Token> expression3 = new List<Token>();
-                        if (tokens[i + j + k + 4].GetLine() != token.GetLine())
+                        if (internalTokens[i + j + k + 4].GetLine() != token.GetLine())
                         {
                             expression3.Add(new Token(TokenType.INT_LITERAL, "1", token.GetLine()));
                         }
                         else
                         {
                             l = 1;
-                            while (tokens[i + j + k + l + 3].GetLine() == token.GetLine())
+                            while (internalTokens[i + j + k + l + 3].GetLine() == token.GetLine())
                             {
-                                expression3.Add(tokens[i + j + k + l + 3]);
+                                expression3.Add(internalTokens[i + j + k + l + 3]);
                                 l++;
                             }
                         }
-                        string variable = tokens[i + 2].GetLiteral();
+                        string variable = internalTokens[i + 2].GetLiteral();
                         bodyStart = i + j + k + l + 3;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
 
                         intermediateList.AddRange(MapForLoop(variable, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
-                        i += bodyEnd + 1;
+                        i = bodyEnd + 1;
                         break;
                     case TokenType.WHILE:
                         // WHILE condition THEN
@@ -1610,7 +1609,8 @@ namespace NEA
                         }
                         variableName = $"CounterVariable{fixedLoopCounter++}";
                         intermediateList.AddRange(MapFixedLengthLoop(variableName, expression.ToArray(), body.ToArray()));
-                        i += bodyEnd + 1;
+                        i = bodyEnd + 1;
+                        MessageBox.Show($"REPEAT x TIMES\ni = {i}");
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
