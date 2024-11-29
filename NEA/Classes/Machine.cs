@@ -1174,21 +1174,18 @@ namespace NEA
         private string[] MapAddition(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
             int localCounterVar = counterVar;
 
-            instrLine = "LOAD_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
 
+            // Intermediate code: Combines the entire expression into one value
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
-            instrLine = "ADD";
-            instructions.Add(instrLine);
+            instructions.Add("ADD");
 
-            instrLine = "STORE_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
             return instructions.ToArray();
         }
@@ -1196,21 +1193,18 @@ namespace NEA
         private string[] MapSubtraction(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
             int localCounterVar = counterVar;
 
-            instrLine = "LOAD_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
 
+            // Intermediate code: Combines the entire expression into one value
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
-            instrLine = "SUB";
-            instructions.Add(instrLine);
+            instructions.Add("SUB");
 
-            instrLine = "STORE_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
             return instructions.ToArray();
         }
@@ -1218,21 +1212,18 @@ namespace NEA
         private string[] MapMultiplication(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
             int localCounterVar = counterVar;
 
-            instrLine = "LOAD_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
 
+            // Intermediate code: Combines the entire expression into one value
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
-            instrLine = "MUL";
-            instructions.Add(instrLine);
+            instructions.Add("MUL");
 
-            instrLine = "STORE_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
             return instructions.ToArray();
         }
@@ -1240,21 +1231,18 @@ namespace NEA
         private string[] MapDivision(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
             int localCounterVar = counterVar;
 
-            instrLine = "LOAD_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
 
+            // Intermediate code: Combines the entire expression into one value
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
-            instrLine = "DIV";
-            instructions.Add(instrLine);
+            instructions.Add("DIV");
 
-            instrLine = "STORE_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
             return instructions.ToArray();
         }
@@ -1262,21 +1250,18 @@ namespace NEA
         private string[] MapModulo(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
             int localCounterVar = counterVar;
 
-            instrLine = "LOAD_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
 
+            // Intermediate code: Combines the entire expression into one value
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
-            instrLine = "MOD";
-            instructions.Add(instrLine);
+            instructions.Add("MOD");
 
-            instrLine = "STORE_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
             return instructions.ToArray();
         }
@@ -1284,21 +1269,18 @@ namespace NEA
         private string[] MapExponentiation(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
             int localCounterVar = counterVar;
 
-            instrLine = "LOAD_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
 
+            // Intermediate code: Combines the entire expression into one value
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
-            instrLine = "EXP";
-            instructions.Add(instrLine);
+            instructions.Add("EXP");
 
-            instrLine = "STORE_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
             return instructions.ToArray();
         }
@@ -1832,13 +1814,14 @@ namespace NEA
                                 throw new Exception("ERROR: No \"REMAINDER\" keyword after \"GET\"");
                             }
                         }
-                        if (internalTokens[i + 3 + theOffset].GetTokenType() != TokenType.OF)
+                        if (internalTokens[i + 3 + theOffset].GetTokenType() != TokenType.FROM)
                         {
                             throw new Exception("ERROR: No \"OF\" keyword after \"REMAINDER\"");
                         }
                         variableName = internalTokens[i + 4 + theOffset].GetLiteral();
                         // Current syntax
                         // GET (THE) REMAINDER OF variable DIVDED BY expression
+                        // GET (THE) REMAINDER FROM x DIVIDED BY expression
                         if (internalTokens[i + 5 + theOffset].GetTokenType() != TokenType.DIVIDED)
                         {
                             throw new Exception($"ERROR: No \"DIVIDED\" keyword after \"{variableName}\"");
