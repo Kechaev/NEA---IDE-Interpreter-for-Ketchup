@@ -46,6 +46,7 @@ namespace NEA
         private Variable[] variables;
         private Dictionary<string, int> variablesDict = new Dictionary<string, int>();
         private int counterVar;
+        private int fixedLoopCounter;
 
         // Fields for Execution
         private int PC;
@@ -62,6 +63,8 @@ namespace NEA
             PC = 0;
             validProgram = true;
             stack = new Stack<object>();
+
+            fixedLoopCounter = 0;
         }
 
         public string[] GetIntermediateCode()
@@ -312,6 +315,8 @@ namespace NEA
             }
             for (int i = noNormalVariables; i < noNormalVariables + GetNoUnnamedVariables(); i++)
             {
+                MessageBox.Show($"Added CounterVariable{i - noNormalVariables}");
+                variablesDict.Add($"CounterVariable{i - noNormalVariables}", counter++);
                 variables[i] = new Variable($"CounterVariable{i - noNormalVariables}", null);
             }
         }
@@ -1108,6 +1113,7 @@ namespace NEA
         {
             List<string> instructions = new List<string>();
             string instrLine;
+            MessageBox.Show($"Tried to access {variable}");
             counterVar = variablesDict[variable];
 
             counter += 2;
@@ -1578,6 +1584,33 @@ namespace NEA
                         }
                         intermediateList.AddRange(MapDoWhileLoop(expression.ToArray(), body.ToArray()));
                         i = i + j + 1;
+                        break;
+                    case TokenType.REPEAT:
+                        expression = new List<Token>();
+                        j = 1;
+                        while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.TIMES)
+                        {
+                            expression.Add(internalTokens[i + j]);
+                            j++;
+                        }
+                        if (internalTokens[i + j].GetTokenType() != TokenType.TIMES)
+                        {
+                            throw new Exception("ERROR: No \"TIMES\" keyword found after expression");
+                        }
+                        if (internalTokens[i + j + 1].GetTokenType() != TokenType.BEGIN)
+                        {
+                            throw new Exception("ERROR: No \"BEGIN\" keyword found after \"TIMES\"");
+                        }
+                        bodyStart = i + j + 1;
+                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+                        body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+                        if (internalTokens[bodyEnd].GetTokenType() != TokenType.END)
+                        {
+                            throw new Exception("ERROR: No \"END\" keyword found after body");
+                        }
+                        variableName = $"CounterVariable{fixedLoopCounter++}";
+                        intermediateList.AddRange(MapFixedLengthLoop(variableName, expression.ToArray(), body.ToArray()));
+                        i += bodyEnd + 1;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
