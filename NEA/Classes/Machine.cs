@@ -35,7 +35,7 @@ namespace NEA
         private string[] keyword = { "CREATE", "SET", "CHANGE", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
-                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED",
+                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
                                      "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
         private int current, start, line, counter;
 
@@ -291,6 +291,10 @@ namespace NEA
                     return TokenType.TIMES;
                 case "DIVIDED":
                     return TokenType.DIVIDED;
+                case "RAISE":
+                    return TokenType.RAISE;
+                case "POWER":
+                    return TokenType.POWER;
                 default:
                     validProgram = false;
                     throw new Exception($"Could NOT find token type\nToken: {token}");
@@ -1277,6 +1281,28 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        private string[] MapExponentiation(string variable, Token[] expression)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instrLine = "EXP";
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
         private int FindRelevantEndIndex(int index, Token[] tokens)
         {
             int nestCounter = 1;
@@ -1587,7 +1613,7 @@ namespace NEA
                         }
                         if (internalTokens[i + 2].GetTokenType() != TokenType.VARIABLE)
                         {
-                            throw new Exception("ERROR: Missing variable in \"COUNT WITH _\"");
+                            throw new Exception("ERROR: Missing variable from \"COUNT WITH\"");
                         }
                         if (internalTokens[i + 3].GetTokenType() != TokenType.FROM)
                         {
@@ -1746,12 +1772,20 @@ namespace NEA
                             expression.Add(internalTokens[i + j + 1]);
                             j++;
                         }
+                        if (internalTokens[i + j + 1].GetTokenType() != TokenType.FROM)
+                        {
+                            throw new Exception($"ERROR: No \"FROM\" keyword after {expression[expression.Count - 1].GetLiteral()}");
+                        }
                         variableName = internalTokens[i + j + 2].GetLiteral();
                         intermediateList.AddRange(MapSubtraction(variableName, expression.ToArray()));
                         i += j + 3;
                         break;
                     case TokenType.MULTIPLICATION:
                         variableName = internalTokens[i + 1].GetLiteral();
+                        if (internalTokens[i + 2].GetTokenType() != TokenType.BY)
+                        {
+                            throw new Exception($"ERROR: No \"BY\" keyword after {variableName}");
+                        }
                         expression = new List<Token>();
                         j = 1;
                         while ((internalTokens[i + j + 2].GetTokenType() != TokenType.EOF || internalTokens[i + j + 2].GetTokenType() != TokenType.EON) && internalTokens[i + j + 2].GetLine() == token.GetLine())
@@ -1764,6 +1798,10 @@ namespace NEA
                         break;
                     case TokenType.DIVISION:
                         variableName = internalTokens[i + 1].GetLiteral();
+                        if (internalTokens[i + 2].GetTokenType() != TokenType.BY)
+                        {
+                            throw new Exception($"ERROR: No \"BY\" keyword after {variableName}");
+                        }
                         expression = new List<Token>();
                         j = 1;
                         while ((internalTokens[i + j + 2].GetTokenType() != TokenType.EOF || internalTokens[i + j + 2].GetTokenType() != TokenType.EON) && internalTokens[i + j + 2].GetLine() == token.GetLine())
@@ -1818,6 +1856,34 @@ namespace NEA
                         }
                         intermediateList.AddRange(MapModulo(variableName, expression.ToArray()));
                         i += j + 6 + theOffset;
+                        break;
+                    case TokenType.RAISE:
+                        if (internalTokens[i + 1].GetTokenType() != TokenType.VARIABLE)
+                        {
+                            throw new Exception("ERROR: No variable found after \"RAISE\"");
+                        }
+                        variableName = internalTokens[i + 1].GetLiteral();
+                        if (internalTokens[i + 2].GetTokenType() != TokenType.TO)
+                        {
+                            throw new Exception($"ERROR: No \"TO\" after \"{variableName}\"");
+                        }
+                        if (internalTokens[i + 3].GetTokenType() != TokenType.THE)
+                        {
+                            throw new Exception("ERROR: No \"THE\" keyword after \"TO\"");
+                        }
+                        if (internalTokens[i + 4].GetTokenType() != TokenType.POWER)
+                        {
+                            throw new Exception("ERROR: No \"POWER\" keyword after \"THE\"");
+                        }
+                        expression = new List<Token>();
+                        j = 1;
+                        while ((internalTokens[i + j + 4].GetTokenType() != TokenType.EOF || internalTokens[i + j + 4].GetTokenType() != TokenType.EON) && internalTokens[i + j + 4].GetLine() == token.GetLine())
+                        {
+                            expression.Add(internalTokens[i + j + 4]);
+                            j++;
+                        }
+                        intermediateList.AddRange(MapExponentiation(variableName, expression.ToArray()));
+                        i += j + 4;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
