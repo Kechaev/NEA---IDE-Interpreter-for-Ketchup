@@ -1472,6 +1472,17 @@ namespace NEA
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         i = bodyEnd + 1;
+
+                        string String = "";
+                        foreach (Token t in body)
+                        {
+                            String += $"{t.GetLiteral()}\n";
+                        }
+                        MessageBox.Show($"Body:\n{String}");
+                        if (internalTokens[i - 1].GetTokenType() != TokenType.END)
+                        {
+                            throw new Exception("ERROR: No \"END\" keyword after the body");
+                        }
                         if (internalTokens[i].GetTokenType() != TokenType.REPEAT)
                         {
                             throw new Exception("ERROR: No \"REPEAT\" keyword found after the body");

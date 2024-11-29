@@ -384,6 +384,24 @@ namespace NEA
             {
                 Run();
             }
+            else if (e.KeyCode == Keys.Up)
+            {
+                int selected = txtCodeField.SelectionStart;
+                int line = txtCodeField.GetLineFromCharIndex(selected);
+                if (line == 0)
+                {
+                    txtCodeField.SelectionStart = 0;
+                }
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                int selected = txtCodeField.SelectionStart;
+                int line = txtCodeField.GetLineFromCharIndex(selected);
+                if (line == txtCodeField.Lines.Length - 1)
+                {
+                    txtCodeField.SelectionStart = txtCodeField.Text.Length;
+                }
+            }
         }
         
         // Fix for tab seleting elements of the applications
@@ -550,9 +568,9 @@ namespace NEA
             MessageBox.Show("Breakpoints");
         }
 
+        // NOT IMPLEMENTED
         private void tsDelay_Click(object sender, EventArgs e)
         {
-            // NOT IMPLEMENTED
             switch (delayMS)
             {
                 case 0:
