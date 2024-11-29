@@ -1165,6 +1165,94 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        private string[] MapAddition(string variable, Token[] expression)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instrLine = "ADD";
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapSubtraction(string variable, Token[] expression)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instrLine = "SUB";
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapMultiplication(string variable, Token[] expression)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instrLine = "MUL";
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapDivision(string variable, Token[] expression)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instrLine = "LOAD_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instrLine = "DIV";
+            instructions.Add(instrLine);
+
+            instrLine = "STORE_VAR " + localCounterVar.ToString();
+            instructions.Add(instrLine);
+
+            return instructions.ToArray();
+        }
+
         private int FindRelevantEndIndex(int index, Token[] tokens)
         {
             int nestCounter = 1;
@@ -1216,7 +1304,6 @@ namespace NEA
             while (i < internalTokens.Length)
             {
                 Token token = internalTokens[i];
-                MessageBox.Show($"token = {token.GetTokenType()}\ni = {i}\nlocal length: {internalTokens.Length}");
                 switch (token.GetTokenType())
                 {
                     case TokenType.PRINT:
@@ -1610,7 +1697,58 @@ namespace NEA
                         variableName = $"CounterVariable{fixedLoopCounter++}";
                         intermediateList.AddRange(MapFixedLengthLoop(variableName, expression.ToArray(), body.ToArray()));
                         i = bodyEnd + 1;
-                        MessageBox.Show($"REPEAT x TIMES\ni = {i}");
+                        break;
+                    case TokenType.ADDITION:
+                        expression = new List<Token>();
+                        j = 1;
+                        while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.TO)
+                        {
+                            expression.Add(internalTokens[i + j]);
+                            j++;
+                        }
+                        variableName = internalTokens[i + j + 1].GetLiteral();
+                        intermediateList.AddRange(MapAddition(variableName, expression.ToArray()));
+                        i += j + 2;
+                        break;
+                    case TokenType.TAKE:
+                        if (internalTokens[i + 1].GetTokenType() != TokenType.AWAY)
+                        {
+                            throw new Exception("ERROR: No \"AWAY\" keyword found after \"TAKE\"");
+                        }
+                        expression = new List<Token>();
+                        j = 1;
+                        while (internalTokens[i + j + 1].GetLine() == token.GetLine() && internalTokens[i + j + 1].GetTokenType() != TokenType.FROM)
+                        {
+                            expression.Add(internalTokens[i + j + 1]);
+                            j++;
+                        }
+                        variableName = internalTokens[i + j + 2].GetLiteral();
+                        intermediateList.AddRange(MapSubtraction(variableName, expression.ToArray()));
+                        i += j + 3;
+                        break;
+                    case TokenType.MULTIPLICATION:
+                        variableName = internalTokens[i + 1].GetLiteral();
+                        expression = new List<Token>();
+                        j = 1;
+                        while ((internalTokens[i + j + 2].GetTokenType() != TokenType.EOF || internalTokens[i + j + 2].GetTokenType() != TokenType.EON) && internalTokens[i + j + 2].GetLine() == token.GetLine())
+                        {
+                            expression.Add(internalTokens[i + j + 2]);
+                            j++;
+                        }
+                        intermediateList.AddRange(MapMultiplication(variableName, expression.ToArray()));
+                        i += j + 2;
+                        break;
+                    case TokenType.DIVISION:
+                        variableName = internalTokens[i + 1].GetLiteral();
+                        expression = new List<Token>();
+                        j = 1;
+                        while ((internalTokens[i + j + 2].GetTokenType() != TokenType.EOF || internalTokens[i + j + 2].GetTokenType() != TokenType.EON) && internalTokens[i + j + 2].GetLine() == token.GetLine())
+                        {
+                            expression.Add(internalTokens[i + j + 2]);
+                            j++;
+                        }
+                        intermediateList.AddRange(MapDivision(variableName, expression.ToArray()));
+                        i += j + 2;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
