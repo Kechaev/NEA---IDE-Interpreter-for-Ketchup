@@ -520,6 +520,7 @@ namespace NEA
                                                    TokenType.DIV, TokenType.MOD, TokenType.EXP, };
             TokenType[] comparisonOperators = { TokenType.EQUAL, TokenType.NOT_EQUAL, TokenType.GREATER,
                                                 TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL };
+            TokenType[] binaryBitwiseOpeartions = { TokenType.AND, TokenType.OR };
 
             string String = "";
 
@@ -562,12 +563,20 @@ namespace NEA
                     while (stack.Count > 0 && stack.Peek().GetTokenType() != TokenType.LEFT_BRACKET)
                     {
                         var topToken = stack.Pop();
-                        if (comparisonOperators.Contains(topToken.GetTokenType()) || mathematicalOperations.Contains(topToken.GetTokenType()))
-                        {
-                            output.Add(topToken.GetTokenType().ToString());
-                        }
+                        // Removed this if statement wrapper
+                        // No idea why it was there
+                        //if (comparisonOperators.Contains(topToken.GetTokenType()) || mathematicalOperations.Contains(topToken.GetTokenType()))
+                        output.Add(topToken.GetTokenType().ToString());
                     }
                     stack.Pop();
+                }
+                else if (binaryBitwiseOpeartions.Contains(e.GetTokenType()))
+                {
+                    while (stack.Count > 0)
+                    {
+                        var topToken = stack.Pop();
+                        output.Add(topToken.GetTokenType().ToString());
+                    }
                 }
                 else
                 {
@@ -642,7 +651,6 @@ namespace NEA
         private string[] MapInputStatement(List<Token> promptExpression)
         {
             List<string> instructions = new List<string>();
-            string instrLine = "ERROR";
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
@@ -651,22 +659,19 @@ namespace NEA
             {
                 if (e.GetTokenType() == TokenType.VARIABLE)
                 {
-                    instrLine = "LOAD_VAR " + variablesDict[e.GetLiteral()];
+                    instructions.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
                 }
                 else if (literals.Contains(e.GetTokenType()))
                 {
-                    instrLine = "LOAD_CONST " + e.GetLiteral();
+                    instructions.Add("LOAD_CONST " + e.GetLiteral());
                 }
                 else
                 {
                     throw new Exception("ERROR: Invalid token in string");
                 }
-
-                instructions.Add(instrLine);
             }
 
-            instrLine = "CALL INPUT";
-            instructions.Add(instrLine);
+            instructions.Add("CALL INPUT");
 
             return instructions.ToArray();
         }
@@ -674,7 +679,9 @@ namespace NEA
         private string[] MapPrintStatement(List<Token> expression)
         {
             List<string> instructions = new List<string>();
+
             instructions.AddRange(GetIntermediateFromExpression(expression));
+
             instructions.Add("CALL PRINT");
 
             return instructions.ToArray();
@@ -830,6 +837,7 @@ namespace NEA
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
+
             List<string> instrLine = new List<string>();
 
             if (e.GetTokenType() == TokenType.VARIABLE)
@@ -1172,6 +1180,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        #region Assignment with operations
         private string[] MapAddition(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1285,6 +1294,7 @@ namespace NEA
 
             return instructions.ToArray();
         }
+        #endregion
 
         private int FindRelevantEndIndex(int index, Token[] tokens)
         {
@@ -1326,6 +1336,7 @@ namespace NEA
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
                                                    TokenType.DIV, TokenType.MOD, TokenType.EXP };
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
+            TokenType[] brackets = { TokenType.LEFT_BRACKET, TokenType.RIGHT_BRACKET };
 
             string type, variableName;
             bool noType;
@@ -1333,7 +1344,6 @@ namespace NEA
             int j, k, l;
             int inputOffset;
             
-
             while (i < internalTokens.Length)
             {
                 Token token = internalTokens[i];
@@ -1346,7 +1356,8 @@ namespace NEA
                         // - Variable
                         // - Any literal
                         // - An input
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.EOF && internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + 1].GetTokenType()) || internalTokens[i + 1].GetTokenType() == TokenType.INPUT)
+                        // - Left Bracket
+                        if (internalTokens[i + 1].GetTokenType() != TokenType.EOF && internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + 1].GetTokenType()) || internalTokens[i + 1].GetTokenType() == TokenType.INPUT || internalTokens[i + 1].GetTokenType() == TokenType.LEFT_BRACKET)
                         {
                             expression = new List<Token>();
                             j = 1;
@@ -1361,7 +1372,7 @@ namespace NEA
                                 // - Variable
                                 // - Any literal
                                 // - Mathematical symbol
-                                if (internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()) || mathematicalOperations.Contains(internalTokens[i + j].GetTokenType()))
+                                if (internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()) || mathematicalOperations.Contains(internalTokens[i + j].GetTokenType()) || brackets.Contains(internalTokens[i + j].GetTokenType()))
                                 {
                                     expression.Add(internalTokens[i + j]);
                                     j++;
@@ -1382,6 +1393,7 @@ namespace NEA
                         {
                             throw new Exception("ERROR: No valid text expression following print command");
                         }
+
                         intermediateList.AddRange(MapPrintStatement(expression));
                         // Set the counter to the end of the print statement
                         i += j;
