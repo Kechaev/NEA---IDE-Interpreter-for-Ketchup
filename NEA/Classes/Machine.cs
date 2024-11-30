@@ -661,6 +661,7 @@ namespace NEA
                 {
                     throw new Exception("ERROR: Invalid token in string");
                 }
+
                 instructions.Add(instrLine);
             }
 
