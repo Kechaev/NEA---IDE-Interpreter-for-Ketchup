@@ -81,12 +81,6 @@ namespace NEA
 
             OrganiseVariables();
 
-            string String = "Variables\n";
-            foreach (Variable var in variables)
-            {
-                String += $"{var.GetID()}. {var.GetName()}\n";
-            }
-
             // Translation
 
             intermediate = TokensToIntermediate(tokens);
@@ -572,6 +566,14 @@ namespace NEA
                 }
                 else if (binaryBitwiseOpeartions.Contains(e.GetTokenType()))
                 {
+                    MessageBox.Show($"Bitwise - {e.GetLiteral()}");
+                    string stackStr = "";
+                    foreach (Token t in stack)
+                    {
+                        stackStr += $"{t.GetLiteral()}\n";
+                    }
+                    MessageBox.Show($"Stack:\n{stackStr}");
+
                     while (stack.Count > 0)
                     {
                         var topToken = stack.Pop();
@@ -691,6 +693,9 @@ namespace NEA
         {
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
                                                    TokenType.DIV, TokenType.MOD, TokenType.EXP };
+            TokenType[] comparisonOperation = { TokenType.GREATER, TokenType.LESS, TokenType.EQUAL,
+                                                TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.NOT_EQUAL };
+            TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
 
             List<TokenType> tokenTypeExpression = new List<TokenType>();
 
@@ -699,8 +704,22 @@ namespace NEA
                 tokenTypeExpression.Add(e.GetTokenType());
             }
 
-            // Does the print statement have an expression
+            // Does the print statement have an expression, mathematical or bitwise
             foreach (TokenType t in mathematicalOperations)
+            {
+                if (tokenTypeExpression.Contains(t))
+                {
+                    return true;
+                }
+            }
+            foreach (TokenType t in comparisonOperation)
+            {
+                if (tokenTypeExpression.Contains(t))
+                {
+                    return true;
+                }
+            }
+            foreach (TokenType t in bitwiseOperations)
             {
                 if (tokenTypeExpression.Contains(t))
                 {
@@ -837,6 +856,7 @@ namespace NEA
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
+            TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
 
             List<string> instrLine = new List<string>();
 
@@ -861,6 +881,21 @@ namespace NEA
                 foreach (string statement in inputStatement)
                 {
                     instrLine.Add(statement);
+                }
+            }
+            else if (bitwiseOperations.Contains(e.GetTokenType()))
+            {
+                if (e.GetTokenType() == TokenType.AND)
+                {
+                    instrLine.Add("MUL");
+                }
+                else if (e.GetTokenType() == TokenType.OR)
+                {
+                    instrLine.Add("ADD");
+                }
+                else if (e.GetTokenType() == TokenType.NOT)
+                {
+                    instrLine.Add("NOT");
                 }
             }
             else
@@ -1316,6 +1351,59 @@ namespace NEA
             return index;
         }
 
+        private bool IsEndOfToken(Token token)
+        {
+            return token.GetTokenType() == TokenType.EOF || token.GetTokenType() == TokenType.EON;
+        }
+
+        private bool IsVariable(Token token)
+        {
+            return token.GetTokenType() == TokenType.VARIABLE;
+        }
+
+        private bool IsInput(Token token)
+        {
+            return token.GetTokenType() == TokenType.INPUT;
+        }
+
+        private bool IsLiteral(Token token)
+        {
+            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
+                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
+                                     TokenType.BOOL_LITERAL };
+            return literals.Contains(token.GetTokenType());
+        }
+
+        private bool IsLeftBracket(Token token)
+        {
+            return token.GetTokenType() == TokenType.LEFT_BRACKET;
+        }
+        
+        private bool IsBracket(Token token)
+        {
+            return IsLeftBracket(token) || token.GetTokenType() == TokenType.RIGHT_BRACKET;
+        }
+
+        private bool IsMathsOperator(Token token)
+        {
+            TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
+                                                   TokenType.DIV, TokenType.MOD, TokenType.EXP };
+            return mathematicalOperations.Contains(token.GetTokenType());
+        }
+
+        private bool IsBitwise(Token token)
+        {
+            TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
+            return bitwiseOperations.Contains(token.GetTokenType());
+        }
+
+        private bool IsComparison(Token token)
+        {
+            TokenType[] comparisonOperations = { TokenType.GREATER, TokenType.LESS, TokenType.EQUAL,
+                                                 TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.NOT_EQUAL };
+            return comparisonOperations.Contains(token.GetTokenType());
+        }
+
         // Implemented list:
         // PRINT
         // ASSIGNMENT
@@ -1336,6 +1424,8 @@ namespace NEA
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
                                                    TokenType.DIV, TokenType.MOD, TokenType.EXP };
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
+            TokenType[] comparisonOperations = { TokenType.GREATER, TokenType.LESS, TokenType.EQUAL,
+                                                 TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.NOT_EQUAL };
             TokenType[] brackets = { TokenType.LEFT_BRACKET, TokenType.RIGHT_BRACKET };
 
             string type, variableName;
@@ -1359,6 +1449,7 @@ namespace NEA
                         // - Left Bracket
                         if (internalTokens[i + 1].GetTokenType() != TokenType.EOF && internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + 1].GetTokenType()) || internalTokens[i + 1].GetTokenType() == TokenType.INPUT || internalTokens[i + 1].GetTokenType() == TokenType.LEFT_BRACKET)
                         {
+                            MessageBox.Show($"token = {internalTokens[i + 1].GetLiteral()} - {internalTokens[i + 1].GetTokenType()}");
                             expression = new List<Token>();
                             j = 1;
                             // Collect tokens for the expression
@@ -1368,12 +1459,14 @@ namespace NEA
                             // - NOT end of nest
                             while (internalTokens[i + j].GetTokenType() != TokenType.EOF && internalTokens[i + j].GetTokenType() != TokenType.EON && internalTokens[i + j].GetLine() == token.GetLine())
                             {
+                                MessageBox.Show($"token = {internalTokens[i + j].GetLiteral()} - {internalTokens[i + j].GetTokenType()}");
                                 // Add to list if:
                                 // - Variable
                                 // - Any literal
                                 // - Mathematical symbol
-                                if (internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()) || mathematicalOperations.Contains(internalTokens[i + j].GetTokenType()) || brackets.Contains(internalTokens[i + j].GetTokenType()))
+                                if (internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()) || mathematicalOperations.Contains(internalTokens[i + j].GetTokenType()) || brackets.Contains(internalTokens[i + j].GetTokenType()) || bitwiseOperations.Contains(internalTokens[i + j].GetTokenType()) || comparisonOperations.Contains(internalTokens[i + j].GetTokenType()))
                                 {
+                                    MessageBox.Show($"token = {internalTokens[i + j].GetLiteral()} - {internalTokens[i + j].GetTokenType()}");
                                     expression.Add(internalTokens[i + j]);
                                     j++;
                                 }
