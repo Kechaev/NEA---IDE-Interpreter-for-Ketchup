@@ -566,17 +566,10 @@ namespace NEA
                 }
                 else if (binaryBitwiseOpeartions.Contains(e.GetTokenType()))
                 {
-                    MessageBox.Show($"Bitwise - {e.GetLiteral()}");
-                    string stackStr = "";
-                    foreach (Token t in stack)
-                    {
-                        stackStr += $"{t.GetLiteral()}\n";
-                    }
-                    MessageBox.Show($"Stack:\n{stackStr}");
-
                     while (stack.Count > 0)
                     {
                         var topToken = stack.Pop();
+                        MessageBox.Show($"Popped: {topToken}");
                         output.Add(topToken.GetTokenType().ToString());
                     }
                 }
@@ -1447,36 +1440,25 @@ namespace NEA
                         // - Any literal
                         // - An input
                         // - Left Bracket
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.EOF && internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + 1].GetTokenType()) || internalTokens[i + 1].GetTokenType() == TokenType.INPUT || internalTokens[i + 1].GetTokenType() == TokenType.LEFT_BRACKET)
+                        Token nextToken = internalTokens[i + 1];
+                        if (IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken))
                         {
-                            MessageBox.Show($"token = {internalTokens[i + 1].GetLiteral()} - {internalTokens[i + 1].GetTokenType()}");
                             expression = new List<Token>();
                             j = 1;
-                            // Collect tokens for the expression
-                            // Accept while:
-                            // - On the same line as the print token
-                            // - NOT end of file
-                            // - NOT end of nest
                             while (internalTokens[i + j].GetTokenType() != TokenType.EOF && internalTokens[i + j].GetTokenType() != TokenType.EON && internalTokens[i + j].GetLine() == token.GetLine())
                             {
-                                MessageBox.Show($"token = {internalTokens[i + j].GetLiteral()} - {internalTokens[i + j].GetTokenType()}");
-                                // Add to list if:
-                                // - Variable
-                                // - Any literal
-                                // - Mathematical symbol
-                                if (internalTokens[i + j].GetTokenType() == TokenType.VARIABLE || literals.Contains(internalTokens[i + j].GetTokenType()) || mathematicalOperations.Contains(internalTokens[i + j].GetTokenType()) || brackets.Contains(internalTokens[i + j].GetTokenType()) || bitwiseOperations.Contains(internalTokens[i + j].GetTokenType()) || comparisonOperations.Contains(internalTokens[i + j].GetTokenType()))
+                                nextToken = internalTokens[i + j];
+                                if (IsVariable(nextToken) || IsLiteral(nextToken) || IsMathsOperator(nextToken) || IsBracket(nextToken) || IsBitwise(nextToken) || IsComparison(nextToken))
                                 {
-                                    MessageBox.Show($"token = {internalTokens[i + j].GetLiteral()} - {internalTokens[i + j].GetTokenType()}");
-                                    expression.Add(internalTokens[i + j]);
+                                    MessageBox.Show($"token = {nextToken.GetLiteral()} - {nextToken.GetTokenType()}");
+                                    expression.Add(nextToken);
                                     j++;
                                 }
-                                // Limitation: in an if statement the prompt cannot contain multiple strings or variables
-                                // Add to list if:
-                                // - An input
-                                else if (internalTokens[i + j].GetTokenType() == TokenType.INPUT)
+                                // Limitation: in an if statement the prompt cannot contain multiple strings or variable
+                                else if (IsInput(nextToken))
                                 {
-                                    expression.Add(internalTokens[i + j]);
-                                    // Increment by 2 (1 + 2 = 3) more to skip filler "WITH PROMPT"
+                                    expression.Add(nextToken);
+                                    // Increment by 2 more to skip filler "WITH PROMPT"
                                     // Continue onto the following string prompt
                                     j += 3;
                                 }
