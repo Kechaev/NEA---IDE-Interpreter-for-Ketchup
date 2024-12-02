@@ -1467,7 +1467,9 @@ namespace NEA
             List<Token> expression;
             int j, k, l;
             int inputOffset;
-            
+            Token nextToken;
+
+
             while (i < internalTokens.Length)
             {
                 Token token = internalTokens[i];
@@ -1481,12 +1483,13 @@ namespace NEA
                         // - Any literal
                         // - An input
                         // - Left Bracket
-                        Token nextToken = internalTokens[i + 1];
-                        if (IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken) || IsUnaryBitwise(nextToken))
+                        nextToken = internalTokens[i + 1];
+                        if (!IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken) || IsUnaryBitwise(nextToken))
                         {
                             expression = new List<Token>();
                             j = 1;
-                            while (internalTokens[i + j].GetTokenType() != TokenType.EOF && internalTokens[i + j].GetTokenType() != TokenType.EON && internalTokens[i + j].GetLine() == token.GetLine())
+                            nextToken = internalTokens[i + j];
+                            while (!IsEndOfToken(nextToken) && nextToken.GetLine() == token.GetLine())
                             {
                                 nextToken = internalTokens[i + j];
                                 if (IsVariable(nextToken) || IsLiteral(nextToken) || IsMathsOperator(nextToken) || IsBracket(nextToken) || IsBitwise(nextToken) || IsComparison(nextToken))
@@ -1517,11 +1520,13 @@ namespace NEA
                         type = "STRING";
                         noType = true;
 
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.VARIABLE)
+                        nextToken = internalTokens[i + 1];
+                        if (!IsVariable(nextToken))
                         {
                             throw new Exception("ERROR: No variable found after \"SET\"");
                         }
-                        if (internalTokens[i + 2].GetTokenType() != TokenType.TO)
+                        nextToken = internalTokens[i + 2];
+                        if (nextToken.GetTokenType() != TokenType.TO)
                         {
                             throw new Exception("ERROR: \"TO\" keyword not found after variable");
                         }
@@ -1529,30 +1534,34 @@ namespace NEA
                         expression = new List<Token>();
                         j = 1;
                         inputOffset = 0;
-                        while (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 2].GetLine() == token.GetLine() && internalTokens[i + j + 2].GetTokenType() != TokenType.AS)
+
+                        nextToken = internalTokens[i + j + 2];
+                        while (!IsEndOfToken(nextToken) && internalTokens[i + j + 2].GetLine() == token.GetLine() && nextToken.GetTokenType() != TokenType.AS)
                         {
                             // Limitation: in an if statement the prompt cannot contain multiple strings or variables
                             // Format without punctuation does not support this
-                            if (internalTokens[i + j + 2].GetTokenType() == TokenType.INPUT)
+                            if (IsInput(nextToken))
                             {
-                                expression.Add(internalTokens[i + j + 2]);
+                                expression.Add(nextToken);
                                 j += 3;
                                 inputOffset += 2;
                             }
                             else
                             {
-                                expression.Add(internalTokens[i + j + 2]);
+                                expression.Add(nextToken);
                                 j++;
                             }
+                            nextToken = internalTokens[i + j + 2];
                         }
                         j = expression.Count + inputOffset;
                         // Data Type identification
-                        if (internalTokens[i + j + 2].GetTokenType() != TokenType.EOF && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
+                        nextToken = internalTokens[i + j + 2];
+                        if (!IsEndOfToken(nextToken) && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
                         {
                             type = internalTokens[i + j + 4].GetLiteral();
                             noType = false;
                         }
-                        else if (internalTokens[i + j + 3].GetTokenType() != TokenType.EOF && internalTokens[i + j + 3].GetLine() == token.GetLine())
+                        else if (!IsEndOfToken(internalTokens[i + j + 3]) && internalTokens[i + j + 3].GetLine() == token.GetLine())
                         {
                             throw new Exception("ERROR: No data type mentioned");
                         }
