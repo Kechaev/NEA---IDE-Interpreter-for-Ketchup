@@ -85,6 +85,7 @@ namespace NEA
 
         private void txtIntermediateCode_Click(object sender, EventArgs e)
         {
+            // CHANGE THIS
             Point p = PointToClient(new Point(MousePosition.X, MousePosition.Y));
             lblName.Text = "HALT";
             txtDescription.Text = nameDescription["HALT"];

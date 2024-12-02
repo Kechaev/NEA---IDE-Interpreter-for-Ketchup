@@ -514,14 +514,7 @@ namespace NEA
                                                    TokenType.DIV, TokenType.MOD, TokenType.EXP, };
             TokenType[] comparisonOperators = { TokenType.EQUAL, TokenType.NOT_EQUAL, TokenType.GREATER,
                                                 TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL };
-            TokenType[] binaryBitwiseOpeartions = { TokenType.AND, TokenType.OR };
-
-            string String = "";
-
-            foreach (Token t in tokens)
-            {
-                String += $"{t.GetTokenType()}\n";
-            }
+            TokenType[] binaryBitwiseOperations = { TokenType.AND, TokenType.OR };
 
             for (int i = 0; i < tokens.Count; i++)
             {
@@ -529,10 +522,20 @@ namespace NEA
                 if (literals.Contains(e.GetTokenType()))
                 {
                     output.Add("LOAD_CONST " + e.GetLiteral());
+                    if (stack.Count > 0 && stack.Peek().GetTokenType() == TokenType.NOT)
+                    {
+                        stack.Pop();
+                        output.Add("NOT");
+                    }
                 }
                 else if (e.GetTokenType() == TokenType.VARIABLE)
                 {
                     output.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
+                    if (stack.Count > 0 && stack.Peek().GetTokenType() == TokenType.NOT)
+                    {
+                        stack.Pop();
+                        output.Add("NOT");
+                    }
                 }
                 else if (e.GetTokenType() == TokenType.INPUT)
                 {
@@ -564,14 +567,9 @@ namespace NEA
                     }
                     stack.Pop();
                 }
-                else if (binaryBitwiseOpeartions.Contains(e.GetTokenType()))
+                else if (IsBitwise(e))
                 {
-                    while (stack.Count > 0)
-                    {
-                        var topToken = stack.Pop();
-                        MessageBox.Show($"Popped: {topToken}");
-                        output.Add(topToken.GetTokenType().ToString());
-                    }
+                    stack.Push(e);
                 }
                 else
                 {
@@ -582,6 +580,21 @@ namespace NEA
                         if (comparisonOperators.Contains(topToken.GetTokenType()) || mathematicalOperations.Contains(topToken.GetTokenType()))
                         {
                             output.Add(topToken.GetTokenType().ToString());
+                        }
+                        else if (binaryBitwiseOperations.Contains(topToken.GetTokenType()))
+                        {
+                            if (topToken.GetTokenType() == TokenType.AND)
+                            {
+                                output.Add("MUL");
+                            }
+                            if (topToken.GetTokenType() == TokenType.OR)
+                            {
+                                output.Add("ADD");
+                            }
+                        }
+                        else if (IsUnaryBitwise(topToken))
+                        {
+                            output.Add("NOT");
                         }
                     }
                     stack.Push(e);
@@ -602,6 +615,21 @@ namespace NEA
                 else if (topToken.GetTokenType() == TokenType.VARIABLE)
                 {
                     output.Add("LOAD_VAR " + variablesDict[topToken.GetLiteral()]);
+                }
+                else if (binaryBitwiseOperations.Contains(topToken.GetTokenType()))
+                {
+                    if (topToken.GetTokenType() == TokenType.AND)
+                    {
+                        output.Add("MUL");
+                    }
+                    if (topToken.GetTokenType() == TokenType.OR)
+                    {
+                        output.Add("ADD");
+                    }
+                }
+                else if (topToken.GetTokenType() == TokenType.NOT)
+                {
+                    output.Add("NOT");
                 }
             }
             return output.ToArray();
@@ -638,6 +666,8 @@ namespace NEA
                 case TokenType.MOD:
                     return 4;
                 case TokenType.EXP:
+                    return 5;
+                case TokenType.NOT:
                     return 5;
             }
             return -1;
@@ -1390,6 +1420,17 @@ namespace NEA
             return bitwiseOperations.Contains(token.GetTokenType());
         }
 
+        private bool IsBinaryBitwise(Token token)
+        {
+            TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR };
+            return bitwiseOperations.Contains(token.GetTokenType());
+        }
+
+        private bool IsUnaryBitwise(Token token)
+        {
+            return token.GetTokenType() == TokenType.NOT;
+        }
+
         private bool IsComparison(Token token)
         {
             TokenType[] comparisonOperations = { TokenType.GREATER, TokenType.LESS, TokenType.EQUAL,
@@ -1441,7 +1482,7 @@ namespace NEA
                         // - An input
                         // - Left Bracket
                         Token nextToken = internalTokens[i + 1];
-                        if (IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken))
+                        if (IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken) || IsUnaryBitwise(nextToken))
                         {
                             expression = new List<Token>();
                             j = 1;
@@ -1450,7 +1491,6 @@ namespace NEA
                                 nextToken = internalTokens[i + j];
                                 if (IsVariable(nextToken) || IsLiteral(nextToken) || IsMathsOperator(nextToken) || IsBracket(nextToken) || IsBitwise(nextToken) || IsComparison(nextToken))
                                 {
-                                    MessageBox.Show($"token = {nextToken.GetLiteral()} - {nextToken.GetTokenType()}");
                                     expression.Add(nextToken);
                                     j++;
                                 }
@@ -2187,6 +2227,27 @@ namespace NEA
                                 throw new Exception("ERROR: Cannot apply exponents to strings");
                             case DataType.BOOLEAN:
                                 throw new Exception("ERROR: Cannot apply exponents to booleans");
+                            default:
+                                throw new Exception("ERROR: Unknown data type");
+                        }
+                        stack.Push(result);
+                        break;
+                    case "NOT":
+                        object1 = stack.Pop();
+                        type = IdentifyDataType(object1.ToString());
+                        switch (type)
+                        {
+                            case DataType.INTEGER:
+                                throw new Exception("ERROR: Cannot apply NOT to integers");
+                            case DataType.DECIMAL:
+                                throw new Exception("ERROR: Cannot apply NOT to decimal");
+                            case DataType.CHARACTER:
+                                throw new Exception("ERROR: Cannot apply NOT to character");
+                            case DataType.STRING:
+                                throw new Exception("ERROR: Cannot apply NOT to string");
+                            case DataType.BOOLEAN:
+                                result = !Convert.ToBoolean(object1);
+                                break;
                             default:
                                 throw new Exception("ERROR: Unknown data type");
                         }
