@@ -1468,6 +1468,7 @@ namespace NEA
             int j, k, l;
             int inputOffset;
             Token nextToken;
+            List<Token> body = new List<Token>();
 
 
             while (i < internalTokens.Length)
@@ -1577,6 +1578,7 @@ namespace NEA
                         type = "STRING";
                         noType = true;
 
+                        // Verify Valid Syntax
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
@@ -1587,6 +1589,7 @@ namespace NEA
                         {
                             throw new Exception("ERROR: No value was mentioned for assignment");
                         }
+                        // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
                         expression = new List<Token>();
                         j = 1;
@@ -1610,6 +1613,7 @@ namespace NEA
                             nextToken = internalTokens[i + j + 2];
                         }
                         j = expression.Count + inputOffset;
+                        // Check for type declaration
                         if (!IsEndOfToken(internalTokens[i + j + 2]) && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
                         {
                             type = internalTokens[i + j + 4].GetLiteral();
@@ -1630,31 +1634,6 @@ namespace NEA
                     case TokenType.DECLARATION:
                         type = "STRING";
                         noType = true;
-
-                        //if (internalTokens[i + 1].GetTokenType() == TokenType.VARIABLE)
-                        //{
-                        //    variableName = internalTokens[i + 1].GetLiteral();
-                        //    if (internalTokens[i + 2].GetTokenType() == TokenType.AS &&
-                        //        internalTokens[i + 3].GetTokenType() == TokenType.DATA_TYPE)
-                        //    {
-                        //        noType = false;
-                        //        type = internalTokens[i + 3].GetLiteral();
-                        //    }
-                        //    else if (internalTokens[i + 2].GetLine() == token.GetLine() && internalTokens[i + 2].GetTokenType() != TokenType.EOF)
-                        //    {
-                        //        throw new Exception("ERROR: No data type mentioned.");
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    throw new Exception("ERROR: When creating no variable was found.");
-                        //}
-                        //intermediateList.AddRange(MapDeclaration(variableName, type));
-                        //i += 2;
-                        //if (!noType)
-                        //{
-                        //    i += 2;
-                        //}
 
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
@@ -1684,10 +1663,9 @@ namespace NEA
                         j = 0;
 
                         List<Token> mainExpression = new List<Token>();
-                        List<Token[]> elseIfExpressions = new List<Token[]>();
                         List<Token> mainBody = new List<Token>();
+                        List<Token[]> elseIfExpressions = new List<Token[]>();
                         List<Token[]> elseIfBodies = new List<Token[]>();
-                        List<Token> body = new List<Token>();
                         List<Token> elseBody = new List<Token>();
                         expression = new List<Token>();
                         // Get Main If Expression
