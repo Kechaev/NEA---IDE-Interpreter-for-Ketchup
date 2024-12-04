@@ -1438,6 +1438,11 @@ namespace NEA
             return comparisonOperations.Contains(token.GetTokenType());
         }
 
+        private bool IsSameLine(Token token1, Token token2)
+        {
+            return token1.GetLine() == token2.GetLine();
+        }
+
         private bool Is(Token token, TokenType type)
         {
             return token.GetTokenType() == type;
@@ -1703,15 +1708,17 @@ namespace NEA
                         expression = new List<Token>();
                         #endregion
                         // Check Valid Syntax - IF
+                        // IF is given by the switch
+                        // THEN
                         int currentLine = token.GetLine();
                         Token finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
-                        if (finalTokenOfLine.GetTokenType() != TokenType.THEN)
+                        if (!Is(finalTokenOfLine,TokenType.THEN))
                         {
                             throw new Exception("ERROR: Missing \"THEN\"");
                         }
                         // Get Main If Expression
                         nextToken = internalTokens[i + j + 1];
-                        while (nextToken.GetLine() == token.GetLine() && !Is(nextToken,TokenType.THEN))
+                        while (IsSameLine(nextToken,token) && !Is(nextToken,TokenType.THEN))
                         {
                             mainExpression.Add(internalTokens[i + j + 1]);
                             j++;
@@ -1727,12 +1734,12 @@ namespace NEA
                         // Identify if Else If statement(s)
                         while (!IsEndOfToken(internalTokens[i]) && Is(internalTokens[i],TokenType.ELSE) && Is(internalTokens[i + 1],TokenType.IF))
                         {
-                            // Get Else If 1 Expression
-                            // The while statements have + 2 because the j variable has not been updated yet
-                            // This is done within the loop
+                            // Reset expression
+                            expression = new List<Token>();
                             j = 0;
+                            // + 2 represents ELSE IF
                             nextToken = internalTokens[i + j + 2];
-                            while (internalTokens[i + j + 2].GetLine() == internalTokens[i].GetLine() && !Is(internalTokens[i + j + 2], TokenType.THEN))
+                            while (IsSameLine(internalTokens[i + j + 2],internalTokens[i]) && !Is(internalTokens[i + j + 2], TokenType.THEN))
                             {
                                 expression.Add(internalTokens[i + j + 2]);
                                 j++;
@@ -1750,15 +1757,13 @@ namespace NEA
                             // Add body & expresison to lists
                             elseIfBodies.Add(body.ToArray());
                             elseIfExpressions.Add(expression.ToArray());
-                            // Reset expression
-                            expression = new List<Token>();
                             // Set i to next section
                             i = bodyEnd + 1;
                         }
                         // Set up Else statement
                         bool isElse = false;
                         // Identify if Else statement is present
-                        if (internalTokens[i].GetTokenType() != TokenType.EOF && internalTokens[i].GetTokenType() == TokenType.ELSE)
+                        if (!IsEndOfToken(internalTokens[i]) && Is(internalTokens[i],TokenType.ELSE))
                         {
                             isElse = true;
                             bodyStart = i + 1;
@@ -1783,7 +1788,7 @@ namespace NEA
                         }
                         List<Token> expression1 = new List<Token>();
                         j = 1;
-                        while (internalTokens[i + j + 3].GetLine() == token.GetLine() && internalTokens[i + j + 3].GetTokenType() != TokenType.TO)
+                        while (IsSameLine(internalTokens[i + j + 3],token) && !Is(internalTokens[i + j + 3],TokenType.TO))
                         {
                             expression1.Add(internalTokens[i + j + 3]);
                             j++;
