@@ -1714,7 +1714,7 @@ namespace NEA
                         Token finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
                         if (!Is(finalTokenOfLine,TokenType.THEN))
                         {
-                            throw new Exception("ERROR: Missing \"THEN\"");
+                            throw new Exception($"ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\"");
                         }
                         // Get Main If Expression
                         nextToken = internalTokens[i + j + 1];
@@ -1731,24 +1731,26 @@ namespace NEA
                         // Set i to next section
                         i = bodyEnd + 1;
 
+                        Token startToken = internalTokens[i];
                         // Identify if Else If statement(s)
-                        while (!IsEndOfToken(internalTokens[i]) && Is(internalTokens[i],TokenType.ELSE) && Is(internalTokens[i + 1],TokenType.IF))
+                        while (!IsEndOfToken(startToken) && Is(startToken,TokenType.ELSE) && Is(internalTokens[i + 1],TokenType.IF))
                         {
+                            startToken = internalTokens[i];
                             // Reset expression
                             expression = new List<Token>();
                             j = 0;
                             // + 2 represents ELSE IF
                             nextToken = internalTokens[i + j + 2];
-                            while (IsSameLine(internalTokens[i + j + 2],internalTokens[i]) && !Is(internalTokens[i + j + 2], TokenType.THEN))
+                            while (IsSameLine(nextToken,startToken) && !Is(nextToken, TokenType.THEN))
                             {
-                                expression.Add(internalTokens[i + j + 2]);
+                                expression.Add(nextToken);
                                 j++;
                                 nextToken = internalTokens[i + j + 2];
                             }
                             // + 2 is used in this case because the program is checking for the next token after the final expression token
-                            if (!Is(internalTokens[i + j + 2], TokenType.THEN))
+                            if (!Is(nextToken, TokenType.THEN))
                             {
-                                throw new Exception($"ERROR: Missing \"THEN\" - Found {internalTokens[i + j + 2].GetTokenType()}");
+                                throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: Missing \"THEN\"");
                             }
                             // Capture Else If 1 Body
                             bodyStart = i + j + 3;
@@ -1774,39 +1776,44 @@ namespace NEA
                         intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
                         break;
                     case TokenType.COUNT:
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.WITH)
+                        nextToken = internalTokens[i + 1];
+                        if (!Is(nextToken,TokenType.WITH))
                         {
                             throw new Exception("ERROR: Missing \"WITH\" keyword");
                         }
-                        if (internalTokens[i + 2].GetTokenType() != TokenType.VARIABLE)
+                        nextToken = internalTokens[i + 2];
+                        if (!Is(nextToken,TokenType.VARIABLE))
                         {
                             throw new Exception("ERROR: Missing variable from \"COUNT WITH\"");
                         }
-                        if (internalTokens[i + 3].GetTokenType() != TokenType.FROM)
+                        nextToken = internalTokens[i + 3];
+                        if (!Is(nextToken,TokenType.FROM))
                         {
                             throw new Exception("ERROR: Missing \"FROM\" keyword");
                         }
                         List<Token> expression1 = new List<Token>();
                         j = 1;
-                        while (IsSameLine(internalTokens[i + j + 3],token) && !Is(internalTokens[i + j + 3],TokenType.TO))
+                        nextToken = internalTokens[i + j + 3];
+                        while (IsSameLine(nextToken,token) && !Is(nextToken,TokenType.TO))
                         {
                             expression1.Add(internalTokens[i + j + 3]);
                             j++;
+                            nextToken = internalTokens[i + j + 3];
                         }
-                        if (internalTokens[i + j + 3].GetTokenType() != TokenType.TO)
+                        if (!Is(internalTokens[i + j + 3],TokenType.TO))
                         {
                             throw new Exception("ERROR: Missing \"TO\" keyword");
                         }
                         List<Token> expression2 = new List<Token>();
                         k = 1;
-                        while (internalTokens[i + j + k + 3].GetLine() == token.GetLine() && internalTokens[i + j + k + 3].GetTokenType() != TokenType.BY)
+                        while (IsSameLine(internalTokens[i + j + k + 3],token) && !Is(internalTokens[i + j + k + 3],TokenType.BY))
                         {
                             expression2.Add(internalTokens[i + j + k + 3]);
                             k++;
                         }
                         l = 0;
                         List<Token> expression3 = new List<Token>();
-                        if (internalTokens[i + j + k + 4].GetLine() != token.GetLine())
+                        if (!IsSameLine(internalTokens[i + j + k + 4],token))
                         {
                             expression3.Add(new Token(TokenType.INT_LITERAL, "1", token.GetLine()));
                         }
