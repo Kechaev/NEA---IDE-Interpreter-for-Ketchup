@@ -1438,6 +1438,36 @@ namespace NEA
             return comparisonOperations.Contains(token.GetTokenType());
         }
 
+        private bool Is(Token token, TokenType type)
+        {
+            return token.GetTokenType() == type;
+        }
+
+        private Token GetLastTokenInLine(int line, Token[] internalTokens)
+        {
+            bool inLine = false;
+            int tokenCounter = 0;
+            int firstTokenIndex = 0;
+            for (int i = 0; i < internalTokens.Length; i++)
+            {
+                Token t = internalTokens[i];
+                if (t.GetLine() == line)
+                {
+                    if (!inLine)
+                    {
+                        firstTokenIndex = i;
+                    }
+                    inLine = true;
+                    tokenCounter++;
+                }
+                else if (inLine && t.GetLine() != line)
+                {
+                    return internalTokens[firstTokenIndex + tokenCounter - 1];
+                }
+            }
+            throw new Exception($"DEV ERROR: No token found");
+        }
+
         // Implemented list:
         // PRINT
         // ASSIGNMENT
@@ -1521,6 +1551,7 @@ namespace NEA
                         type = "STRING";
                         noType = true;
 
+                        // Verify Valid Syntax
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
@@ -1531,11 +1562,11 @@ namespace NEA
                         {
                             throw new Exception("ERROR: \"TO\" keyword not found after variable");
                         }
+                        // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
                         expression = new List<Token>();
                         j = 1;
                         inputOffset = 0;
-
                         nextToken = internalTokens[i + j + 2];
                         while (!IsEndOfToken(nextToken) && internalTokens[i + j + 2].GetLine() == token.GetLine() && nextToken.GetTokenType() != TokenType.AS)
                         {
@@ -1555,7 +1586,7 @@ namespace NEA
                             nextToken = internalTokens[i + j + 2];
                         }
                         j = expression.Count + inputOffset;
-                        // Data Type identification
+                        // Check for type declaration
                         nextToken = internalTokens[i + j + 2];
                         if (!IsEndOfToken(nextToken) && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
                         {
@@ -1635,11 +1666,13 @@ namespace NEA
                         type = "STRING";
                         noType = true;
 
+                        // Checking Valid Syntax - Not much to check here
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
                             throw new Exception("ERROR: When creating no variable was found.");
                         }
+                        // Getting Variable Name
                         variableName = nextToken.GetLiteral();
                         if (internalTokens[i + 2].GetTokenType() == TokenType.AS &&
                                 internalTokens[i + 3].GetTokenType() == TokenType.DATA_TYPE)
@@ -1661,22 +1694,28 @@ namespace NEA
                     case TokenType.IF:
                         // Declare necessary variables
                         j = 0;
-
+                        #region Variable Declarations
                         List<Token> mainExpression = new List<Token>();
                         List<Token> mainBody = new List<Token>();
                         List<Token[]> elseIfExpressions = new List<Token[]>();
                         List<Token[]> elseIfBodies = new List<Token[]>();
                         List<Token> elseBody = new List<Token>();
                         expression = new List<Token>();
-                        // Get Main If Expression
-                        while (internalTokens[i + j + 1].GetLine() == internalTokens[i + 1].GetLine() && internalTokens[i + j + 1].GetTokenType() != TokenType.THEN)
-                        {
-                            j++;
-                            mainExpression.Add(internalTokens[i + j]);
-                        }
-                        if (internalTokens[i + j + 1].GetTokenType() != TokenType.THEN)
+                        #endregion
+                        // Check Valid Syntax - IF
+                        int currentLine = token.GetLine();
+                        Token finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
+                        if (finalTokenOfLine.GetTokenType() != TokenType.THEN)
                         {
                             throw new Exception("ERROR: Missing \"THEN\"");
+                        }
+                        // Get Main If Expression
+                        nextToken = internalTokens[i + j + 1];
+                        while (nextToken.GetLine() == token.GetLine() && !Is(nextToken,TokenType.THEN))
+                        {
+                            mainExpression.Add(internalTokens[i + j + 1]);
+                            j++;
+                            nextToken = internalTokens[i + j + 1];
                         }
                         // Capture Main If Body
                         int bodyStart = i + j + 2;
@@ -1686,19 +1725,21 @@ namespace NEA
                         i = bodyEnd + 1;
 
                         // Identify if Else If statement(s)
-                        while ((internalTokens[i].GetTokenType() != TokenType.EOF || internalTokens[i].GetTokenType() != TokenType.EON) && internalTokens[i].GetTokenType() == TokenType.ELSE && internalTokens[i + 1].GetTokenType() == TokenType.IF)
+                        while (!IsEndOfToken(internalTokens[i]) && Is(internalTokens[i],TokenType.ELSE) && Is(internalTokens[i + 1],TokenType.IF))
                         {
                             // Get Else If 1 Expression
                             // The while statements have + 2 because the j variable has not been updated yet
                             // This is done within the loop
                             j = 0;
-                            while (internalTokens[i + j + 2].GetLine() == internalTokens[i].GetLine() && internalTokens[i + j + 2].GetTokenType() != TokenType.THEN)
+                            nextToken = internalTokens[i + j + 2];
+                            while (internalTokens[i + j + 2].GetLine() == internalTokens[i].GetLine() && !Is(internalTokens[i + j + 2], TokenType.THEN))
                             {
+                                expression.Add(internalTokens[i + j + 2]);
                                 j++;
-                                expression.Add(internalTokens[i + j + 1]);
+                                nextToken = internalTokens[i + j + 2];
                             }
                             // + 2 is used in this case because the program is checking for the next token after the final expression token
-                            if (internalTokens[i + j + 2].GetTokenType() != TokenType.THEN)
+                            if (!Is(internalTokens[i + j + 2], TokenType.THEN))
                             {
                                 throw new Exception($"ERROR: Missing \"THEN\" - Found {internalTokens[i + j + 2].GetTokenType()}");
                             }
