@@ -931,6 +931,7 @@ namespace NEA
         }
 
         // Add inputs for assignment and reassignment
+        #region Assignment
         private string[] MapAssignment(string variable, List<Token> expression, string type)
         {
             List<string> instructions = new List<string>();
@@ -982,6 +983,7 @@ namespace NEA
 
             return instructions.ToArray();
         }
+        #endregion
 
         private string[] MapIfStatement(Token[] mainExpression, Token[] mainBody, List<Token[]> elseIfExpression, List<Token[]> elseIfBodies, bool isElse, Token[] elseBody)
         {
@@ -1068,6 +1070,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        #region Loops
         private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
         {
             List<string> instructions = new List<string>();
@@ -1237,6 +1240,7 @@ namespace NEA
 
             return instructions.ToArray();
         }
+        #endregion
 
         #region Assignment with operations
         private string[] MapAddition(string variable, Token[] expression)
@@ -1374,6 +1378,7 @@ namespace NEA
             return index;
         }
 
+        #region Extra Token Utility
         private bool IsEndOfToken(Token token)
         {
             return token.GetTokenType() == TokenType.EOF || token.GetTokenType() == TokenType.EON;
@@ -1472,6 +1477,7 @@ namespace NEA
             }
             throw new Exception($"DEV ERROR: No token found");
         }
+        #endregion
 
         // Implemented list:
         // PRINT
@@ -1504,6 +1510,7 @@ namespace NEA
             int inputOffset;
             Token nextToken;
             List<Token> body = new List<Token>();
+            Token bodyStartToken, bodyEndToken;
 
 
             while (i < internalTokens.Length)
@@ -1527,7 +1534,6 @@ namespace NEA
                             nextToken = internalTokens[i + j];
                             while (!IsEndOfToken(nextToken) && nextToken.GetLine() == token.GetLine())
                             {
-                                nextToken = internalTokens[i + j];
                                 if (IsVariable(nextToken) || IsLiteral(nextToken) || IsMathsOperator(nextToken) || IsBracket(nextToken) || IsBitwise(nextToken) || IsComparison(nextToken))
                                 {
                                     expression.Add(nextToken);
@@ -1540,6 +1546,14 @@ namespace NEA
                                     // Increment by 2 more to skip filler "WITH PROMPT"
                                     // Continue onto the following string prompt
                                     j += 3;
+                                }
+                                try
+                                {
+                                    nextToken = internalTokens[i + j];
+                                }
+                                catch
+                                {
+                                    nextToken = new Token(TokenType.EOF, null, -1);
                                 }
                             }
                         }
@@ -1709,8 +1723,6 @@ namespace NEA
                         expression = new List<Token>();
                         #endregion
                         // Check Valid Syntax - IF
-                        // IF is given by the switch
-                        // THEN
                         int currentLine = token.GetLine();
                         Token finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
                         if (!Is(finalTokenOfLine,TokenType.THEN))
@@ -1728,6 +1740,26 @@ namespace NEA
                         // Capture Main If Body
                         int bodyStart = i + j + 2;
                         int bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+
+                        // Verify Valid Syntax - BEGIN & END
+                        bodyStartToken = internalTokens[bodyStart];
+                        bodyEndToken = internalTokens[bodyEnd];
+                        if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
+                        {
+                            if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
+                            {
+                                throw new Exception($"ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\"");
+                            }
+                            if (!Is(bodyStartToken, TokenType.BEGIN))
+                            {
+                                throw new Exception($"ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"");
+                            }
+                            if (!Is(bodyEndToken, TokenType.END))
+                            {
+                                throw new Exception($"ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\"");
+                            }
+                        }
+
                         mainBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         // Set i to next section
                         i = bodyEnd + 1;
@@ -1736,7 +1768,13 @@ namespace NEA
                         // Identify if Else If statement(s)
                         while (!IsEndOfToken(startToken) && Is(startToken,TokenType.ELSE) && Is(internalTokens[i + 1],TokenType.IF))
                         {
-                            startToken = internalTokens[i];
+                            // Verify Valid Syntax - ELSE IF
+                            currentLine = startToken.GetLine();
+                            finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
+                            if (!Is(finalTokenOfLine, TokenType.THEN))
+                            {
+                                throw new Exception($"ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\"");
+                            }
                             // Reset expression
                             expression = new List<Token>();
                             j = 0;
@@ -1756,12 +1794,33 @@ namespace NEA
                             // Capture Else If 1 Body
                             bodyStart = i + j + 3;
                             bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+                            // Verify Valid Syntax - BEGIN & END
+                            bodyStartToken = internalTokens[bodyStart];
+                            bodyEndToken = internalTokens[bodyEnd];
+                            if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
+                            {
+                                if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
+                                {
+                                    throw new Exception($"ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\"");
+                                }
+                                if (!Is(bodyStartToken, TokenType.BEGIN))
+                                {
+                                    throw new Exception($"ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"");
+                                }
+                                if (!Is(bodyEndToken, TokenType.END))
+                                {
+                                    throw new Exception($"ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\"");
+                                }
+                            }
+
                             body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                             // Add body & expresison to lists
                             elseIfBodies.Add(body.ToArray());
                             elseIfExpressions.Add(expression.ToArray());
                             // Set i to next section
                             i = bodyEnd + 1;
+                            // Needed for preparing the next iteration of ELSE IF
+                            startToken = internalTokens[i];
                         }
                         // Set up Else statement
                         bool isElse = false;
@@ -1771,6 +1830,26 @@ namespace NEA
                             isElse = true;
                             bodyStart = i + 1;
                             bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+
+                            // Verify Valid Syntax - BEGIN & END
+                            bodyStartToken = internalTokens[bodyStart];
+                            bodyEndToken = internalTokens[bodyEnd];
+                            if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
+                            {
+                                if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
+                                {
+                                    throw new Exception($"ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\"");
+                                }
+                                if (!Is(bodyStartToken, TokenType.BEGIN))
+                                {
+                                    throw new Exception($"ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"");
+                                }
+                                if (!Is(bodyEndToken, TokenType.END))
+                                {
+                                    throw new Exception($"ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\"");
+                                }
+                            }
+
                             elseBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                             i = bodyEnd + 1;
                         }
@@ -1891,7 +1970,6 @@ namespace NEA
                         {
                             expression.Add(internalTokens[i + j + 1]);
                             j++;
-                            //MessageBox.Show($"run next: {internalTokens[i + j + 1].GetTokenType() != TokenType.EOF}");
                         }
                         intermediateList.AddRange(MapDoWhileLoop(expression.ToArray(), body.ToArray()));
                         i = i + j + 1;

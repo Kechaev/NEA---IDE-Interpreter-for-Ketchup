@@ -76,8 +76,10 @@ namespace NEA
                 }
                 txtConsole.Text += $"{newExecuteSeparator}\r\n";
             }
-
+            
             machine = new Machine(txtCodeField.Text);
+
+            // Error Checking
             try
             {
                 machine.Interpret();
@@ -90,6 +92,11 @@ namespace NEA
             {
                 ConsoleWrite(e.Message);
             }
+
+            // No Error Checking
+            //machine.Interpret();
+            //string[] intermediate = machine.GetIntermediateCode();
+            //StartExecution(intermediate);
         }
 
         public void StartExecution(string[] intermediateCode)
@@ -201,7 +208,7 @@ namespace NEA
             {
                 int line = txtCodeField.GetLineFromCharIndex(selectionStart);
                 List<string> linesAsList = new List<string>(lines);
-                linesAsList.Remove(lines[line]);
+                linesAsList.RemoveAt(line);
                 txtCodeField.Lines = linesAsList.ToArray();
                 txtCodeField.SelectionStart = selectionStart;
             }
