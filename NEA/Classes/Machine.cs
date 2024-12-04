@@ -1545,7 +1545,7 @@ namespace NEA
                         }
                         else
                         {
-                            throw new Exception("ERROR: No valid text expression following print command");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: No valid text expression following print command");
                         }
 
                         intermediateList.AddRange(MapPrintStatement(expression));
@@ -1560,12 +1560,12 @@ namespace NEA
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
-                            throw new Exception("ERROR: No variable found after \"SET\"");
+                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No variable found after \"SET\"");
                         }
                         nextToken = internalTokens[i + 2];
                         if (nextToken.GetTokenType() != TokenType.TO)
                         {
-                            throw new Exception("ERROR: \"TO\" keyword not found after variable");
+                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: \"TO\" keyword not found after variable");
                         }
                         // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
@@ -1593,14 +1593,14 @@ namespace NEA
                         j = expression.Count + inputOffset;
                         // Check for type declaration
                         nextToken = internalTokens[i + j + 2];
-                        if (!IsEndOfToken(nextToken) && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
+                        if (!IsEndOfToken(nextToken) && Is(internalTokens[i + j + 3],TokenType.AS) && Is(internalTokens[i + j + 4],TokenType.DATA_TYPE))
                         {
                             type = internalTokens[i + j + 4].GetLiteral();
                             noType = false;
                         }
-                        else if (!IsEndOfToken(internalTokens[i + j + 3]) && internalTokens[i + j + 3].GetLine() == token.GetLine())
+                        else if (!IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
                         {
-                            throw new Exception("ERROR: No data type mentioned");
+                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No data type mentioned");
                         }
 
                         intermediateList.AddRange(MapAssignment(variableName, expression, type));
@@ -1618,12 +1618,12 @@ namespace NEA
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
-                            throw new Exception("ERROR: When assigning no variable was found");
+                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: When assigning no variable was found");
                         }
                         nextToken = internalTokens[i + 2];
-                        if (nextToken.GetTokenType() != TokenType.TO)
+                        if (!Is(nextToken,TokenType.TO))
                         {
-                            throw new Exception("ERROR: No value was mentioned for assignment");
+                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No value was mentioned for assignment");
                         }
                         // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
@@ -1650,14 +1650,15 @@ namespace NEA
                         }
                         j = expression.Count + inputOffset;
                         // Check for type declaration
-                        if (!IsEndOfToken(internalTokens[i + j + 2]) && internalTokens[i + j + 3].GetTokenType() == TokenType.AS && internalTokens[i + j + 4].GetTokenType() == TokenType.DATA_TYPE)
+                        nextToken = internalTokens[i + j + 2];
+                        if (!IsEndOfToken(nextToken) && Is(internalTokens[i + j + 3],TokenType.AS) && Is(internalTokens[i + j + 4],TokenType.DATA_TYPE))
                         {
                             type = internalTokens[i + j + 4].GetLiteral();
                             noType = false;
                         }
-                        else if (internalTokens[i + j + 3].GetTokenType() != TokenType.EOF && internalTokens[i + j + 3].GetLine() == token.GetLine())
+                        else if (!IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
                         {
-                            throw new Exception("ERROR: No data type mentioned");
+                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No data type mentioned");
                         }
 
                         intermediateList.AddRange(MapReassignment(variableName, expression, type));
@@ -1779,17 +1780,17 @@ namespace NEA
                         nextToken = internalTokens[i + 1];
                         if (!Is(nextToken,TokenType.WITH))
                         {
-                            throw new Exception("ERROR: Missing \"WITH\" keyword");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" keyword");
                         }
                         nextToken = internalTokens[i + 2];
                         if (!Is(nextToken,TokenType.VARIABLE))
                         {
-                            throw new Exception("ERROR: Missing variable from \"COUNT WITH\"");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: Missing variable from \"COUNT WITH\"");
                         }
                         nextToken = internalTokens[i + 3];
                         if (!Is(nextToken,TokenType.FROM))
                         {
-                            throw new Exception("ERROR: Missing \"FROM\" keyword");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: Missing \"FROM\" keyword");
                         }
                         List<Token> expression1 = new List<Token>();
                         j = 1;
@@ -1802,7 +1803,7 @@ namespace NEA
                         }
                         if (!Is(internalTokens[i + j + 3],TokenType.TO))
                         {
-                            throw new Exception("ERROR: Missing \"TO\" keyword");
+                            throw new Exception($"ERROR: Missing \"TO\" keyword");
                         }
                         List<Token> expression2 = new List<Token>();
                         k = 1;
