@@ -1480,6 +1480,22 @@ namespace NEA
             }
             throw new Exception($"DEV ERROR: No token found");
         }
+
+        private bool PreviouslyDeclared(string variableName, int upperRange)
+        { 
+            // Might not work because of InternalTokens and tokens
+            for (int i = 0; i < upperRange; i++)
+            {
+                if (Is(tokens[i],TokenType.DECLARATION) || Is(tokens[i], TokenType.ASSIGNMENT))
+                {
+                    if (tokens[i + 1].GetLiteral() == variableName)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         #endregion
 
         // Implemented:
@@ -1598,6 +1614,12 @@ namespace NEA
                         }
                         // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
+
+                        if (PreviouslyDeclared(variableName, i))
+                        {
+                            throw new Exception($"ERROR on line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} already set, use CHANGE to modify the value");
+                        }
+
                         expression = new List<Token>();
                         j = 1;
                         inputOffset = 0;
@@ -1656,6 +1678,12 @@ namespace NEA
                         }
                         // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
+
+                        if (!PreviouslyDeclared(variableName, i))
+                        {
+                            throw new Exception($"ERROR on line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} was not created, therefore cannot be changed");
+                        }
+
                         expression = new List<Token>();
                         j = 1;
                         inputOffset = 0;
@@ -1715,6 +1743,12 @@ namespace NEA
                         }
                         // Getting Variable Name
                         variableName = nextToken.GetLiteral();
+
+                        if (PreviouslyDeclared(variableName, i))
+                        {
+                            throw new Exception($"ERROR on line {internalTokens[i + 1].GetLine() + 1}: Cannot create variable {variableName} more than once");
+                        }
+
                         if (internalTokens[i + 2].GetTokenType() == TokenType.AS &&
                                 internalTokens[i + 3].GetTokenType() == TokenType.DATA_TYPE)
                         {
