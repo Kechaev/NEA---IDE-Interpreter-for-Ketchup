@@ -963,8 +963,11 @@ namespace NEA
             instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
-            instrLine = "ADJUST_TYPE " + type;
-            instructions.Add(instrLine);
+            if (type != null)
+            {
+                instrLine = "ADJUST_TYPE " + type;
+                instructions.Add(instrLine);
+            }
 
             return instructions.ToArray();
         }
@@ -1479,12 +1482,22 @@ namespace NEA
         }
         #endregion
 
-        // Implemented list:
+        // Implemented:
         // PRINT
         // ASSIGNMENT
         // REASSIGNMENT
         // DECLARATION
         // IF
+        // COUNT Loop (FOR)
+        // WHILE Loop
+        // DO-WHILE Loop
+        // Fixed-Length Loop
+        // Addtion assignment
+        // Subtraction assignment
+        // Multiplication assignment
+        // Division assignment
+        // Modulo assignment
+        // Exponential assignment
         // EON (End of Nest)
         // EOF (End of File)
         private string[] TokensToIntermediate(Token[] internalTokens)
@@ -1511,6 +1524,8 @@ namespace NEA
             Token nextToken;
             List<Token> body = new List<Token>();
             Token bodyStartToken, bodyEndToken;
+            int currentLine;
+            Token finalTokenOfLine;
 
 
             while (i < internalTokens.Length)
@@ -1625,7 +1640,7 @@ namespace NEA
                         }
                         break;
                     case TokenType.REASSIGNMENT:
-                        type = "STRING";
+                        type = null;
                         noType = true;
 
                         // Verify Valid Syntax
@@ -1674,8 +1689,14 @@ namespace NEA
                         {
                             throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No data type mentioned");
                         }
-
-                        intermediateList.AddRange(MapReassignment(variableName, expression, type));
+                        if (noType)
+                        {
+                            intermediateList.AddRange(MapReassignment(variableName, expression, null));
+                        }
+                        else
+                        {
+                            intermediateList.AddRange(MapReassignment(variableName, expression, type));
+                        }
                         i += j + 3;
                         if (!noType)
                         {
@@ -1723,8 +1744,8 @@ namespace NEA
                         expression = new List<Token>();
                         #endregion
                         // Check Valid Syntax - IF
-                        int currentLine = token.GetLine();
-                        Token finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
+                        currentLine = token.GetLine();
+                        finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
                         if (!Is(finalTokenOfLine,TokenType.THEN))
                         {
                             throw new Exception($"ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\"");
@@ -1906,12 +1927,12 @@ namespace NEA
                                 l++;
                             }
                         }
-                        string variable = internalTokens[i + 2].GetLiteral();
+                        variableName = internalTokens[i + 2].GetLiteral();
                         bodyStart = i + j + k + l + 3;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
 
-                        intermediateList.AddRange(MapForLoop(variable, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
+                        intermediateList.AddRange(MapForLoop(variableName, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
                         i = bodyEnd + 1;
                         break;
                     case TokenType.WHILE:
@@ -2589,10 +2610,15 @@ namespace NEA
                         break;
                     case "LOAD_VAR":
                         intOp = Convert.ToInt32(operand);
-                        if (variables[intOp].IsDeclared())
+                        if (variables[intOp].IsDeclared() && !variables[intOp].IsNull())
                         {
                             stack.Push(variables[intOp].GetValue());
                         }
+                        if (variables[intOp].IsDeclared() && variables[intOp].IsNull())
+                        {
+                            throw new Exception("ERROR in execution: Attempted to use a variable with no assigned value");
+                        }
+                        //MessageBox.Show($"Var {variables[intOp].GetName()} - {variables[intOp].GetDataType().ToString()}");
                         break;
                     case "STORE_VAR":
                         intOp = Convert.ToInt32(operand);
@@ -2602,7 +2628,9 @@ namespace NEA
                         }
                         break;
                     case "DECLARE_VAR":
-                        variables[Convert.ToInt32(operand)].Declare();
+                        intOp = Convert.ToInt32(operand);
+                        variables[intOp].Declare();
+                        variables[intOp].SetNull();
                         break;
                     case "JUMP":
                         intOp = Convert.ToInt32(operand);

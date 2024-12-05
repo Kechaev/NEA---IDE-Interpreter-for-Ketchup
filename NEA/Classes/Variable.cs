@@ -16,6 +16,7 @@ namespace NEA.Classes
         private object value;
         private DataType type;
         private bool declared;
+        private bool isNull;
         
         public Variable(string name, object value)
         {
@@ -72,6 +73,11 @@ namespace NEA.Classes
             }
         }
 
+        public DataType GetDataType()
+        {
+            return type;
+        }
+
         public void SetDataType(DataType type)
         {
             this.type = type;
@@ -105,6 +111,16 @@ namespace NEA.Classes
         public bool IsDeclared()
         {
             return declared;
+        }
+
+        public void SetNull()
+        {
+            value = null;
+        }
+
+        public bool IsNull()
+        {
+            return value == null;
         }
     }
 }

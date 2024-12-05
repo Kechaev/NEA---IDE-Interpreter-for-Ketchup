@@ -602,5 +602,10 @@ namespace NEA
                     break;
             }
         }
+
+        private void txtCodeField_SelectionChanged_1(object sender, EventArgs e)
+        {
+            UpdateCaretPosition();
+        }
     }
 }
