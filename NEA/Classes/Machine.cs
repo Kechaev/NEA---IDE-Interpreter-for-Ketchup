@@ -488,7 +488,7 @@ namespace NEA
                 }
             }
 
-            tokensList.Add(new Token(TokenType.EOF, null, line));
+            tokensList.Add(new Token(TokenType.EOF, null, line + 1));
 
             return tokensList.ToArray();
         }
@@ -923,8 +923,8 @@ namespace NEA
             }
             else
             {
-                MessageBox.Show($"Pre-crash: {e.GetTokenType()}");
-                throw new Exception("ERROR: Invalid token in string");
+                //MessageBox.Show($"Pre-crash: {e.GetTokenType()}");
+                throw new Exception($"ERROR on Line {e.GetLine() + 1}: Invalid keyword in the expression");
             }
 
             return instrLine;
@@ -1481,12 +1481,52 @@ namespace NEA
             throw new Exception($"DEV ERROR: No token found");
         }
 
-        private bool PreviouslyDeclared(string variableName, int upperRange)
-        { 
+        private bool PreviouslyDeclared(string variableName, int upperRange, Token[] internalToken)
+        {
+            //MessageBox.Show($"Run\nInternal first: {internalToken[0].GetLiteral()}");
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                Token currentToken = tokens[i];
+
+                if (Is(currentToken, internalToken[0].GetTokenType()) && IsSameLine(currentToken, internalToken[0]))
+                {
+                    //MessageBox.Show($"Matched {currentToken.GetLiteral()} & {internalToken[0].GetTokenType()}\nFirst: {currentToken.GetLiteral()}\nEnd: {internalToken[internalToken.Length - 1].GetLiteral()}");
+                    for (int j = 0; j < internalToken.Length; j++)
+                    {
+                        Token currentInternalToken = internalToken[j];
+                        currentToken = tokens[i + j];
+                        //MessageBox.Show($"internal: {currentInternalToken.GetLiteral()}\nexternal: {currentToken.GetLiteral()}");
+                        if (currentInternalToken != currentToken)
+                        {
+                            break;
+                        }
+                        if (j == internalToken.Length - 1)
+                        {
+                            //MessageBox.Show($"Valid throughout");
+                            upperRange += i;
+                        }
+                    }
+                }
+            }
             // Might not work because of InternalTokens and tokens
             for (int i = 0; i < upperRange; i++)
             {
                 if (Is(tokens[i],TokenType.DECLARATION) || Is(tokens[i], TokenType.ASSIGNMENT))
+                {
+                    if (tokens[i + 1].GetLiteral() == variableName)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private bool DeclaredAfter(string variableName, int lowerRange, Token[] internalToken)
+        {
+            for (int i = lowerRange + 1; i < tokens.Length; i++)
+            {
+                if (Is(tokens[i], TokenType.DECLARATION) || Is(tokens[i], TokenType.ASSIGNMENT))
                 {
                     if (tokens[i + 1].GetLiteral() == variableName)
                     {
@@ -1605,25 +1645,30 @@ namespace NEA
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
-                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No variable found after \"SET\"");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: No variable found after \"SET\"");
                         }
                         nextToken = internalTokens[i + 2];
                         if (nextToken.GetTokenType() != TokenType.TO)
                         {
-                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: \"TO\" keyword not found after variable");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: \"TO\" keyword not found after variable.");
                         }
                         // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
 
-                        if (PreviouslyDeclared(variableName, i))
+                        if (PreviouslyDeclared(variableName, i, internalTokens))
                         {
-                            throw new Exception($"ERROR on line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} already set, use CHANGE to modify the value");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} already created or set, use \"CHANGE\" to modify the value after.");
                         }
 
                         expression = new List<Token>();
                         j = 1;
                         inputOffset = 0;
                         nextToken = internalTokens[i + j + 2];
+                        if (!IsSameLine(nextToken, token))
+                        {
+                            throw new Exception($"ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything");
+                        }
+
                         while (!IsEndOfToken(nextToken) && internalTokens[i + j + 2].GetLine() == token.GetLine() && nextToken.GetTokenType() != TokenType.AS)
                         {
                             // Limitation: in an if statement the prompt cannot contain multiple strings or variables
@@ -1651,7 +1696,7 @@ namespace NEA
                         }
                         else if (!IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
                         {
-                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No data type mentioned");
+                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No data type mentioned after \"AS\" keyword");
                         }
 
                         intermediateList.AddRange(MapAssignment(variableName, expression, type));
@@ -1669,19 +1714,24 @@ namespace NEA
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
-                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: When assigning no variable was found");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: When assigning no variable was found.");
                         }
                         nextToken = internalTokens[i + 2];
                         if (!Is(nextToken,TokenType.TO))
                         {
-                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No value was mentioned for assignment");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: No value was mentioned for assignment.");
                         }
                         // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
 
-                        if (!PreviouslyDeclared(variableName, i))
+
+                        if (!PreviouslyDeclared(variableName, i, internalTokens) && DeclaredAfter(variableName, i, internalTokens))
                         {
-                            throw new Exception($"ERROR on line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} was not created, therefore cannot be changed");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} was not created before changing. Try using \"SET\" in the first mention of the variable.");
+                        }
+                        if (!PreviouslyDeclared(variableName, i, internalTokens))
+                        {
+                            throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} was not created, therefore cannot be changed. Try using \"SET\" instead.");
                         }
 
                         expression = new List<Token>();
@@ -1739,14 +1789,14 @@ namespace NEA
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
-                            throw new Exception("ERROR: When creating no variable was found.");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: When creating no variable was found.");
                         }
                         // Getting Variable Name
                         variableName = nextToken.GetLiteral();
 
-                        if (PreviouslyDeclared(variableName, i))
+                        if (PreviouslyDeclared(variableName, i, internalTokens))
                         {
-                            throw new Exception($"ERROR on line {internalTokens[i + 1].GetLine() + 1}: Cannot create variable {variableName} more than once");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Cannot create variable {variableName} more than once");
                         }
 
                         if (internalTokens[i + 2].GetTokenType() == TokenType.AS &&
