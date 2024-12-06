@@ -1483,32 +1483,27 @@ namespace NEA
 
         private bool PreviouslyDeclared(string variableName, int upperRange, Token[] internalToken)
         {
-            //MessageBox.Show($"Run\nInternal first: {internalToken[0].GetLiteral()}");
             for (int i = 0; i < tokens.Length; i++)
             {
                 Token currentToken = tokens[i];
 
                 if (Is(currentToken, internalToken[0].GetTokenType()) && IsSameLine(currentToken, internalToken[0]))
                 {
-                    //MessageBox.Show($"Matched {currentToken.GetLiteral()} & {internalToken[0].GetTokenType()}\nFirst: {currentToken.GetLiteral()}\nEnd: {internalToken[internalToken.Length - 1].GetLiteral()}");
                     for (int j = 0; j < internalToken.Length; j++)
                     {
                         Token currentInternalToken = internalToken[j];
                         currentToken = tokens[i + j];
-                        //MessageBox.Show($"internal: {currentInternalToken.GetLiteral()}\nexternal: {currentToken.GetLiteral()}");
                         if (currentInternalToken != currentToken)
                         {
                             break;
                         }
                         if (j == internalToken.Length - 1)
                         {
-                            //MessageBox.Show($"Valid throughout");
                             upperRange += i;
                         }
                     }
                 }
             }
-            // Might not work because of InternalTokens and tokens
             for (int i = 0; i < upperRange; i++)
             {
                 if (Is(tokens[i],TokenType.DECLARATION) || Is(tokens[i], TokenType.ASSIGNMENT))
