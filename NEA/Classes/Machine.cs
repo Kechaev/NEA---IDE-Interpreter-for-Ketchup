@@ -692,7 +692,7 @@ namespace NEA
                 }
                 else
                 {
-                    throw new Exception("ERROR: Invalid token in string");
+                    throw new Exception($"ERROR on Line {e.GetLine() + 1}: Invalid token in string");
                 }
             }
 
@@ -1478,6 +1478,7 @@ namespace NEA
                     return internalTokens[firstTokenIndex + tokenCounter - 1];
                 }
             }
+            // This should not be reached at any point
             throw new Exception($"DEV ERROR: No token found");
         }
 
@@ -1691,7 +1692,7 @@ namespace NEA
                         }
                         else if (!IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
                         {
-                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No data type mentioned after \"AS\" keyword");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: No data type mentioned after \"AS\" keyword");
                         }
 
                         intermediateList.AddRange(MapAssignment(variableName, expression, type));
@@ -1760,7 +1761,7 @@ namespace NEA
                         }
                         else if (!IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
                         {
-                            throw new Exception($"ERROR on line {nextToken.GetLine() + 1}: No data type mentioned");
+                            throw new Exception($"ERROR on Line {nextToken.GetLine() + 1}: No data type mentioned");
                         }
                         if (noType)
                         {
@@ -1802,7 +1803,7 @@ namespace NEA
                         }
                         else if (internalTokens[i + 2].GetLine() == token.GetLine() && internalTokens[i + 2].GetTokenType() != TokenType.EOF)
                         {
-                            throw new Exception("ERROR: No data type mentioned.");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No data type specified.");
                         }
                         intermediateList.AddRange(MapDeclaration(variableName, type));
                         i += 2;
@@ -1980,9 +1981,10 @@ namespace NEA
                             j++;
                             nextToken = internalTokens[i + j + 3];
                         }
-                        if (!Is(internalTokens[i + j + 3],TokenType.TO))
+                        nextToken = internalTokens[i + j + 3];
+                        if (!Is(nextToken,TokenType.TO))
                         {
-                            throw new Exception($"ERROR: Missing \"TO\" keyword");
+                            throw new Exception($"ERROR on {internalTokens[i + j + 2].GetLine() + 1}: Missing \"TO\" keyword");
                         }
                         List<Token> expression2 = new List<Token>();
                         k = 1;
@@ -2028,7 +2030,7 @@ namespace NEA
                         }
                         if (internalTokens[i + j].GetTokenType() != TokenType.THEN)
                         {
-                            throw new Exception("ERROR: Missing \"THEN\" in while loop");
+                            throw new Exception($"ERROR on Line {internalTokens[i + j - 1].GetLine() + 1}: Missing \"THEN\" in while loop");
                         }
                         bodyStart = i + j + 1;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
@@ -2046,7 +2048,7 @@ namespace NEA
                         // REPEAT IF condition
                         if (internalTokens[i + 1].GetTokenType() != TokenType.BEGIN)
                         {
-                            throw new Exception("ERROR: No \"BEGIN\" keyword found after \"LOOP\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i].GetLine() + 1}: No \"BEGIN\" keyword found after \"LOOP\"");
                         }
                         bodyStart = i + 1;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
@@ -2054,15 +2056,16 @@ namespace NEA
                         i = bodyEnd + 1;
                         if (internalTokens[i - 1].GetTokenType() != TokenType.END)
                         {
-                            throw new Exception("ERROR: No \"END\" keyword after the body");
+                            // Throw error for no END 1 line ahead of the final token in the loop
+                            throw new Exception($"ERROR on Line {internalTokens[i - 2].GetLine() + 2}: No \"END\" keyword after the body");
                         }
                         if (internalTokens[i].GetTokenType() != TokenType.REPEAT)
                         {
-                            throw new Exception("ERROR: No \"REPEAT\" keyword found after the body");
+                            throw new Exception($"ERROR on Line {internalTokens[i].GetLine() + 1}: No \"REPEAT\" keyword found after the body");
                         }
                         if (internalTokens[i + 1].GetTokenType() != TokenType.IF)
                         {
-                            throw new Exception("ERROR: No \"IF\" keyword found after \"REPEAT\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i].GetLine() + 1}: No \"IF\" keyword found after \"REPEAT\"");
                         }
                         expression = new List<Token>();
                         j = 1;
@@ -2084,18 +2087,18 @@ namespace NEA
                         }
                         if (internalTokens[i + j].GetTokenType() != TokenType.TIMES)
                         {
-                            throw new Exception("ERROR: No \"TIMES\" keyword found after expression");
+                            throw new Exception($"ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"TIMES\" keyword found after expression");
                         }
                         if (internalTokens[i + j + 1].GetTokenType() != TokenType.BEGIN)
                         {
-                            throw new Exception("ERROR: No \"BEGIN\" keyword found after \"TIMES\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i + j + 1].GetLine() + 1}: No \"BEGIN\" keyword found after \"TIMES\"");
                         }
                         bodyStart = i + j + 1;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         if (internalTokens[bodyEnd].GetTokenType() != TokenType.END)
                         {
-                            throw new Exception("ERROR: No \"END\" keyword found after body");
+                            throw new Exception($"ERROR on Line {internalTokens[bodyEnd].GetLine() + 1}: No \"END\" keyword found after body");
                         }
                         variableName = $"CounterVariable{fixedLoopCounter++}";
                         intermediateList.AddRange(MapFixedLengthLoop(variableName, expression.ToArray(), body.ToArray()));
@@ -2116,7 +2119,7 @@ namespace NEA
                     case TokenType.TAKE:
                         if (internalTokens[i + 1].GetTokenType() != TokenType.AWAY)
                         {
-                            throw new Exception("ERROR: No \"AWAY\" keyword found after \"TAKE\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"AWAY\" keyword found after \"TAKE\"");
                         }
                         expression = new List<Token>();
                         j = 1;
@@ -2127,7 +2130,7 @@ namespace NEA
                         }
                         if (internalTokens[i + j + 1].GetTokenType() != TokenType.FROM)
                         {
-                            throw new Exception($"ERROR: No \"FROM\" keyword after {expression[expression.Count - 1].GetLiteral()}");
+                            throw new Exception($"ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"FROM\" keyword after {expression[expression.Count - 1].GetLiteral()}");
                         }
                         variableName = internalTokens[i + j + 2].GetLiteral();
                         intermediateList.AddRange(MapSubtraction(variableName, expression.ToArray()));
@@ -2137,7 +2140,7 @@ namespace NEA
                         variableName = internalTokens[i + 1].GetLiteral();
                         if (internalTokens[i + 2].GetTokenType() != TokenType.BY)
                         {
-                            throw new Exception($"ERROR: No \"BY\" keyword after {variableName}");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"BY\" keyword after {variableName}");
                         }
                         expression = new List<Token>();
                         j = 1;
@@ -2153,7 +2156,7 @@ namespace NEA
                         variableName = internalTokens[i + 1].GetLiteral();
                         if (internalTokens[i + 2].GetTokenType() != TokenType.BY)
                         {
-                            throw new Exception($"ERROR: No \"BY\" keyword after {variableName}");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"BY\" keyword after {variableName}");
                         }
                         expression = new List<Token>();
                         j = 1;
@@ -2178,16 +2181,16 @@ namespace NEA
                         {
                             if (theOffset == 0)
                             {
-                                throw new Exception("ERROR: No \"REMAINDER\" keyword after \"THE\"");
+                                throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"REMAINDER\" keyword after \"THE\"");
                             }
                             else
                             {
-                                throw new Exception("ERROR: No \"REMAINDER\" keyword after \"GET\"");
+                                throw new Exception($"ERROR on Line {internalTokens[i + 1 + theOffset].GetLine() + 1}: No \"REMAINDER\" keyword after \"GET\"");
                             }
                         }
                         if (internalTokens[i + 3 + theOffset].GetTokenType() != TokenType.FROM)
                         {
-                            throw new Exception("ERROR: No \"OF\" keyword after \"REMAINDER\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 2 + theOffset].GetLine() + 1}: No \"OF\" keyword after \"REMAINDER\"");
                         }
                         variableName = internalTokens[i + 4 + theOffset].GetLiteral();
                         // Current syntax
@@ -2195,11 +2198,11 @@ namespace NEA
                         // GET (THE) REMAINDER FROM x DIVIDED BY expression
                         if (internalTokens[i + 5 + theOffset].GetTokenType() != TokenType.DIVIDED)
                         {
-                            throw new Exception($"ERROR: No \"DIVIDED\" keyword after \"{variableName}\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 4 + theOffset].GetLine() + 1}: No \"DIVIDED\" keyword after \"{variableName}\"");
                         }
                         if (internalTokens[i + 6 + theOffset].GetTokenType() != TokenType.BY)
                         {
-                            throw new Exception("ERROR: No \"BY\" keyword after \"DIVIDED\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 5 + theOffset].GetLine() + 1}: No \"BY\" keyword after \"DIVIDED\"");
                         }
                         expression = new List<Token>();
                         j = 1;
@@ -2214,20 +2217,20 @@ namespace NEA
                     case TokenType.RAISE:
                         if (internalTokens[i + 1].GetTokenType() != TokenType.VARIABLE)
                         {
-                            throw new Exception("ERROR: No variable found after \"RAISE\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i].GetLine() + 1}: No variable found after \"RAISE\"");
                         }
                         variableName = internalTokens[i + 1].GetLiteral();
                         if (internalTokens[i + 2].GetTokenType() != TokenType.TO)
                         {
-                            throw new Exception($"ERROR: No \"TO\" after \"{variableName}\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"TO\" after \"{variableName}\"");
                         }
                         if (internalTokens[i + 3].GetTokenType() != TokenType.THE)
                         {
-                            throw new Exception("ERROR: No \"THE\" keyword after \"TO\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 2].GetLine() + 1}: No \"THE\" keyword after \"TO\"");
                         }
                         if (internalTokens[i + 4].GetTokenType() != TokenType.POWER)
                         {
-                            throw new Exception("ERROR: No \"POWER\" keyword after \"THE\"");
+                            throw new Exception($"ERROR on Line {internalTokens[i + 3].GetLine() + 1}: No \"POWER\" keyword after \"THE\"");
                         }
                         expression = new List<Token>();
                         j = 1;
