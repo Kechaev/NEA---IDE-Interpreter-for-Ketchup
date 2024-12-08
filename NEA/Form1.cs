@@ -554,6 +554,7 @@ namespace NEA
 
         private void IDE_MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            MessageBox.Show($"Is Closing");
             if (!PromptToSaveChanges())
             {
                 e.Cancel = true;

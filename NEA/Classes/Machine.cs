@@ -1622,16 +1622,6 @@ namespace NEA
                                     nextToken = new Token(TokenType.EOF, null, -1);
                                 }
                             }
-
-                            string String = "";
-
-                            foreach (Token t in expression)
-                            {
-                                String += $"{t.GetTokenType()}\n";
-                            }
-
-                            MessageBox.Show($"PRINT: {String}");
-
                         }
                         else
                         {
@@ -1760,15 +1750,6 @@ namespace NEA
                             }
                             nextToken = internalTokens[i + j + 2];
                         }
-                        string String1 = "";
-
-                        foreach (Token t in expression)
-                        {
-                            String1 += $"{t.GetTokenType()}\n";
-                        }
-
-                        MessageBox.Show($"CHANGE: {String1}");
-
                         j = expression.Count + inputOffset;
                         // Check for type declaration
                         nextToken = internalTokens[i + j + 2];
