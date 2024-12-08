@@ -930,7 +930,6 @@ namespace NEA
             return instrLine;
         }
 
-        // Add inputs for assignment and reassignment
         #region Assignment
         private string[] MapAssignment(string variable, List<Token> expression, string type)
         {
@@ -958,7 +957,7 @@ namespace NEA
             string instrLine;
             counterVar = variablesDict[variable];
 
-            instructions.AddRange(ConvertToPostfix(expression));
+            instructions.AddRange(GetIntermediateFromExpression(expression));
 
             instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
@@ -1623,6 +1622,16 @@ namespace NEA
                                     nextToken = new Token(TokenType.EOF, null, -1);
                                 }
                             }
+
+                            string String = "";
+
+                            foreach (Token t in expression)
+                            {
+                                String += $"{t.GetTokenType()}\n";
+                            }
+
+                            MessageBox.Show($"PRINT: {String}");
+
                         }
                         else
                         {
@@ -1751,6 +1760,15 @@ namespace NEA
                             }
                             nextToken = internalTokens[i + j + 2];
                         }
+                        string String1 = "";
+
+                        foreach (Token t in expression)
+                        {
+                            String1 += $"{t.GetTokenType()}\n";
+                        }
+
+                        MessageBox.Show($"CHANGE: {String1}");
+
                         j = expression.Count + inputOffset;
                         // Check for type declaration
                         nextToken = internalTokens[i + j + 2];
