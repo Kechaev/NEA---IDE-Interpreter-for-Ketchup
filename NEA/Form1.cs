@@ -276,6 +276,7 @@ namespace NEA
 
         private void txtCodeField_TextChanged(object sender, EventArgs e)
         {
+            isSaved = false;
             if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
             {
                 undoStack.Push(txtCodeField.Text);
@@ -554,7 +555,6 @@ namespace NEA
 
         private void IDE_MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            MessageBox.Show($"Is Closing");
             if (!PromptToSaveChanges())
             {
                 e.Cancel = true;
