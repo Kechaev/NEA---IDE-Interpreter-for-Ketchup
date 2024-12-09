@@ -276,6 +276,7 @@ namespace NEA
 
         private void txtCodeField_TextChanged(object sender, EventArgs e)
         {
+            MessageBox.Show($"Text Changed");
             isSaved = false;
             if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
             {
@@ -375,7 +376,10 @@ namespace NEA
 
         private void tsFileExit_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            if (PromptToSaveChanges())
+            {
+                Application.Exit();
+            }
         }
 
         private void txtCodeField_KeyDown(object sender, KeyEventArgs e)
@@ -477,6 +481,14 @@ namespace NEA
             }
         }
 
+        private void tsFileSaveAs_Click(object sender, EventArgs e)
+        {
+            if (!isSaved)
+            {
+                SaveFileAs();
+            }
+        }
+
         private void tsFileSave_Click(object sender, EventArgs e)
         {
             if (currentFilePath == null)
@@ -537,8 +549,12 @@ namespace NEA
 
         private bool PromptToSaveChanges()
         {
+            //MessageBox.Show($"Run?  {!isSaved}");
             if (!isSaved)
             {
+                // Fix this mess
+                // Not saving on exit - problem in this method
+                // Not prompting a save in other scenarios
                 var result = MessageBox.Show($"Do you want to save changes?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
                 if (result == DialogResult.Yes)
@@ -608,5 +624,6 @@ namespace NEA
         {
             UpdateCaretPosition();
         }
+
     }
 }
