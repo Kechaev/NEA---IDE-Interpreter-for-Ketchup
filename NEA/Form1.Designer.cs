@@ -312,6 +312,7 @@ namespace NEA
             resources.ApplyResources(this.txtCodeField, "txtCodeField");
             this.txtCodeField.Name = "txtCodeField";
             this.tableCodeSpace.SetRowSpan(this.txtCodeField, 2);
+            this.txtCodeField.ContentsResized += new System.Windows.Forms.ContentsResizedEventHandler(this.txtCodeField_ContentsResized);
             this.txtCodeField.SelectionChanged += new System.EventHandler(this.txtCodeField_SelectionChanged_1);
             this.txtCodeField.VScroll += new System.EventHandler(this.txtCodeField_VScroll);
             this.txtCodeField.TextChanged += new System.EventHandler(this.txtCodeField_TextChanged);

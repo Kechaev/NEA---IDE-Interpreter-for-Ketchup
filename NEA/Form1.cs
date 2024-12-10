@@ -276,7 +276,6 @@ namespace NEA
 
         private void txtCodeField_TextChanged(object sender, EventArgs e)
         {
-            MessageBox.Show($"Text Changed");
             isSaved = false;
             if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
             {
@@ -571,7 +570,7 @@ namespace NEA
 
         private void IDE_MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!PromptToSaveChanges())
+            if (!isSaved && !PromptToSaveChanges())
             {
                 e.Cancel = true;
             }
@@ -625,5 +624,13 @@ namespace NEA
             UpdateCaretPosition();
         }
 
+        private void txtCodeField_ContentsResized(object sender, ContentsResizedEventArgs e)
+        {
+            // Dumbest piece of code I've ever written
+            if (txtCodeField.ZoomFactor != 1.0f)
+            {
+                txtCodeField.ZoomFactor = 1.0f;
+            }
+        }
     }
 }

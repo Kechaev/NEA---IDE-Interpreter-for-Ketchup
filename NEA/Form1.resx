@@ -168,7 +168,7 @@
     <value>E&amp;xit</value>
   </data>
   <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 29</value>
+    <value>54, 32</value>
   </data>
   <data name="tsFile.Text" xml:space="preserve">
     <value>&amp;File</value>
@@ -201,7 +201,7 @@
     <value>Paste</value>
   </data>
   <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 29</value>
+    <value>58, 32</value>
   </data>
   <data name="tsEdit.Text" xml:space="preserve">
     <value>&amp;Edit</value>
@@ -234,7 +234,7 @@
     <value>View Token</value>
   </data>
   <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 29</value>
+    <value>65, 32</value>
   </data>
   <data name="tsView.Text" xml:space="preserve">
     <value>&amp;View</value>
@@ -258,7 +258,7 @@
     <value>Enable Breakpoints</value>
   </data>
   <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>82, 29</value>
+    <value>82, 32</value>
   </data>
   <data name="tsDebug.Text" xml:space="preserve">
     <value>&amp;Debug</value>
@@ -276,7 +276,7 @@
     <value>Add delay (100ms)</value>
   </data>
   <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>92, 29</value>
+    <value>92, 32</value>
   </data>
   <data name="tsConsole.Text" xml:space="preserve">
     <value>&amp;Console</value>
@@ -285,7 +285,7 @@
     <value>0, 0</value>
   </data>
   <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1893, 33</value>
+    <value>1893, 36</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
@@ -383,7 +383,7 @@
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAITSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
-        YBkUBJugINiqYC1pQpokpDAYCDYKBgUVCwnY2gnpJFHERnc8Z3MvXJY7u28WVxbffPDBvrMzsvfMzpsF
+        YBkUBJugINiqYC1pQpokpDAYCDYKBgUVQQjY2gnpJFHERnc8Z3MvXJY7u28WVxbffPDBvrMzsvfMzpsF
         k5KSkpISS5ZmSZY8k1WE1AqAp+mtJJGhBajVgT55JxLqC1CjwRtevU0P5agnjDd4va2xDX/Ar/CTuA6X
         4QjsELyB8yzGBeQ5eU7DDsAbtKGVUTmzGbaAD3AJbpqMT50OePy6QwbYHFvAKwbCKdR8jAGYh3/EGQaC
         Zue1VZL0wr/iMXwHf8M7uAeHYEG84UK9q/AezyOvgDPIjN+A5wwAC9BjpxgImv2rrf4XoBmH1tfqd1gQ
@@ -391,7 +391,7 @@
         ioctgPfpjVkvQMsc1PdCC9hlIHyBmg8yCMcdrImX6bWc3Yj6PeCtWVOuFT4SNQ8tYJ+B8Blq3uYCwvE2
         wVWoGa1A8gZqxn3iJRw3mVfAAQPhG9S8bQXwOV4ErwDyC2p+xQAMQ808vQL4GFR+Qs3bUEBr5BXAq273
         gyNI1qBmdNa8blYA9wPNH7KA4W456rHgh38NX9RWPj1GxcsC8QY/SfkjIxLqh48OHbzavyhJZER51Uvi
-        JMuyRj/dnzYYPuL/fZQoSXIPmxByXZDSw3MAAAAASUVORK5CYII=
+        JMuyRj/dnzYYPuL/fZQoSXIPki1yXNVJZmcAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -430,7 +430,7 @@
     <value>Comment Line</value>
   </data>
   <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 33</value>
+    <value>0, 36</value>
   </data>
   <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
     <value>1893, 41</value>

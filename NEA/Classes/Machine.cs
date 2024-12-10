@@ -23,6 +23,7 @@ using System.Diagnostics.Tracing;
 using System.CodeDom;
 using System.Windows.Forms.VisualStyles;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
+using System.Collections.Specialized;
 
 namespace NEA
 {
@@ -496,6 +497,7 @@ namespace NEA
 
         #region Translation into Intermdiate
 
+        #region Utility for Translation
         // Shunting Yard Algorithm
         // Converts list of tokens
         // To intermediate code in postfix
@@ -673,45 +675,6 @@ namespace NEA
             return -1;
         }
 
-        private string[] MapInputStatement(List<Token> promptExpression)
-        {
-            List<string> instructions = new List<string>();
-            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
-                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
-                                     TokenType.BOOL_LITERAL };
-
-            foreach (Token e in promptExpression)
-            {
-                if (e.GetTokenType() == TokenType.VARIABLE)
-                {
-                    instructions.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
-                }
-                else if (literals.Contains(e.GetTokenType()))
-                {
-                    instructions.Add("LOAD_CONST " + e.GetLiteral());
-                }
-                else
-                {
-                    throw new Exception($"ERROR on Line {e.GetLine() + 1}: Invalid token in string");
-                }
-            }
-
-            instructions.Add("CALL INPUT");
-
-            return instructions.ToArray();
-        }
-
-        private string[] MapPrintStatement(List<Token> expression)
-        {
-            List<string> instructions = new List<string>();
-
-            instructions.AddRange(GetIntermediateFromExpression(expression));
-
-            instructions.Add("CALL PRINT");
-
-            return instructions.ToArray();
-        }
-
         private bool ContainsExpressions(List<Token> expression)
         {
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
@@ -803,24 +766,48 @@ namespace NEA
 
                 List<Token> expressionForRPN;
 
+                //string String = "";
+
+                //foreach (Token t in expression)
+                //{
+                //    String += $"{t.GetLiteral()}\n";
+                //}
+
+                //MessageBox.Show($"{String}");
+
+                // Does not register last token in expression?
                 for (int counter = 0; counter < begins.Count; counter++)
                 {
                     expressionForRPN = new List<Token>();
-                    for (int i = 0; i < begins[counter] & counter == 0; i++)
+                    for (int i = 0; i < begins[counter] && counter == 0; i++)
                     {
                         instrLine = new List<string>();
                         Token e = expression[i];
 
+                        //MessageBox.Show($"BEGIN\ne = {e.GetTokenType()}");
                         instrLine.AddRange(GetInstructions(e, ref i, expression));
                         instructions.AddRange(instrLine);
                     }
-                    for (int i = begins[counter]; i < ends[counter]; i++)
+                    // Changed to <=
+                    // ???
+                    for (int i = begins[counter]; i <= ends[counter]; i++)
                     {
                         Token e = expression[i];
+
+                        //MessageBox.Show($"END\ne = {e.GetTokenType()}");
 
                         expressionForRPN.Add(e);
                     }
                     instructions.AddRange(ConvertToPostfix(expressionForRPN));
+
+                    //String = "";
+
+                    //foreach (string t in ConvertToPostfix(expressionForRPN))
+                    //{
+                    //    String += $"{t}\n";
+                    //}
+
+                    //MessageBox.Show($"Postfix:\n{String}");
                     // i < expression.Count 
                     // Ensures that the last token is added in the case that it is by itself.
                     // counter < begins.Count - 1
@@ -832,6 +819,8 @@ namespace NEA
                         instrLine = new List<string>();
                         Token e = expression[i];
 
+                        MessageBox.Show($"BOTH\ne = {e.GetTokenType()}");
+
                         instrLine.AddRange(GetInstructions(e, ref i, expression));
                         instructions.AddRange(instrLine);
                     }
@@ -842,6 +831,8 @@ namespace NEA
                 {
                     instrLine = new List<string>();
                     instrLine.Add("ADD");
+
+                    //MessageBox.Show($"ADD");
                     instructions.AddRange(instrLine);
                 }
             }
@@ -929,6 +920,48 @@ namespace NEA
 
             return instrLine;
         }
+        #endregion
+
+        #region Built-in Functions
+        private string[] MapInputStatement(List<Token> promptExpression)
+        {
+            List<string> instructions = new List<string>();
+            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
+                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
+                                     TokenType.BOOL_LITERAL };
+
+            foreach (Token e in promptExpression)
+            {
+                if (e.GetTokenType() == TokenType.VARIABLE)
+                {
+                    instructions.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
+                }
+                else if (literals.Contains(e.GetTokenType()))
+                {
+                    instructions.Add("LOAD_CONST " + e.GetLiteral());
+                }
+                else
+                {
+                    throw new Exception($"ERROR on Line {e.GetLine() + 1}: Invalid token in string");
+                }
+            }
+
+            instructions.Add("CALL INPUT");
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapPrintStatement(List<Token> expression)
+        {
+            List<string> instructions = new List<string>();
+
+            instructions.AddRange(GetIntermediateFromExpression(expression));
+
+            instructions.Add("CALL PRINT");
+
+            return instructions.ToArray();
+        }
+        #endregion
 
         #region Assignment
         private string[] MapAssignment(string variable, List<Token> expression, string type)
@@ -959,6 +992,22 @@ namespace NEA
 
             instructions.AddRange(GetIntermediateFromExpression(expression));
 
+            //string String = "Expression: ";
+
+            //foreach (Token t in expression)
+            //{
+            //    String += $"{t.GetLiteral()}";
+            //}
+
+            //String += "\n\n";
+
+            //foreach (string s in GetIntermediateFromExpression(expression))
+            //{
+            //    String += s + "\n";
+            //}
+
+            //MessageBox.Show($"{String}");
+
             instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
@@ -987,6 +1036,7 @@ namespace NEA
         }
         #endregion
 
+        #region If Statement
         private string[] MapIfStatement(Token[] mainExpression, Token[] mainBody, List<Token[]> elseIfExpression, List<Token[]> elseIfBodies, bool isElse, Token[] elseBody)
         {
             List<string> instructions = new List<string>();
@@ -1071,6 +1121,7 @@ namespace NEA
 
             return instructions.ToArray();
         }
+        #endregion
 
         #region Loops
         private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
@@ -1360,6 +1411,7 @@ namespace NEA
         }
         #endregion
 
+        #region Extra Token Utility
         private int FindRelevantEndIndex(int index, Token[] tokens)
         {
             int nestCounter = 1;
@@ -1380,7 +1432,6 @@ namespace NEA
             return index;
         }
 
-        #region Extra Token Utility
         private bool IsEndOfToken(Token token)
         {
             return token.GetTokenType() == TokenType.EOF || token.GetTokenType() == TokenType.EON;
