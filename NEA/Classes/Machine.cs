@@ -2400,7 +2400,7 @@ namespace NEA
                                 result = Convert.ToBoolean(object1) | Convert.ToBoolean(object2);
                                 break;
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when adding {object1.ToString()} and {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2417,13 +2417,13 @@ namespace NEA
                                 result = Convert.ToDouble(object1) - Convert.ToDouble(object2);
                                 break;
                             case DataType.CHARACTER:
-                                throw new Exception("ERROR: Cannot subtract two characters");
+                                throw new Exception($"LOGIC ERROR: Cannot subtract {object2.ToString()} from {object1.ToString()} as characters.");
                             case DataType.STRING:
-                                throw new Exception("ERROR: Cannot subtract two strings");
+                                throw new Exception($"LOGIC ERROR: Cannot subtract {object2.ToString()} from {object1.ToString()} as strings.");
                             case DataType.BOOLEAN:
-                                throw new Exception("ERROR: Cannot subtract two strings");
+                                throw new Exception($"LOGIC ERROR: Cannot subtract {object2.ToString()} from {object1.ToString()} as booleans.");
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when subtracting {object2.ToString()} from {object1.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2440,15 +2440,15 @@ namespace NEA
                                 result = Convert.ToDouble(object1) * Convert.ToDouble(object2);
                                 break;
                             case DataType.CHARACTER:
-                                throw new Exception("ERROR: Cannot multiply two characters together");
+                                throw new Exception($"LOGIC ERROR: Cannot multiply {object1.ToString()} with {object2.ToString()} as characters.");
                             case DataType.STRING:
-                                throw new Exception("ERROR: Cannot multiply two strings together");
+                                throw new Exception($"LOGIC ERROR: Cannot multiply {object1.ToString()} with {object2.ToString()} as strings.");
                             case DataType.BOOLEAN:
                                 // Logical multiplication - AND
                                 result = Convert.ToBoolean(object1) & Convert.ToBoolean(object2);
                                 break;
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when multiplying {object1.ToString()} with {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2472,13 +2472,13 @@ namespace NEA
                                 result = Convert.ToDouble(object1) / Convert.ToDouble(object2);
                                 break;
                             case DataType.CHARACTER:
-                                throw new Exception("ERROR: Cannot divide characters");
+                                throw new Exception($"LOGIC ERROR: Cannot divide {object2.ToString()} by {object1.ToString()} as characters.");
                             case DataType.STRING:
-                                throw new Exception("ERROR: Cannot divide strings");
+                                throw new Exception($"LOGIC ERROR: Cannot divide {object2.ToString()} by {object1.ToString()} as strings.");
                             case DataType.BOOLEAN:
-                                throw new Exception("ERROR: Cannot divide booleans");
+                                throw new Exception($"LOGIC ERROR: Cannot divide {object2.ToString()} by {object1.ToString()} as booleans.");
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when dividing {object2.ToString()} by {object1.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2495,13 +2495,13 @@ namespace NEA
                                 result = Convert.ToDouble(object1) % Convert.ToDouble(object2);
                                 break;
                             case DataType.CHARACTER:
-                                throw new Exception("ERROR: Cannot apply modulo to characters");
+                                throw new Exception($"LOGIC ERROR: Cannot apply modulo to {object1.ToString()} and {object2.ToString()} as characters.");
                             case DataType.STRING:
-                                throw new Exception("ERROR: Cannot apply modulo to strings");
+                                throw new Exception($"LOGIC ERROR: Cannot apply modulo to {object1.ToString()} and {object2.ToString()} as strings.");
                             case DataType.BOOLEAN:
-                                throw new Exception("ERROR: Cannot apply modulo to booleans");
+                                throw new Exception($"LOGIC ERROR: Cannot apply modulo to {object1.ToString()} and {object2.ToString()} as booleans.");
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when applying modulo to {object1.ToString()} and {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2518,13 +2518,13 @@ namespace NEA
                                 result = Math.Pow(Convert.ToDouble(object1), Convert.ToDouble(object2));
                                 break;
                             case DataType.CHARACTER:
-                                throw new Exception("ERROR: Cannot apply exponents to characters");
+                                throw new Exception($"LOGIC ERROR: Cannot apply exponents to {object1.ToString()} and {object2.ToString()} as characters.");
                             case DataType.STRING:
-                                throw new Exception("ERROR: Cannot apply exponents to strings");
+                                throw new Exception($"LOGIC ERROR: Cannot apply exponents to {object1.ToString()} and {object2.ToString()} as strings.");
                             case DataType.BOOLEAN:
-                                throw new Exception("ERROR: Cannot apply exponents to booleans");
+                                throw new Exception($"LOGIC ERROR: Cannot apply exponents to {object1.ToString()} and {object2.ToString()} as booleans.");
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when applying exponents to {object1.ToString()} and {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2534,18 +2534,18 @@ namespace NEA
                         switch (type)
                         {
                             case DataType.INTEGER:
-                                throw new Exception("ERROR: Cannot apply NOT to integers");
+                                throw new Exception($"LOGIC ERROR: Cannot apply NOT to {object1.ToString()} as an integers.");
                             case DataType.DECIMAL:
-                                throw new Exception("ERROR: Cannot apply NOT to decimal");
+                                throw new Exception($"LOGIC ERROR: Cannot apply NOT to {object1.ToString()} as a decimal.");
                             case DataType.CHARACTER:
-                                throw new Exception("ERROR: Cannot apply NOT to character");
+                                throw new Exception($"LOGIC ERROR: Cannot apply NOT to {object1.ToString()} as acharacter.");
                             case DataType.STRING:
-                                throw new Exception("ERROR: Cannot apply NOT to string");
+                                throw new Exception($"LOGIC ERROR: Cannot apply NOT to {object1.ToString()} as a string.");
                             case DataType.BOOLEAN:
                                 result = !Convert.ToBoolean(object1);
                                 break;
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when applying NOT to {object1.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2568,9 +2568,9 @@ namespace NEA
                                 result = object1.ToString().Length > object2.ToString().Length;
                                 break;
                             case DataType.BOOLEAN:
-                                throw new Exception("ERROR: Cannot compare booleans");
+                                throw new Exception($"LOGIC ERROR: Cannot compare {object1.ToString()} to {object2.ToString()} as booleans.");
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when comparing {object1.ToString()} and {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2593,9 +2593,9 @@ namespace NEA
                                 result = object1.ToString().Length < object2.ToString().Length;
                                 break;
                             case DataType.BOOLEAN:
-                                throw new Exception("ERROR: Cannot compare booleans");
+                                throw new Exception($"LOGIC ERROR: Cannot compare {object1.ToString()} to {object2.ToString()} as booleans.");
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when comparing {object1.ToString()} to {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2618,9 +2618,9 @@ namespace NEA
                                 result = object1.ToString().Length >= object2.ToString().Length;
                                 break;
                             case DataType.BOOLEAN:
-                                throw new Exception("ERROR: Cannot compare booleans");
+                                throw new Exception($"LOGIC ERROR: Cannot compare {object1.ToString()} to {object2.ToString()} as booleans.");
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when comparing {object1.ToString()} to {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2643,9 +2643,9 @@ namespace NEA
                                 result = object1.ToString().Length <= object2.ToString().Length;
                                 break;
                             case DataType.BOOLEAN:
-                                throw new Exception("ERROR: Cannot compare booleans");
+                                throw new Exception($"LOGIC ERROR: Cannot compare {object1.ToString()} to {object2.ToString()} as booleans.");
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when comparing {object1.ToString()} to {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2671,7 +2671,7 @@ namespace NEA
                                 result = Convert.ToBoolean(object1) == Convert.ToBoolean(object2);
                                 break;
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"ERROR: Unknown data type when comparing {object1.ToString()} to {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
@@ -2697,7 +2697,7 @@ namespace NEA
                                 result = Convert.ToBoolean(object1) != Convert.ToBoolean(object2);
                                 break;
                             default:
-                                throw new Exception("ERROR: Unknown data type");
+                                throw new Exception($"LOGIC ERROR: Unknown data type when comparing {object1.ToString()} to {object2.ToString()}.");
                         }
                         stack.Push(result);
                         break;
