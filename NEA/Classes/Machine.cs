@@ -2073,12 +2073,14 @@ namespace NEA
                         // END
                         expression = new List<Token>();
                         j = 1;
-                        while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.THEN)
+                        nextToken = internalTokens[i + j];
+                        while (IsSameLine(nextToken,token) && !Is(nextToken,TokenType.THEN))
                         {
                             expression.Add(internalTokens[i + j]);
                             j++;
+                            nextToken = internalTokens[i + j];
                         }
-                        if (internalTokens[i + j].GetTokenType() != TokenType.THEN)
+                        if (!Is(nextToken,TokenType.THEN))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j - 1].GetLine() + 1}: Missing \"THEN\" in while loop.");
                         }
