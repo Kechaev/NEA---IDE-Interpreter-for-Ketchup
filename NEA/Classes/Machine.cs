@@ -2748,7 +2748,7 @@ namespace NEA
                         }
                         if (variables[intOp].IsDeclared() && variables[intOp].IsNull())
                         {
-                            throw new Exception("ERROR in execution: Attempted to use a variable with no assigned value");
+                            throw new Exception($"DEV ERROR in execution: Attempted to use a variable {variables[intOp].GetName()} with no assigned value.");
                         }
                         //MessageBox.Show($"Var {variables[intOp].GetName()} - {variables[intOp].GetDataType().ToString()}");
                         break;
@@ -2781,7 +2781,7 @@ namespace NEA
                         }
                         catch
                         {
-                            throw new Exception("ERROR: When attempting \"JUMP_FALSE\" stack was not prepped. Top of stack was not a boolean value");
+                            throw new Exception($"DEV ERROR: When attempting \"JUMP_FALSE\" stack was not prepped. Top of stack was not a boolean value");
                         }
                         break;
                     case "ADJUST_TYPE":
