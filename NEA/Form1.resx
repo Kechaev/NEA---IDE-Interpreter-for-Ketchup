@@ -264,13 +264,13 @@
     <value>&amp;Debug</value>
   </data>
   <data name="tsClear.Size" type="System.Drawing.Size, System.Drawing">
-    <value>264, 34</value>
+    <value>270, 34</value>
   </data>
   <data name="tsClear.Text" xml:space="preserve">
     <value>Clear</value>
   </data>
   <data name="tsDelay.Size" type="System.Drawing.Size, System.Drawing">
-    <value>264, 34</value>
+    <value>270, 34</value>
   </data>
   <data name="tsDelay.Text" xml:space="preserve">
     <value>Add delay (100ms)</value>
@@ -382,16 +382,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAITSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
-        YBkUBJugINiqYC1pQpokpDAYCDYKBgUVbQK2dkI6SRSx0R3P2dwLl+XO7pvFlcU3H3yw7+yM7D2z82bB
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAITSURBVGhD7Zm/SxxRFIUnpoxgkyagrIMWYiH+DUIa66QT
+        wTIoCDZBQbBVwVrShDRJSGEwEGwUDAr+qgK2dkI6SRSx0R3P2dwLl+XO7pvFlcU3H3yw7+yM7D2z82bB
         pKSkpKTEkqVZkiXPZBUhtQLgaXorSWRoAWp1oE/eiYT6AtRo8IZXb9NDOeoJ4w1eb2tswx/wK/wkrsNl
         OAI7BG/gPItxAXlOntOwA/AGbWhlVM5shi3gA1yCmybjU6cDHr/ukAE2xxbwioFwCjUfYwDm4R9xhoGg
-        2XltlSS98K94DN/B3/AO7sEhWBBvuFDvKrzH88gr4Awy4zfgOQPAAvTYKQaCZv9qq/8FaMah9bX6HRbE
+        2XltlSS98K94At/B3/AO7sEhWBBvuFDvKrzH88gr4Awy4zfgOQPAAvTYKQaCZv9qq/8FaMah9bX6HRbE
         G6yoPraA95BX66PJbHm2gEkGgmZeASxyBU6YrAoL3lbeQEX1abQJbkFLKwXsMBA2oOb9DMLxBgo26ZK/
         4mEL4H16Y9YL0DIH9b3QAnYZCF+g5oMMwnEHa+Jlei1nN6J+D3hr1pRrhY9EzUML2GcgfIaat7mAcLxN
         cBVqRiuQvIGacZ94CcdN5hVwwED4BjVvWwF8jhfBK4D8gppfMQDDUDNPrwA+BpWfUPM2FNAaeQXwqtv9
-        4AiSNagZnTWvmxXA/UDzhyxguFuOeiz44V/DF7WVT49R8bJAvMFPUv7IiIT64aNDB6/2L0oSGVFe9ZI4
-        ybKs0U/3pw2Gj/h/HyVKktwDgGdyWoMjtK8AAAAASUVORK5CYII=
+        4AiSNagZnTWvmxXA/UDzhyxguFuOeiz44V/DF7WVT49R8bJAvMGPU/7IiIT64aNDB6/2L0oSGVFe9ZI4
+        ybKs0U/3pw2Gj/h/HyVKktwDbqFyWBL7XIgAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">

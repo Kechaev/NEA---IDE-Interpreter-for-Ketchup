@@ -790,7 +790,7 @@ namespace NEA
                     }
                     // Changed to <=
                     // ???
-                    for (int i = begins[counter]; i <= ends[counter]; i++)
+                    for (int i = begins[counter]; i < ends[counter]; i++)
                     {
                         Token e = expression[i];
 
@@ -1628,10 +1628,16 @@ namespace NEA
             Token bodyStartToken, bodyEndToken;
             int currentLine;
             Token finalTokenOfLine;
-
+            int prevI = -1;
 
             while (i < internalTokens.Length)
             {
+                if (prevI == i)
+                {
+                    throw new Exception($"SYNTAX ERROR: Invalid Unknown keyword \"{internalTokens[i].GetLiteral()}\", unable to process.");
+                }
+                prevI = i;
+
                 Token token = internalTokens[i];
                 switch (token.GetTokenType())
                 {
