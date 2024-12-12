@@ -1623,7 +1623,7 @@ namespace NEA
             List<Token> expression;
             int j, k, l;
             int inputOffset;
-            Token nextToken;
+            Token nextToken, prevToken;
             List<Token> body = new List<Token>();
             Token bodyStartToken, bodyEndToken;
             int currentLine;
@@ -2098,7 +2098,8 @@ namespace NEA
                         // statement
                         // END
                         // REPEAT IF condition
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.BEGIN)
+                        nextToken = internalTokens[i + 1];
+                        if (!Is(nextToken, TokenType.BEGIN))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No \"BEGIN\" keyword found after \"LOOP\".");
                         }
@@ -2106,25 +2107,30 @@ namespace NEA
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
                         i = bodyEnd + 1;
-                        if (internalTokens[i - 1].GetTokenType() != TokenType.END)
+                        prevToken = internalTokens[i - 1];
+                        if (!Is(prevToken, TokenType.END))
                         {
                             // Throw error for no END 1 line ahead of the final token in the loop
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i - 2].GetLine() + 2}: No \"END\" keyword after the body.");
                         }
-                        if (internalTokens[i].GetTokenType() != TokenType.REPEAT)
+                        nextToken = internalTokens[i];
+                        if (!Is(nextToken, TokenType.REPEAT))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No \"REPEAT\" keyword found after the body.");
                         }
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.IF)
+                        nextToken = internalTokens[i + 1];
+                        if (!Is(nextToken, TokenType.IF))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No \"IF\" keyword found after \"REPEAT\".");
                         }
                         expression = new List<Token>();
                         j = 1;
-                        while (internalTokens[i + j + 1].GetTokenType() != TokenType.EOF && internalTokens[i + j + 1].GetLine() == internalTokens[i].GetLine())
+                        nextToken = internalTokens[i + j + 1];
+                        while (nextToken.GetTokenType() != TokenType.EOF && internalTokens[i + j + 1].GetLine() == internalTokens[i].GetLine())
                         {
-                            expression.Add(internalTokens[i + j + 1]);
+                            expression.Add(nextToken);
                             j++;
+                            nextToken = internalTokens[i + j + 1];
                         }
                         intermediateList.AddRange(MapDoWhileLoop(expression.ToArray(), body.ToArray()));
                         i = i + j + 1;

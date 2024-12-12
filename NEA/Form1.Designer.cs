@@ -176,7 +176,7 @@ namespace NEA
             // 
             this.tsIntermediateCodeView.Name = "tsIntermediateCodeView";
             resources.ApplyResources(this.tsIntermediateCodeView, "tsIntermediateCodeView");
-            this.tsIntermediateCodeView.Click += new System.EventHandler(this.intermediateCodeToolStripMenuItem_Click);
+            this.tsIntermediateCodeView.Click += new System.EventHandler(this.tsIntermediateView_Click);
             // 
             // tsTokenView
             // 

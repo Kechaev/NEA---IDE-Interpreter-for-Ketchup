@@ -440,31 +440,45 @@ namespace NEA
             Cut();
         }
 
-        private void intermediateCodeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tsIntermediateView_Click(object sender, EventArgs e)
         {
-            machine = new Machine(txtCodeField.Text);
-            machine.Interpret();
+            if (txtCodeField.Text == "")
+            {
+                MessageBox.Show("No program has been entered.\nCannot open Intermediate View.");
+            }
+            else
+            {
+                machine = new Machine(txtCodeField.Text);
+                machine.Interpret();
 
-            string[] intermediate = machine.GetIntermediateCode();
+                string[] intermediate = machine.GetIntermediateCode();
 
-            IntermediateView intermediateForm = new IntermediateView(machine.GetIntermediateCode());
-            intermediateForm.ShowDialog();
+                IntermediateView intermediateForm = new IntermediateView(machine.GetIntermediateCode());
+                intermediateForm.ShowDialog();
+            }
         }
 
         private void tsTokenView_Click(object sender, EventArgs e)
         {
-            machine = new Machine(txtCodeField.Text);
-            Token[] tokens = machine.Tokenize();
-
-            string[] tokensString = new string[tokens.Length];
-
-            for (int i = 0; i < tokens.Length; i++)
+            if (txtCodeField.Text == "")
             {
-                tokensString[i] = tokens[i].GetTokenType().ToString();
+                MessageBox.Show("No program has been entered.\nCannot open Token View.");
             }
+            else
+            {
+                machine = new Machine(txtCodeField.Text);
+                Token[] tokens = machine.Tokenize();
 
-            TokenView tokenForm = new TokenView(tokensString);
-            tokenForm.ShowDialog();
+                string[] tokensString = new string[tokens.Length];
+
+                for (int i = 0; i < tokens.Length; i++)
+                {
+                    tokensString[i] = tokens[i].GetTokenType().ToString();
+                }
+
+                TokenView tokenForm = new TokenView(tokensString);
+                tokenForm.ShowDialog();
+            }
         }
 
         private void tsClear_Click(object sender, EventArgs e)
