@@ -398,6 +398,13 @@ namespace NEA
             {
                 Run();
             }
+            else if (e.KeyCode == Keys.Back && txtCodeField.Focused)
+            {
+                if (txtCodeField.SelectionStart == txtCodeField.Text.Length)
+                {
+                    txtCodeField.ScrollToCaret();
+                }
+            }
             else if (e.KeyCode == Keys.Up)
             {
                 int selected = txtCodeField.SelectionStart;
