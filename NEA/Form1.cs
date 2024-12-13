@@ -105,6 +105,9 @@ namespace NEA
             while (machine.GetRunningStatus())
             {
                 machine.FetchExecute(intermediateCode, ref txtConsole);
+
+                txtConsole.SelectionStart = txtConsole.Text.Length;
+                txtConsole.ScrollToCaret(); 
             }
         }
 
