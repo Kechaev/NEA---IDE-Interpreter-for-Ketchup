@@ -378,7 +378,7 @@ namespace NEA
 
             if (current >= sourceCode.Length)
             {
-                validProgram = false;
+                throw new Exception($"SYNTAX ERROR: String does not have a \" to end on.");
             }
 
             current++;
@@ -2768,9 +2768,18 @@ namespace NEA
                         break;
                     case "STORE_VAR":
                         intOp = Convert.ToInt32(operand);
-                        if (variables[intOp].IsDeclared())
+                        Variable var = variables[intOp];
+                        if (var.IsDeclared())
                         {
-                            variables[intOp].SetValue(stack.Pop());
+                            // Add detection for incorrect data type parse
+                            //if (var.GetDataType() == IdentifyDataType(stack.Peek()))
+                            //{
+                            var.SetValue(stack.Pop());
+                            //}
+                            //else
+                            //{
+                            //    throw new Exception($"LOGIC ERROR: Attempted to convert {stack.Peek()} to {var.GetDataType()}.");
+                            //}
                         }
                         break;
                     case "DECLARE_VAR":
