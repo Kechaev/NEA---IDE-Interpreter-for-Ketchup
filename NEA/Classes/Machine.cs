@@ -1639,7 +1639,7 @@ namespace NEA
         // COUNT Loop (FOR) - NEW SYNTAX
         // WHILE Loop
         // DO-WHILE Loop
-        // Fixed-Length Loop
+        // Fixed-Length Loop - NEW SYNTAX
         // Addtion assignment
         // Subtraction assignment
         // Multiplication assignment
@@ -1675,6 +1675,7 @@ namespace NEA
             int currentLine;
             Token finalTokenOfLine;
             int prevI = -1;
+            int bodyStart, bodyEnd;
 
             while (i < internalTokens.Length)
             {
@@ -1934,38 +1935,39 @@ namespace NEA
                         }
                         // Get Main If Expression
                         nextToken = internalTokens[i + j + 1];
-                        while (IsSameLine(nextToken,token) && !Is(nextToken,TokenType.THEN))
+                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken,token) && !Is(nextToken,TokenType.THEN))
                         {
                             mainExpression.Add(internalTokens[i + j + 1]);
                             j++;
                             nextToken = internalTokens[i + j + 1];
                         }
                         // Capture Main If Body
-                        int bodyStart = i + j + 2;
-                        int bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+                        bodyStart = i + j + 2;
+                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+                        bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
 
                         // Verify Valid Syntax - BEGIN & END
                         bodyStartToken = internalTokens[bodyStart];
                         bodyEndToken = internalTokens[bodyEnd];
-                        if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
-                        {
-                            if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                            }
-                            if (!Is(bodyStartToken, TokenType.BEGIN))
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\".");
-                            }
-                            if (!Is(bodyEndToken, TokenType.END))
-                            {
-                                throw new Exception($"SYNTAX ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                            }
-                        }
+                        //if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
+                        //{
+                        //    if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
+                        //    {
+                        //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
+                        //    }
+                        //    if (!Is(bodyStartToken, TokenType.BEGIN))
+                        //    {
+                        //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\".");
+                        //    }
+                        //    if (!Is(bodyEndToken, TokenType.END))
+                        //    {
+                        //        throw new Exception($"SYNTAX ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
+                        //    }
+                        //}
 
-                        mainBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+                        mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                         // Set i to next section
-                        i = bodyEnd + 1;
+                        i = bodyEnd + 2;
 
                         Token startToken = internalTokens[i];
                         // Identify if Else If statement(s)
@@ -1997,31 +1999,32 @@ namespace NEA
                             // Capture Else If 1 Body
                             bodyStart = i + j + 3;
                             bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
+                            bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
                             // Verify Valid Syntax - BEGIN & END
-                            bodyStartToken = internalTokens[bodyStart];
-                            bodyEndToken = internalTokens[bodyEnd];
-                            if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
-                            {
-                                if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                                }
-                                if (!Is(bodyStartToken, TokenType.BEGIN))
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\".");
-                                }
-                                if (!Is(bodyEndToken, TokenType.END))
-                                {
-                                    throw new Exception($"SYNTAX ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                                }
-                            }
+                            //bodyStartToken = internalTokens[bodyStart];
+                            //bodyEndToken = internalTokens[bodyEnd];
+                            //if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
+                            //{
+                            //    if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
+                            //    {
+                            //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
+                            //    }
+                            //    if (!Is(bodyStartToken, TokenType.BEGIN))
+                            //    {
+                            //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\".");
+                            //    }
+                            //    if (!Is(bodyEndToken, TokenType.END))
+                            //    {
+                            //        throw new Exception($"SYNTAX ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
+                            //    }
+                            //}
 
-                            body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+                            body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                             // Add body & expresison to lists
                             elseIfBodies.Add(body.ToArray());
                             elseIfExpressions.Add(expression.ToArray());
                             // Set i to next section
-                            i = bodyEnd + 1;
+                            i = bodyEnd + 2;
                             // Needed for preparing the next iteration of ELSE IF
                             startToken = internalTokens[i];
                         }
@@ -2035,26 +2038,26 @@ namespace NEA
                             bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
 
                             // Verify Valid Syntax - BEGIN & END
-                            bodyStartToken = internalTokens[bodyStart];
-                            bodyEndToken = internalTokens[bodyEnd];
-                            if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
-                            {
-                                if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                                }
-                                if (!Is(bodyStartToken, TokenType.BEGIN))
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\".");
-                                }
-                                if (!Is(bodyEndToken, TokenType.END))
-                                {
-                                    throw new Exception($"SYNTAX ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                                }
-                            }
+                            //bodyStartToken = internalTokens[bodyStart];
+                            //bodyEndToken = internalTokens[bodyEnd];
+                            //if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
+                            //{
+                            //    if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
+                            //    {
+                            //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
+                            //    }
+                            //    if (!Is(bodyStartToken, TokenType.BEGIN))
+                            //    {
+                            //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\".");
+                            //    }
+                            //    if (!Is(bodyEndToken, TokenType.END))
+                            //    {
+                            //        throw new Exception($"SYNTAX ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
+                            //    }
+                            //}
 
-                            elseBody = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
-                            i = bodyEnd + 1;
+                            elseBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
+                            i = bodyEnd + 2;
                         }
                         intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
                         break;
@@ -2203,7 +2206,6 @@ namespace NEA
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"TIMES\" keyword found after expression.");
                         }
                         bodyStart = i + j + 1;
-                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         bodyEnd = FindEndIndex(bodyStart, "REPEAT", internalTokens);
                         body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                         variableName = $"CounterVariable{fixedLoopCounter++}";
