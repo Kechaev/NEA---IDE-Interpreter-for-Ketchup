@@ -1453,7 +1453,7 @@ namespace NEA
 
         private int FindEndIndex(int index, string structure, Token[] tokens)
         {
-            string[] structures = { "IF", "COUNT", "WHILE", "DO", "FIXED" };
+            string[] structures = { "IF", "COUNT", "WHILE", "LOOP", "REPEAT" };
 
             int nestCounter = 1;
 
@@ -1636,7 +1636,7 @@ namespace NEA
         // REASSIGNMENT
         // DECLARATION
         // IF
-        // COUNT Loop (FOR)
+        // COUNT Loop (FOR) - NEW SYNTAX
         // WHILE Loop
         // DO-WHILE Loop
         // Fixed-Length Loop
@@ -2191,29 +2191,24 @@ namespace NEA
                     case TokenType.REPEAT:
                         expression = new List<Token>();
                         j = 1;
-                        while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.TIMES)
+                        nextToken = internalTokens[i + j];
+                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token) && !Is(internalTokens[i + j], TokenType.TIMES))
                         {
                             expression.Add(internalTokens[i + j]);
                             j++;
+                            nextToken = internalTokens[i + j];
                         }
-                        if (internalTokens[i + j].GetTokenType() != TokenType.TIMES)
+                        if (!Is(internalTokens[i + j],TokenType.TIMES))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"TIMES\" keyword found after expression.");
                         }
-                        if (internalTokens[i + j + 1].GetTokenType() != TokenType.BEGIN)
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j + 1].GetLine() + 1}: No \"BEGIN\" keyword found after \"TIMES\".");
-                        }
                         bodyStart = i + j + 1;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
-                        body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
-                        if (internalTokens[bodyEnd].GetTokenType() != TokenType.END)
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[bodyEnd].GetLine() + 1}: No \"END\" keyword found after body.");
-                        }
+                        bodyEnd = FindEndIndex(bodyStart, "REPEAT", internalTokens);
+                        body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                         variableName = $"CounterVariable{fixedLoopCounter++}";
                         intermediateList.AddRange(MapFixedLengthLoop(variableName, expression.ToArray(), body.ToArray()));
-                        i = bodyEnd + 1;
+                        i = bodyEnd + 2;
                         break;
                     case TokenType.ADDITION:
                         expression = new List<Token>();
