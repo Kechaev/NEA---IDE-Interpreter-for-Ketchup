@@ -1451,6 +1451,33 @@ namespace NEA
             return index;
         }
 
+        private int FindEndIndex(int index, string structure, Token[] tokens)
+        {
+            string[] structures = { "IF", "COUNT", "WHILE", "DO", "FIXED" };
+
+            int nestCounter = 1;
+
+            while (nestCounter > 0 && index < tokens.Length - 1)
+            {
+                index++;
+                Token nextToken = tokens[index];
+                if (structures.Contains(nextToken.GetLiteral().ToUpper()))
+                {
+                    nestCounter++;
+                }
+                else if (nextToken.GetTokenType() == TokenType.END)
+                {
+                    nestCounter--;
+                }
+            }
+
+            if (tokens[index].GetTokenType() == TokenType.END && tokens[index + 1].GetLiteral() == structure)
+            {
+                return index;
+            }
+            throw new Exception($"SYNTAX ERROR: No \"END {structure}\" command was found.");
+        }
+
         private bool IsEndOfToken(Token token)
         {
             return token.GetTokenType() == TokenType.EOF || token.GetTokenType() == TokenType.EON;
@@ -2085,11 +2112,12 @@ namespace NEA
                         }
                         variableName = internalTokens[i + 2].GetLiteral();
                         bodyStart = i + j + k + l + 3;
-                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
-                        body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+                        bodyEnd = FindEndIndex(bodyStart, "COUNT", internalTokens);
+                        nextToken = internalTokens[bodyEnd + 1];
+                        body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
 
                         intermediateList.AddRange(MapForLoop(variableName, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
-                        i = bodyEnd + 1;
+                        i = bodyEnd + 2;
                         break;
                     case TokenType.WHILE:
                         // WHILE condition THEN
