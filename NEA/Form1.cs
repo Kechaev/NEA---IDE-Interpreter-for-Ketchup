@@ -76,8 +76,10 @@ namespace NEA
                 }
                 txtConsole.Text += $"{newExecuteSeparator}\r\n";
             }
-            
+
             machine = new Machine(txtCodeField.Text);
+
+            machine.SetDelay(delayMS);
 
             // Error Checking
             try
@@ -622,22 +624,27 @@ namespace NEA
             {
                 case 0:
                     tsDelay.Text = "Add Delay (200ms)";
+                    machine.SetDelay(100);
                     delayMS = 100;
                     break;
                 case 100:
                     tsDelay.Text = "Add Delay (500ms)";
+                    machine.SetDelay(200);
                     delayMS = 200;
                     break;
                 case 200:
                     tsDelay.Text = "Add Delay (1000ms)";
+                    machine.SetDelay(500);
                     delayMS = 500;
                     break;
                 case 500:
                     tsDelay.Text = "Add Delay (0ms)";
+                    machine.SetDelay(1000);
                     delayMS = 1000;
                     break;
                 case 1000:
                     tsDelay.Text = "Add Delay (100ms)";
+                    machine.SetDelay(0);
                     delayMS = 0;
                     break;
             }

@@ -37,7 +37,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
-                                     "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "BEGIN", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
+                                     "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
         private int current, start, line, counter;
 
         // Fields for Translation into Intermediate Code
@@ -56,6 +56,8 @@ namespace NEA
         private bool validProgram;
         private bool isRunning = false;
 
+        private int delayMS;
+
         public Machine(string sourceCode)
         {
             this.sourceCode = sourceCode;
@@ -66,6 +68,24 @@ namespace NEA
             stack = new Stack<object>();
 
             fixedLoopCounter = 0;
+            delayMS = 0;
+        }
+
+        public Machine()
+        {
+            callStack = new Stack<StackFrame>();
+            counter = 0;
+            PC = 0;
+            validProgram = true;
+            stack = new Stack<object>();
+
+            fixedLoopCounter = 0;
+            delayMS = 0;
+        }
+
+        public void SetSourceCode(string sourceCode)
+        {
+            this.sourceCode = sourceCode;
         }
 
         public string[] GetIntermediateCode()
@@ -114,7 +134,7 @@ namespace NEA
             for (int i = 0; i < tokens.Length; i++) 
             {
                 Token token = tokens[i];
-                if (token.GetTokenType() == TokenType.TIMES && tokens[i + 1].GetTokenType() == TokenType.BEGIN)
+                if (token.GetTokenType() == TokenType.TIMES)
                 {
                     counter++;
                 }
@@ -291,7 +311,6 @@ namespace NEA
                 case "POWER":
                     return TokenType.POWER;
                 default:
-                    validProgram = false;
                     throw new Exception($"SYNTAX ERROR: Unkown keyword: {token}.");
             }
         }
@@ -2337,6 +2356,11 @@ namespace NEA
             return validProgram;
         }
 
+        public void SetDelay(int delay)
+        {
+            delayMS = delay;
+        }
+
         public void FetchExecute(string[] intermediateCode, ref TextBox console)
         {
             if (PC < intermediateCode.Length)
@@ -2730,8 +2754,8 @@ namespace NEA
                         if (operand == "PRINT")
                         {
                             object object1 = stack.Pop();
+                            Thread.Sleep(delayMS);
                             console.Text += $"{object1}\r\n";
-                            // ConsoleWrite the object
                         }
                         else if (operand == "INPUT")
                         {
