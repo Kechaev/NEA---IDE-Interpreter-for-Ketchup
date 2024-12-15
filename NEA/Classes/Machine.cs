@@ -34,7 +34,7 @@ namespace NEA
         // Fields for Tokenization
         private Token[] tokens;
         private string[] keyword = { "CREATE", "SET", "CHANGE", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
-                                     "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "LOOP", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
+                                     "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
                                      "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
@@ -246,8 +246,8 @@ namespace NEA
                     return TokenType.BY;
                 case "WHILE":
                     return TokenType.WHILE;
-                case "LOOP":
-                    return TokenType.LOOP;
+                case "DO":
+                    return TokenType.DO;
                 case "REPEAT":
                     return TokenType.REPEAT;
                 case "FOR":
@@ -1453,7 +1453,7 @@ namespace NEA
 
         private int FindEndIndex(int index, string structure, Token[] tokens)
         {
-            string[] structures = { "IF", "COUNT", "WHILE", "LOOP", "REPEAT" };
+            string[] structures = { "IF", "COUNT", "WHILE", "DO", "REPEAT" };
 
             int nestCounter = 1;
 
@@ -2062,6 +2062,10 @@ namespace NEA
                         intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
                         break;
                     case TokenType.COUNT:
+                        // Current Syntax:
+                        // COUNT WITH variable FROM begin TO limit BY steps
+                        // statement
+                        // END COUNT
                         nextToken = internalTokens[i + 1];
                         if (!Is(nextToken,TokenType.WITH))
                         {
@@ -2123,10 +2127,10 @@ namespace NEA
                         i = bodyEnd + 2;
                         break;
                     case TokenType.WHILE:
+                        // Current Syntax:
                         // WHILE condition THEN
-                        // BEGIN
                         // statements
-                        // END
+                        // END WHO:E
                         currentLine = token.GetLine();
                         finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
                         if (!Is(finalTokenOfLine, TokenType.THEN))
@@ -2149,28 +2153,28 @@ namespace NEA
                         intermediateList.AddRange(MapWhileLoop(expression.ToArray(), body.ToArray()));
                         i = bodyEnd + 2;
                         break;
-                    case TokenType.LOOP:
-                        // NOT FINAL SYNTAX
-
-                        // LOOP
-                        // BEGIN
+                    case TokenType.DO:
+                        // Current Syntax:
+                        // DO
                         // statement
-                        // END
+                        // END DO
                         // REPEAT IF condition
                         nextToken = internalTokens[i + 1];
-                        if (!Is(nextToken, TokenType.BEGIN))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No \"BEGIN\" keyword found after \"LOOP\".");
-                        }
                         bodyStart = i + 1;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
-                        body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
-                        i = bodyEnd + 1;
-                        prevToken = internalTokens[i - 1];
+                        bodyEnd = FindEndIndex(bodyStart, "DO", internalTokens);
+                        body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
+                        i = bodyEnd + 2;
+                        prevToken = internalTokens[i - 2];
                         if (!Is(prevToken, TokenType.END))
                         {
                             // Throw error for no END 1 line ahead of the final token in the loop
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i - 2].GetLine() + 2}: No \"END\" keyword after the body.");
+                        }
+                        prevToken = internalTokens[i - 1];
+                        if (!Is(prevToken, TokenType.DO))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i - 2].GetLine() + 2}: NO \"DO\" keyword after \"END\" keyword.");
                         }
                         nextToken = internalTokens[i];
                         if (!Is(nextToken, TokenType.REPEAT))
