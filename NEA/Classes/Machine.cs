@@ -2127,6 +2127,12 @@ namespace NEA
                         // BEGIN
                         // statements
                         // END
+                        currentLine = token.GetLine();
+                        finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
+                        if (!Is(finalTokenOfLine, TokenType.THEN))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\".");
+                        }
                         expression = new List<Token>();
                         j = 1;
                         nextToken = internalTokens[i + j];
@@ -2136,15 +2142,12 @@ namespace NEA
                             j++;
                             nextToken = internalTokens[i + j];
                         }
-                        if (!Is(nextToken,TokenType.THEN))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j - 1].GetLine() + 1}: Missing \"THEN\" in while loop.");
-                        }
                         bodyStart = i + j + 1;
                         bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
-                        body = internalTokensList.GetRange(bodyStart + 1, bodyEnd - bodyStart - 1);
+                        bodyEnd = FindEndIndex(bodyStart, "WHILE", internalTokens);
+                        body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                         intermediateList.AddRange(MapWhileLoop(expression.ToArray(), body.ToArray()));
-                        i = bodyEnd + 1;
+                        i = bodyEnd + 2;
                         break;
                     case TokenType.LOOP:
                         // NOT FINAL SYNTAX
