@@ -2163,10 +2163,12 @@ namespace NEA
                         // ADD x TO variable
                         expression = new List<Token>();
                         j = 1;
-                        while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.TO)
+                        nextToken = internalTokens[i + j];
+                        while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.TO))
                         {
                             expression.Add(internalTokens[i + j]);
                             j++;
+                            nextToken = internalTokens[i + j];
                         }
                         variableName = internalTokens[i + j + 1].GetLiteral();
                         intermediateList.AddRange(MapAddition(variableName, expression.ToArray()));
@@ -2175,18 +2177,22 @@ namespace NEA
                     case TokenType.TAKE:
                         // Current Syntax:
                         // TAKE AWAY x FROM variable
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.AWAY)
+                        nextToken = internalTokens[i + 1];
+                        if (!Is(nextToken, TokenType.AWAY))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"AWAY\" keyword found after \"TAKE\".");
                         }
                         expression = new List<Token>();
                         j = 1;
-                        while (internalTokens[i + j + 1].GetLine() == token.GetLine() && internalTokens[i + j + 1].GetTokenType() != TokenType.FROM)
+                        nextToken = internalTokens[i + j + 1];
+                        while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.FROM))
                         {
                             expression.Add(internalTokens[i + j + 1]);
                             j++;
+                            nextToken = internalTokens[i + j + 1];
                         }
-                        if (internalTokens[i + j + 1].GetTokenType() != TokenType.FROM)
+                        nextToken = internalTokens[i + j + 1];
+                        if (!Is(internalTokens[i + j + 1], TokenType.FROM))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"FROM\" keyword after {expression[expression.Count - 1].GetLiteral()}.");
                         }
@@ -2198,16 +2204,19 @@ namespace NEA
                         // Current Syntax:
                         // MULTIPLY variable BY x
                         variableName = internalTokens[i + 1].GetLiteral();
-                        if (internalTokens[i + 2].GetTokenType() != TokenType.BY)
+                        nextToken = internalTokens[i + 2];
+                        if (!Is(nextToken, TokenType.BY))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"BY\" keyword after {variableName}.");
                         }
                         expression = new List<Token>();
                         j = 1;
-                        while ((internalTokens[i + j + 2].GetTokenType() != TokenType.EOF || internalTokens[i + j + 2].GetTokenType() != TokenType.EON) && internalTokens[i + j + 2].GetLine() == token.GetLine())
+                        nextToken = internalTokens[i + j + 2];
+                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
                         {
-                            expression.Add(internalTokens[i + j + 2]);
+                            expression.Add(nextToken);
                             j++;
+                            nextToken = internalTokens[i + j + 2];
                         }
                         intermediateList.AddRange(MapMultiplication(variableName, expression.ToArray()));
                         i += j + 2;
@@ -2216,16 +2225,19 @@ namespace NEA
                         // Current Syntax:
                         // DIVIDE variable BY x
                         variableName = internalTokens[i + 1].GetLiteral();
-                        if (internalTokens[i + 2].GetTokenType() != TokenType.BY)
+                        nextToken = internalTokens[i + 2];
+                        if (!Is(nextToken, TokenType.BY))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"BY\" keyword after {variableName}.");
                         }
                         expression = new List<Token>();
                         j = 1;
-                        while ((internalTokens[i + j + 2].GetTokenType() != TokenType.EOF || internalTokens[i + j + 2].GetTokenType() != TokenType.EON) && internalTokens[i + j + 2].GetLine() == token.GetLine())
+                        nextToken = internalTokens[i + j + 2];
+                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
                         {
-                            expression.Add(internalTokens[i + j + 2]);
+                            expression.Add(nextToken);
                             j++;
+                            nextToken = internalTokens[i + j + 2];
                         }
                         intermediateList.AddRange(MapDivision(variableName, expression.ToArray()));
                         i += j + 2;
@@ -2235,11 +2247,13 @@ namespace NEA
                         // GET (THE) REMAINDER OF variable DIVDED BY expression
                         // GET (THE) REMAINDER FROM x DIVIDED BY expression
                         int theOffset = 0;
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.THE)
+                        nextToken = internalTokens[i + 1];
+                        if (!Is(nextToken, TokenType.THE))
                         {
                             theOffset = -1;
                         }
-                        if (internalTokens[i + 2 + theOffset].GetTokenType() != TokenType.REMAINDER)
+                        nextToken = internalTokens[i + 2 + theOffset];
+                        if (!Is(nextToken, TokenType.REMAINDER))
                         {
                             if (theOffset == 0)
                             {
@@ -2250,25 +2264,30 @@ namespace NEA
                                 throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1 + theOffset].GetLine() + 1}: No \"REMAINDER\" keyword after \"GET\".");
                             }
                         }
-                        if (internalTokens[i + 3 + theOffset].GetTokenType() != TokenType.FROM && internalTokens[i + 3 + theOffset].GetTokenType() != TokenType.OF)
+                        nextToken = internalTokens[i + 3 + theOffset];
+                        if (!Is(nextToken, TokenType.FROM) && !Is(nextToken, TokenType.OF))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2 + theOffset].GetLine() + 1}: No \"OF\" or \"FROM\" keyword after \"REMAINDER\".");
                         }
                         variableName = internalTokens[i + 4 + theOffset].GetLiteral();
-                        if (internalTokens[i + 5 + theOffset].GetTokenType() != TokenType.DIVIDED)
+                        nextToken = internalTokens[i + 5 + theOffset];
+                        if (!Is(nextToken, TokenType.DIVIDED))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 4 + theOffset].GetLine() + 1}: No \"DIVIDED\" keyword after \"{variableName}\".");
                         }
-                        if (internalTokens[i + 6 + theOffset].GetTokenType() != TokenType.BY)
+                        nextToken = internalTokens[i + 6 + theOffset];
+                        if (!Is(nextToken, TokenType.BY))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 5 + theOffset].GetLine() + 1}: No \"BY\" keyword after \"DIVIDED\".");
                         }
                         expression = new List<Token>();
                         j = 1;
-                        while ((internalTokens[i + j + 6 + theOffset].GetTokenType() != TokenType.EOF || internalTokens[i + j + 6 + theOffset].GetTokenType() != TokenType.EON) && internalTokens[i + j + 6 + theOffset].GetLine() == token.GetLine())
+                        nextToken = internalTokens[i + j + 6 + theOffset];
+                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
                         {
-                            expression.Add(internalTokens[i + j + 6 + theOffset]);
+                            expression.Add(nextToken);
                             j++;
+                            nextToken = internalTokens[i + j + 6 + theOffset];
                         }
                         intermediateList.AddRange(MapModulo(variableName, expression.ToArray()));
                         i += j + 6 + theOffset;
@@ -2276,33 +2295,40 @@ namespace NEA
                     case TokenType.RAISE:
                         // Current Syntax:
                         // RAISE variable TO THE POWER 2
-                        if (internalTokens[i + 1].GetTokenType() != TokenType.VARIABLE)
+                        nextToken = internalTokens[i + 1];
+                        if (!Is(nextToken, TokenType.VARIABLE))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No variable found after \"RAISE\".");
                         }
                         variableName = internalTokens[i + 1].GetLiteral();
-                        if (internalTokens[i + 2].GetTokenType() != TokenType.TO)
+                        nextToken = internalTokens[i + 2];
+                        if (!Is(nextToken, TokenType.TO))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"TO\" after \"{variableName}\".");
                         }
-                        if (internalTokens[i + 3].GetTokenType() != TokenType.THE)
+                        nextToken = internalTokens[i + 3];
+                        if (!Is(nextToken, TokenType.THE))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2].GetLine() + 1}: No \"THE\" keyword after \"TO\".");
                         }
-                        if (internalTokens[i + 4].GetTokenType() != TokenType.POWER)
+                        nextToken = internalTokens[i + 4];
+                        if (!Is(nextToken, TokenType.POWER))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 3].GetLine() + 1}: No \"POWER\" keyword after \"THE\".");
                         }
-                        if (internalTokens[i + 5].GetTokenType() != TokenType.OF)
+                        nextToken = internalTokens[i + 5];
+                        if (!Is(nextToken, TokenType.OF))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 4].GetLine() + 1}: No \"OF\" keyword after \"POWER\".");
                         }
                         expression = new List<Token>();
                         j = 1;
-                        while ((internalTokens[i + j + 5].GetTokenType() != TokenType.EOF || internalTokens[i + j + 5].GetTokenType() != TokenType.EON) && internalTokens[i + j + 5].GetLine() == token.GetLine())
+                        nextToken = internalTokens[i + j + 5];
+                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
                         {
-                            expression.Add(internalTokens[i + j + 5]);
+                            expression.Add(nextToken);
                             j++;
+                            nextToken = internalTokens[i + j + 5];
                         }
                         intermediateList.AddRange(MapExponentiation(variableName, expression.ToArray()));
                         i += j + 5;
@@ -2322,7 +2348,6 @@ namespace NEA
         #endregion
 
         #region Execution
-
         public void SetRunningStatus(bool status)
         {
             isRunning = status;
