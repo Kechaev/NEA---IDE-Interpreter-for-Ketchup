@@ -490,7 +490,7 @@ namespace NEA
                     }
                     else
                     {
-                        tokensList.Add(new Token(TokenType.VARIABLE, word, line));
+                        tokensList.Add(new Token(TokenType.VARIABLE, word.ToUpper(), line));
                     }
                 }
                 else if (IsComparisonOperatorChar(c))
@@ -1431,51 +1431,59 @@ namespace NEA
         #endregion
 
         #region Extra Token Utility
-        private int FindRelevantEndIndex(int index, Token[] tokens)
-        {
-            int nestCounter = 1;
+        //private int FindRelevantEndIndex(int index, Token[] tokens)
+        //{
+        //    int nestCounter = 1;
 
-            while (nestCounter > 0 && index < tokens.Length - 1)
-            {
-                index++;
-                if (tokens[index].GetTokenType() == TokenType.BEGIN)
-                {
-                    nestCounter++;
-                }
-                else if (tokens[index].GetTokenType() == TokenType.END)
-                {
-                    nestCounter--;
-                }
-            }
+        //    while (nestCounter > 0 && index < tokens.Length - 1)
+        //    {
+        //        index++;
+        //        if (tokens[index].GetTokenType() == TokenType.BEGIN)
+        //        {
+        //            nestCounter++;
+        //        }
+        //        else if (tokens[index].GetTokenType() == TokenType.END)
+        //        {
+        //            nestCounter--;
+        //        }
+        //    }
 
-            return index;
-        }
+        //    return index;
+        //}
 
         private int FindEndIndex(int index, string structure, Token[] tokens)
         {
-            string[] structures = { "IF", "COUNT", "WHILE", "DO", "REPEAT" };
+            //MessageBox.Show($"FindEndIndex({index}, {structure}, {tokens[tokens.Length - 1].GetTokenType()})");
+            string[] structures = { "IF", "COUNT", "WHILE", "DO", "REPEAT", "ELSE" };
 
             int nestCounter = 1;
+
+            int initialIndex = index;
 
             while (nestCounter > 0 && index < tokens.Length - 1)
             {
                 index++;
                 Token nextToken = tokens[index];
-                if (structures.Contains(nextToken.GetLiteral().ToUpper()))
+                //MessageBox.Show($"token = {nextToken.GetTokenType()}");
+                if (structures.Contains(nextToken.GetTokenType().ToString().ToUpper()) && !Is(tokens[index - 1], TokenType.END))
                 {
                     nestCounter++;
+                    //MessageBox.Show($"+\n{nestCounter}");
                 }
                 else if (nextToken.GetTokenType() == TokenType.END)
                 {
                     nestCounter--;
+                    //MessageBox.Show($"-\n{nestCounter}");
                 }
             }
+
+            //MessageBox.Show($"nestCounter = {nestCounter}");
 
             if (tokens[index].GetTokenType() == TokenType.END && tokens[index + 1].GetLiteral() == structure)
             {
                 return index;
             }
-            throw new Exception($"SYNTAX ERROR: No \"END {structure}\" command was found.");
+            throw new Exception($"SYNTAX ERROR following {tokens[initialIndex].GetLine()}: No \"END {structure}\" command was found.");
         }
 
         private bool IsEndOfToken(Token token)
@@ -1671,7 +1679,6 @@ namespace NEA
             int inputOffset;
             Token nextToken, prevToken;
             List<Token> body = new List<Token>();
-            Token bodyStartToken, bodyEndToken;
             int currentLine;
             Token finalTokenOfLine;
             int prevI = -1;
@@ -1943,27 +1950,7 @@ namespace NEA
                         }
                         // Capture Main If Body
                         bodyStart = i + j + 2;
-                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
-
-                        // Verify Valid Syntax - BEGIN & END
-                        bodyStartToken = internalTokens[bodyStart];
-                        bodyEndToken = internalTokens[bodyEnd];
-                        //if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
-                        //{
-                        //    if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
-                        //    {
-                        //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                        //    }
-                        //    if (!Is(bodyStartToken, TokenType.BEGIN))
-                        //    {
-                        //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\".");
-                        //    }
-                        //    if (!Is(bodyEndToken, TokenType.END))
-                        //    {
-                        //        throw new Exception($"SYNTAX ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                        //    }
-                        //}
 
                         mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                         // Set i to next section
@@ -1998,27 +1985,7 @@ namespace NEA
                             }
                             // Capture Else If 1 Body
                             bodyStart = i + j + 3;
-                            bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                             bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
-                            // Verify Valid Syntax - BEGIN & END
-                            //bodyStartToken = internalTokens[bodyStart];
-                            //bodyEndToken = internalTokens[bodyEnd];
-                            //if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
-                            //{
-                            //    if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
-                            //    {
-                            //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                            //    }
-                            //    if (!Is(bodyStartToken, TokenType.BEGIN))
-                            //    {
-                            //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\".");
-                            //    }
-                            //    if (!Is(bodyEndToken, TokenType.END))
-                            //    {
-                            //        throw new Exception($"SYNTAX ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                            //    }
-                            //}
-
                             body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                             // Add body & expresison to lists
                             elseIfBodies.Add(body.ToArray());
@@ -2035,26 +2002,7 @@ namespace NEA
                         {
                             isElse = true;
                             bodyStart = i + 1;
-                            bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
-
-                            // Verify Valid Syntax - BEGIN & END
-                            //bodyStartToken = internalTokens[bodyStart];
-                            //bodyEndToken = internalTokens[bodyEnd];
-                            //if (!Is(bodyStartToken, TokenType.BEGIN) || !Is(bodyEndToken, TokenType.END))
-                            //{
-                            //    if (!Is(bodyStartToken, TokenType.BEGIN) && !Is(bodyEndToken, TokenType.END))
-                            //    {
-                            //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\"\r\nERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                            //    }
-                            //    if (!Is(bodyStartToken, TokenType.BEGIN))
-                            //    {
-                            //        throw new Exception($"SYNTAX ERROR on Line {bodyStartToken.GetLine() + 1}: Missing \"BEGIN\".");
-                            //    }
-                            //    if (!Is(bodyEndToken, TokenType.END))
-                            //    {
-                            //        throw new Exception($"SYNTAX ERROR following Line {bodyStartToken.GetLine() + 1}: Missing \"END\".");
-                            //    }
-                            //}
+                            bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
 
                             elseBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                             i = bodyEnd + 2;
@@ -2063,7 +2011,7 @@ namespace NEA
                         break;
                     case TokenType.COUNT:
                         // Current Syntax:
-                        // COUNT WITH variable FROM begin TO limit BY steps
+                        // COUNT WITH variable FROM begin TO limit (BY steps)
                         // statement
                         // END COUNT
                         nextToken = internalTokens[i + 1];
@@ -2130,7 +2078,7 @@ namespace NEA
                         // Current Syntax:
                         // WHILE condition THEN
                         // statements
-                        // END WHO:E
+                        // END WHILE
                         currentLine = token.GetLine();
                         finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
                         if (!Is(finalTokenOfLine, TokenType.THEN))
@@ -2147,7 +2095,6 @@ namespace NEA
                             nextToken = internalTokens[i + j];
                         }
                         bodyStart = i + j + 1;
-                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         bodyEnd = FindEndIndex(bodyStart, "WHILE", internalTokens);
                         body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                         intermediateList.AddRange(MapWhileLoop(expression.ToArray(), body.ToArray()));
@@ -2161,21 +2108,9 @@ namespace NEA
                         // REPEAT IF condition
                         nextToken = internalTokens[i + 1];
                         bodyStart = i + 1;
-                        bodyEnd = FindRelevantEndIndex(bodyStart, internalTokens);
                         bodyEnd = FindEndIndex(bodyStart, "DO", internalTokens);
                         body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                         i = bodyEnd + 2;
-                        prevToken = internalTokens[i - 2];
-                        if (!Is(prevToken, TokenType.END))
-                        {
-                            // Throw error for no END 1 line ahead of the final token in the loop
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i - 2].GetLine() + 2}: No \"END\" keyword after the body.");
-                        }
-                        prevToken = internalTokens[i - 1];
-                        if (!Is(prevToken, TokenType.DO))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i - 2].GetLine() + 2}: NO \"DO\" keyword after \"END\" keyword.");
-                        }
                         nextToken = internalTokens[i];
                         if (!Is(nextToken, TokenType.REPEAT))
                         {
@@ -2199,6 +2134,10 @@ namespace NEA
                         i = i + j + 1;
                         break;
                     case TokenType.REPEAT:
+                        // Current Syntax:
+                        // REPEAT n TIMES
+                        // statement
+                        // END REPEAT
                         expression = new List<Token>();
                         j = 1;
                         nextToken = internalTokens[i + j];
@@ -2220,6 +2159,8 @@ namespace NEA
                         i = bodyEnd + 2;
                         break;
                     case TokenType.ADDITION:
+                        // Current Syntax:
+                        // ADD x TO variable
                         expression = new List<Token>();
                         j = 1;
                         while (internalTokens[i + j].GetLine() == token.GetLine() && internalTokens[i + j].GetTokenType() != TokenType.TO)
@@ -2232,6 +2173,8 @@ namespace NEA
                         i += j + 2;
                         break;
                     case TokenType.TAKE:
+                        // Current Syntax:
+                        // TAKE AWAY x FROM variable
                         if (internalTokens[i + 1].GetTokenType() != TokenType.AWAY)
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"AWAY\" keyword found after \"TAKE\".");
@@ -2252,6 +2195,8 @@ namespace NEA
                         i += j + 3;
                         break;
                     case TokenType.MULTIPLICATION:
+                        // Current Syntax:
+                        // MULTIPLY variable BY x
                         variableName = internalTokens[i + 1].GetLiteral();
                         if (internalTokens[i + 2].GetTokenType() != TokenType.BY)
                         {
@@ -2268,6 +2213,8 @@ namespace NEA
                         i += j + 2;
                         break;
                     case TokenType.DIVISION:
+                        // Current Syntax:
+                        // DIVIDE variable BY x
                         variableName = internalTokens[i + 1].GetLiteral();
                         if (internalTokens[i + 2].GetTokenType() != TokenType.BY)
                         {
@@ -2284,9 +2231,9 @@ namespace NEA
                         i += j + 2;
                         break;
                     case TokenType.GET:
-                        // Allows for both of these syntaxes:
-                        // GET THE REMAINDER OF ...
-                        // GET REMAINDER OF...
+                        // Current syntax
+                        // GET (THE) REMAINDER OF variable DIVDED BY expression
+                        // GET (THE) REMAINDER FROM x DIVIDED BY expression
                         int theOffset = 0;
                         if (internalTokens[i + 1].GetTokenType() != TokenType.THE)
                         {
@@ -2303,14 +2250,11 @@ namespace NEA
                                 throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1 + theOffset].GetLine() + 1}: No \"REMAINDER\" keyword after \"GET\".");
                             }
                         }
-                        if (internalTokens[i + 3 + theOffset].GetTokenType() != TokenType.FROM)
+                        if (internalTokens[i + 3 + theOffset].GetTokenType() != TokenType.FROM && internalTokens[i + 3 + theOffset].GetTokenType() != TokenType.OF)
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2 + theOffset].GetLine() + 1}: No \"OF\" keyword after \"REMAINDER\".");
+                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2 + theOffset].GetLine() + 1}: No \"OF\" or \"FROM\" keyword after \"REMAINDER\".");
                         }
                         variableName = internalTokens[i + 4 + theOffset].GetLiteral();
-                        // Current syntax
-                        // GET (THE) REMAINDER OF variable DIVDED BY expression
-                        // GET (THE) REMAINDER FROM x DIVIDED BY expression
                         if (internalTokens[i + 5 + theOffset].GetTokenType() != TokenType.DIVIDED)
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 4 + theOffset].GetLine() + 1}: No \"DIVIDED\" keyword after \"{variableName}\".");
@@ -2330,6 +2274,8 @@ namespace NEA
                         i += j + 6 + theOffset;
                         break;
                     case TokenType.RAISE:
+                        // Current Syntax:
+                        // RAISE variable TO THE POWER 2
                         if (internalTokens[i + 1].GetTokenType() != TokenType.VARIABLE)
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No variable found after \"RAISE\".");
@@ -2347,15 +2293,19 @@ namespace NEA
                         {
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 3].GetLine() + 1}: No \"POWER\" keyword after \"THE\".");
                         }
+                        if (internalTokens[i + 5].GetTokenType() != TokenType.OF)
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 4].GetLine() + 1}: No \"OF\" keyword after \"POWER\".");
+                        }
                         expression = new List<Token>();
                         j = 1;
-                        while ((internalTokens[i + j + 4].GetTokenType() != TokenType.EOF || internalTokens[i + j + 4].GetTokenType() != TokenType.EON) && internalTokens[i + j + 4].GetLine() == token.GetLine())
+                        while ((internalTokens[i + j + 5].GetTokenType() != TokenType.EOF || internalTokens[i + j + 5].GetTokenType() != TokenType.EON) && internalTokens[i + j + 5].GetLine() == token.GetLine())
                         {
-                            expression.Add(internalTokens[i + j + 4]);
+                            expression.Add(internalTokens[i + j + 5]);
                             j++;
                         }
                         intermediateList.AddRange(MapExponentiation(variableName, expression.ToArray()));
-                        i += j + 4;
+                        i += j + 5;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
