@@ -116,6 +116,7 @@ namespace NEA.Classes
         public void SetNull()
         {
             value = null;
+            isNull = true;
         }
 
         public bool IsNull()
