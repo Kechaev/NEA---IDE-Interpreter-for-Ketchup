@@ -420,9 +420,9 @@ namespace NEA
             List<string> subroutineNames = new List<string>();
             char[] seperators = { ' ', '\n' };
             string[] words = sourceCode.Split(seperators);
-            for (int i = 0; i < words.Length; i++)
+            for (int i = 0; i < words.Length - 1; i++)
             {
-                if (words[i] == "FUNCTION")
+                if (words[i] == "FUNCTION" && !keyword.Contains(words[i + 1]))
                 {
                     subroutineNames.Add(words[i + 1]);
                 }
@@ -1559,7 +1559,7 @@ namespace NEA
         private int FindEndIndex(int index, string structure, Token[] tokens)
         {
             //MessageBox.Show($"FindEndIndex({index}, {structure}, {tokens[tokens.Length - 1].GetTokenType()})");
-            string[] structures = { "IF", "COUNT", "WHILE", "DO", "REPEAT", "ELSE" };
+            string[] structures = { "IF", "COUNT", "WHILE", "DO", "REPEAT", "ELSE", "FUNCTION" };
 
             int nestCounter = 1;
 
@@ -1789,7 +1789,7 @@ namespace NEA
                                                  TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.NOT_EQUAL };
             TokenType[] brackets = { TokenType.LEFT_BRACKET, TokenType.RIGHT_BRACKET };
 
-            string type, variableName;
+            string type, variableName, subroutineName;
             bool noType;
             List<Token> expression;
             int j, k, l;
@@ -2452,6 +2452,44 @@ namespace NEA
                         break;
                     case TokenType.FUNCTION:
                         // Function code
+                        nextToken = internalTokens[i + 1];
+                        if (!Is(nextToken, TokenType.SUBROUTINE_NAME))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No valid function name found after  \"FUNCTION\" keyword.");
+                        }
+                        subroutineName = nextToken.GetLiteral();
+                        nextToken = internalTokens[i + 2];
+                        if (!Is(nextToken, TokenType.WITH))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No \"WITH\" keyword found after {subroutineName}.");
+                        }
+                        nextToken = internalTokens[i + 3];
+                        if (!Is(nextToken, TokenType.INPUTS))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No \"INPUTS\" keyword found after \"WITH\" keyword.");
+                        }
+                        // To-Do: Add support for more than one parameter
+                        // Think of intuitive syntax for it
+                        // Maybe comma, but think of something else
+                        nextToken = internalTokens[i + 4];
+                        if (!Is(nextToken, TokenType.VARIABLE))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No variable name found after \"INPUTS\".");
+                        }
+                        List<string> variableNames = new List<string>();
+                        variableName = nextToken.GetLiteral();
+                        nextToken = internalTokens[i + 5];
+                        if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.AS) && Is(internalTokens[i + 5], TokenType.DATA_TYPE))
+                        {
+                            type = internalTokens[i + 5].GetLiteral();
+                            noType = false;
+                        }
+                        bodyStart = i + 6;
+                        bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
+
+                        // Do something
+
+                        i = bodyEnd + 2;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");

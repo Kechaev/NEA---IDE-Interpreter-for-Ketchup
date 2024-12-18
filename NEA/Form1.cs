@@ -617,7 +617,6 @@ namespace NEA
             MessageBox.Show("Breakpoints");
         }
 
-        // NOT IMPLEMENTED
         private void tsDelay_Click(object sender, EventArgs e)
         {
             switch (delayMS)
