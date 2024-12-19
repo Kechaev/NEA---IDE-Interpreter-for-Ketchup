@@ -37,7 +37,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
-                                     "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF", "EON" /*/ End of nest /*/ };
+                                     "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
         // Fields for Translation into Intermediate Code
@@ -517,7 +517,6 @@ namespace NEA
         // To intermediate code in postfix
         // https://en.wikipedia.org/wiki/Shunting_yard_algorithm
 
-        // Potential Optimization - Change List<Token> to Token[]
         private string[] ConvertToPostfix(List<Token> tokens)
         {
             List<string> output = new List<string>();
@@ -526,152 +525,25 @@ namespace NEA
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
+            TokenType[] number = { TokenType.INT_LITERAL, TokenType.DEC_LITERAL };
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
                                                    TokenType.DIV, TokenType.MOD, TokenType.EXP, };
             TokenType[] comparisonOperators = { TokenType.EQUAL, TokenType.NOT_EQUAL, TokenType.GREATER,
                                                 TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL };
             TokenType[] binaryBitwiseOperations = { TokenType.AND, TokenType.OR };
-
-            for (int i = 0; i < tokens.Count; i++)
-            {
-                Token e = tokens[i];
-                if (literals.Contains(e.GetTokenType()))
-                {
-                    output.Add("LOAD_CONST " + e.GetLiteral());
-                    if (stack.Count > 0 && stack.Peek().GetTokenType() == TokenType.NOT)
-                    {
-                        stack.Pop();
-                        output.Add("NOT");
-                    }
-                }
-                else if (e.GetTokenType() == TokenType.VARIABLE)
-                {
-                    output.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
-                    if (stack.Count > 0 && stack.Peek().GetTokenType() == TokenType.NOT)
-                    {
-                        stack.Pop();
-                        output.Add("NOT");
-                    }
-                }
-                else if (e.GetTokenType() == TokenType.INPUT)
-                {
-                    List<Token> inputPrompt = new List<Token>();
-                    i++;
-
-                    inputPrompt.Add(tokens[i]);
-
-                    string[] inputStatement = MapInputStatement(inputPrompt);
-
-                    foreach (string statement in inputStatement)
-                    {
-                        output.Add(statement);
-                    }
-                }
-                else if (e.GetTokenType() == TokenType.LEFT_BRACKET)
-                {
-                    stack.Push(e);
-                }
-                else if (e.GetTokenType() == TokenType.RIGHT_BRACKET)
-                {
-                    while (stack.Count > 0 && stack.Peek().GetTokenType() != TokenType.LEFT_BRACKET)
-                    {
-                        var topToken = stack.Pop();
-                        // Removed this if statement wrapper
-                        // No idea why it was there
-                        //if (comparisonOperators.Contains(topToken.GetTokenType()) || mathematicalOperations.Contains(topToken.GetTokenType()))
-                        output.Add(topToken.GetTokenType().ToString());
-                    }
-                    stack.Pop();
-                }
-                else if (IsBitwise(e))
-                {
-                    stack.Push(e);
-                }
-                else
-                {
-                    while (stack.Count > 0 && stack.Peek().GetTokenType() != TokenType.LEFT_BRACKET &&
-                           Precedence(stack.Peek().GetTokenType()) <= Precedence(e.GetTokenType()))
-                    {
-                        var topToken = stack.Pop();
-                        if (comparisonOperators.Contains(topToken.GetTokenType()) || mathematicalOperations.Contains(topToken.GetTokenType()))
-                        {
-                            output.Add(topToken.GetTokenType().ToString());
-                        }
-                        else if (binaryBitwiseOperations.Contains(topToken.GetTokenType()))
-                        {
-                            if (topToken.GetTokenType() == TokenType.AND)
-                            {
-                                output.Add("MUL");
-                            }
-                            if (topToken.GetTokenType() == TokenType.OR)
-                            {
-                                output.Add("ADD");
-                            }
-                        }
-                        else if (IsUnaryBitwise(topToken))
-                        {
-                            output.Add("NOT");
-                        }
-                    }
-                    stack.Push(e);
-                }
-            }
-
-            while (stack.Count > 0)
-            {
-                var topToken = stack.Pop();
-                if (comparisonOperators.Contains(topToken.GetTokenType()) || mathematicalOperations.Contains(topToken.GetTokenType()))
-                {
-                    output.Add(topToken.GetTokenType().ToString());
-                }
-                else if (literals.Contains(topToken.GetTokenType()))
-                {
-                    output.Add("LOAD_CONST " + topToken.GetLiteral());
-                }
-                else if (topToken.GetTokenType() == TokenType.VARIABLE)
-                {
-                    output.Add("LOAD_VAR " + variablesDict[topToken.GetLiteral()]);
-                }
-                else if (binaryBitwiseOperations.Contains(topToken.GetTokenType()))
-                {
-                    if (topToken.GetTokenType() == TokenType.AND)
-                    {
-                        output.Add("MUL");
-                    }
-                    if (topToken.GetTokenType() == TokenType.OR)
-                    {
-                        output.Add("ADD");
-                    }
-                }
-                else if (topToken.GetTokenType() == TokenType.NOT)
-                {
-                    output.Add("NOT");
-                }
-            }
-            return output.ToArray();
-        }
-
-        private string[] newConvertToPostfix(List<Token> tokens)
-        {
-            List<string> output = new List<string>();
-            Stack<Token> stack = new Stack<Token>();
-
-            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
-                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
-                                     TokenType.BOOL_LITERAL };
-            TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
-                                                   TokenType.DIV, TokenType.MOD, TokenType.EXP, };
-            TokenType[] comparisonOperators = { TokenType.EQUAL, TokenType.NOT_EQUAL, TokenType.GREATER,
-                                                TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL };
-            TokenType[] binaryBitwiseOperations = { TokenType.AND, TokenType.OR };
+            TokenType[] unaryBitwiseOperation = { TokenType.NOT };
 
             for (int i = 0; i < tokens.Count; i++)
             {
                 Token token = tokens[i];
-                MessageBox.Show($"token = {token.GetLiteral()}");
+                
                 if (IsLiteral(token))
                 {
                     output.Add("LOAD_CONST " + token.GetLiteral());
+                }
+                if (IsVariable(token))
+                {
+                    output.Add("LOAD_VAR " + variablesDict[token.GetLiteral()]);
                 }
                 else if (IsUnary(token))
                 {
@@ -679,101 +551,79 @@ namespace NEA
                 }
                 else if (IsBinary(token))
                 {
-                    Token topToken = stack.Peek();
-                    while ((Precedence(token.GetTokenType()) <= Precedence(topToken.GetTokenType()) ||
-                           IsUnary(topToken)) && topToken.GetTokenType() != TokenType.LEFT_BRACKET &&
-                           IsLeftAssociatitve(token.GetTokenType()))
+                    while ((stack.Count > 0) && ((Precedence(token) <= Precedence(stack.Peek())) || IsUnary(stack.Peek()) && (!Is(stack.Peek(), TokenType.LEFT_BRACKET)) && IsLeftAssociatitve(token)))
                     {
-                        output.Add(stack.Pop().ToString());
+                        output.Add(stack.Pop().GetTokenType().ToString());
                     }
+                    stack.Push(token);
                 }
                 else if (Is(token, TokenType.LEFT_BRACKET))
                 {
                     stack.Push(token);
                 }
-                else if (Is(token, TokenType.RIGHT_BRACKET))
+                else if (Is(token, TokenType.RIGHT_BRACKET) && stack.Count > 0)
                 {
-                    while (!Is(stack.Peek(), TokenType.LEFT_BRACKET))
+                    while (!Is(stack.Peek(), TokenType.RIGHT_BRACKET))
                     {
-                        output.Add(stack.Pop().ToString());
-                        if (stack.Count < 0)
-                        {
-                            throw new Exception($"ERROR: HELP Shunting Yard");
-                        }
+                        output.Add(stack.Pop().GetTokenType().ToString());
                     }
-
                     stack.Pop();
-
                     if (IsUnary(stack.Peek()))
                     {
-                        output.Add(stack.Pop().ToString());
+                        output.Add(stack.Pop().GetTokenType().ToString());
                     }
                 }
             }
 
-            do
+            
+            while (stack.Count > 0)
             {
-                if (!Is(stack.Peek(), TokenType.LEFT_BRACKET))
+                if (Is(stack.Peek(), TokenType.LEFT_BRACKET))
                 {
-                    throw new Exception($"ERROR: Shunting Yard Left bracket");
+                    throw new Exception($"SYNTAX ERROR on Line {stack.Peek().GetLine() + 1}: Closing bracket \")\" missing");
                 }
 
-                output.Add(stack.Pop().ToString());
+                output.Add(stack.Pop().GetTokenType().ToString());
             }
-            while (stack.Count > 0);
-
-            string Str = "";
-            foreach (string s in output)
-            {
-                Str += s;
-            }
-
-            MessageBox.Show($"{Str}\n");
 
             return output.ToArray();
         }
 
-        private int Precedence(TokenType type)
+        private int Precedence(Token token)
         {
-            switch (type)
+            switch (token.GetTokenType())
             {
-                case TokenType.EQUAL:
-                    return 7;
-                case TokenType.NOT_EQUAL:
-                    return 7;
-                case TokenType.GREATER:
-                    return 6;
-                case TokenType.LESS:
-                    return 6;
-                case TokenType.GREATER_EQUAL:
-                    return 6;
-                case TokenType.LESS_EQUAL:
-                    return 6;
-                case TokenType.OR:
-                    return 10;
-                case TokenType.AND:
-                    return 8;
-                case TokenType.ADD:
-                    return 4;
-                case TokenType.SUB:
-                    return 4;
-                case TokenType.MUL:
-                    return 3;
-                case TokenType.DIV:
-                    return 3;
-                case TokenType.MOD:
-                    return 3;
-                case TokenType.EXP:
-                    return 2;
                 case TokenType.NOT:
+                    return 8;
+                case TokenType.EXP:
+                    return 7;
+                case TokenType.MUL:
+                case TokenType.DIV:
+                case TokenType.MOD:
+                    return 6;
+                case TokenType.ADD:
+                case TokenType.SUB:
+                    return 5;
+                case TokenType.LESS_EQUAL:
+                case TokenType.LESS:
+                case TokenType.GREATER_EQUAL:
+                case TokenType.GREATER:
+                    return 4;
+                case TokenType.EQUAL:
+                case TokenType.NOT_EQUAL:
+                    return 3;
+                case TokenType.AND:
+                    return 2;
+                case TokenType.OR:
                     return 1;
+                default:
+                    return -1;
             }
-            return -1;
         }
 
-        private bool IsLeftAssociatitve(TokenType op)
+        private bool IsLeftAssociatitve(Token op)
         {
-            if (op != TokenType.EXP)
+            if (op.GetTokenType() != TokenType.EXP)
             {
                 return true;
             }
@@ -821,6 +671,7 @@ namespace NEA
             return false;
         }
 
+        // Questionable Method???
         private string[] GetIntermediateFromExpression(List<Token> expression)
         {
             List<string> instructions = new List<string>();
@@ -871,16 +722,6 @@ namespace NEA
 
                 List<Token> expressionForRPN;
 
-                //string String = "";
-
-                //foreach (Token t in expression)
-                //{
-                //    String += $"{t.GetLiteral()}\n";
-                //}
-
-                //MessageBox.Show($"{String}");
-
-                // Does not register last token in expression?
                 for (int counter = 0; counter < begins.Count; counter++)
                 {
                     expressionForRPN = new List<Token>();
@@ -924,7 +765,7 @@ namespace NEA
                         instrLine = new List<string>();
                         Token e = expression[i];
 
-                        MessageBox.Show($"BOTH\ne = {e.GetTokenType()}");
+                        //MessageBox.Show($"BOTH\ne = {e.GetTokenType()}");
 
                         instrLine.AddRange(GetInstructions(e, ref i, expression));
                         instructions.AddRange(instrLine);
@@ -1097,22 +938,6 @@ namespace NEA
 
             instructions.AddRange(GetIntermediateFromExpression(expression));
 
-            //string String = "Expression: ";
-
-            //foreach (Token t in expression)
-            //{
-            //    String += $"{t.GetLiteral()}";
-            //}
-
-            //String += "\n\n";
-
-            //foreach (string s in GetIntermediateFromExpression(expression))
-            //{
-            //    String += s + "\n";
-            //}
-
-            //MessageBox.Show($"{String}");
-
             instrLine = "STORE_VAR " + counterVar.ToString();
             instructions.Add(instrLine);
 
@@ -1156,26 +981,7 @@ namespace NEA
 
             int localCounter = counter;
 
-            string Str = "";
-
-            foreach (Token t in mainExpression)
-            {
-                Str += $"{t.GetLiteral()}\n";
-            }
-
-            MessageBox.Show($"Main Expression:\n{Str}");
-
-            // Fix This
             instructions.AddRange(ConvertToPostfix(mainExpression.ToList()));
-
-            Str = "";
-
-            foreach (string s in newConvertToPostfix(mainExpression.ToList()))
-            {
-                Str += $"{s}\n";
-            }
-
-            MessageBox.Show($"{Str}\n");
 
             if (elseIfExpression.Count > 0)
             {
@@ -1536,26 +1342,6 @@ namespace NEA
         #endregion
 
         #region Extra Token Utility
-        //private int FindRelevantEndIndex(int index, Token[] tokens)
-        //{
-        //    int nestCounter = 1;
-
-        //    while (nestCounter > 0 && index < tokens.Length - 1)
-        //    {
-        //        index++;
-        //        if (tokens[index].GetTokenType() == TokenType.BEGIN)
-        //        {
-        //            nestCounter++;
-        //        }
-        //        else if (tokens[index].GetTokenType() == TokenType.END)
-        //        {
-        //            nestCounter--;
-        //        }
-        //    }
-
-        //    return index;
-        //}
-
         private int FindEndIndex(int index, string structure, Token[] tokens)
         {
             //MessageBox.Show($"FindEndIndex({index}, {structure}, {tokens[tokens.Length - 1].GetTokenType()})");
@@ -1657,7 +1443,7 @@ namespace NEA
         {
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
                                                    TokenType.DIV, TokenType.MOD, TokenType.EXP };
-            return IsBinaryBitwise(token) || mathematicalOperations.Contains(token.GetTokenType());
+            return IsBinaryBitwise(token) || mathematicalOperations.Contains(token.GetTokenType()) || IsComparison(token);
         }
 
         private bool IsComparison(Token token)
