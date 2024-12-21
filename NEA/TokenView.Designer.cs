@@ -33,15 +33,18 @@
             this.txtTokenView = new System.Windows.Forms.RichTextBox();
             this.lblName = new System.Windows.Forms.Label();
             this.txtDescription = new System.Windows.Forms.TextBox();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tabControl.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Controls.Add(this.txtTokenView, 0, 0);
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.Controls.Add(this.tabControl, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblName, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtDescription, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -63,7 +66,7 @@
             this.txtTokenView.Location = new System.Drawing.Point(3, 3);
             this.txtTokenView.Name = "txtTokenView";
             this.txtTokenView.ReadOnly = true;
-            this.txtTokenView.Size = new System.Drawing.Size(496, 426);
+            this.txtTokenView.Size = new System.Drawing.Size(482, 183);
             this.txtTokenView.TabIndex = 4;
             this.txtTokenView.Text = "";
             // 
@@ -71,9 +74,9 @@
             // 
             this.lblName.AutoSize = true;
             this.lblName.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblName.Location = new System.Drawing.Point(3, 432);
+            this.lblName.Location = new System.Drawing.Point(3, 228);
             this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(300, 44);
+            this.lblName.Size = new System.Drawing.Size(200, 29);
             this.lblName.TabIndex = 5;
             this.lblName.Text = "[Click on a token]";
             // 
@@ -81,13 +84,34 @@
             // 
             this.txtDescription.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtDescription.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDescription.Location = new System.Drawing.Point(3, 465);
+            this.txtDescription.Location = new System.Drawing.Point(3, 261);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.ReadOnly = true;
-            this.txtDescription.Size = new System.Drawing.Size(496, 217);
+            this.txtDescription.Size = new System.Drawing.Size(496, 421);
             this.txtDescription.TabIndex = 6;
             this.txtDescription.Text = "Lorum Ipsum";
+            // 
+            // tabControl
+            // 
+            this.tabControl.Controls.Add(this.tabPage2);
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.Location = new System.Drawing.Point(3, 3);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(496, 222);
+            this.tabControl.TabIndex = 1;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.txtTokenView);
+            this.tabPage2.Location = new System.Drawing.Point(4, 29);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(488, 189);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Main Branch";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // TokenView
             // 
@@ -102,6 +126,8 @@
             this.Load += new System.EventHandler(this.TokenView_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.tabControl.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -112,5 +138,7 @@
         private System.Windows.Forms.RichTextBox txtTokenView;
         private System.Windows.Forms.Label lblName;
         private System.Windows.Forms.TextBox txtDescription;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage tabPage2;
     }
 }

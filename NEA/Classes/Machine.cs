@@ -46,7 +46,7 @@ namespace NEA
         private Dictionary<string, int> subroutineDict;
         private Variable[] variables;
         private Dictionary<string, int> variablesDict = new Dictionary<string, int>();
-        private int counterVar;
+        private int counterVar, counterSubroutine;
         private int fixedLoopCounter;
 
         // Fields for Execution
@@ -62,18 +62,9 @@ namespace NEA
         {
             this.sourceCode = sourceCode;
             callStack = new Stack<StackFrame>();
-            counter = 0;
-            PC = 0;
-            validProgram = true;
-            stack = new Stack<object>();
-
-            fixedLoopCounter = 0;
-            delayMS = 0;
-        }
-
-        public Machine()
-        {
-            callStack = new Stack<StackFrame>();
+            counterSubroutine = 0;
+            subroutineDict = new Dictionary<string, int>();
+            intermediateSubroutines = new List<string[]>();
             counter = 0;
             PC = 0;
             validProgram = true;
@@ -730,30 +721,16 @@ namespace NEA
                         instrLine = new List<string>();
                         Token e = expression[i];
 
-                        //MessageBox.Show($"BEGIN\ne = {e.GetTokenType()}");
                         instrLine.AddRange(GetInstructions(e, ref i, expression));
                         instructions.AddRange(instrLine);
                     }
-                    // Changed to <=
-                    // ???
                     for (int i = begins[counter]; i < ends[counter]; i++)
                     {
                         Token e = expression[i];
 
-                        //MessageBox.Show($"END\ne = {e.GetTokenType()}");
-
                         expressionForRPN.Add(e);
                     }
                     instructions.AddRange(ConvertToPostfix(expressionForRPN));
-
-                    //String = "";
-
-                    //foreach (string t in ConvertToPostfix(expressionForRPN))
-                    //{
-                    //    String += $"{t}\n";
-                    //}
-
-                    //MessageBox.Show($"Postfix:\n{String}");
                     // i < expression.Count 
                     // Ensures that the last token is added in the case that it is by itself.
                     // counter < begins.Count - 1
@@ -764,8 +741,6 @@ namespace NEA
                     {
                         instrLine = new List<string>();
                         Token e = expression[i];
-
-                        //MessageBox.Show($"BOTH\ne = {e.GetTokenType()}");
 
                         instrLine.AddRange(GetInstructions(e, ref i, expression));
                         instructions.AddRange(instrLine);
@@ -778,7 +753,6 @@ namespace NEA
                     instrLine = new List<string>();
                     instrLine.Add("ADD");
 
-                    //MessageBox.Show($"ADD");
                     instructions.AddRange(instrLine);
                 }
             }
@@ -1678,12 +1652,20 @@ namespace NEA
                             throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
                         }
 
-                        while (!IsEndOfToken(nextToken) && internalTokens[i + j + 2].GetLine() == token.GetLine() && nextToken.GetTokenType() != TokenType.AS)
+                        while (!IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !Is(nextToken, TokenType.AS))
                         {
                             // Limitation: in an if statement the prompt cannot contain multiple strings or variables
                             // Format without punctuation does not support this
                             if (IsInput(nextToken))
                             {
+                                if (!Is(internalTokens[i + j + 3], TokenType.WITH))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
+                                }
+                                if (!Is(internalTokens[i + j + 4], TokenType.PROMPT))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"PROMPT\" after \"WITH\".");
+                                }
                                 expression.Add(nextToken);
                                 j += 3;
                                 inputOffset += 2;
@@ -1753,6 +1735,14 @@ namespace NEA
                             // Format without punctuation does not support this
                             if (IsInput(nextToken))
                             {
+                                if (!Is(internalTokens[i + j + 3], TokenType.WITH))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
+                                }
+                                if (!Is(internalTokens[i + j + 4], TokenType.PROMPT))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"PROMPT\" after \"WITH\".");
+                                }
                                 expression.Add(nextToken);
                                 j += 3;
                                 inputOffset += 2;
@@ -2265,15 +2255,27 @@ namespace NEA
                         List<string> variableNames = new List<string>();
                         variableName = nextToken.GetLiteral();
                         nextToken = internalTokens[i + 5];
-                        if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.AS) && Is(internalTokens[i + 5], TokenType.DATA_TYPE))
+                        bodyStart = i + 5;
+                        if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.AS) && !Is(internalTokens[i + 5], TokenType.DATA_TYPE))
                         {
                             type = internalTokens[i + 5].GetLiteral();
                             noType = false;
+                            bodyStart = i + 7;
                         }
-                        bodyStart = i + 6;
                         bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
 
-                        // Do something
+                        subroutineDict.Add(subroutineName, counterSubroutine);
+
+                        List<Token> functionsTokens = new List<Token>();
+
+                        for (int x = bodyStart; x < bodyEnd; x++)
+                        {
+                            functionsTokens.Add(internalTokens[x]);
+                        }
+
+                        intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray()));
+
+                        counterSubroutine++;
 
                         i = bodyEnd + 2;
                         break;
