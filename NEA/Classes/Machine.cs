@@ -2247,6 +2247,12 @@ namespace NEA
                         // To-Do: Add support for more than one parameter
                         // Think of intuitive syntax for it
                         // Maybe comma, but think of something else
+                        // - a AND b AND c
+                        // - a, b, c
+                        // - a. b AND c
+                        // Use a, b AND c
+                        // Use a AND b
+                        // Use a AND b AND c
                         nextToken = internalTokens[i + 4];
                         if (!Is(nextToken, TokenType.VARIABLE))
                         {
