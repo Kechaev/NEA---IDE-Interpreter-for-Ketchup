@@ -15,6 +15,7 @@ namespace NEA
         // Think of a new implementation
         // Doesn't work for scrollable text
         private string[] intermediate;
+        private List<string[]> subroutineIntermediate;
         private int[,] map;
         private Dictionary<string, string> nameDescription = new Dictionary<string, string>()
         {
@@ -39,14 +40,16 @@ namespace NEA
             {"DIV", "Performs division on the top two items of the stack and pushes the result back onto the stack." },
             {"EXP", "Performs exponentiation on the top two items of the stack and pushes the result back onto the stack.\r\nExponentiation meaning raising the first number to the power of the second number." },
             {"MOD", "Performs the modulo operation on the top two items off the stack and pushes the result back onto the stack.\r\nThe modulo operator divides the first number by the second and returns the remainder." },
+            {"RETURN", "Takes the top value of the stack and goes back to the main branch." },
             {"HALT", "Indicates the end of the program and stops the execution of the program." },
         };
 
         // Add support for explaining what the individual words mean
-        public IntermediateView(string[] intermediate)
+        public IntermediateView(string[] intermediate, List<string[]> subroutineIntermediate)
         {
             InitializeComponent();
             this.intermediate = intermediate;
+            this.subroutineIntermediate = subroutineIntermediate;
             txtIntermediateCode.Select();
         }
 
@@ -55,7 +58,6 @@ namespace NEA
             string intermediateString = "";
             int maxLength = 0;
             
-
             foreach (string line in intermediate)
             {
                 int length = line.Length;
@@ -80,6 +82,21 @@ namespace NEA
             {
                 map[i, 0] = i * 18;
                 map[i, 1] = i * 18 + 18;
+            }
+
+            for (int i = 0; i < subroutineIntermediate.Count; i++)
+            {
+                TabPage tp = new TabPage($"Subroutine {i + 1}");
+                tabControlIntermediate.Controls.Add(tp);
+
+                RichTextBox txtIntermediate = new RichTextBox();
+                txtIntermediate.Dock = DockStyle.Fill;
+                txtIntermediate.BackColor = SystemColors.ControlLight;
+                Font f = new Font("Courier New", 12);
+                txtIntermediate.Font = f;
+                txtIntermediate.Lines = subroutineIntermediate[i];
+
+                tp.Controls.Add(txtIntermediate);
             }
         }
 

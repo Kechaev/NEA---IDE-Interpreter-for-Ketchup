@@ -79,6 +79,11 @@ namespace NEA
             return intermediate;
         }
 
+        public List<string[]> GetSubroutinesIntermediateCode()
+        {
+            return intermediateSubroutines;
+        }
+
         public void Interpret()
         {
             // Tokenization
@@ -2310,21 +2315,20 @@ namespace NEA
 
                         intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray(), true));
 
-                        string output = "Subroutines\n";
-                        int subCounter = 1;
+                        //string output = "Subroutines\n";
+                        //int subCounter = 1;
 
+                        //foreach (string[] subroutine in intermediateSubroutines)
+                        //{
+                        //    output += $"Subroutine {subCounter++}:\n\n";
+                        //    foreach (string line in subroutine)
+                        //    {
+                        //        output += $"{line}\n";
+                        //    }
+                        //    output += $"\n";
+                        //}
 
-                        foreach (string[] subroutine in intermediateSubroutines)
-                        {
-                            output += $"Subroutine {subCounter++}:\n\n";
-                            foreach (string line in subroutine)
-                            {
-                                output += $"{line}\n";
-                            }
-                            output += $"\n";
-                        }
-
-                        MessageBox.Show($"{output}");
+                        //MessageBox.Show($"{output}");
 
                         counterSubroutine++;
 
