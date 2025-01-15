@@ -90,7 +90,7 @@ namespace NEA
 
             // Translation
 
-            intermediate = TokensToIntermediate(tokens);
+            intermediate = TokensToIntermediate(tokens, false);
 
             // Execution is done from the form
             // To acommodate for outputs (& later inputs)
@@ -883,6 +883,31 @@ namespace NEA
         }
         #endregion
 
+        #region Functions
+
+        // Anything else required for functions
+
+
+        private string[] MapReturn(List<Token> expression)
+        {
+            List<string> instructions = new List<string>();
+            string instrLine;
+
+            instructions.AddRange(GetIntermediateFromExpression(expression));
+
+            instructions.Add("RETURN");
+
+            // Question:
+            // What is the most optimal way to transfer a variable/value from within a function to outside of it.
+            // Using?:
+            // A register
+            // Pushing it to the stack
+            // other methods?
+
+            return instructions.ToArray();
+        }
+        #endregion
+
         #region Assignment
         private string[] MapAssignment(string variable, List<Token> expression, string type)
         {
@@ -971,7 +996,7 @@ namespace NEA
             }
             instructions.Add(instrLine);
 
-            string[] statements = TokensToIntermediate(mainBody);
+            string[] statements = TokensToIntermediate(mainBody, false);
             instructions.AddRange(statements);
 
             instrLine = "JUMP " + (localCounter - length).ToString();
@@ -1004,7 +1029,7 @@ namespace NEA
 
                 instructions.Add(instrLine);
 
-                statements = TokensToIntermediate(elseIfBodies[i]);
+                statements = TokensToIntermediate(elseIfBodies[i], false);
                 instructions.AddRange(statements);
 
                 instrLine = "JUMP " + (localCounter - length).ToString();
@@ -1016,7 +1041,7 @@ namespace NEA
                 instrLine = "LABEL " + (localCounter - 1).ToString();
                 instructions.Add(instrLine);
 
-                statements = TokensToIntermediate(elseBody);
+                statements = TokensToIntermediate(elseBody, false);
                 instructions.AddRange(statements);
             }
 
@@ -1061,7 +1086,7 @@ namespace NEA
             instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
-            string[] statement = TokensToIntermediate(body);
+            string[] statement = TokensToIntermediate(body, false);
 
             instructions.AddRange(statement);
 
@@ -1102,7 +1127,7 @@ namespace NEA
             instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
-            instructions.AddRange(TokensToIntermediate(body));
+            instructions.AddRange(TokensToIntermediate(body, false));
 
             instrLine = "JUMP " + (localCounter - 2).ToString();
             instructions.Add(instrLine);
@@ -1125,7 +1150,7 @@ namespace NEA
             instrLine = "LABEL " + (localCounter - 2).ToString();
             instructions.Add(instrLine);
 
-            instructions.AddRange(TokensToIntermediate(body));
+            instructions.AddRange(TokensToIntermediate(body, false));
 
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
@@ -1175,7 +1200,7 @@ namespace NEA
             instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
-            instructions.AddRange(TokensToIntermediate(body));
+            instructions.AddRange(TokensToIntermediate(body, false));
 
             instrLine = "LOAD_VAR " + localCounterVar.ToString();
             instructions.Add(instrLine);
@@ -1533,7 +1558,7 @@ namespace NEA
         // Exponential assignment
         // EON (End of Nest)
         // EOF (End of File)
-        private string[] TokensToIntermediate(Token[] internalTokens)
+        private string[] TokensToIntermediate(Token[] internalTokens, bool inFunction)
         {
             List<string> intermediateList = new List<string>();
             List<Token> internalTokensList = internalTokens.ToList();
@@ -1621,6 +1646,7 @@ namespace NEA
                         i += j;
                         break;
                     case TokenType.ASSIGNMENT:
+                        // SET variable TO [expression]
                         type = "STRING";
                         noType = true;
 
@@ -2228,8 +2254,8 @@ namespace NEA
                         break;
                     case TokenType.FUNCTION:
                         // Current Function Syntax
-                        // FUNCTION name WITH INPUTS a
-                        //   statement
+                        // FUNCTION subroutine WITH INPUTS a
+                        //   statements
                         // END FUNCTION
                         nextToken = internalTokens[i + 1];
                         if (!Is(nextToken, TokenType.SUBROUTINE_NAME))
@@ -2282,7 +2308,7 @@ namespace NEA
                             functionsTokens.Add(internalTokens[x]);
                         }
 
-                        intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray()));
+                        intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray(), true));
 
                         string output = "Subroutines\n";
                         int subCounter = 1;
@@ -2303,6 +2329,52 @@ namespace NEA
                         counterSubroutine++;
 
                         i = bodyEnd + 2;
+                        break;
+                    case TokenType.RETURN:
+                        if (!inFunction)
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unable to return when outside of a function.");
+                        }
+
+                        // Capture expression
+                        expression = new List<Token>();
+                        j = 1;
+                        inputOffset = 0;
+                        nextToken = internalTokens[i + j];
+                        if (!IsSameLine(nextToken, token))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Cannot \"RETURN\" nothing.");
+                        }
+
+                        while (!IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j], nextToken))
+                        {
+                            // Limitation: in an if statement the prompt cannot contain multiple strings or variables
+                            // Format without punctuation does not support this
+                            if (IsInput(nextToken))
+                            {
+                                if (!Is(internalTokens[i + j + 1], TokenType.WITH))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
+                                }
+                                if (!Is(internalTokens[i + j + 2], TokenType.PROMPT))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"PROMPT\" after \"WITH\".");
+                                }
+                                expression.Add(nextToken);
+                                j += 1;
+                                inputOffset += 2;
+                            }
+                            else
+                            {
+                                expression.Add(nextToken);
+                                j++;
+                            }
+                            nextToken = internalTokens[i + j];
+                        }
+                        j = expression.Count + inputOffset;
+                        i += j + 1;
+
+                        intermediateList.AddRange(MapReturn(expression));   
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
