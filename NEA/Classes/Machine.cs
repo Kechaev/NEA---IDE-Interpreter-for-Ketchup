@@ -2227,7 +2227,10 @@ namespace NEA
                         i += j + 5;
                         break;
                     case TokenType.FUNCTION:
-                        // Function code
+                        // Current Function Syntax
+                        // FUNCTION name WITH INPUTS a
+                        //   statement
+                        // END FUNCTION
                         nextToken = internalTokens[i + 1];
                         if (!Is(nextToken, TokenType.SUBROUTINE_NAME))
                         {
@@ -2280,6 +2283,22 @@ namespace NEA
                         }
 
                         intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray()));
+
+                        string output = "Subroutines\n";
+                        int subCounter = 1;
+
+
+                        foreach (string[] subroutine in intermediateSubroutines)
+                        {
+                            output += $"Subroutine {subCounter++}:\n\n";
+                            foreach (string line in subroutine)
+                            {
+                                output += $"{line}\n";
+                            }
+                            output += $"\n";
+                        }
+
+                        MessageBox.Show($"{output}");
 
                         counterSubroutine++;
 
