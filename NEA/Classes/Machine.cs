@@ -2378,7 +2378,29 @@ namespace NEA
                         j = expression.Count + inputOffset;
                         i += j + 1;
 
-                        intermediateList.AddRange(MapReturn(expression));   
+                        intermediateList.AddRange(MapReturn(expression));
+                        break;
+                    case TokenType.SUBROUTINE_NAME:
+                        List<Variable> parameters = new List<Variable>();
+                        // Function Call
+                        nextToken = internalTokens[i + 1];
+                        if (!Is(nextToken, TokenType.WITH))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"WITH\" keyword after \"{token.GetLiteral()}\".");
+                        }
+                        nextToken = internalTokens[i + 2];
+                        if (!Is(nextToken, TokenType.INPUTS))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"INPUTS\" keyword after \"WITH\".");
+                        }
+                        nextToken = internalTokens[i + 3];
+                        if (!IsLiteral(nextToken))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing value after \"INPUTS\"");
+                        }
+                        int paramCounter = 0;
+                        Variable parameter = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
+                        
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
@@ -2808,7 +2830,7 @@ namespace NEA
                         if (operand == "PRINT")
                         {
                             object object1 = stack.Pop();
-                            Thread.Sleep(delayMS);
+                            //Thread.Sleep(delayMS);
                             console.Text += $"{object1}\r\n";
                         }
                         else if (operand == "INPUT")
