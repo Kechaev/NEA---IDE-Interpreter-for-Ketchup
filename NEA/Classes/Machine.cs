@@ -84,6 +84,11 @@ namespace NEA
             return intermediateSubroutines;
         }
 
+        public Dictionary<string, int> GetSubroutineDictionary()
+        {
+            return subroutineDict;
+        }
+
         public void Interpret()
         {
             // Tokenization
@@ -892,15 +897,22 @@ namespace NEA
 
         // Anything else required for functions
 
-
-        private string[] MapReturn(List<Token> expression)
+        private string[] MapSubroutineCall(string subroutineName)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
+
+            instructions.Add($"CALL {subroutineName}");
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapReturn(List<Token> expression, int returnAddress)
+        {
+            List<string> instructions = new List<string>();
 
             instructions.AddRange(GetIntermediateFromExpression(expression));
 
-            instructions.Add("RETURN");
+            instructions.Add($"RETURN {returnAddress}");
 
             // Question:
             // What is the most optimal way to transfer a variable/value from within a function to outside of it.
@@ -1584,7 +1596,7 @@ namespace NEA
             List<Token> expression;
             int j, k, l;
             int inputOffset;
-            Token nextToken, prevToken;
+            Token nextToken;
             List<Token> body = new List<Token>();
             int currentLine;
             Token finalTokenOfLine;
@@ -2304,7 +2316,7 @@ namespace NEA
                         }
                         bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
 
-                        subroutineDict.Add(subroutineName, counterSubroutine);
+                        subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
 
                         List<Token> functionsTokens = new List<Token>();
 
@@ -2400,7 +2412,12 @@ namespace NEA
                         }
                         int paramCounter = 0;
                         Variable parameter = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
-                        
+
+                        intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper()));
+
+                        MessageBox.Show($"Variable used: {parameter.GetName()}\nValue = {parameter.GetValue()}");
+
+                        i += 4;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
@@ -2848,7 +2865,7 @@ namespace NEA
                         {
                             // Subroutines ???
                             int index = subroutineDict[operand];
-                            //StartExecution(intermediateSubroutines[index]);
+                            FetchExecute(intermediateSubroutines[index], ref console);
                         }
                         break;
                     case "LOAD_CONST":

@@ -465,7 +465,7 @@ namespace NEA
 
                 string[] intermediate = machine.GetIntermediateCode();
 
-                IntermediateView intermediateForm = new IntermediateView(machine.GetIntermediateCode(), machine.GetSubroutinesIntermediateCode());
+                IntermediateView intermediateForm = new IntermediateView(machine.GetIntermediateCode(), machine.GetSubroutinesIntermediateCode(), machine.GetSubroutineDictionary());
                 intermediateForm.ShowDialog();
             }
         }

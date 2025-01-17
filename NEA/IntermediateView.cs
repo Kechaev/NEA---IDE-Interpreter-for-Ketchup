@@ -16,6 +16,7 @@ namespace NEA
         // Doesn't work for scrollable text
         private string[] intermediate;
         private List<string[]> subroutineIntermediate;
+        private Dictionary<string, int> subroutineDict;
         private int[,] map;
         private Dictionary<string, string> nameDescription = new Dictionary<string, string>()
         {
@@ -45,11 +46,12 @@ namespace NEA
         };
 
         // Add support for explaining what the individual words mean
-        public IntermediateView(string[] intermediate, List<string[]> subroutineIntermediate)
+        public IntermediateView(string[] intermediate, List<string[]> subroutineIntermediate, Dictionary<string, int> subroutineDict)
         {
             InitializeComponent();
             this.intermediate = intermediate;
             this.subroutineIntermediate = subroutineIntermediate;
+            this.subroutineDict = subroutineDict;
             txtIntermediateCode.Select();
         }
 
@@ -86,7 +88,7 @@ namespace NEA
 
             for (int i = 0; i < subroutineIntermediate.Count; i++)
             {
-                TabPage tp = new TabPage($"Subroutine {i + 1}");
+                TabPage tp = new TabPage($"{KeyByValue(subroutineDict, i)}");
                 tabControlIntermediate.Controls.Add(tp);
 
                 RichTextBox txtIntermediate = new RichTextBox();
@@ -95,6 +97,7 @@ namespace NEA
                 Font f = new Font("Courier New", 12);
                 txtIntermediate.Font = f;
                 txtIntermediate.Lines = subroutineIntermediate[i];
+                txtIntermediate.BorderStyle = BorderStyle.None;
 
                 tp.Controls.Add(txtIntermediate);
             }
@@ -134,6 +137,18 @@ namespace NEA
                 }
             }
             return output;
+        }
+
+        private string KeyByValue(Dictionary<string, int> dictionary, int value)
+        {
+            foreach (KeyValuePair<string, int> pair in dictionary)
+            {
+                if (pair.Value == value)
+                {
+                    return pair.Key;
+                }
+            }
+            return null;
         }
     }
 }
