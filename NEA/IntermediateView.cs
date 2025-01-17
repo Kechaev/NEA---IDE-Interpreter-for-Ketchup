@@ -88,7 +88,7 @@ namespace NEA
 
             for (int i = 0; i < subroutineIntermediate.Count; i++)
             {
-                TabPage tp = new TabPage($"{KeyByValue(subroutineDict, i)}");
+                TabPage tp = new TabPage($"Subroutine {KeyByValue(subroutineDict, i)}");
                 tabControlIntermediate.Controls.Add(tp);
 
                 RichTextBox txtIntermediate = new RichTextBox();
