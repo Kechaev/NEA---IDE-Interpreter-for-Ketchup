@@ -16,7 +16,6 @@ namespace NEA.Classes
         private object value;
         private DataType type;
         private bool declared;
-        private bool isNull;
         
         public Variable(string name, object value)
         {
@@ -121,7 +120,6 @@ namespace NEA.Classes
         public void SetNull()
         {
             value = null;
-            isNull = true;
         }
 
         public bool IsNull()

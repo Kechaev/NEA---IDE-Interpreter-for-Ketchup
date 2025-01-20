@@ -93,6 +93,39 @@ namespace NEA
             return subroutineDict;
         }
 
+        private string[] FindLocalVariables(string subroutineName)
+        {
+            bool inFunction = false;
+            bool loop = true;
+            List<string> variablesFound = new List<string>();
+            for (int i = 0; i < tokens.Length - 1 && loop; i++)
+            {
+                if (tokens[i].GetTokenType() == TokenType.FUNCTION && tokens[i + 1].GetLiteral().ToUpper() == subroutineName.ToUpper())
+                {
+                    inFunction = !inFunction;
+                    if (inFunction == false)
+                    {
+                        loop = false;
+                    }
+                }
+                if (inFunction && tokens[i].GetTokenType() == TokenType.VARIABLE && !variablesFound.Contains(tokens[i].GetLiteral()))
+                {
+                    variablesFound.Add(tokens[i].GetLiteral());
+                }
+            }
+
+            string output = "Local Variable:\n";
+
+            foreach (string s in variablesFound)
+            {
+                output += $"{s}\n";
+            }
+
+            MessageBox.Show($"{output}");
+
+            return variablesFound.ToArray();
+        }
+
         public void Interpret()
         {
             // Tokenization
@@ -907,7 +940,6 @@ namespace NEA
         {
             List<string> instructions = new List<string>();
 
-            MessageBox.Show($"Paramters: {parameters.Count}");
             foreach (Variable p in parameters)
             {
                 instructions.Add($"LOAD_VAR {p.GetID()}");
@@ -924,7 +956,7 @@ namespace NEA
 
             instructions.AddRange(GetIntermediateFromExpression(expression));
 
-            instructions.Add($"RETURN");
+            instructions.Add("RETURN");
 
             // Question:
             // What is the most optimal way to transfer a variable/value from within a function to outside of it.
@@ -2414,7 +2446,7 @@ namespace NEA
                         intermediateList.AddRange(MapReturn(expression));
                         break;
                     case TokenType.SUBROUTINE_NAME:
-                        List<Variable> parameters = new List<Variable>();
+                        List<Variable> arguements = new List<Variable>();
                         // Function Call
                         nextToken = internalTokens[i + 1];
                         if (!Is(nextToken, TokenType.WITH))
@@ -2432,18 +2464,22 @@ namespace NEA
                             throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing value after \"INPUTS\"");
                         }
                         int paramCounter = 0;
-                        Variable parameter = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
-                        parameters.Add(parameter);
+                        Variable arguement = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
+                        arguements.Add(arguement);
+                        int localCounter = FindLocalVariables(token.GetLiteral()).Length;
                         MessageBox.Show($"subroutine name = {token.GetLiteral()}");
                         MessageBox.Show($"Subroutine Index: {subroutineDict[token.GetLiteral().ToUpper()]}");
                         MessageBox.Show($"paramcounter = {paramCounter}");
+                        MessageBox.Show($"local counter = {localCounter}");
+                        // Lock in bro
                         subroutineParametersCount[subroutineDict[token.GetLiteral().ToUpper()]] = paramCounter;
+                        subroutineLocalVariableCounter[subroutineDict[token.GetLiteral().ToUpper()]] = localCounter;
                         // Return address found in when creating the stack frame
                         // Which is referred to in the RETURN statement
 
-                        intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), parameters));
+                        intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements));
 
-                        MessageBox.Show($"Variable used: {parameter.GetName()}\nValue = {parameter.GetValue()}\nID = {parameter.GetID()}");
+                        MessageBox.Show($"Arguements used: {arguement.GetName()}\nValue = {arguement.GetValue()}\nID = {arguement.GetID()}");
 
                         i += 4;
                         break;
@@ -2894,9 +2930,11 @@ namespace NEA
                             // Custom Subroutine's Written by the User
                             int index = subroutineDict[operand];
                             int paramaterCount = subroutineParametersCount[subroutineDict[operand]];
-                            // No values assigned to subroutineLocalVariableCounter
+                            // No values assigned to subroutineLocalVariableCounter ! ! !
                             int localVariablesCounter = subroutineLocalVariableCounter[subroutineDict[operand]];
+                            // ! ! ! 
                             Variable[] parameters = new Variable[paramaterCount];
+                            // Find the number of local variables per subroutine
                             Variable[] local = new Variable[localVariablesCounter];
                             for (int i = 0; i < paramaterCount; i++)
                             {
