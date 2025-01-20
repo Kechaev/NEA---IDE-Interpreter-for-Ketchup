@@ -24,6 +24,8 @@ using System.CodeDom;
 using System.Windows.Forms.VisualStyles;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 using System.Collections.Specialized;
+using System.Runtime.InteropServices;
+using System.IO.IsolatedStorage;
 
 namespace NEA
 {
@@ -44,6 +46,7 @@ namespace NEA
         private string[] intermediate;
         private List<string[]> intermediateSubroutines;
         private Dictionary<string, int> subroutineDict;
+        private int[] subroutineParametersCount, subroutineLocalVariableCounter;
         private Variable[] variables;
         private Dictionary<string, int> variablesDict = new Dictionary<string, int>();
         private int counterVar, counterSubroutine;
@@ -60,6 +63,7 @@ namespace NEA
 
         public Machine(string sourceCode)
         {
+            Variable.ResetVariables();
             this.sourceCode = sourceCode;
             callStack = new Stack<StackFrame>();
             counterSubroutine = 0;
@@ -439,6 +443,8 @@ namespace NEA
             string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
 
             string[] subroutineNames = FindSubroutineNames();
+            subroutineParametersCount = new int[subroutineNames.Length];
+            subroutineLocalVariableCounter = new int[subroutineNames.Length];
 
             while (current < sourceCode.Length)
             {
@@ -2428,6 +2434,12 @@ namespace NEA
                         int paramCounter = 0;
                         Variable parameter = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
                         parameters.Add(parameter);
+                        MessageBox.Show($"subroutine name = {token.GetLiteral()}");
+                        MessageBox.Show($"Subroutine Index: {subroutineDict[token.GetLiteral().ToUpper()]}");
+                        MessageBox.Show($"paramcounter = {paramCounter}");
+                        subroutineParametersCount[subroutineDict[token.GetLiteral().ToUpper()]] = paramCounter;
+                        // Return address found in when creating the stack frame
+                        // Which is referred to in the RETURN statement
 
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), parameters));
 
@@ -2881,7 +2893,17 @@ namespace NEA
                         {
                             // Custom Subroutine's Written by the User
                             int index = subroutineDict[operand];
-                            //StackFrame sf = new StackFrame(,, PC + 1, true);
+                            int paramaterCount = subroutineParametersCount[subroutineDict[operand]];
+                            // No values assigned to subroutineLocalVariableCounter
+                            int localVariablesCounter = subroutineLocalVariableCounter[subroutineDict[operand]];
+                            Variable[] parameters = new Variable[paramaterCount];
+                            Variable[] local = new Variable[localVariablesCounter];
+                            for (int i = 0; i < paramaterCount; i++)
+                            {
+                                parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", stack.Pop());
+                                MessageBox.Show($"param = {parameters[i].GetName()}\nvalue = {parameters[i].GetValue()}");
+                            }
+                            StackFrame sf = new StackFrame(parameters, local, PC + 1, true);
                             FetchExecute(intermediateSubroutines[index], ref console);
                         }
                         break;
@@ -2890,6 +2912,8 @@ namespace NEA
                         break;
                     case "LOAD_VAR":
                         intOp = Convert.ToInt32(operand);
+                        MessageBox.Show($"intOp = {intOp}\nvariables length = {variables.Length}");
+                        MessageBox.Show($"variable[0] = {variables[0].GetName()}");
                         if (variables[intOp].IsDeclared() && !variables[intOp].IsNull())
                         {
                             stack.Push(variables[intOp].GetValue());

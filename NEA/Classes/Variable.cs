@@ -36,6 +36,11 @@ namespace NEA.Classes
             declared = false;
         }
 
+        public static void ResetVariables()
+        {
+            counter = 0;
+        }
+
         private DataType IdentifyBestDataType()
         {
             try
