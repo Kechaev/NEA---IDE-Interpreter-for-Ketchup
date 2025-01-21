@@ -944,7 +944,7 @@ namespace NEA
 
             foreach (Variable p in parameters)
             {
-                instructions.Add($"LOAD_VAR {p.GetID()}");
+                instructions.Add($"LOAD_CONST {p.GetValue()}");
             }
 
             instructions.Add($"CALL {subroutineName}");
@@ -2347,8 +2347,8 @@ namespace NEA
                             throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
                         }
                         List<string> variableNames = new List<string>();
-                        j = 1;
-                        for (; areParamsToRead; j++)
+                        areParamsToRead = true;
+                        for (j = 1; areParamsToRead; j++)
                         {
                             nextToken = internalTokens[i + j + 2];
                             MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
@@ -2370,7 +2370,7 @@ namespace NEA
                                 throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
                             }
                         }
-
+                        MessageBox.Show("End of arguement collection");
                         // To-Do: Add support for more than one parameter
                         // Think of intuitive syntax for it
                         // Maybe comma, but think of something else
@@ -2515,10 +2515,12 @@ namespace NEA
                         {
                             throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
                         }
-                        j = 1;
-                        for (; areParamsToRead; j++)
+                        areParamsToRead = true;
+                        readyForNextParam = true;
+                        for (j = 1; areParamsToRead; j++)
                         {
                             nextToken = internalTokens[i + j + 1];
+                            MessageBox.Show($"Next token = {nextToken.GetTokenType()}");
                             if (Is(nextToken, TokenType.RIGHT_BRACKET))
                             {
                                 areParamsToRead = false;
@@ -2527,6 +2529,7 @@ namespace NEA
                             {
                                 arguements.Add(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
                                 readyForNextParam = false;
+                                MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
                             }
                             else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
                             {
@@ -2537,6 +2540,7 @@ namespace NEA
                                 throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken}\" in the arguement.");
                             }
                         }
+                        MessageBox.Show("Param Collection ended");
 
                         //Variable arguement = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
                         //arguements.Add(arguement);
@@ -2553,7 +2557,8 @@ namespace NEA
 
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements));
 
-                        i += j + 3;
+                        i += j + 1;
+                        MessageBox.Show($"Next token: {tokens[i]}");
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
@@ -3001,19 +3006,43 @@ namespace NEA
                         {
                             // Custom Subroutine's Written by the User
                             int index = subroutineDict[operand];
-                            int paramaterCount = subroutineParametersCount[subroutineDict[operand]];
+                            int parameterCount = subroutineParametersCount[subroutineDict[operand]];
                             // No values assigned to subroutineLocalVariableCounter ! ! !
                             int localVariablesCounter = subroutineLocalVariableCounter[subroutineDict[operand]];
                             // ! ! ! 
-                            Variable[] parameters = new Variable[paramaterCount];
+                            Variable[] parameters = new Variable[parameterCount];
                             // Find the number of local variables per subroutine
                             Variable[] local = new Variable[localVariablesCounter];
-                            for (int i = 0; i < paramaterCount; i++)
+                            MessageBox.Show($"ParamCounter = {parameterCount}");
+                            for (int i = 0; i < parameterCount; i++)
                             {
-                                parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", stack.Pop());
+                                object parameterValue = stack.Pop();
+                                parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", parameterValue);
+                                // Parameters are also considered local variables, therefore add them to variables too.
+                                local[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", parameterValue);
                                 MessageBox.Show($"param = {parameters[i].GetName()}\nvalue = {parameters[i].GetValue()}");
                             }
-                            StackFrame sf = new StackFrame(parameters, local, PC + 1, true);
+                            for (int i = parameterCount; i < localVariablesCounter; i++)
+                            {
+                                local[i] = new Variable($"subroutine{subroutineDict[operand]}Local{i}", null);
+                            }
+                            StackFrame sf = new StackFrame(parameters, local, PC, true);
+
+                            string output = "StackFrame:\nParameters:\n";
+
+                            foreach (Variable v in parameters)
+                            {
+                                output += $"{v.GetName()} - {v.GetValue()}\n";
+                            }
+                            output += "Locals:\n";
+                            foreach (Variable v in local)
+                            {
+                                output += $"{v.GetName()} - {v.GetValue()}\n";
+                            }
+                            output += $"Return Address = {PC + 1}";
+
+                            MessageBox.Show(output);
+
                             FetchExecute(intermediateSubroutines[index], ref console);
                         }
                         break;
@@ -3022,6 +3051,7 @@ namespace NEA
                         break;
                     case "LOAD_VAR":
                         intOp = Convert.ToInt32(operand);
+                        MessageBox.Show($"PRE-CRASH");
                         MessageBox.Show($"intOp = {intOp}\nvariables length = {variables.Length}");
                         MessageBox.Show($"variable[0] = {variables[0].GetName()}");
                         if (variables[intOp].IsDeclared() && !variables[intOp].IsNull())
