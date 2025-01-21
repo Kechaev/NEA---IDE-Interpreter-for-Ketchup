@@ -217,6 +217,8 @@ namespace NEA
                     return TokenType.LEFT_BRACKET;
                 case ")":
                     return TokenType.RIGHT_BRACKET;
+                case ",":
+                    return TokenType.COMMA;
                 case "+":
                     return TokenType.ADD;
                 case "-":
@@ -327,8 +329,8 @@ namespace NEA
                     return TokenType.AND;
                 case "NOT":
                     return TokenType.NOT;
-                case "BEGIN":
-                    return TokenType.BEGIN;
+                //case "BEGIN":
+                //    return TokenType.BEGIN;
                 case "END":
                     return TokenType.END;
                 case "PRINT":
@@ -471,7 +473,7 @@ namespace NEA
         public Token[] Tokenize()
         {
             List<Token> tokensList = new List<Token>();
-            char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^' };
+            char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^', ',' };
             string[] multiCharKeywords = { "=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
             string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
 
@@ -1646,6 +1648,7 @@ namespace NEA
             Token finalTokenOfLine;
             int prevI = -1;
             int bodyStart, bodyEnd;
+            bool areParamsToRead = true, readyForNextParam = true; ;
 
             while (i < internalTokens.Length)
             {
@@ -2314,6 +2317,7 @@ namespace NEA
                         i += j + 5;
                         break;
                     case TokenType.FUNCTION:
+                        MessageBox.Show("FUNCTION CREATE");
                         // Current Function Syntax
                         // FUNCTION subroutine WITH INPUTS a
                         //   statements
@@ -2325,15 +2329,48 @@ namespace NEA
                         }
                         subroutineName = nextToken.GetLiteral();
                         nextToken = internalTokens[i + 2];
-                        if (!Is(nextToken, TokenType.WITH))
+
+                        // Worded Parameter Syntax
+
+                        //if (!Is(nextToken, TokenType.WITH))
+                        //{
+                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No \"WITH\" keyword found after {subroutineName}.");
+                        //}
+                        //nextToken = internalTokens[i + 3];
+                        //if (!Is(nextToken, TokenType.INPUTS))
+                        //{
+                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No \"INPUTS\" keyword found after \"WITH\" keyword.");
+                        //}
+
+                        if (!Is(nextToken, TokenType.LEFT_BRACKET))
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No \"WITH\" keyword found after {subroutineName}.");
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
                         }
-                        nextToken = internalTokens[i + 3];
-                        if (!Is(nextToken, TokenType.INPUTS))
+                        List<string> variableNames = new List<string>();
+                        j = 1;
+                        for (; areParamsToRead; j++)
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No \"INPUTS\" keyword found after \"WITH\" keyword.");
+                            nextToken = internalTokens[i + j + 2];
+                            MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
+                            if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                            {
+                                areParamsToRead = false;
+                            }
+                            else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                            {
+                                variableNames.Add(nextToken.GetLiteral());
+                                readyForNextParam = false;
+                            }
+                            else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                            {
+                                readyForNextParam = true;
+                            }
+                            else
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
+                            }
                         }
+
                         // To-Do: Add support for more than one parameter
                         // Think of intuitive syntax for it
                         // Maybe comma, but think of something else
@@ -2343,22 +2380,24 @@ namespace NEA
                         // Use a, b AND c
                         // Use a AND b
                         // Use a AND b AND c
-                        nextToken = internalTokens[i + 4];
-                        if (!Is(nextToken, TokenType.VARIABLE))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No variable name found after \"INPUTS\".");
-                        }
-                        List<string> variableNames = new List<string>();
-                        variableName = nextToken.GetLiteral();
-                        nextToken = internalTokens[i + 5];
-                        bodyStart = i + 5;
-                        if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.AS) && !Is(internalTokens[i + 5], TokenType.DATA_TYPE))
-                        {
-                            type = internalTokens[i + 5].GetLiteral();
-                            noType = false;
-                            bodyStart = i + 7;
-                        }
+
+
+                        //nextToken = internalTokens[i + 2];
+                        //if (!Is(nextToken, TokenType.VARIABLE))
+                        //{
+                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No variable name found after \"INPUTS\".");
+                        //}
+
+                        nextToken = internalTokens[i + j + 2];
+                        bodyStart = i + j + 2;
+                        //if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.AS) && !Is(internalTokens[i + 5], TokenType.DATA_TYPE))
+                        //{
+                        //    type = internalTokens[i + j + 3].GetLiteral();
+                        //    noType = false;
+                        //    bodyStart = i + j + 5;
+                        //}
                         bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
+                        MessageBox.Show($"Start: {bodyStart}\nEnd: {bodyEnd}");
 
                         subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
 
@@ -2367,6 +2406,7 @@ namespace NEA
                         for (int x = bodyStart; x < bodyEnd; x++)
                         {
                             functionsTokens.Add(internalTokens[x]);
+                            MessageBox.Show(internalTokens[x].GetLiteral().ToString());
                         }
 
                         intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray(), true));
@@ -2388,6 +2428,7 @@ namespace NEA
 
                         counterSubroutine++;
 
+                        // Incorrect calculation here
                         i = bodyEnd + 2;
                         break;
                     case TokenType.RETURN:
@@ -2446,26 +2487,59 @@ namespace NEA
                         intermediateList.AddRange(MapReturn(expression));
                         break;
                     case TokenType.SUBROUTINE_NAME:
+                        MessageBox.Show("FUNCTION CALL");
                         List<Variable> arguements = new List<Variable>();
                         // Function Call
                         nextToken = internalTokens[i + 1];
-                        if (!Is(nextToken, TokenType.WITH))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"WITH\" keyword after \"{token.GetLiteral()}\".");
-                        }
-                        nextToken = internalTokens[i + 2];
-                        if (!Is(nextToken, TokenType.INPUTS))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"INPUTS\" keyword after \"WITH\".");
-                        }
-                        nextToken = internalTokens[i + 3];
-                        if (!IsLiteral(nextToken))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing value after \"INPUTS\"");
-                        }
                         int paramCounter = 0;
-                        Variable arguement = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
-                        arguements.Add(arguement);
+
+                        // Worded Parameter Syntax
+
+
+                        //if (!Is(nextToken, TokenType.WITH))
+                        //{
+                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"WITH\" keyword after \"{token.GetLiteral()}\".");
+                        //}
+                        //nextToken = internalTokens[i + 2];
+                        //if (!Is(nextToken, TokenType.INPUTS))
+                        //{
+                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"INPUTS\" keyword after \"WITH\".");
+                        //}
+                        //nextToken = internalTokens[i + 3];
+                        //if (!IsLiteral(nextToken))
+                        //{
+                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing value after \"INPUTS\"");
+                        //}
+
+                        if (!Is(nextToken, TokenType.LEFT_BRACKET))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
+                        }
+                        j = 1;
+                        for (; areParamsToRead; j++)
+                        {
+                            nextToken = internalTokens[i + j + 1];
+                            if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                            {
+                                areParamsToRead = false;
+                            }
+                            else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
+                            {
+                                arguements.Add(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                readyForNextParam = false;
+                            }
+                            else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                            {
+                                readyForNextParam = true;
+                            }
+                            else
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken}\" in the arguement.");
+                            }
+                        }
+
+                        //Variable arguement = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
+                        //arguements.Add(arguement);
                         int localCounter = FindLocalVariables(token.GetLiteral()).Length;
                         MessageBox.Show($"subroutine name = {token.GetLiteral()}");
                         MessageBox.Show($"Subroutine Index: {subroutineDict[token.GetLiteral().ToUpper()]}");
@@ -2479,9 +2553,7 @@ namespace NEA
 
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements));
 
-                        MessageBox.Show($"Arguements used: {arguement.GetName()}\nValue = {arguement.GetValue()}\nID = {arguement.GetID()}");
-
-                        i += 4;
+                        i += j + 3;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
