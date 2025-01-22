@@ -31,6 +31,11 @@ namespace NEA.Classes
             return parameters;
         }
 
+        public int GetReturnAddress()
+        {
+            return returnAddress;
+        }
+
         public bool IsFunction()
         {
             return isFunction;

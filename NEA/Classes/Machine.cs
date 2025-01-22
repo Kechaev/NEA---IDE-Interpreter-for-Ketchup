@@ -2641,11 +2641,14 @@ namespace NEA
 
         private void StartSubroutineExecution(string[] intermediateCode, ref TextBox console)
         {
-            while (isRunning)
+            // Does a call stack contain a pointer to the subroutine it was called from?
+            StackFrame sf = callStack.Peek();
+            while (isRunning && PC < intermediateCode.Length)
             {
                 MessageBox.Show($"Cycle:\nRan {intermediateCode[PC]}");
                 FetchExecute(intermediateCode, ref console, true);
             }
+            // In that case return back to the previous subroutine from here
         }
 
         private void Execute(string opcode, string operand, string[] intermediateCode, ref TextBox console, bool inFunction)
@@ -2984,8 +2987,9 @@ namespace NEA
                     case "RETURN":
                         // ???
                         // WHAT ARE YOU DOING????
-                        MessageBox.Show($"RETURN\nPC = {PC}");
-                        PC = Convert.ToInt32(stack.Pop());
+                        StackFrame sf = callStack.Pop();
+                        PC = Convert.ToInt32(sf.GetReturnAddress());
+                        MessageBox.Show($"RETURN\nPC = {PC}\nTop of Stack: {stack.Peek()}");
                         FetchExecute(intermediate, ref console, false);
                         break;
                     case "HALT":
@@ -2999,6 +3003,13 @@ namespace NEA
             {
                 int intOp;
                 Variable var;
+                Variable[] localVariables = variables;
+
+                if (inFunction)
+                {
+                    localVariables = callStack.Peek().GetLocalVariables();
+                }
+
                 switch (opcode)
                 {
                     case "CALL":
@@ -3083,19 +3094,10 @@ namespace NEA
                         break;
                     case "LOAD_VAR":
                         intOp = Convert.ToInt32(operand);
-                        if (!inFunction)
-                        {
-                            var = variables[intOp];
-                        }
-                        else
-                        {
-                            StackFrame topStackFrame = callStack.Peek();
-                            Variable[] vars = topStackFrame.GetLocalVariables();
-                            var = vars[intOp];
-                        }
+                        var = localVariables[intOp];
                         if (var.IsDeclared() && !var.IsNull())
                         {
-                            stack.Push(variables[intOp].GetValue());
+                            stack.Push(localVariables[intOp].GetValue());
                         }
                         else if (!var.IsDeclared())
                         {
@@ -3111,7 +3113,7 @@ namespace NEA
                         break;
                     case "STORE_VAR":
                         intOp = Convert.ToInt32(operand); 
-                        var = variables[intOp];
+                        var = localVariables[intOp];
                         if (var.IsDeclared())
                         {
                             // Add detection for incorrect data type parse
@@ -3127,8 +3129,8 @@ namespace NEA
                         break;
                     case "DECLARE_VAR":
                         intOp = Convert.ToInt32(operand);
-                        variables[intOp].Declare();
-                        variables[intOp].SetNull();
+                        localVariables[intOp].Declare();
+                        localVariables[intOp].SetNull();
                         break;
                     case "JUMP":
                         intOp = Convert.ToInt32(operand);
@@ -3183,7 +3185,7 @@ namespace NEA
                         {
                             MessageBox.Show($"Pre-crash: {lastOperand}");
                         }
-                        variables[variableIndex].SetDataType(type);
+                        localVariables[variableIndex].SetDataType(type);
                         break;
                 }
             }
