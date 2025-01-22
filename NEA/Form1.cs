@@ -106,7 +106,7 @@ namespace NEA
             machine.SetRunningStatus(machine.GetValidity());
             while (machine.GetRunningStatus())
             {
-                machine.FetchExecute(intermediateCode, ref txtConsole);
+                machine.FetchExecute(intermediateCode, ref txtConsole, false);
 
                 txtConsole.SelectionStart = txtConsole.Text.Length;
                 txtConsole.ScrollToCaret(); 
@@ -652,6 +652,8 @@ namespace NEA
         private void txtCodeField_SelectionChanged_1(object sender, EventArgs e)
         {
             UpdateCaretPosition();
+            txtCodeField.AppendText("");
+            txtCodeField.ScrollToCaret();
         }
 
         private void txtCodeField_ContentsResized(object sender, ContentsResizedEventArgs e)

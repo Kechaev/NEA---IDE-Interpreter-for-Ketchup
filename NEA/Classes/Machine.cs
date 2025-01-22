@@ -26,6 +26,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 using System.IO.IsolatedStorage;
+using System.Reflection;
 
 namespace NEA
 {
@@ -948,6 +949,18 @@ namespace NEA
             }
 
             instructions.Add($"CALL {subroutineName}");
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapParameterDeclaration(List<Variable> parameters)
+        {
+            List<string> instructions = new List<string>();
+
+            foreach (Variable p in parameters)
+            {
+                instructions.Add($"DECLARE_VAR {p.GetID()}");
+            }
 
             return instructions.ToArray();
         }
@@ -2317,7 +2330,6 @@ namespace NEA
                         i += j + 5;
                         break;
                     case TokenType.FUNCTION:
-                        MessageBox.Show("FUNCTION CREATE");
                         // Current Function Syntax
                         // FUNCTION subroutine WITH INPUTS a
                         //   statements
@@ -2351,7 +2363,7 @@ namespace NEA
                         for (j = 1; areParamsToRead; j++)
                         {
                             nextToken = internalTokens[i + j + 2];
-                            MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
+                            //MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
                             if (Is(nextToken, TokenType.RIGHT_BRACKET))
                             {
                                 areParamsToRead = false;
@@ -2370,7 +2382,6 @@ namespace NEA
                                 throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
                             }
                         }
-                        MessageBox.Show("End of arguement collection");
                         // To-Do: Add support for more than one parameter
                         // Think of intuitive syntax for it
                         // Maybe comma, but think of something else
@@ -2397,7 +2408,6 @@ namespace NEA
                         //    bodyStart = i + j + 5;
                         //}
                         bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
-                        MessageBox.Show($"Start: {bodyStart}\nEnd: {bodyEnd}");
 
                         subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
 
@@ -2406,7 +2416,6 @@ namespace NEA
                         for (int x = bodyStart; x < bodyEnd; x++)
                         {
                             functionsTokens.Add(internalTokens[x]);
-                            MessageBox.Show(internalTokens[x].GetLiteral().ToString());
                         }
 
                         intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray(), true));
@@ -2487,29 +2496,12 @@ namespace NEA
                         intermediateList.AddRange(MapReturn(expression));
                         break;
                     case TokenType.SUBROUTINE_NAME:
-                        MessageBox.Show("FUNCTION CALL");
-                        List<Variable> arguements = new List<Variable>();
                         // Function Call
+                        // Current Syntax:
+                        // FunctionName (arg1,arg2,...)
+                        List<Variable> arguements = new List<Variable>();
                         nextToken = internalTokens[i + 1];
                         int paramCounter = 0;
-
-                        // Worded Parameter Syntax
-
-
-                        //if (!Is(nextToken, TokenType.WITH))
-                        //{
-                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"WITH\" keyword after \"{token.GetLiteral()}\".");
-                        //}
-                        //nextToken = internalTokens[i + 2];
-                        //if (!Is(nextToken, TokenType.INPUTS))
-                        //{
-                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"INPUTS\" keyword after \"WITH\".");
-                        //}
-                        //nextToken = internalTokens[i + 3];
-                        //if (!IsLiteral(nextToken))
-                        //{
-                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing value after \"INPUTS\"");
-                        //}
 
                         if (!Is(nextToken, TokenType.LEFT_BRACKET))
                         {
@@ -2520,7 +2512,7 @@ namespace NEA
                         for (j = 1; areParamsToRead; j++)
                         {
                             nextToken = internalTokens[i + j + 1];
-                            MessageBox.Show($"Next token = {nextToken.GetTokenType()}");
+                            //MessageBox.Show($"Next token = {nextToken.GetTokenType()}");
                             if (Is(nextToken, TokenType.RIGHT_BRACKET))
                             {
                                 areParamsToRead = false;
@@ -2529,7 +2521,7 @@ namespace NEA
                             {
                                 arguements.Add(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
                                 readyForNextParam = false;
-                                MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
+                                //MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
                             }
                             else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
                             {
@@ -2540,15 +2532,14 @@ namespace NEA
                                 throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken}\" in the arguement.");
                             }
                         }
-                        MessageBox.Show("Param Collection ended");
 
                         //Variable arguement = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
                         //arguements.Add(arguement);
                         int localCounter = FindLocalVariables(token.GetLiteral()).Length;
-                        MessageBox.Show($"subroutine name = {token.GetLiteral()}");
-                        MessageBox.Show($"Subroutine Index: {subroutineDict[token.GetLiteral().ToUpper()]}");
-                        MessageBox.Show($"paramcounter = {paramCounter}");
-                        MessageBox.Show($"local counter = {localCounter}");
+                        //MessageBox.Show($"subroutine name = {token.GetLiteral()}");
+                        //MessageBox.Show($"Subroutine Index: {subroutineDict[token.GetLiteral().ToUpper()]}");
+                        //MessageBox.Show($"paramcounter = {paramCounter}");
+                        //MessageBox.Show($"local counter = {localCounter}");
                         // Lock in bro
                         subroutineParametersCount[subroutineDict[token.GetLiteral().ToUpper()]] = paramCounter;
                         subroutineLocalVariableCounter[subroutineDict[token.GetLiteral().ToUpper()]] = localCounter;
@@ -2558,7 +2549,6 @@ namespace NEA
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements));
 
                         i += j + 1;
-                        MessageBox.Show($"Next token: {tokens[i]}");
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
@@ -2595,8 +2585,17 @@ namespace NEA
             delayMS = delay;
         }
 
-        public void FetchExecute(string[] intermediateCode, ref TextBox console)
+        public void FetchExecute(string[] intermediateCode, ref TextBox console, bool inFunction)
         {
+            string output = "";
+
+            foreach (string s in intermediateCode)
+            {
+                output += $"{s}\n";
+            }
+
+            MessageBox.Show(output);
+            MessageBox.Show($"Length: {intermediateCode.Length}");
             if (PC < intermediateCode.Length)
             {
                 string line = Fetch(intermediateCode);
@@ -2623,8 +2622,8 @@ namespace NEA
                         operand += line[i];
                     }
                 }
-
-                Execute(opcode, operand, intermediateCode, ref console);
+                MessageBox.Show($"Executing\nExecute({opcode}, {operand}, {intermediateCode[0]}, console");
+                Execute(opcode, operand, intermediateCode, ref console, inFunction);
             }
             else
             {
@@ -2640,7 +2639,16 @@ namespace NEA
             return line;
         }
 
-        private void Execute(string opcode, string operand, string[] intermediateCode, ref TextBox console)
+        private void StartSubroutineExecution(string[] intermediateCode, ref TextBox console)
+        {
+            while (isRunning)
+            {
+                MessageBox.Show($"Cycle:\nRan {intermediateCode[PC]}");
+                FetchExecute(intermediateCode, ref console, true);
+            }
+        }
+
+        private void Execute(string opcode, string operand, string[] intermediateCode, ref TextBox console, bool inFunction)
         {
             // Opcodes not involving an operand in the instruction
             if (operand == null)
@@ -2973,7 +2981,15 @@ namespace NEA
                         }
                         stack.Push(result);
                         break;
+                    case "RETURN":
+                        // ???
+                        // WHAT ARE YOU DOING????
+                        MessageBox.Show($"RETURN\nPC = {PC}");
+                        PC = Convert.ToInt32(stack.Pop());
+                        FetchExecute(intermediate, ref console, false);
+                        break;
                     case "HALT":
+                        MessageBox.Show($"Top Stack = {stack.Peek()}");
                         isRunning = false;
                         break;
                 }
@@ -2982,6 +2998,7 @@ namespace NEA
             else
             {
                 int intOp;
+                Variable var;
                 switch (opcode)
                 {
                     case "CALL":
@@ -3018,8 +3035,10 @@ namespace NEA
                             {
                                 object parameterValue = stack.Pop();
                                 parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", parameterValue);
+                                parameters[i].Declare();
                                 // Parameters are also considered local variables, therefore add them to variables too.
                                 local[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", parameterValue);
+                                local[i].Declare();
                                 MessageBox.Show($"param = {parameters[i].GetName()}\nvalue = {parameters[i].GetValue()}");
                             }
                             for (int i = parameterCount; i < localVariablesCounter; i++)
@@ -3027,6 +3046,7 @@ namespace NEA
                                 local[i] = new Variable($"subroutine{subroutineDict[operand]}Local{i}", null);
                             }
                             StackFrame sf = new StackFrame(parameters, local, PC, true);
+                            callStack.Push(sf);
 
                             string output = "StackFrame:\nParameters:\n";
 
@@ -3039,11 +3059,23 @@ namespace NEA
                             {
                                 output += $"{v.GetName()} - {v.GetValue()}\n";
                             }
-                            output += $"Return Address = {PC + 1}";
+                            output += $"Return Address = {PC}";
 
                             MessageBox.Show(output);
 
-                            FetchExecute(intermediateSubroutines[index], ref console);
+                            output = "";
+
+                            foreach (string s in intermediateSubroutines[index])
+                            {
+                                output += $"{s}\n";
+                            }
+
+                            MessageBox.Show(output);
+
+                            PC = 0;
+                            StartSubroutineExecution(intermediateSubroutines[index], ref console);
+
+                            MessageBox.Show("Ran the fetch exec");
                         }
                         break;
                     case "LOAD_CONST":
@@ -3051,22 +3083,35 @@ namespace NEA
                         break;
                     case "LOAD_VAR":
                         intOp = Convert.ToInt32(operand);
-                        MessageBox.Show($"PRE-CRASH");
-                        MessageBox.Show($"intOp = {intOp}\nvariables length = {variables.Length}");
-                        MessageBox.Show($"variable[0] = {variables[0].GetName()}");
-                        if (variables[intOp].IsDeclared() && !variables[intOp].IsNull())
+                        if (!inFunction)
+                        {
+                            var = variables[intOp];
+                        }
+                        else
+                        {
+                            StackFrame topStackFrame = callStack.Peek();
+                            Variable[] vars = topStackFrame.GetLocalVariables();
+                            var = vars[intOp];
+                        }
+                        if (var.IsDeclared() && !var.IsNull())
                         {
                             stack.Push(variables[intOp].GetValue());
                         }
-                        if (variables[intOp].IsDeclared() && variables[intOp].IsNull())
+                        else if (!var.IsDeclared())
                         {
-                            throw new Exception($"DEV ERROR in execution: Attempted to use a variable {variables[intOp].GetName()} with no assigned value.");
+                            throw new Exception($"LOGIC ERROR in execution: Tried to use an undeclared local variable.");
+                        }
+                        else
+                        {
+                            throw new Exception($"DEV ERROR in execution: Attempted to use a variable {var.GetName()} with no assigned value.");
                         }
                         //MessageBox.Show($"Var {variables[intOp].GetName()} - {variables[intOp].GetDataType().ToString()}");
+                        MessageBox.Show($"Stack Count = {stack.Count()}");
+                        MessageBox.Show($"Top of Stack: {stack.Peek()}");
                         break;
                     case "STORE_VAR":
-                        intOp = Convert.ToInt32(operand);
-                        Variable var = variables[intOp];
+                        intOp = Convert.ToInt32(operand); 
+                        var = variables[intOp];
                         if (var.IsDeclared())
                         {
                             // Add detection for incorrect data type parse
