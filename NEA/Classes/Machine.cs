@@ -122,7 +122,7 @@ namespace NEA
                 output += $"{s}\n";
             }
 
-            MessageBox.Show($"{output}");
+            //MessageBox.Show($"{output}");
 
             return variablesFound.ToArray();
         }
@@ -459,7 +459,7 @@ namespace NEA
         private string[] FindSubroutineNames()
         {
             List<string> subroutineNames = new List<string>();
-            char[] seperators = { ' ', '\n' };
+            char[] seperators = { ' ', '\n', '(', ')' };
             string[] words = sourceCode.Split(seperators);
             for (int i = 0; i < words.Length - 1; i++)
             {
@@ -1667,7 +1667,7 @@ namespace NEA
             {
                 if (prevI == i)
                 {
-                    throw new Exception($"SYNTAX ERROR: Invalid Unknown keyword \"{internalTokens[i].GetLiteral()}\", unable to process.");
+                    throw new Exception($"DEV ERROR on Line {internalTokens[i].GetLine() + 1}: Unkown token \"{internalTokens[i].GetLiteral()}\", unable to process.");
                 }
                 prevI = i;
 
@@ -2337,7 +2337,7 @@ namespace NEA
                         nextToken = internalTokens[i + 1];
                         if (!Is(nextToken, TokenType.SUBROUTINE_NAME))
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No valid function name found after  \"FUNCTION\" keyword.");
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No valid function name found after \"FUNCTION\" keyword.");
                         }
                         subroutineName = nextToken.GetLiteral();
                         nextToken = internalTokens[i + 2];
@@ -2499,7 +2499,7 @@ namespace NEA
                         // Function Call
                         // Current Syntax:
                         // FunctionName (arg1,arg2,...)
-                        List<Variable> arguements = new List<Variable>();
+                        Stack<Variable> arguementsStack = new Stack<Variable>();
                         nextToken = internalTokens[i + 1];
                         int paramCounter = 0;
 
@@ -2519,7 +2519,7 @@ namespace NEA
                             }
                             else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
                             {
-                                arguements.Add(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
                                 readyForNextParam = false;
                                 //MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
                             }
@@ -2545,6 +2545,11 @@ namespace NEA
                         subroutineLocalVariableCounter[subroutineDict[token.GetLiteral().ToUpper()]] = localCounter;
                         // Return address found in when creating the stack frame
                         // Which is referred to in the RETURN statement
+                        List<Variable> arguements = new List<Variable>();
+                        while (arguementsStack.Count > 0)
+                        {
+                            arguements.Add(arguementsStack.Pop());
+                        }
 
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements));
 
@@ -2987,10 +2992,18 @@ namespace NEA
                     case "RETURN":
                         // ???
                         // WHAT ARE YOU DOING????
+                        MessageBox.Show("RETURN CALLED");
                         StackFrame sf = callStack.Pop();
                         PC = Convert.ToInt32(sf.GetReturnAddress());
                         MessageBox.Show($"RETURN\nPC = {PC}\nTop of Stack: {stack.Peek()}");
-                        FetchExecute(intermediate, ref console, false);
+                        if (callStack.Count > 0)
+                        {
+                            FetchExecute(callStack.Peek().GetIntermediate(), ref console, true);
+                        }
+                        else
+                        {
+                            FetchExecute(intermediate, ref console, false);
+                        }
                         break;
                     case "HALT":
                         MessageBox.Show($"Top Stack = {stack.Peek()}");
@@ -3041,7 +3054,7 @@ namespace NEA
                             Variable[] parameters = new Variable[parameterCount];
                             // Find the number of local variables per subroutine
                             Variable[] local = new Variable[localVariablesCounter];
-                            MessageBox.Show($"ParamCounter = {parameterCount}");
+                            //MessageBox.Show($"ParamCounter = {parameterCount}");
                             for (int i = 0; i < parameterCount; i++)
                             {
                                 object parameterValue = stack.Pop();
@@ -3050,13 +3063,13 @@ namespace NEA
                                 // Parameters are also considered local variables, therefore add them to variables too.
                                 local[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", parameterValue);
                                 local[i].Declare();
-                                MessageBox.Show($"param = {parameters[i].GetName()}\nvalue = {parameters[i].GetValue()}");
+                                //MessageBox.Show($"param = {parameters[i].GetName()}\nvalue = {parameters[i].GetValue()}");
                             }
                             for (int i = parameterCount; i < localVariablesCounter; i++)
                             {
                                 local[i] = new Variable($"subroutine{subroutineDict[operand]}Local{i}", null);
                             }
-                            StackFrame sf = new StackFrame(parameters, local, PC, true);
+                            StackFrame sf = new StackFrame(parameters, local, PC, true, intermediateSubroutines[index]);
                             callStack.Push(sf);
 
                             string output = "StackFrame:\nParameters:\n";
@@ -3072,7 +3085,7 @@ namespace NEA
                             }
                             output += $"Return Address = {PC}";
 
-                            MessageBox.Show(output);
+                            //MessageBox.Show(output);
 
                             output = "";
 
@@ -3081,7 +3094,7 @@ namespace NEA
                                 output += $"{s}\n";
                             }
 
-                            MessageBox.Show(output);
+                            //MessageBox.Show(output);
 
                             PC = 0;
                             StartSubroutineExecution(intermediateSubroutines[index], ref console);
@@ -3108,8 +3121,7 @@ namespace NEA
                             throw new Exception($"DEV ERROR in execution: Attempted to use a variable {var.GetName()} with no assigned value.");
                         }
                         //MessageBox.Show($"Var {variables[intOp].GetName()} - {variables[intOp].GetDataType().ToString()}");
-                        MessageBox.Show($"Stack Count = {stack.Count()}");
-                        MessageBox.Show($"Top of Stack: {stack.Peek()}");
+                        MessageBox.Show($"Stack Count = {stack.Count()}\nTop of Stack: {stack.Peek()}");
                         break;
                     case "STORE_VAR":
                         intOp = Convert.ToInt32(operand); 

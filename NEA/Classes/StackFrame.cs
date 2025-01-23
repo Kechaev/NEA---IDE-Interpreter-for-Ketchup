@@ -13,12 +13,15 @@ namespace NEA.Classes
         private Variable[] parameters;
         private bool isFunction;
 
-        public StackFrame(Variable[] parameters, Variable[] localVariables, int returnAddress, bool isFunction)
+        private string[] intermediate;
+
+        public StackFrame(Variable[] parameters, Variable[] localVariables, int returnAddress, bool isFunction, string[] intermediate)
         {
             this.parameters = parameters;
             this.localVariables = localVariables;
             this.returnAddress = returnAddress;
             this.isFunction = isFunction;
+            this.intermediate = intermediate;
         }
 
         public Variable[] GetLocalVariables()
@@ -39,6 +42,11 @@ namespace NEA.Classes
         public bool IsFunction()
         {
             return isFunction;
+        }
+
+        public string[] GetIntermediate()
+        {
+            return intermediate;
         }
     }
 }
