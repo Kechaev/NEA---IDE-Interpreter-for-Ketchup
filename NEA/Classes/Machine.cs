@@ -2491,7 +2491,7 @@ namespace NEA
                             output += $"{inter}\n";
                         }
 
-                        MessageBox.Show($"{output}");
+                        //MessageBox.Show($"{output}");
 
                         intermediateList.AddRange(MapReturn(expression));
                         break;
@@ -2592,15 +2592,6 @@ namespace NEA
 
         public void FetchExecute(string[] intermediateCode, ref TextBox console, bool inFunction)
         {
-            string output = "";
-
-            foreach (string s in intermediateCode)
-            {
-                output += $"{s}\n";
-            }
-
-            MessageBox.Show(output);
-            MessageBox.Show($"Length: {intermediateCode.Length}");
             if (PC < intermediateCode.Length)
             {
                 string line = Fetch(intermediateCode);
@@ -2627,7 +2618,6 @@ namespace NEA
                         operand += line[i];
                     }
                 }
-                MessageBox.Show($"Executing\nExecute({opcode}, {operand}, {intermediateCode[0]}, console");
                 Execute(opcode, operand, intermediateCode, ref console, inFunction);
             }
             else
@@ -2650,7 +2640,6 @@ namespace NEA
             StackFrame sf = callStack.Peek();
             while (isRunning && PC < intermediateCode.Length)
             {
-                MessageBox.Show($"Cycle:\nRan {intermediateCode[PC]}");
                 FetchExecute(intermediateCode, ref console, true);
             }
             // In that case return back to the previous subroutine from here
@@ -2990,12 +2979,8 @@ namespace NEA
                         stack.Push(result);
                         break;
                     case "RETURN":
-                        // ???
-                        // WHAT ARE YOU DOING????
-                        MessageBox.Show("RETURN CALLED");
                         StackFrame sf = callStack.Pop();
                         PC = Convert.ToInt32(sf.GetReturnAddress());
-                        MessageBox.Show($"RETURN\nPC = {PC}\nTop of Stack: {stack.Peek()}");
                         if (callStack.Count > 0)
                         {
                             FetchExecute(callStack.Peek().GetIntermediate(), ref console, true);
@@ -3006,7 +2991,7 @@ namespace NEA
                         }
                         break;
                     case "HALT":
-                        MessageBox.Show($"Top Stack = {stack.Peek()}");
+                        MessageBox.Show($"HALTED\nTop Stack = {stack.Peek()}");
                         isRunning = false;
                         break;
                 }
@@ -3098,8 +3083,6 @@ namespace NEA
 
                             PC = 0;
                             StartSubroutineExecution(intermediateSubroutines[index], ref console);
-
-                            MessageBox.Show("Ran the fetch exec");
                         }
                         break;
                     case "LOAD_CONST":
@@ -3120,8 +3103,6 @@ namespace NEA
                         {
                             throw new Exception($"DEV ERROR in execution: Attempted to use a variable {var.GetName()} with no assigned value.");
                         }
-                        //MessageBox.Show($"Var {variables[intOp].GetName()} - {variables[intOp].GetDataType().ToString()}");
-                        MessageBox.Show($"Stack Count = {stack.Count()}\nTop of Stack: {stack.Peek()}");
                         break;
                     case "STORE_VAR":
                         intOp = Convert.ToInt32(operand); 
