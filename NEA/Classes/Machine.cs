@@ -576,6 +576,11 @@ namespace NEA
             TokenType[] binaryBitwiseOperations = { TokenType.AND, TokenType.OR };
             TokenType[] unaryBitwiseOperation = { TokenType.NOT };
 
+            if (Is(tokens[0], TokenType.SUB))
+            {
+                output.Add("LOAD_CONST 0");
+            }
+
             for (int i = 0; i < tokens.Count; i++)
             {
                 Token token = tokens[i];
@@ -628,6 +633,15 @@ namespace NEA
 
                 output.Add(stack.Pop().GetTokenType().ToString());
             }
+
+            string strOutput = "";
+
+            foreach (string s in output)
+            {
+                strOutput += $"{s}\n";
+            }
+
+            MessageBox.Show($"Postfix\n{strOutput}");
 
             return output.ToArray();
         }
@@ -1129,10 +1143,9 @@ namespace NEA
         #endregion
 
         #region Loops
-        private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
+        private string[] MapForLoop2(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
             counter += 2;
@@ -1155,6 +1168,74 @@ namespace NEA
             instructions.Add("LESS_EQUAL");
 
             instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
+
+            string[] statement = TokensToIntermediate(body, false);
+
+            instructions.AddRange(statement);
+
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
+
+            instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
+
+            instructions.Add("ADD");
+
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
+
+            instructions.Add("JUMP " + (localCounter - 2).ToString());
+
+            instructions.Add("LABEL " + (localCounter - 1).ToString());
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
+        {
+            List<string> instructions = new List<string>();
+            counterVar = variablesDict[variable];
+            counter += 4;
+
+            int localCounter = counter;
+            int localCounterVar = counterVar;
+
+            instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
+
+            instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
+
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
+
+            instructions.Add("LABEL " + (localCounter - 2).ToString());
+
+            instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
+
+            instructions.Add("LOAD_CONST 0");
+
+            instructions.Add("GREATER");
+
+            instructions.Add("JUMP_FALSE " + (localCounter - 4).ToString());
+
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
+
+            instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
+
+            instructions.Add("LESS_EQUAL");
+
+            instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
+
+            instructions.Add("JUMP " + (localCounter - 3).ToString());
+
+            instructions.Add("LABEL " + (localCounter - 4).ToString());
+
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
+
+            instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
+
+            instructions.Add("GREATER_EQUAL");
+
+            instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
+
+            instructions.Add("JUMP " + (localCounter - 3).ToString());
+
+            instructions.Add("LABEL " + (localCounter - 3).ToString());
 
             string[] statement = TokensToIntermediate(body, false);
 
@@ -2894,6 +2975,7 @@ namespace NEA
                         stack.Push(result);
                         break;
                     case "LESS_EQUAL":
+                        MessageBox.Show($"LESS EQUAL CRASH\nPrev {intermediate[PC - 2]}");
                         object2 = stack.Pop();
                         object1 = stack.Pop();
                         type = GetDataTypeFrom(object1, object2);
@@ -3129,6 +3211,7 @@ namespace NEA
                         break;
                     case "JUMP_FALSE":
                         object value = stack.Pop();
+                        MessageBox.Show($"Prev instruction = {intermediate[PC - 1]}\nPrev Prev instructions = {intermediate[PC - 2]}");
                         try
                         {
                             bool toJump = Convert.ToBoolean(value);
