@@ -1142,46 +1142,35 @@ namespace NEA
 
             instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
 
-            instrLine = "DECLARE_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
 
-            instrLine = "STORE_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
-            instrLine = "LABEL " + (localCounter - 2).ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LABEL " + (localCounter - 2).ToString());
 
-            instrLine = "LOAD_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
 
             instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
 
-            instrLine = "LESS_EQUAL";
-            instructions.Add(instrLine);
+            instructions.Add("LESS_EQUAL");
 
-            instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
-            instructions.Add(instrLine);
+            instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
 
             string[] statement = TokensToIntermediate(body, false);
 
             instructions.AddRange(statement);
 
-            instrLine = "LOAD_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
 
             instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
 
-            instrLine = "ADD";
-            instructions.Add(instrLine);
+            instructions.Add("ADD");
 
-            instrLine = "STORE_VAR " + localCounterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
-            instrLine = "JUMP " + (localCounter - 2).ToString();
-            instructions.Add(instrLine);
+            instructions.Add("JUMP " + (localCounter - 2).ToString());
 
-            instrLine = "LABEL " + (localCounter - 1).ToString();
-            instructions.Add(instrLine);
+            instructions.Add("LABEL " + (localCounter - 1).ToString());
 
             return instructions.ToArray();
         }
@@ -2360,10 +2349,11 @@ namespace NEA
                         }
                         List<string> variableNames = new List<string>();
                         areParamsToRead = true;
+                        readyForNextParam = true;
                         for (j = 1; areParamsToRead; j++)
                         {
                             nextToken = internalTokens[i + j + 2];
-                            //MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
+                            MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
                             if (Is(nextToken, TokenType.RIGHT_BRACKET))
                             {
                                 areParamsToRead = false;
@@ -2409,6 +2399,7 @@ namespace NEA
                         //}
                         bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
 
+                        MessageBox.Show($"Added FUNCTION {internalTokens[i + 1].GetLiteral()}");
                         subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
 
                         List<Token> functionsTokens = new List<Token>();
@@ -2439,6 +2430,7 @@ namespace NEA
 
                         // Incorrect calculation here
                         i = bodyEnd + 2;
+                        MessageBox.Show($"After function\nToken = {internalTokens[i].GetLiteral()}");
                         break;
                     case TokenType.RETURN:
                         if (!inFunction)
@@ -2543,7 +2535,7 @@ namespace NEA
                         // Lock in bro
                         subroutineParametersCount[subroutineDict[token.GetLiteral().ToUpper()]] = paramCounter;
                         subroutineLocalVariableCounter[subroutineDict[token.GetLiteral().ToUpper()]] = localCounter;
-                        // Return address found in when creating the stack frame
+                        // Return address found in the stack frame
                         // Which is referred to in the RETURN statement
                         List<Variable> arguements = new List<Variable>();
                         while (arguementsStack.Count > 0)
@@ -2991,7 +2983,6 @@ namespace NEA
                         }
                         break;
                     case "HALT":
-                        MessageBox.Show($"HALTED\nTop Stack = {stack.Peek()}");
                         isRunning = false;
                         break;
                 }
@@ -3043,6 +3034,9 @@ namespace NEA
                             for (int i = 0; i < parameterCount; i++)
                             {
                                 object parameterValue = stack.Pop();
+
+                                // DO NOT CREATE DUPLICATE VARIABLES THIS MAKES EXECUTION MUCH HARDER
+
                                 parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", parameterValue);
                                 parameters[i].Declare();
                                 // Parameters are also considered local variables, therefore add them to variables too.
@@ -3083,6 +3077,7 @@ namespace NEA
 
                             PC = 0;
                             StartSubroutineExecution(intermediateSubroutines[index], ref console);
+                            MessageBox.Show($"End of Function Call\nTop of stack: {stack.Peek()}");
                         }
                         break;
                     case "LOAD_CONST":
@@ -3090,6 +3085,9 @@ namespace NEA
                         break;
                     case "LOAD_VAR":
                         intOp = Convert.ToInt32(operand);
+                        MessageBox.Show($"IntOp = {intOp}");
+                        MessageBox.Show($"localVar[0] = {localVariables[0].GetName()}\nVar ID = {localVariables[0].GetID()}\nlocalVar len = {localVariables.Length}");
+
                         var = localVariables[intOp];
                         if (var.IsDeclared() && !var.IsNull())
                         {
