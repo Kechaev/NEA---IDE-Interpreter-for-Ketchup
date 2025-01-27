@@ -599,6 +599,7 @@ namespace NEA
                 }
                 else if (IsBinary(token))
                 {
+                    MessageBox.Show(token.GetTokenType().ToString());
                     while ((stack.Count > 0) && ((Precedence(token) <= Precedence(stack.Peek())) || IsUnary(stack.Peek()) && (!Is(stack.Peek(), TokenType.LEFT_BRACKET)) && IsLeftAssociatitve(token)))
                     {
                         output.Add(stack.Pop().GetTokenType().ToString());
@@ -2927,6 +2928,26 @@ namespace NEA
                                 throw new Exception($"LOGIC ERROR: Unknown data type when applying exponents to {object1.ToString()} and {object2.ToString()}.");
                         }
                         stack.Push(result);
+                        break;
+                    case "OR":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        if (type != DataType.BOOLEAN)
+                        {
+                            throw new Exception($"LOGIC ERROR: Attempted to perform \"OR\" on non boolean values.");
+                        }
+                        stack.Push(Convert.ToBoolean(object1) | Convert.ToBoolean(object2));
+                        break;
+                    case "AND":
+                        object2 = stack.Pop();
+                        object1 = stack.Pop();
+                        type = GetDataTypeFrom(object1, object2);
+                        if (type != DataType.BOOLEAN)
+                        {
+                            throw new Exception($"LOGIC ERROR: Attempted to perform \"AND\" on non boolean values.");
+                        }
+                        stack.Push(Convert.ToBoolean(object1) & Convert.ToBoolean(object2));
                         break;
                     case "NOT":
                         object1 = stack.Pop();
