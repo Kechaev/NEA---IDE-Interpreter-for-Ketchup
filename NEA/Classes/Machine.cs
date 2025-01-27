@@ -634,15 +634,6 @@ namespace NEA
                 output.Add(stack.Pop().GetTokenType().ToString());
             }
 
-            string strOutput = "";
-
-            foreach (string s in output)
-            {
-                strOutput += $"{s}\n";
-            }
-
-            MessageBox.Show($"Postfix\n{strOutput}");
-
             return output.ToArray();
         }
 
@@ -702,7 +693,7 @@ namespace NEA
                 tokenTypeExpression.Add(e.GetTokenType());
             }
 
-            // Does the print statement have an expression, mathematical or bitwise
+            // Does the print statement have an expression: mathematical or boolean
             foreach (TokenType t in mathematicalOperations)
             {
                 if (tokenTypeExpression.Contains(t))
@@ -731,8 +722,15 @@ namespace NEA
         // Questionable Method???
         private string[] GetIntermediateFromExpression(List<Token> expression)
         {
+            string output = "";
+            foreach (Token t in expression)
+            {
+                output += $"{t.GetLiteral()}\n";
+            }
+            //MessageBox.Show($"Ran GetIntermediateFromExpression\nArguement: {output}");
             List<string> instructions = new List<string>();
             List<string> instrLine;
+            // Definitions
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
@@ -751,6 +749,7 @@ namespace NEA
                 for (int i = 0; i < expression.Count; i++)
                 {
                     nonExpressionTotalMembers++;
+                    //MessageBox.Show($"token = {expression[i].GetLiteral()}\nnonExpressionTotalMembers = {nonExpressionTotalMembers}");
                     if (expression[i].GetTokenType() != TokenType.STR_LITERAL)
                     {
                         begins.Add(i);
@@ -770,12 +769,19 @@ namespace NEA
                         }
                     }
                 }
+                //MessageBox.Show($"Final Count:\nnonExpressionTotalMembers = {nonExpressionTotalMembers}");
                 if (begins.Count != ends.Count)
                 {
                     ends.Add(expression.Count);
                     numberOfExpressions++;
                     nonExpressionTotalMembers--;
                 }
+                output = "";
+                for (int i = 0; i < begins.Count; i++)
+                {
+                    output += $"Begins: {begins[i]}\nEnds: {ends[i]}\n";
+                }
+                //MessageBox.Show(output);
 
                 List<Token> expressionForRPN;
 
@@ -850,6 +856,25 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        private string[] GetIntermediateFromExpression2(List<Token> expression)
+        {
+            int i = 0;
+            while (i < expression.Count)
+            {
+                bool inExpression = false;
+                for (i = 0; i < expression.Count && !inExpression; i++)
+                {
+                    Token token = expression[i];
+                    if (!Is(token, TokenType.STR_LITERAL) || !IsVariable(token))
+                    {
+
+                    }
+
+                }
+            }
+            return new string[0];
+        }
+
         // Returns the correct intermediate code instruction
         private List<string> GetInstructions(Token e, ref int i, List<Token> expression)
         {
@@ -857,6 +882,7 @@ namespace NEA
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
+            string operators = "+-*/^%";
 
             List<string> instrLine = new List<string>();
 
@@ -883,6 +909,31 @@ namespace NEA
                     instrLine.Add(statement);
                 }
             }
+            // This should not be called?
+            //else if (operators.Contains(e.GetLiteral()))
+            //{
+            //    switch (e.GetLiteral())
+            //    {
+            //        case "+":
+            //            instrLine.Add("ADD");
+            //            break;
+            //        case "-":
+            //            instrLine.Add("SUB");
+            //            break;
+            //        case "*":
+            //            instrLine.Add("MUL");
+            //            break;
+            //        case "/":
+            //            instrLine.Add("DIV");
+            //            break;
+            //        case "^":
+            //            instrLine.Add("EXP");
+            //            break;
+            //        case "%":
+            //            instrLine.Add("MOD");
+            //            break;
+            //    }
+            //}
             else if (bitwiseOperations.Contains(e.GetTokenType()))
             {
                 if (e.GetTokenType() == TokenType.AND)
@@ -901,7 +952,7 @@ namespace NEA
             else
             {
                 //MessageBox.Show($"Pre-crash: {e.GetTokenType()}");
-                throw new Exception($"SYNTAX ERROR on Line {e.GetLine() + 1}: Invalid keyword in the expression.");
+                throw new Exception($"SYNTAX ERROR on Line {e.GetLine() + 1}: Invalid keyword \"{e.GetLiteral()}\" in the expression. ");
             }
 
             return instrLine;
@@ -1515,7 +1566,7 @@ namespace NEA
 
             //MessageBox.Show($"nestCounter = {nestCounter}");
 
-            if (tokens[index].GetTokenType() == TokenType.END && tokens[index + 1].GetLiteral() == structure)
+            if (tokens[index].GetTokenType() == TokenType.END && tokens[index + 1].GetLiteral().ToUpper() == structure)
             {
                 return index;
             }
@@ -1737,7 +1788,7 @@ namespace NEA
             {
                 if (prevI == i)
                 {
-                    throw new Exception($"DEV ERROR on Line {internalTokens[i].GetLine() + 1}: Unkown token \"{internalTokens[i].GetLiteral()}\", unable to process.");
+                    throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: Unkown token \"{internalTokens[i].GetLiteral()}\", unable to process.");
                 }
                 prevI = i;
 
@@ -2434,7 +2485,7 @@ namespace NEA
                         for (j = 1; areParamsToRead; j++)
                         {
                             nextToken = internalTokens[i + j + 2];
-                            MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
+                            //MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
                             if (Is(nextToken, TokenType.RIGHT_BRACKET))
                             {
                                 areParamsToRead = false;
@@ -2480,7 +2531,7 @@ namespace NEA
                         //}
                         bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
 
-                        MessageBox.Show($"Added FUNCTION {internalTokens[i + 1].GetLiteral()}");
+                        //MessageBox.Show($"Added FUNCTION {internalTokens[i + 1].GetLiteral()}");
                         subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
 
                         List<Token> functionsTokens = new List<Token>();
@@ -2511,7 +2562,6 @@ namespace NEA
 
                         // Incorrect calculation here
                         i = bodyEnd + 2;
-                        MessageBox.Show($"After function\nToken = {internalTokens[i].GetLiteral()}");
                         break;
                     case TokenType.RETURN:
                         if (!inFunction)
@@ -2975,7 +3025,6 @@ namespace NEA
                         stack.Push(result);
                         break;
                     case "LESS_EQUAL":
-                        MessageBox.Show($"LESS EQUAL CRASH\nPrev {intermediate[PC - 2]}");
                         object2 = stack.Pop();
                         object1 = stack.Pop();
                         type = GetDataTypeFrom(object1, object2);
@@ -3159,7 +3208,7 @@ namespace NEA
 
                             PC = 0;
                             StartSubroutineExecution(intermediateSubroutines[index], ref console);
-                            MessageBox.Show($"End of Function Call\nTop of stack: {stack.Peek()}");
+                            //MessageBox.Show($"End of Function Call\nTop of stack: {stack.Peek()}");
                         }
                         break;
                     case "LOAD_CONST":
@@ -3167,9 +3216,7 @@ namespace NEA
                         break;
                     case "LOAD_VAR":
                         intOp = Convert.ToInt32(operand);
-                        MessageBox.Show($"IntOp = {intOp}");
-                        MessageBox.Show($"localVar[0] = {localVariables[0].GetName()}\nVar ID = {localVariables[0].GetID()}\nlocalVar len = {localVariables.Length}");
-
+                       
                         var = localVariables[intOp];
                         if (var.IsDeclared() && !var.IsNull())
                         {
@@ -3211,7 +3258,6 @@ namespace NEA
                         break;
                     case "JUMP_FALSE":
                         object value = stack.Pop();
-                        MessageBox.Show($"Prev instruction = {intermediate[PC - 1]}\nPrev Prev instructions = {intermediate[PC - 2]}");
                         try
                         {
                             bool toJump = Convert.ToBoolean(value);
