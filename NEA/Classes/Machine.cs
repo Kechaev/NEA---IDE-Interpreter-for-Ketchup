@@ -27,6 +27,7 @@ using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 using System.IO.IsolatedStorage;
 using System.Reflection;
+using System.Net.NetworkInformation;
 
 namespace NEA
 {
@@ -599,7 +600,6 @@ namespace NEA
                 }
                 else if (IsBinary(token))
                 {
-                    MessageBox.Show(token.GetTokenType().ToString());
                     while ((stack.Count > 0) && ((Precedence(token) <= Precedence(stack.Peek())) || IsUnary(stack.Peek()) && (!Is(stack.Peek(), TokenType.LEFT_BRACKET)) && IsLeftAssociatitve(token)))
                     {
                         output.Add(stack.Pop().GetTokenType().ToString());
@@ -721,7 +721,7 @@ namespace NEA
         }
 
         // Questionable Method???
-        private string[] GetIntermediateFromExpression(List<Token> expression)
+        private string[] GetIntermediateFromExpression2(List<Token> expression)
         {
             string output = "";
             foreach (Token t in expression)
@@ -857,21 +857,51 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] GetIntermediateFromExpression2(List<Token> expression)
+        private string[] GetIntermediateFromExpression(List<Token> expression)
         {
+            List<string> instructions = new List<string>();
             int i = 0;
+            // Parsing incorrect expression?
+            // Parsing the variables and expressions, NOT parsing the string literals
+            // SET a TO 5
+            // SET b TO 3
+            // PRINT a " + " b " = " a + b
+
+            // Parsing a
+            // Parsing b
+            // Parsing a + b
+            // Separately
+
+            // NOT TRUE ^^^
+
+            string output = "";
+            foreach (Token t in expression)
+            {
+                output += $"{t.GetLiteral()}\n";
+            }
+            MessageBox.Show($"Ran GetIntermediateFromExpression\nArguement: {output}");
+            if (expression.Count == 1)
+            {
+                Token e = expression[i];
+                instructions.AddRange(GetInstructions(e, ref i, expression));
+                return instructions.ToArray();
+            }
             while (i < expression.Count)
             {
+                // Figure this out
                 bool inExpression = false;
-                for (i = 0; i < expression.Count && !inExpression; i++)
+                for (; i < expression.Count && !inExpression; i++)
                 {
                     Token token = expression[i];
-                    if (!Is(token, TokenType.STR_LITERAL) || !IsVariable(token))
+                    MessageBox.Show($"Processed: {token.GetLiteral()}\ni = {i}\nExpression len = {expression.Count}");
+                    if (!IsLiteral(token) && !IsVariable(token))
                     {
-
+                        inExpression = true;
+                        i--;
                     }
 
                 }
+                MessageBox.Show($"Exited For Loop\ni = {i}\ntoken = {expression[i].GetLiteral()}");
             }
             return new string[0];
         }
@@ -901,7 +931,14 @@ namespace NEA
 
                 i++;
 
-                inputPrompt.Add(expression[i]);
+                try
+                {
+                    inputPrompt.Add(expression[i]);
+                }
+                catch
+                {
+                    throw new Exception($"SYNTAX ERROR on Line {e.GetLine() + 1}: No prompt given after \"PROMPT\".");
+                }
 
                 string[] inputStatement = MapInputStatement(inputPrompt);
 
@@ -1754,6 +1791,8 @@ namespace NEA
         // Division assignment
         // Modulo assignment
         // Exponential assignment
+        // Function declaration
+        // Function call (independant of assignment and/or printing) - EFFECTIVELY NOT WORKING
         // EON (End of Nest)
         // EOF (End of File)
         private string[] TokensToIntermediate(Token[] internalTokens, bool inFunction)
@@ -1797,6 +1836,9 @@ namespace NEA
                 switch (token.GetTokenType())
                 {
                     case TokenType.PRINT:
+                        // Current Syntax
+                        // PRINT [expression]
+                        //
                         // Reject:
                         // - End of file
                         // Accept:
@@ -1817,7 +1859,7 @@ namespace NEA
                                     expression.Add(nextToken);
                                     j++;
                                 }
-                                // Limitation: in an if statement the prompt cannot contain multiple strings or variable
+                                // Limitation: in an if statement the prompt cannot contain multiple strings or variable - not necessarily an issue for a KS3 usage
                                 else if (IsInput(nextToken))
                                 {
                                     expression.Add(nextToken);
@@ -1845,6 +1887,7 @@ namespace NEA
                         i += j;
                         break;
                     case TokenType.ASSIGNMENT:
+                        // Current Syntax
                         // SET variable TO [expression]
                         type = "STRING";
                         noType = true;
@@ -2056,7 +2099,7 @@ namespace NEA
                         finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
                         if (!Is(finalTokenOfLine,TokenType.THEN))
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\".");
+                            throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\" at the end.");
                         }
                         // Get Main If Expression
                         nextToken = internalTokens[i + j + 1];
