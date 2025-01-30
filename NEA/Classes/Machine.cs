@@ -747,6 +747,7 @@ namespace NEA
 
             if (ContainsExpressions(expression))
             {
+                MessageBox.Show("Contains Expression");
                 for (int i = 0; i < expression.Count; i++)
                 {
                     nonExpressionTotalMembers++;
@@ -859,51 +860,68 @@ namespace NEA
 
         private string[] GetIntermediateFromExpression(List<Token> expression)
         {
+            // Надо фиксить
             List<string> instructions = new List<string>();
-            int i = 0;
-            // Parsing incorrect expression?
-            // Parsing the variables and expressions, NOT parsing the string literals
-            // SET a TO 5
-            // SET b TO 3
-            // PRINT a " + " b " = " a + b
 
-            // Parsing a
-            // Parsing b
-            // Parsing a + b
-            // Separately
+            bool inExpression = false;
 
-            // NOT TRUE ^^^
-
-            string output = "";
-            foreach (Token t in expression)
+            if (ContainsExpressions(expression))
             {
-                output += $"{t.GetLiteral()}\n";
-            }
-            MessageBox.Show($"Ran GetIntermediateFromExpression\nArguement: {output}");
-            if (expression.Count == 1)
-            {
-                Token e = expression[i];
-                instructions.AddRange(GetInstructions(e, ref i, expression));
-                return instructions.ToArray();
-            }
-            while (i < expression.Count)
-            {
-                // Figure this out
-                bool inExpression = false;
-                for (; i < expression.Count && !inExpression; i++)
+                int i = 1;
+                List<Token> tokensForRPN = new List<Token>();
+                for (; i < expression.Count; i++)
                 {
                     Token token = expression[i];
-                    MessageBox.Show($"Processed: {token.GetLiteral()}\ni = {i}\nExpression len = {expression.Count}");
-                    if (!IsLiteral(token) && !IsVariable(token))
+                    if (!IsVariable(token) && !IsLiteral(token))
                     {
                         inExpression = true;
-                        i--;
+                        Token prev = expression[i - 1];
+                        while (i < expression.Count && inExpression)
+                        {
+                            if ((IsVariable(prev) || IsLiteral(prev)) && (IsVariable(token) || IsLiteral(token)))
+                            {
+                                inExpression = false;
+                            }
+                            else
+                            {
+                                tokensForRPN.Add(token);
+                            }
+                        }
+                        string output = "";
+                        foreach (Token t in tokensForRPN)
+                        {
+                            output += $"{t.GetLiteral()}\n";
+                        }
+                        MessageBox.Show($"Expression: {output}");
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+            else
+            {
+                int inputOffset = 0;
+                instructions = new List<string>();
+                for (int i = 0; i < expression.Count; i++)
+                {
+                    Token e = expression[i];
+
+                    if (Is(e, TokenType.INPUT))
+                    {
+                        inputOffset++;
                     }
 
+                    instructions.AddRange(GetInstructions(e, ref i, expression));
                 }
-                MessageBox.Show($"Exited For Loop\ni = {i}\ntoken = {expression[i].GetLiteral()}");
+                for (int i = 0; i < expression.Count - inputOffset - 1; i++)
+                {
+                    instructions.Add("ADD");
+                }
             }
-            return new string[0];
+
+            return instructions.ToArray();
         }
 
         // Returns the correct intermediate code instruction
@@ -2548,15 +2566,7 @@ namespace NEA
                                 throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
                             }
                         }
-                        // To-Do: Add support for more than one parameter
-                        // Think of intuitive syntax for it
-                        // Maybe comma, but think of something else
-                        // - a AND b AND c
-                        // - a, b, c
-                        // - a. b AND c
-                        // Use a, b AND c
-                        // Use a AND b
-                        // Use a AND b AND c
+                        // Func(a,b,c,...)
 
 
                         //nextToken = internalTokens[i + 2];
