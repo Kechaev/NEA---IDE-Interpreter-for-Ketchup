@@ -931,7 +931,7 @@ namespace NEA
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
-            string operators = "+-*/^%";
+            //string operators = "+-*/^%";
 
             List<string> instrLine = new List<string>();
 

@@ -59,6 +59,7 @@ namespace NEA
             this.stripRedo = new System.Windows.Forms.ToolStripButton();
             this.stripRun = new System.Windows.Forms.ToolStripButton();
             this.stripComment = new System.Windows.Forms.ToolStripButton();
+            this.stripFormat = new System.Windows.Forms.ToolStripButton();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.statusLineInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusColumnInfo = new System.Windows.Forms.ToolStripStatusLabel();
@@ -238,7 +239,8 @@ namespace NEA
             this.stripUndo,
             this.stripRedo,
             this.stripRun,
-            this.stripComment});
+            this.stripComment,
+            this.stripFormat});
             resources.ApplyResources(this.toolStrip, "toolStrip");
             this.toolStrip.Name = "toolStrip";
             // 
@@ -269,6 +271,14 @@ namespace NEA
             resources.ApplyResources(this.stripComment, "stripComment");
             this.stripComment.Name = "stripComment";
             this.stripComment.Click += new System.EventHandler(this.stripComment_Click);
+            // 
+            // stripFormat
+            // 
+            this.stripFormat.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.stripFormat.Image = global::NEA.Properties.Resources.Indent_Icon;
+            resources.ApplyResources(this.stripFormat, "stripFormat");
+            this.stripFormat.Name = "stripFormat";
+            this.stripFormat.Click += new System.EventHandler(this.stripFormat_Click);
             // 
             // statusBar
             // 
@@ -414,6 +424,7 @@ namespace NEA
         private ToolStripMenuItem tsClear;
         private ToolStripMenuItem tsDelay;
         private Timer timer;
+        private ToolStripButton stripFormat;
     }
 }
 

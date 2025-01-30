@@ -668,5 +668,54 @@ namespace NEA
                 txtCodeField.ZoomFactor = 1.0f;
             }
         }
+
+        private void stripFormat_Click(object sender, EventArgs e)
+        {
+            string usersCode = txtCodeField.Text;
+
+            // Reset the code to be a plain
+            string[] lines = usersCode.Split('\n');
+            char[] toTrim = { '\t', ' ' };
+            usersCode = "";
+            foreach (string line in lines)
+            {
+                usersCode += line.Trim(toTrim) + "\n";
+            }
+
+            usersCode = usersCode.TrimEnd('\n');
+
+            lines = usersCode.Split('\n');
+            usersCode = "";
+            string[] toIndent = { "FUNCTION", "COUNT", "IF", "ELSE", "WHILE", "REPEAT", "DO" };
+            string[] unIndent = { "END" };
+            int currentIndent = 0;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                string[] words = line.Split(' ');
+                
+                if (unIndent.Contains(words[0].ToUpper()))
+                {
+                    currentIndent--;
+                }
+                
+                for (int j = 0; j < currentIndent; j++)
+                {
+                    usersCode += '\t';
+                }
+                usersCode += line + '\n';
+
+                if (toIndent.Contains(words[0].ToUpper()))
+                {
+                    currentIndent++;
+                }
+            }
+
+            usersCode = usersCode.TrimEnd('\n');
+
+            txtCodeField.Text = usersCode;
+
+            // Add automatic capitalisation of non variable keywords
+        }
     }
 }
