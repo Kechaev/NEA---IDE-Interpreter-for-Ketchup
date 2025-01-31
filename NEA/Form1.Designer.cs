@@ -71,6 +71,8 @@ namespace NEA
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.lblConsole = new System.Windows.Forms.Label();
             this.timer = new System.Windows.Forms.Timer(this.components);
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -238,7 +240,9 @@ namespace NEA
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stripUndo,
             this.stripRedo,
+            this.toolStripSeparator2,
             this.stripRun,
+            this.toolStripSeparator1,
             this.stripComment,
             this.stripFormat});
             resources.ApplyResources(this.toolStrip, "toolStrip");
@@ -358,6 +362,16 @@ namespace NEA
             // 
             this.timer.Interval = 1;
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
+            // 
             // IDE_MainWindow
             // 
             resources.ApplyResources(this, "$this");
@@ -425,6 +439,8 @@ namespace NEA
         private ToolStripMenuItem tsDelay;
         private Timer timer;
         private ToolStripButton stripFormat;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripSeparator toolStripSeparator1;
     }
 }
 
