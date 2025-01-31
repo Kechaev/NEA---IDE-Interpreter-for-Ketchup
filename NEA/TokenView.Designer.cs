@@ -30,11 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TokenView));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtTokenView = new System.Windows.Forms.RichTextBox();
             this.lblName = new System.Windows.Forms.Label();
             this.txtDescription = new System.Windows.Forms.TextBox();
-            this.tabControl = new System.Windows.Forms.TabControl();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -51,11 +51,32 @@
             this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 5);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(502, 685);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // tabControl
+            // 
+            this.tabControl.Controls.Add(this.tabPage2);
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.Location = new System.Drawing.Point(3, 3);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(496, 449);
+            this.tabControl.TabIndex = 1;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.txtTokenView);
+            this.tabPage2.Location = new System.Drawing.Point(4, 29);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(488, 416);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Main Branch";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // txtTokenView
             // 
@@ -66,7 +87,7 @@
             this.txtTokenView.Location = new System.Drawing.Point(3, 3);
             this.txtTokenView.Name = "txtTokenView";
             this.txtTokenView.ReadOnly = true;
-            this.txtTokenView.Size = new System.Drawing.Size(482, 183);
+            this.txtTokenView.Size = new System.Drawing.Size(482, 410);
             this.txtTokenView.TabIndex = 4;
             this.txtTokenView.Text = "";
             // 
@@ -74,7 +95,7 @@
             // 
             this.lblName.AutoSize = true;
             this.lblName.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblName.Location = new System.Drawing.Point(3, 228);
+            this.lblName.Location = new System.Drawing.Point(3, 455);
             this.lblName.Name = "lblName";
             this.lblName.Size = new System.Drawing.Size(200, 29);
             this.lblName.TabIndex = 5;
@@ -84,34 +105,13 @@
             // 
             this.txtDescription.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtDescription.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDescription.Location = new System.Drawing.Point(3, 261);
+            this.txtDescription.Location = new System.Drawing.Point(3, 488);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.ReadOnly = true;
-            this.txtDescription.Size = new System.Drawing.Size(496, 421);
+            this.txtDescription.Size = new System.Drawing.Size(496, 194);
             this.txtDescription.TabIndex = 6;
             this.txtDescription.Text = "Lorum Ipsum";
-            // 
-            // tabControl
-            // 
-            this.tabControl.Controls.Add(this.tabPage2);
-            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl.Location = new System.Drawing.Point(3, 3);
-            this.tabControl.Name = "tabControl";
-            this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(496, 222);
-            this.tabControl.TabIndex = 1;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.txtTokenView);
-            this.tabPage2.Location = new System.Drawing.Point(4, 29);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(488, 189);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Main Branch";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // TokenView
             // 

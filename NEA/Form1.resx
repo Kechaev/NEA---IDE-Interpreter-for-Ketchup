@@ -168,7 +168,7 @@
     <value>E&amp;xit</value>
   </data>
   <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 29</value>
+    <value>54, 32</value>
   </data>
   <data name="tsFile.Text" xml:space="preserve">
     <value>&amp;File</value>
@@ -201,7 +201,7 @@
     <value>Paste</value>
   </data>
   <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 29</value>
+    <value>58, 32</value>
   </data>
   <data name="tsEdit.Text" xml:space="preserve">
     <value>&amp;Edit</value>
@@ -234,7 +234,7 @@
     <value>View Token</value>
   </data>
   <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 29</value>
+    <value>65, 32</value>
   </data>
   <data name="tsView.Text" xml:space="preserve">
     <value>&amp;View</value>
@@ -258,7 +258,7 @@
     <value>Enable Breakpoints</value>
   </data>
   <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>82, 29</value>
+    <value>82, 32</value>
   </data>
   <data name="tsDebug.Text" xml:space="preserve">
     <value>&amp;Debug</value>
@@ -276,7 +276,7 @@
     <value>Add delay (100ms)</value>
   </data>
   <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>92, 29</value>
+    <value>92, 32</value>
   </data>
   <data name="tsConsole.Text" xml:space="preserve">
     <value>&amp;Console</value>
@@ -285,7 +285,7 @@
     <value>0, 0</value>
   </data>
   <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1893, 33</value>
+    <value>1893, 36</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
@@ -382,16 +382,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAISSURBVGhD7ZkxSxxRFIUnpoxgkyagrIMWYiH+BiGNddKJ
-        YBkUBJugINiqYC1pQpokpDAYCDYKBhUVq4CtnZBOEkVsdMdzNvfCZbmz+2ZxZfHNBx/sOzsje8/svFkw
-        KSkpKSmxZGmWZMkzWUVIrQB4mt5KEhlagFod6JN3IqG+ADUavOHV2/RIjnrCeIPX2xrb8Af8Cj+J63AZ
-        jsAOwRs4z2JcQJ6T5zTsALxBG1oZlTObYQv4AJfgpsn41OmAx687ZIDNsQW8YiCcQs3HGIB5+EecYSBo
-        dl5bJUkv/CuewHfwN7yDe3AIFsQbLtS7Cu/xPPIKOIPM+A14zgCwAD12ioGg2b/a6n8BmnFofa1+hwXx
-        Biuqjy3gPeTV+mgyW54tYJKBoJlXAItcgRMmq8KCt5U3UFF9Gm2CW9DSSgE7DIQNqHk/g3C8gYJNuuSv
-        eNgCeJ/emPUCtMxBfS+0gF0Gwheo+SCDcNzBmniZXsvZjajfA96aNeVa4SNR89AC9hkIn6HmbS4gHG8T
-        XIWa0Qokb6Bm3CdewnGTeQUcMhC+Qc3bVgCf40XwCiC/oOZXDMAw1MzTK4CPQeUn1LwNBbRGXgG86nY/
-        OIZkDWpGZ83rZgVwP9D8IQsY7pajHgt++NfwRW3l02NUvCwQb/CDlD8yIqF++OjQwav9i5JERpRXvSRO
-        sixr9NP9aYPhI/7fR4mSJPdCMnJT1L0zPQAAAABJRU5ErkJggg==
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIUSURBVGhD7Zm/SxxRFIXHWCaQxkYwrEMsZAvxbxDSpDad
+        BCyDAcEmKAhpo2AtaUKaKBYGAyFNBEMEFSth23SBdOIPQhrd8ZzxXrgsd3bfLG5YfPPBB/vOzsjeMztv
+        FkwqKioqKixZmiVZMiCrCMkLgI30SpLI0ALU5tMn8k4ktBagRoM3vHqVHspR9xhv8Fa74zv8AjfhR3Ed
+        voMTsE/wBi6yHKeQ5xQ5B/sAb9C21iblzE7YAt7Dt3DHZHzq9MHj1x0ywM7YAoYZCA2o+RQDsAj/iK8Z
+        CJr9zldJMgLPxGP4Cp7Aa/gTjsOSeMOFel3jPV5EUQG/IDN+AwYZABagx84yEDQ7z1e3BWjGofW1+hmW
+        xBusrD62gDeQV+uDyWx5toCXDATNvAJY5AqcMVkTlrytvIHK6tNuE/wGLd0UsMtA2IaajzIIxxso2OSB
+        /BUPWwDv039mvQQtC1DfCy1gj4GwATUfYxCOO1gHL9K/cnY7WveAF2ZNuVb4SNQ8tIB9BsInqHmPCwjH
+        2wRXoWa0Bsk01Iz7xBB8bjKvgAMGwhbUvGcF8DleBq8A8gNqfskA1KFmnl4BfAwqX6HmPSigO4oK4FW3
+        +8ERJGtQMzpvXncqgPuB5ndZQP2RHPW/4Id/Bh/mK5/HRsXLAvEG30/5IyMSWoePDh28ObosSWREedUr
+        4iTLsnY/3e83GD7i/31UKElyAzlPclIo95sVAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -409,12 +409,18 @@
   <data name="stripComment.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAEaSURBVFhH7ZUxK4VhGIbflRiwmPwCgzKynB9w8gssNiWL
-        UjZlO4OkdLajlJTNIIsySX6AUhKDMivDKTrHdT/v99RJXx2DR6n3qquv+17ueob3S4VC4b8yi4s4Yykz
-        h+qmLAVzh33ctpR5R3WbloL5RI2tW0ppEpXlsopIJtDHllSAzu/dvIooVnEPfWwXN/BooFvDBfx1ptFH
-        htnGEA7xHn3oDM/xucofeIK6ShjHqLFXS5kLVPdgKZhr1NiNpcwjqru0FMgovqDGTqsslWUHRzAEP/0w
-        uxjCPtYNfreHYTTQh/T4iCZ6F/4fWEEfG1cBeo69C2cLNfRmKbOD6p4sBdNCjd1ayhyguitLf8BY9R2k
-        risUCoUfkNIXsndh4pe+/5EAAAAASUVORK5CYII=
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAJtSURBVFhHxddLqE1RHMfxg5BICkUGmMhQYSSlkDIx8igM
+        ZCAjSvKmcE1ISl55RsijhEhhQAYGjAyUCRMDUnTJ+/X9yl+n21rL3oN79q8+g7vO/679P4/13+e0SDe+
+        4lOHeU2v3fqCjZiFOR3itbym1/7TjYudjtf02pUbmIgZmISRLmQyBlMwAcNdyKR2A/vwGW+xwYVM1sD3
+        9hV2ow9SqdVAX5zDr7/WIpc9iDqbzqVWAwNxC7HxMuRyElG32YVMajUwFA/hpt8wD6n0x1VEAyuRS60G
+        RuEp3PQDpiOVwbgP675jAXJJNjAeB3AKvpQ6gYt4Dzf27F6D61ETzuINrPuB2ziOePw0FsEkG5iKd3CD
+        3rIXJtmA57fRBkbDc+yYDOtxHj/hBs+xDe01UXcUznjrXmMXnBlR46lwDJtkA7ksRzyDmxiAVObCz4h1
+        jzAMudRqYB2igTPITbeliFfqDgYhl1oNOFKjgdJ0W42ou4R+yKVWAx652HiLC5nsQNQddqGQyg3UmW6H
+        EHVdLhRSuQGn2z24aWm6+XJfQDTg21FKsgGPoXc6j4s2YSdeIhpwmsWRaufRfIZo4Ap61m3FbJhkA40P
+        osZH8TjshzeQY3Cy3YC3YP/Zb0PecFz38eDfl+Fe1n2Ex7BnnadpIUyygVTap9tj5KbbZNigdS8wFqVU
+        bmAJYrrdRW66zYTP3LonGIFSKjewCm6q0nSbD0+JdQ8wBKVUbmA7ooEjLmSyAlF3HQ6wUio3cBCxcWm6
+        OTOizm9UuRtWpHIDfv9zqjmQfJ9zmQYHjadosQv/SeUGeiv/Gmj8x2mDP89b3b8BAr+jztt9Y/0AAAAA
+        SUVORK5CYII=
 </value>
   </data>
   <data name="stripComment.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -439,7 +445,7 @@
     <value>Auto Format</value>
   </data>
   <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 33</value>
+    <value>0, 36</value>
   </data>
   <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
     <value>1893, 41</value>

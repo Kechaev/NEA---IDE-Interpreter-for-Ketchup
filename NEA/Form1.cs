@@ -82,23 +82,23 @@ namespace NEA
             machine.SetDelay(delayMS);
 
             // Error Checking
-            //try
-            //{
-            //    machine.Interpret();
+            try
+            {
+                machine.Interpret();
 
-            //    string[] intermediate = machine.GetIntermediateCode();
+                string[] intermediate = machine.GetIntermediateCode();
 
-            //    StartExecution(intermediate);
-            //}
-            //catch (Exception e)
-            //{
-            //    ConsoleWrite(e.Message);
-            //}
+                StartExecution(intermediate);
+            }
+            catch (Exception e)
+            {
+                ConsoleWrite(e.Message);
+            }
 
             // No Error Checking
-            machine.Interpret();
-            string[] intermediate = machine.GetIntermediateCode();
-            StartExecution(intermediate);
+            //machine.Interpret();
+            //string[] intermediate = machine.GetIntermediateCode();
+            //StartExecution(intermediate);
         }
 
         public void StartExecution(string[] intermediateCode)
@@ -673,7 +673,41 @@ namespace NEA
         {
             string usersCode = txtCodeField.Text;
 
-            // Reset the code to be a plain
+            // Get Tokens and sort by need for capitalisation
+            machine = new Machine(usersCode);
+
+            Token[] tokens = machine.Tokenize();
+
+            usersCode = "";
+
+            foreach (Token token in tokens)
+            {
+                if (IsVariable(token) || IsLiteral(token))
+                {
+                    if (Is(token, TokenType.STR_LITERAL))
+                    {
+                        usersCode += "\"" + token.GetLiteral() + "\" ";
+                    }
+                    else
+                    {
+                        usersCode += token.GetLiteral() + " ";
+                    }
+                }
+                else if (Is(token, TokenType.NEWLINE))
+                {
+                    usersCode += "\n";
+                }
+                else
+                {
+                    if (token.GetLiteral() == null) { }
+                    else
+                    {
+                        usersCode += token.GetLiteral().ToUpper() + " ";
+                    }
+                }
+            }
+
+            // Reset code to have no indentation
             string[] lines = usersCode.Split('\n');
             char[] toTrim = { '\t', ' ' };
             usersCode = "";
@@ -716,6 +750,24 @@ namespace NEA
             txtCodeField.Text = usersCode;
 
             // Add automatic capitalisation of non variable keywords
+        }
+
+        private bool IsVariable(Token token)
+        {
+            return token.GetTokenType() == TokenType.VARIABLE;
+        }
+
+        private bool IsLiteral(Token token)
+        {
+            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
+                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
+                                     TokenType.BOOL_LITERAL };
+            return literals.Contains(token.GetTokenType());
+        }
+
+        private bool Is(Token token, TokenType type)
+        {
+            return token.GetTokenType() == type;
         }
     }
 }

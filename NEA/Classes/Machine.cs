@@ -494,6 +494,7 @@ namespace NEA
                 else if (c == '\n')
                 {
                     line++;
+                    tokensList.Add(new Token(TokenType.NEWLINE, "\n", line));
                 }
                 else if (c == '\t')
                 {
@@ -515,7 +516,7 @@ namespace NEA
                         TokenType type = GetTokenType(word);
                         if (type == TokenType.END)
                         {
-                            tokensList.Add(new Token(TokenType.EON, word, line));
+                            tokensList.Add(new Token(TokenType.EON, null, line));
                         }
                         tokensList.Add(new Token(type, word, line));
                     }
@@ -1634,14 +1635,14 @@ namespace NEA
             return token.GetTokenType() == TokenType.EOF || token.GetTokenType() == TokenType.EON;
         }
 
-        private bool IsVariable(Token token)
-        {
-            return token.GetTokenType() == TokenType.VARIABLE;
-        }
-
         private bool IsInput(Token token)
         {
             return token.GetTokenType() == TokenType.INPUT;
+        }
+
+        private bool IsVariable(Token token)
+        {
+            return token.GetTokenType() == TokenType.VARIABLE;
         }
 
         private bool IsLiteral(Token token)
@@ -2731,6 +2732,9 @@ namespace NEA
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements));
 
                         i += j + 1;
+                        break;
+                    case TokenType.NEWLINE:
+                        i++;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
