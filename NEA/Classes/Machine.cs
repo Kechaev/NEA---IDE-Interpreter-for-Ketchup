@@ -116,15 +116,6 @@ namespace NEA
                 }
             }
 
-            string output = "Local Variable:\n";
-
-            foreach (string s in variablesFound)
-            {
-                output += $"{s}\n";
-            }
-
-            //MessageBox.Show($"{output}");
-
             return variablesFound.ToArray();
         }
 
@@ -145,7 +136,10 @@ namespace NEA
             // To acommodate for outputs (& later inputs)
         }
 
-        #region Tokenization
+        #region Tokenization - Credit to Robert Nystrom (Crafting Interpreters)
+
+        // Tokenization heavily inspired by Nystrom's tokenization algorithms
+
         #region Utility
         private int GetNoVariables()
         {
@@ -210,7 +204,7 @@ namespace NEA
             return char.IsDigit(c);
         }
 
-        // Not completed
+        // Token definitions
         private TokenType GetTokenType(string token)
         {
             switch (token.ToUpper())
@@ -376,7 +370,6 @@ namespace NEA
                 variables[i] = new Variable($"CounterVariable{i - noNormalVariables}", null);
             }
         }
-        #endregion
 
         private string GetComparisonOperator()
         {
@@ -471,6 +464,7 @@ namespace NEA
             }
             return subroutineNames.ToArray();
         }
+        #endregion
 
         public Token[] Tokenize()
         {
@@ -559,7 +553,7 @@ namespace NEA
         #region Utility for Translation
         // Shunting Yard Algorithm
         // Converts list of tokens
-        // To intermediate code in postfix
+        // To intermediate code in postfix (RPN)
         // https://en.wikipedia.org/wiki/Shunting_yard_algorithm
 
         private string[] ConvertToPostfix(List<Token> tokens)
@@ -578,6 +572,8 @@ namespace NEA
             TokenType[] binaryBitwiseOperations = { TokenType.AND, TokenType.OR };
             TokenType[] unaryBitwiseOperation = { TokenType.NOT };
 
+            // Dealing with an expression beginning with a negative number
+            // -1 expressed as 0 - 1
             if (Is(tokens[0], TokenType.SUB))
             {
                 output.Add("LOAD_CONST 0");
@@ -601,7 +597,7 @@ namespace NEA
                 }
                 else if (IsBinary(token))
                 {
-                    while ((stack.Count > 0) && ((Precedence(token) <= Precedence(stack.Peek())) || IsUnary(stack.Peek()) && (!Is(stack.Peek(), TokenType.LEFT_BRACKET)) && IsLeftAssociatitve(token)))
+                    while ((stack.Count > 0) && ((Precedence(token) <= Precedence(stack.Peek())) || IsUnary(stack.Peek()) && (!Is(stack.Peek(), TokenType.LEFT_BRACKET)) && IsLeftAssociative(token)))
                     {
                         output.Add(stack.Pop().GetTokenType().ToString());
                     }
@@ -625,7 +621,6 @@ namespace NEA
                 }
             }
 
-            
             while (stack.Count > 0)
             {
                 if (Is(stack.Peek(), TokenType.LEFT_BRACKET))
@@ -671,7 +666,7 @@ namespace NEA
             }
         }
 
-        private bool IsLeftAssociatitve(Token op)
+        private bool IsLeftAssociative(Token op)
         {
             if (op.GetTokenType() != TokenType.EXP)
             {
@@ -682,11 +677,13 @@ namespace NEA
 
         private bool ContainsExpressions(List<Token> expression)
         {
+            #region Operations Array Declarations
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
                                                    TokenType.DIV, TokenType.MOD, TokenType.EXP };
             TokenType[] comparisonOperation = { TokenType.GREATER, TokenType.LESS, TokenType.EQUAL,
                                                 TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.NOT_EQUAL };
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
+            #endregion
 
             List<TokenType> tokenTypeExpression = new List<TokenType>();
 
@@ -1640,6 +1637,11 @@ namespace NEA
             return token.GetTokenType() == TokenType.INPUT;
         }
 
+        private bool IsSubroutineCall(Token token)
+        {
+            return token.GetTokenType() == TokenType.SUBROUTINE_NAME;
+        }
+
         private bool IsVariable(Token token)
         {
             return token.GetTokenType() == TokenType.VARIABLE;
@@ -1885,6 +1887,10 @@ namespace NEA
                                     // Increment by 2 more to skip filler "WITH PROMPT"
                                     // Continue onto the following string prompt
                                     j += 3;
+                                }
+                                else if (IsSubroutineCall(nextToken))
+                                {
+                                    MessageBox.Show("Subroutine Called");
                                 }
                                 try
                                 {
