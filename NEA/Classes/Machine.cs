@@ -488,7 +488,7 @@ namespace NEA
                 else if (c == '\n')
                 {
                     line++;
-                    tokensList.Add(new Token(TokenType.NEWLINE, "\n", line));
+                    //tokensList.Add(new Token(TokenType.NEWLINE, "\n", line));
                 }
                 else if (c == '\t')
                 {
@@ -719,7 +719,7 @@ namespace NEA
         }
 
         // Questionable Method???
-        private string[] GetIntermediateFromExpression2(List<Token> expression)
+        private string[] GetIntermediateFromExpression(List<Token> expression)
         {
             string output = "";
             foreach (Token t in expression)
@@ -745,7 +745,7 @@ namespace NEA
 
             if (ContainsExpressions(expression))
             {
-                MessageBox.Show("Contains Expression");
+                //MessageBox.Show("Contains Expression");
                 for (int i = 0; i < expression.Count; i++)
                 {
                     nonExpressionTotalMembers++;
@@ -856,45 +856,42 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] GetIntermediateFromExpression(List<Token> expression)
+        private string[] GetIntermediateFromExpression2(List<Token> expression)
         {
             // Надо фиксить
             List<string> instructions = new List<string>();
 
             bool inExpression = false;
+            int stringLits = 0;
 
             if (ContainsExpressions(expression))
             {
-                int i = 1;
+                int i = 0;
+                Stack<Token> nonExpression = new Stack<Token>();
                 List<Token> tokensForRPN = new List<Token>();
                 for (; i < expression.Count; i++)
                 {
                     Token token = expression[i];
                     if (!IsVariable(token) && !IsLiteral(token))
                     {
-                        inExpression = true;
-                        Token prev = expression[i - 1];
-                        while (i < expression.Count && inExpression)
+                        //MessageBox.Show($"Not Var or Lit\n{token.GetLiteral()}");
+                        if (nonExpression.Count > 0)
                         {
-                            if ((IsVariable(prev) || IsLiteral(prev)) && (IsVariable(token) || IsLiteral(token)))
-                            {
-                                inExpression = false;
-                            }
-                            else
-                            {
-                                tokensForRPN.Add(token);
-                            }
+                            instructions.AddRange(GetInstructions(nonExpression.Pop(), ref i, expression));
+                            PrintList(instructions);
                         }
-                        string output = "";
-                        foreach (Token t in tokensForRPN)
-                        {
-                            output += $"{t.GetLiteral()}\n";
-                        }
-                        MessageBox.Show($"Expression: {output}");
+
                     }
                     else
                     {
-
+                        //MessageBox.Show($"Var or Lit\n{token.GetLiteral()}");
+                        if (nonExpression.Count > 0)
+                        {
+                            instructions.AddRange(GetInstructions(nonExpression.Pop(), ref i, expression));
+                            PrintList(instructions);
+                        }
+                        nonExpression.Push(token);
+                        //MessageBox.Show($"Added to stack\n{nonExpression.Peek().GetLiteral()}");
                     }
                 }
             }
@@ -920,6 +917,16 @@ namespace NEA
             }
 
             return instructions.ToArray();
+        }
+
+        private void PrintList(List<string> list)
+        {
+            string str = "";
+            foreach (string s in list)
+            {
+                str += $"{s}\n";
+            }
+            //MessageBox.Show(str);
         }
 
         // Returns the correct intermediate code instruction
@@ -1618,8 +1625,6 @@ namespace NEA
                 }
             }
 
-            //MessageBox.Show($"nestCounter = {nestCounter}");
-
             if (tokens[index].GetTokenType() == TokenType.END && tokens[index + 1].GetLiteral().ToUpper() == structure)
             {
                 return index;
@@ -1843,7 +1848,11 @@ namespace NEA
             Token finalTokenOfLine;
             int prevI = -1;
             int bodyStart, bodyEnd;
-            bool areParamsToRead = true, readyForNextParam = true; ;
+            bool areParamsToRead = true, readyForNextParam = true;
+            Stack<Variable> arguementsStack;
+            int paramCounter;
+            int localCounter;
+            List<Variable> arguements;
 
             while (i < internalTokens.Length)
             {
@@ -1868,7 +1877,7 @@ namespace NEA
                         // - An input
                         // - Left Bracket
                         nextToken = internalTokens[i + 1];
-                        if (!IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken) || IsUnaryBitwise(nextToken))
+                        if (!IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken) || IsUnaryBitwise(nextToken) || IsSubroutineCall(nextToken))
                         {
                             expression = new List<Token>();
                             j = 1;
@@ -1890,7 +1899,54 @@ namespace NEA
                                 }
                                 else if (IsSubroutineCall(nextToken))
                                 {
-                                    MessageBox.Show("Subroutine Called");
+                                    subroutineName = nextToken.GetLiteral().ToUpper();
+
+                                    arguementsStack = new Stack<Variable>();
+                                    paramCounter = 0;
+                                    nextToken = internalTokens[i + 2];
+
+                                    if (!Is(nextToken, TokenType.LEFT_BRACKET))
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
+                                    }
+                                    areParamsToRead = true;
+                                    readyForNextParam = true;
+                                    for (j = 1; areParamsToRead; j++)
+                                    {
+                                        nextToken = internalTokens[i + j + 2];
+                                        //MessageBox.Show($"Next token = {nextToken.GetTokenType()}");
+                                        if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                                        {
+                                            areParamsToRead = false;
+                                        }
+                                        else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
+                                        {
+                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                            readyForNextParam = false;
+                                            //MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
+                                        }
+                                        else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                                        {
+                                            readyForNextParam = true;
+                                        }
+                                        else
+                                        {
+                                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
+                                        }
+                                    }
+
+                                    localCounter = FindLocalVariables(subroutineName).Length;
+                                    subroutineParametersCount[subroutineDict[subroutineName]] = paramCounter;
+                                    subroutineLocalVariableCounter[subroutineDict[subroutineName]] = localCounter;
+                                    arguements = new List<Variable>();
+                                    while (arguementsStack.Count > 0)
+                                    {
+                                        arguements.Add(arguementsStack.Pop());
+                                    }
+
+                                    intermediateList.AddRange(MapSubroutineCall(subroutineName, arguements));
+
+                                    i += 2;
                                 }
                                 try
                                 {
@@ -2122,13 +2178,13 @@ namespace NEA
                         // Check Valid Syntax - IF
                         currentLine = token.GetLine();
                         finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
-                        if (!Is(finalTokenOfLine,TokenType.THEN))
+                        if (!Is(finalTokenOfLine, TokenType.THEN))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\" at the end.");
                         }
                         // Get Main If Expression
                         nextToken = internalTokens[i + j + 1];
-                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken,token) && !Is(nextToken,TokenType.THEN))
+                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token) && !Is(nextToken, TokenType.THEN))
                         {
                             mainExpression.Add(internalTokens[i + j + 1]);
                             j++;
@@ -2144,7 +2200,7 @@ namespace NEA
 
                         Token startToken = internalTokens[i];
                         // Identify if Else If statement(s)
-                        while (!IsEndOfToken(startToken) && Is(startToken,TokenType.ELSE) && Is(internalTokens[i + 1],TokenType.IF))
+                        while (!IsEndOfToken(startToken) && Is(startToken, TokenType.ELSE) && Is(internalTokens[i + 1], TokenType.IF))
                         {
                             // Verify Valid Syntax - ELSE IF
                             currentLine = startToken.GetLine();
@@ -2158,7 +2214,7 @@ namespace NEA
                             j = 0;
                             // + 2 represents ELSE IF
                             nextToken = internalTokens[i + j + 2];
-                            while (IsSameLine(nextToken,startToken) && !Is(nextToken, TokenType.THEN))
+                            while (IsSameLine(nextToken, startToken) && !Is(nextToken, TokenType.THEN))
                             {
                                 expression.Add(nextToken);
                                 j++;
@@ -2184,7 +2240,7 @@ namespace NEA
                         // Set up Else statement
                         bool isElse = false;
                         // Identify if Else statement is present
-                        if (!IsEndOfToken(internalTokens[i]) && Is(internalTokens[i],TokenType.ELSE))
+                        if (!IsEndOfToken(internalTokens[i]) && Is(internalTokens[i], TokenType.ELSE))
                         {
                             isElse = true;
                             bodyStart = i + 1;
@@ -2194,7 +2250,7 @@ namespace NEA
                             i = bodyEnd + 2;
                         }
                         intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
-                        break;
+                        break; 
                     case TokenType.COUNT:
                         // Current Syntax:
                         // COUNT WITH variable FROM begin TO limit (BY steps)
@@ -2683,9 +2739,9 @@ namespace NEA
                         // Function Call
                         // Current Syntax:
                         // FunctionName (arg1,arg2,...)
-                        Stack<Variable> arguementsStack = new Stack<Variable>();
+                        arguementsStack = new Stack<Variable>();
                         nextToken = internalTokens[i + 1];
-                        int paramCounter = 0;
+                        paramCounter = 0;
 
                         if (!Is(nextToken, TokenType.LEFT_BRACKET))
                         {
@@ -2719,7 +2775,7 @@ namespace NEA
 
                         //Variable arguement = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
                         //arguements.Add(arguement);
-                        int localCounter = FindLocalVariables(token.GetLiteral()).Length;
+                        localCounter = FindLocalVariables(token.GetLiteral()).Length;
                         //MessageBox.Show($"subroutine name = {token.GetLiteral()}");
                         //MessageBox.Show($"Subroutine Index: {subroutineDict[token.GetLiteral().ToUpper()]}");
                         //MessageBox.Show($"paramcounter = {paramCounter}");
@@ -2729,7 +2785,7 @@ namespace NEA
                         subroutineLocalVariableCounter[subroutineDict[token.GetLiteral().ToUpper()]] = localCounter;
                         // Return address found in the stack frame
                         // Which is referred to in the RETURN statement
-                        List<Variable> arguements = new List<Variable>();
+                        arguements = new List<Variable>();
                         while (arguementsStack.Count > 0)
                         {
                             arguements.Add(arguementsStack.Pop());
@@ -2827,7 +2883,13 @@ namespace NEA
             StackFrame sf = callStack.Peek();
             while (isRunning && PC < intermediateCode.Length)
             {
+                string line = intermediateCode[PC];
                 FetchExecute(intermediateCode, ref console, true);
+                
+                if (line == "RETURN")
+                {
+                    return;
+                }
             }
             // In that case return back to the previous subroutine from here
         }

@@ -95,7 +95,7 @@ namespace NEA
                 ConsoleWrite(e.Message);
             }
 
-            // No Error Checking
+            //No Error Checking
             //machine.Interpret();
             //string[] intermediate = machine.GetIntermediateCode();
             //StartExecution(intermediate);
@@ -464,13 +464,20 @@ namespace NEA
             }
             else
             {
-                machine = new Machine(txtCodeField.Text);
-                machine.Interpret();
+                try
+                {
+                    machine = new Machine(txtCodeField.Text);
+                    machine.Interpret();
 
-                string[] intermediate = machine.GetIntermediateCode();
+                    string[] intermediate = machine.GetIntermediateCode();
 
-                IntermediateView intermediateForm = new IntermediateView(machine.GetIntermediateCode(), machine.GetSubroutinesIntermediateCode(), machine.GetSubroutineDictionary());
-                intermediateForm.ShowDialog();
+                    IntermediateView intermediateForm = new IntermediateView(machine.GetIntermediateCode(), machine.GetSubroutinesIntermediateCode(), machine.GetSubroutineDictionary());
+                    intermediateForm.ShowDialog();
+                }
+                catch (Exception m)
+                {
+                    ConsoleWrite(m.Message);
+                }
             }
         }
 
@@ -680,8 +687,14 @@ namespace NEA
 
             usersCode = "";
 
+            Token prev = tokens[0];
+
             foreach (Token token in tokens)
             {
+                if (!IsSameLine(token, prev))
+                {
+                    usersCode += "\n";
+                }
                 if (IsVariable(token) || IsLiteral(token))
                 {
                     if (Is(token, TokenType.STR_LITERAL))
@@ -693,10 +706,6 @@ namespace NEA
                         usersCode += token.GetLiteral() + " ";
                     }
                 }
-                else if (Is(token, TokenType.NEWLINE))
-                {
-                    usersCode += "\n";
-                }
                 else
                 {
                     if (token.GetLiteral() == null) { }
@@ -705,6 +714,7 @@ namespace NEA
                         usersCode += token.GetLiteral().ToUpper() + " ";
                     }
                 }
+                prev = token;
             }
 
             // Reset code to have no indentation
@@ -748,8 +758,6 @@ namespace NEA
             usersCode = usersCode.TrimEnd('\n');
 
             txtCodeField.Text = usersCode;
-
-            // Add automatic capitalisation of non variable keywords
         }
 
         private bool IsVariable(Token token)
@@ -768,6 +776,11 @@ namespace NEA
         private bool Is(Token token, TokenType type)
         {
             return token.GetTokenType() == type;
+        }
+
+        private bool IsSameLine(Token token1, Token token2)
+        {
+            return token1.GetLine() == token2.GetLine();
         }
     }
 }
