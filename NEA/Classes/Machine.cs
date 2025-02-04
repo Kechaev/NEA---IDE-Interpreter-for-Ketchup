@@ -305,8 +305,6 @@ namespace NEA
                     return TokenType.AND;
                 case "NOT":
                     return TokenType.NOT;
-                //case "BEGIN":
-                //    return TokenType.BEGIN;
                 case "END":
                     return TokenType.END;
                 case "PRINT":
@@ -1792,15 +1790,15 @@ namespace NEA
         #endregion
 
         // Implemented:
-        // PRINT
+        // PRINT (with Function calls)
         // ASSIGNMENT
         // REASSIGNMENT
         // DECLARATION
         // IF
-        // COUNT Loop (FOR) - NEW SYNTAX
+        // COUNT Loop (FOR)
         // WHILE Loop
         // DO-WHILE Loop
-        // Fixed-Length Loop - NEW SYNTAX
+        // Fixed-Length Loop
         // Addtion assignment
         // Subtraction assignment
         // Multiplication assignment
@@ -1846,6 +1844,7 @@ namespace NEA
 
             while (i < internalTokens.Length)
             {
+                // Catch a repeating reading of the same token
                 if (prevI == i)
                 {
                     throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: Unkown token \"{internalTokens[i].GetLiteral()}\", unable to process.");
@@ -1866,6 +1865,7 @@ namespace NEA
                         // - Any literal
                         // - An input
                         // - Left Bracket
+                        // - Function call
                         nextToken = internalTokens[i + 1];
                         if (!IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken) || IsUnaryBitwise(nextToken) || IsSubroutineCall(nextToken))
                         {
@@ -1903,6 +1903,7 @@ namespace NEA
                                     readyForNextParam = true;
                                     for (j = 1; areParamsToRead; j++)
                                     {
+                                        // Read as an expression until a comma then convert to instructions with Shunting Yard
                                         nextToken = internalTokens[i + j + 2];
                                         //MessageBox.Show($"Next token = {nextToken.GetTokenType()}");
                                         if (Is(nextToken, TokenType.RIGHT_BRACKET))
@@ -1914,6 +1915,12 @@ namespace NEA
                                             arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
                                             readyForNextParam = false;
                                             //MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
+                                        }
+                                        else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                                        {
+                                            // Deal with variable
+                                            throw new Exception("DEV ERROR: NOT DEALT WITH VARIBLE IN FUNCTION CALL");
+                                            readyForNextParam = false;
                                         }
                                         else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
                                         {

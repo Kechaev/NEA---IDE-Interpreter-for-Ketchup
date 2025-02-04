@@ -28,6 +28,7 @@ namespace NEA
 
         private string currentFilePath = null;
         private bool isSaved = true;
+        private static int NoOfRuns = 1;
 
         // IntelliSense Hack 101
         // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
@@ -65,15 +66,14 @@ namespace NEA
         
         private void Run()
         {
-            if (txtConsole.Text.Length > 0)
+            string name = $"Unsaved Program {NoOfRuns++}";
+            if (Path.GetFileName(currentFilePath) != null)
             {
-                string newExecuteSeparator = "";
-                for (int i = 0; i < GetMaxLineLength(); i++)
-                {
-                    newExecuteSeparator += "=";
-                }
-                txtConsole.Text += $"{newExecuteSeparator}\r\n";
+                name = Path.GetFileName(currentFilePath);
             }
+            string time = DateTime.Now.ToLongTimeString();
+
+            txtConsole.Text += $"=== {name} - {time} ===\r\n";
 
             machine = new Machine(txtCodeField.Text);
 
