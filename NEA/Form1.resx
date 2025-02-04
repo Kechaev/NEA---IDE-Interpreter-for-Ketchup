@@ -240,19 +240,19 @@
     <value>&amp;View</value>
   </data>
   <data name="tsDebugTraceTable.Size" type="System.Drawing.Size, System.Drawing">
-    <value>264, 34</value>
+    <value>270, 34</value>
   </data>
   <data name="tsDebugTraceTable.Text" xml:space="preserve">
     <value>Trace Table</value>
   </data>
   <data name="tsDebugSyntaxCheck.Size" type="System.Drawing.Size, System.Drawing">
-    <value>264, 34</value>
+    <value>270, 34</value>
   </data>
   <data name="tsDebugSyntaxCheck.Text" xml:space="preserve">
     <value>Check Syntax</value>
   </data>
   <data name="tsDebugBreakpoints.Size" type="System.Drawing.Size, System.Drawing">
-    <value>264, 34</value>
+    <value>270, 34</value>
   </data>
   <data name="tsDebugBreakpoints.Text" xml:space="preserve">
     <value>Enable Breakpoints</value>
@@ -264,16 +264,10 @@
     <value>&amp;Debug</value>
   </data>
   <data name="tsClear.Size" type="System.Drawing.Size, System.Drawing">
-    <value>264, 34</value>
+    <value>270, 34</value>
   </data>
   <data name="tsClear.Text" xml:space="preserve">
     <value>Clear</value>
-  </data>
-  <data name="tsDelay.Size" type="System.Drawing.Size, System.Drawing">
-    <value>264, 34</value>
-  </data>
-  <data name="tsDelay.Text" xml:space="preserve">
-    <value>Add delay (100ms)</value>
   </data>
   <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
     <value>92, 29</value>
@@ -355,16 +349,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIoSURBVGhD7Ze/SxxRFIUnPyRFNGlsBGUdtAgWkr9BrKxN
-        JwHLYEhhIwqBtEkgdUgjaaJYKAmIjYJBIYmpArZ2AbskEoLNuJtzNvfCZbiz+2bRNfjmgw98Z2cX7hnn
-        vd2koqKioiJPI20kjeSarCKkWQDM0kySyNAC1PrIkLwSCfkC1Gjwhlez9LNcdYXxBs/bOdvwA1yFb8XX
-        8Dkch/8B3sBFlucH5PuKnIOXjDdoS2v35Z0h2ALewGfwvcl48lzyEewOGWAYtoABBsIh1HyCAViEx+Jj
-        BoJm35urJBmEv8Sv8BH8Bs/gHrwHS+ANF+pZjc93K4oKOILM+B9wgwFgAXrtLANBs5Pm6l8BmnFo/Vvd
-        gCXwBitrMbaABci7tWwyW6At4CEDQTOvABb5As6YrA5LPFbeQGUtptUmuAUtnRSww0BYh5oPMwjDGyjY
-        5Lp8ShG2AD6np2a9BC3zUF8LLWCXgbACNR9lEIY7WBuz9I+8ux35PeCBWVOuFR6JmocWsM9AeAc1v8AC
-        yuFtgi+hZrQGyTTUjPtEP5wymVfAJwbCGtT8QgrgGV4WrwDyEWr+mwEYg5p5egXwGFQ2oebnXEDnFBXA
-        u273gy+QvILcxdUnkEcd/QkJC9DsgIHA/UA/77wKGOuVq7rJCJyEt5srn7tGxcsC8AbPUrYbCfnho0MH
-        rw8/lSQyorzr3Yffza3RwV98t8R2X5+vJD3wDuyDNxlUVHSbJPkL65Zs6QoS3cEAAAAASUVORK5CYII=
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7Ze9SxxRFMUnJsEiMTZpAso6aCEWIX9DSJU6
+        dhKwFMXCJkQQbDWQOqQJaUxIkaAgNgoGBT9SCWnTCXb5IASL1V3P2dwLl+HO7ptFV/HND37gOzu7cM84
+        7+0mJSUlJSVZ6mk9qSc3ZBUhjQJgNT2RJDK0ALU22C+vREK2ADUavOHVk3RXrrrGeINnbZ91uAI/wvfi
+        G7gAH8IrgDdwnsX5Cfm+PCfhJeMN2tTKI3lnCLaAt3AeLpuMJ88lH8HukAGGYQt4wED4DjV/zAC8hEfi
+        FANBs8PGKkn64G/xG5yAB/AUbsFhWABvuFBPK3y+m5FXwA/IjP8BNxkAFqDXjjMQNPvTWP0vQDMOrX+r
+        X2ABvMGKmo8t4AXk3XpnMlugLeA5A0EzrwAWuQjHTFaDBR4rb6Ci5tNsE1yDlnYK2GAgfIaaDzAIwxso
+        2KRLPiUPWwCf02OznoWWGaivhRawyUD4ADUfYhCGO1gLq+k/eXcrsnvAqFlTrhUeiZqHFrDNQFiCml9g
+        AcXwNsFXUDNageQZ1Iz7xH341GReATsMhE9Q8wspgGd4UbwCyFeo+V8GYARq5ukVwGNQWYWan3MB7ZNX
+        AO+63Q/2IHkNuYur05BHHf0FCQvQbJ+BwP1AP++8Chi5K1d1kkH4BN5prHx6jYqXBeANXk3ZbiRkh48O
+        Hbw2MCdJZER51zsPv5tbo4O/+LrFVl+fryW34T3YA28xKCnpNElyBrr3bOa3hcg0AAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -938,12 +932,6 @@
   <data name="&gt;&gt;tsClear.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;tsDelay.Name" xml:space="preserve">
-    <value>tsDelay</value>
-  </data>
-  <data name="&gt;&gt;tsDelay.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;stripUndo.Name" xml:space="preserve">
     <value>stripUndo</value>
   </data>
@@ -956,11 +944,23 @@
   <data name="&gt;&gt;stripRedo.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;toolStripSeparator2.Name" xml:space="preserve">
+    <value>toolStripSeparator2</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;stripRun.Name" xml:space="preserve">
     <value>stripRun</value>
   </data>
   <data name="&gt;&gt;stripRun.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator1.Name" xml:space="preserve">
+    <value>toolStripSeparator1</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;stripComment.Name" xml:space="preserve">
     <value>stripComment</value>
@@ -991,18 +991,6 @@
   </data>
   <data name="&gt;&gt;timer.Type" xml:space="preserve">
     <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator1.Name" xml:space="preserve">
-    <value>toolStripSeparator1</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator2.Name" xml:space="preserve">
-    <value>toolStripSeparator2</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>IDE_MainWindow</value>

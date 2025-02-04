@@ -44,25 +44,6 @@ namespace NEA
                                      "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
-        // Fields for Translation into Intermediate Code
-        private string[] intermediate;
-        private List<string[]> intermediateSubroutines;
-        private Dictionary<string, int> subroutineDict;
-        private int[] subroutineParametersCount, subroutineLocalVariableCounter;
-        private Variable[] variables;
-        private Dictionary<string, int> variablesDict = new Dictionary<string, int>();
-        private int counterVar, counterSubroutine;
-        private int fixedLoopCounter;
-
-        // Fields for Execution
-        private int PC;
-        private Stack<object> stack;
-        private Stack<StackFrame> callStack;
-        private bool validProgram;
-        private bool isRunning = false;
-
-        private int delayMS;
-
         public Machine(string sourceCode)
         {
             Variable.ResetVariables();
@@ -77,7 +58,6 @@ namespace NEA
             stack = new Stack<object>();
 
             fixedLoopCounter = 0;
-            delayMS = 0;
         }
 
         public string[] GetIntermediateCode()
@@ -547,6 +527,16 @@ namespace NEA
             return tokensList.ToArray();
         }
         #endregion
+
+        // Fields for Translation into Intermediate Code
+        private string[] intermediate;
+        private List<string[]> intermediateSubroutines;
+        private Dictionary<string, int> subroutineDict;
+        private int[] subroutineParametersCount, subroutineLocalVariableCounter;
+        private Variable[] variables;
+        private Dictionary<string, int> variablesDict = new Dictionary<string, int>();
+        private int counterVar, counterSubroutine;
+        private int fixedLoopCounter;
 
         #region Translation into Intermdiate
 
@@ -2812,6 +2802,13 @@ namespace NEA
         }
         #endregion
 
+        // Fields for Execution
+        private int PC;
+        private Stack<object> stack;
+        private Stack<StackFrame> callStack;
+        private bool validProgram;
+        private bool isRunning = false;
+
         #region Execution
         public void SetRunningStatus(bool status)
         {
@@ -2826,11 +2823,6 @@ namespace NEA
         public bool GetValidity()
         {
             return validProgram;
-        }
-
-        public void SetDelay(int delay)
-        {
-            delayMS = delay;
         }
 
         public void FetchExecute(string[] intermediateCode, ref TextBox console, bool inFunction)

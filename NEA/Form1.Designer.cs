@@ -53,11 +53,12 @@ namespace NEA
             this.tsDebugBreakpoints = new System.Windows.Forms.ToolStripMenuItem();
             this.tsConsole = new System.Windows.Forms.ToolStripMenuItem();
             this.tsClear = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsDelay = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.stripUndo = new System.Windows.Forms.ToolStripButton();
             this.stripRedo = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.stripRun = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.stripComment = new System.Windows.Forms.ToolStripButton();
             this.stripFormat = new System.Windows.Forms.ToolStripButton();
             this.statusBar = new System.Windows.Forms.StatusStrip();
@@ -71,8 +72,6 @@ namespace NEA
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.lblConsole = new System.Windows.Forms.Label();
             this.timer = new System.Windows.Forms.Timer(this.components);
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -217,8 +216,7 @@ namespace NEA
             // tsConsole
             // 
             this.tsConsole.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsClear,
-            this.tsDelay});
+            this.tsClear});
             this.tsConsole.Name = "tsConsole";
             resources.ApplyResources(this.tsConsole, "tsConsole");
             // 
@@ -227,12 +225,6 @@ namespace NEA
             this.tsClear.Name = "tsClear";
             resources.ApplyResources(this.tsClear, "tsClear");
             this.tsClear.Click += new System.EventHandler(this.tsClear_Click);
-            // 
-            // tsDelay
-            // 
-            this.tsDelay.Name = "tsDelay";
-            resources.ApplyResources(this.tsDelay, "tsDelay");
-            this.tsDelay.Click += new System.EventHandler(this.tsDelay_Click);
             // 
             // toolStrip
             // 
@@ -262,12 +254,22 @@ namespace NEA
             this.stripRedo.Name = "stripRedo";
             this.stripRedo.Click += new System.EventHandler(this.stripRedo_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
+            // 
             // stripRun
             // 
             this.stripRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             resources.ApplyResources(this.stripRun, "stripRun");
             this.stripRun.Name = "stripRun";
             this.stripRun.Click += new System.EventHandler(this.stripRun_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
             // 
             // stripComment
             // 
@@ -362,16 +364,6 @@ namespace NEA
             // 
             this.timer.Interval = 1;
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
-            // 
             // IDE_MainWindow
             // 
             resources.ApplyResources(this, "$this");
@@ -436,7 +428,6 @@ namespace NEA
         private ToolStripMenuItem tsTokenView;
         private ToolStripMenuItem tsConsole;
         private ToolStripMenuItem tsClear;
-        private ToolStripMenuItem tsDelay;
         private Timer timer;
         private ToolStripButton stripFormat;
         private ToolStripSeparator toolStripSeparator2;
