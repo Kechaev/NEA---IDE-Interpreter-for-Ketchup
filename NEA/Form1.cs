@@ -509,6 +509,10 @@ namespace NEA
             if (PromptToSaveChanges())
             {
                 OpenFile();
+                if (currentFilePath != null)
+                {
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                }
             }
         }
 
@@ -517,6 +521,10 @@ namespace NEA
             if (!isSaved)
             {
                 SaveFileAs();
+                if (currentFilePath != null)
+                {
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                }
             }
         }
 
@@ -530,6 +538,10 @@ namespace NEA
             {
                 File.WriteAllText(currentFilePath, txtCodeField.Text);
                 isSaved = true;
+                if (currentFilePath != null)
+                {
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                }
             }
         }
 
@@ -546,6 +558,10 @@ namespace NEA
                 currentFilePath = openFileDialog.FileName;
                 txtCodeField.Text = File.ReadAllText(currentFilePath);
                 isSaved = true;
+                if (currentFilePath != null)
+                {
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                }
             }
         }
 
@@ -562,6 +578,10 @@ namespace NEA
                 currentFilePath = saveFileDialog.FileName;
                 File.WriteAllText(currentFilePath, txtCodeField.Text);
                 isSaved = true;
+                if (currentFilePath != null)
+                {
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                }
             }
         }
 
@@ -570,11 +590,19 @@ namespace NEA
             if (currentFilePath == null)
             {
                 SaveFileAs();
+                if (currentFilePath != null)
+                {
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                }
             }
             else
             {
                 File.WriteAllText(currentFilePath, txtCodeField.Text);
                 isSaved = true;
+                if (currentFilePath != null)
+                {
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                }
             }
         }
 
@@ -606,6 +634,8 @@ namespace NEA
             PromptToSaveChanges();
 
             txtCodeField.Text = "";
+
+            this.Text = "Ketchup™️ IDE";
         }
         #endregion
 
