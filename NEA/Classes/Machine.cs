@@ -38,7 +38,7 @@ namespace NEA
         // Fields for Tokenization
         private Token[] tokens;
         private string[] keyword = { "CREATE", "SET", /*"CHANGE",*/ "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
-                                     "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
+                                     "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
@@ -253,6 +253,12 @@ namespace NEA
                     return TokenType.WITH;
                 case "FROM":
                     return TokenType.FROM;
+                case "GOING":
+                    return TokenType.GOING;
+                case "UP":
+                    return TokenType.UP;
+                case "DOWN":
+                    return TokenType.DOWN;
                 case "BY":
                     return TokenType.BY;
                 case "WHILE":
@@ -866,7 +872,6 @@ namespace NEA
                         if (nonExpression.Count > 0)
                         {
                             instructions.AddRange(GetInstructions(nonExpression.Pop(), ref i, expression));
-                            PrintList(instructions);
                         }
 
                     }
@@ -876,7 +881,6 @@ namespace NEA
                         if (nonExpression.Count > 0)
                         {
                             instructions.AddRange(GetInstructions(nonExpression.Pop(), ref i, expression));
-                            PrintList(instructions);
                         }
                         nonExpression.Push(token);
                         //MessageBox.Show($"Added to stack\n{nonExpression.Peek().GetLiteral()}");
@@ -905,16 +909,6 @@ namespace NEA
             }
 
             return instructions.ToArray();
-        }
-
-        private void PrintList(List<string> list)
-        {
-            string str = "";
-            foreach (string s in list)
-            {
-                str += $"{s}\n";
-            }
-            //MessageBox.Show(str);
         }
 
         // Returns the correct intermediate code instruction
@@ -1243,7 +1237,123 @@ namespace NEA
         #endregion
 
         #region Loops
-        private string[] MapForLoop2(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
+
+        #region Old For Loops [REDACTED]
+        //private string[] MapForLoop3(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
+        //{
+        //    List<string> instructions = new List<string>();
+        //    counterVar = variablesDict[variable];
+
+        //    counter += 2;
+
+        //    int localCounter = counter;
+        //    int localCounterVar = counterVar;
+
+        //    instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
+
+        //    instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
+
+        //    instructions.Add("STORE_VAR " + localCounterVar.ToString());
+
+        //    instructions.Add("LABEL " + (localCounter - 2).ToString());
+
+        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
+
+        //    instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
+
+        //    instructions.Add("LESS_EQUAL");
+
+        //    instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
+
+        //    string[] statement = TokensToIntermediate(body, false);
+
+        //    instructions.AddRange(statement);
+
+        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
+
+        //    instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
+
+        //    instructions.Add("ADD");
+
+        //    instructions.Add("STORE_VAR " + localCounterVar.ToString());
+
+        //    instructions.Add("JUMP " + (localCounter - 2).ToString());
+
+        //    instructions.Add("LABEL " + (localCounter - 1).ToString());
+
+        //    return instructions.ToArray();
+        //}
+
+        //private string[] MapForLoop2(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
+        //{
+        //    List<string> instructions = new List<string>();
+        //    counterVar = variablesDict[variable];
+        //    counter += 4;
+
+        //    int localCounter = counter;
+        //    int localCounterVar = counterVar;
+
+        //    instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
+
+        //    instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
+
+        //    instructions.Add("STORE_VAR " + localCounterVar.ToString());
+
+        //    instructions.Add("LABEL " + (localCounter - 2).ToString());
+
+        //    instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
+
+        //    instructions.Add("LOAD_CONST 0");
+
+        //    instructions.Add("GREATER");
+
+        //    instructions.Add("JUMP_FALSE " + (localCounter - 4).ToString());
+
+        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
+
+        //    instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
+
+        //    instructions.Add("LESS_EQUAL");
+
+        //    instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
+
+        //    instructions.Add("JUMP " + (localCounter - 3).ToString());
+
+        //    instructions.Add("LABEL " + (localCounter - 4).ToString());
+
+        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
+
+        //    instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
+
+        //    instructions.Add("GREATER_EQUAL");
+
+        //    instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
+
+        //    instructions.Add("JUMP " + (localCounter - 3).ToString());
+
+        //    instructions.Add("LABEL " + (localCounter - 3).ToString());
+
+        //    string[] statement = TokensToIntermediate(body, false);
+
+        //    instructions.AddRange(statement);
+
+        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
+
+        //    instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
+
+        //    instructions.Add("ADD");
+
+        //    instructions.Add("STORE_VAR " + localCounterVar.ToString());
+
+        //    instructions.Add("JUMP " + (localCounter - 2).ToString());
+
+        //    instructions.Add("LABEL " + (localCounter - 1).ToString());
+
+        //    return instructions.ToArray();
+        //}
+        #endregion
+
+        private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, bool negativeStep, Token[] body)
         {
             List<string> instructions = new List<string>();
             counterVar = variablesDict[variable];
@@ -1265,7 +1375,14 @@ namespace NEA
 
             instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
 
-            instructions.Add("LESS_EQUAL");
+            if (negativeStep)
+            {
+                instructions.Add("GREATER_EQUAL");
+            }
+            else
+            {
+                instructions.Add("LESS_EQUAL");
+            }
 
             instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
 
@@ -1277,75 +1394,14 @@ namespace NEA
 
             instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
 
-            instructions.Add("ADD");
-
-            instructions.Add("STORE_VAR " + localCounterVar.ToString());
-
-            instructions.Add("JUMP " + (localCounter - 2).ToString());
-
-            instructions.Add("LABEL " + (localCounter - 1).ToString());
-
-            return instructions.ToArray();
-        }
-
-        private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
-        {
-            List<string> instructions = new List<string>();
-            counterVar = variablesDict[variable];
-            counter += 4;
-
-            int localCounter = counter;
-            int localCounterVar = counterVar;
-
-            instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
-
-            instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
-
-            instructions.Add("STORE_VAR " + localCounterVar.ToString());
-
-            instructions.Add("LABEL " + (localCounter - 2).ToString());
-
-            instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
-
-            instructions.Add("LOAD_CONST 0");
-
-            instructions.Add("GREATER");
-
-            instructions.Add("JUMP_FALSE " + (localCounter - 4).ToString());
-
-            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
-
-            instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
-
-            instructions.Add("LESS_EQUAL");
-
-            instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
-
-            instructions.Add("JUMP " + (localCounter - 3).ToString());
-
-            instructions.Add("LABEL " + (localCounter - 4).ToString());
-
-            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
-
-            instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
-
-            instructions.Add("GREATER_EQUAL");
-
-            instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
-
-            instructions.Add("JUMP " + (localCounter - 3).ToString());
-
-            instructions.Add("LABEL " + (localCounter - 3).ToString());
-
-            string[] statement = TokensToIntermediate(body, false);
-
-            instructions.AddRange(statement);
-
-            instructions.Add("LOAD_VAR " + localCounterVar.ToString());
-
-            instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
-
-            instructions.Add("ADD");
+            if (negativeStep)
+            {
+                instructions.Add("SUB");
+            }
+            else
+            {
+                instructions.Add("ADD");
+            }
 
             instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
@@ -2296,15 +2352,46 @@ namespace NEA
                         }
                         List<Token> expression2 = new List<Token>();
                         k = 1;
-                        while (IsSameLine(internalTokens[i + j + k + 3],token) && !Is(internalTokens[i + j + k + 3],TokenType.BY))
+                        while (IsSameLine(internalTokens[i + j + k + 3],token) && !Is(internalTokens[i + j + k + 3],TokenType.GOING))
                         {
                             expression2.Add(internalTokens[i + j + k + 3]);
                             k++;
+                        }
+                        bool negativeStep = true;
+                        nextToken = internalTokens[i + j + k + 3];
+                        if (IsSameLine(nextToken, internalTokens[i + j + k + 2]))
+                        {
+                            if (!Is(nextToken, TokenType.GOING))
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"GOING\" keyword.");
+                            }
+                            nextToken = internalTokens[i + j + k + 4];
+                            if (!Is(nextToken, TokenType.UP) && !Is(nextToken, TokenType.DOWN))
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"UP\" or \"DOWN\" keyword after \"GOING\".");
+                            }
+                            if (Is(nextToken, TokenType.UP))
+                            {
+                                negativeStep = false;
+                            }
+                            nextToken = internalTokens[i + j + k + 5];
+                            if (!Is(nextToken, TokenType.BY))
+                            {
+                                if (negativeStep)
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"BY\" keyword after \"DOWN\" keyword.");
+                                }
+                                else
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"BY\" keyword after \"UP\" keyword.");
+                                }
+                            }
                         }
                         l = 0;
                         List<Token> expression3 = new List<Token>();
                         if (!IsSameLine(internalTokens[i + j + k + 4],token))
                         {
+                            negativeStep = false;
                             expression3.Add(new Token(TokenType.INT_LITERAL, "1", token.GetLine()));
                         }
                         else
@@ -2322,7 +2409,7 @@ namespace NEA
                         nextToken = internalTokens[bodyEnd + 1];
                         body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
 
-                        intermediateList.AddRange(MapForLoop(variableName, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), body.ToArray()));
+                        intermediateList.AddRange(MapForLoop(variableName, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), negativeStep, body.ToArray()));
                         i = bodyEnd + 2;
                         break;
                     case TokenType.WHILE:
@@ -2803,9 +2890,6 @@ namespace NEA
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements));
 
                         i += j + 1;
-                        break;
-                    case TokenType.NEWLINE:
-                        i++;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");

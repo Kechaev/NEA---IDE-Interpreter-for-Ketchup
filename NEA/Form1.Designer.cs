@@ -73,6 +73,8 @@ namespace NEA
             this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.lblConsole = new System.Windows.Forms.Label();
+            this.btnCopy = new System.Windows.Forms.Button();
+            this.btnClear = new System.Windows.Forms.Button();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -329,6 +331,7 @@ namespace NEA
             // 
             this.txtConsole.BackColor = System.Drawing.SystemColors.MenuBar;
             this.txtConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tableConsole.SetColumnSpan(this.txtConsole, 3);
             resources.ApplyResources(this.txtConsole, "txtConsole");
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;
@@ -347,7 +350,6 @@ namespace NEA
             this.txtCodeField.BorderStyle = System.Windows.Forms.BorderStyle.None;
             resources.ApplyResources(this.txtCodeField, "txtCodeField");
             this.txtCodeField.Name = "txtCodeField";
-            this.tableCodeSpace.SetRowSpan(this.txtCodeField, 2);
             this.txtCodeField.ContentsResized += new System.Windows.Forms.ContentsResizedEventHandler(this.txtCodeField_ContentsResized);
             this.txtCodeField.SelectionChanged += new System.EventHandler(this.txtCodeField_SelectionChanged_1);
             this.txtCodeField.VScroll += new System.EventHandler(this.txtCodeField_VScroll);
@@ -384,6 +386,8 @@ namespace NEA
             // 
             resources.ApplyResources(this.tableConsole, "tableConsole");
             this.tableConsole.Controls.Add(this.txtConsole, 0, 1);
+            this.tableConsole.Controls.Add(this.btnCopy, 1, 0);
+            this.tableConsole.Controls.Add(this.btnClear, 2, 0);
             this.tableConsole.Controls.Add(this.lblConsole, 0, 0);
             this.tableConsole.Name = "tableConsole";
             // 
@@ -391,6 +395,20 @@ namespace NEA
             // 
             resources.ApplyResources(this.lblConsole, "lblConsole");
             this.lblConsole.Name = "lblConsole";
+            // 
+            // btnCopy
+            // 
+            resources.ApplyResources(this.btnCopy, "btnCopy");
+            this.btnCopy.Name = "btnCopy";
+            this.btnCopy.UseVisualStyleBackColor = true;
+            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
+            // 
+            // btnClear
+            // 
+            resources.ApplyResources(this.btnClear, "btnClear");
+            this.btnClear.Name = "btnClear";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click_1);
             // 
             // IDE_MainWindow
             // 
@@ -466,6 +484,8 @@ namespace NEA
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripButton stripCopy;
         private SplitContainer splitContainer;
+        private Button btnCopy;
+        private Button btnClear;
     }
 }
 

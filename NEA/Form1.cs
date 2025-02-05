@@ -15,6 +15,7 @@ using System.Threading;
 using System.Reflection;
 using NEA.Classes;
 using System.Collections;
+using System.Diagnostics.PerformanceData;
 
 namespace NEA
 {
@@ -24,6 +25,7 @@ namespace NEA
         private Stack<int> undoStackCaretPosition = new Stack<int>();
         private Stack<string> redoStack = new Stack<string>();
         private Stack<int> redoStackCaretPosition = new Stack<int>();
+        private int currentIndent = 0;
         private Machine machine;
 
         private string currentFilePath = null;
@@ -423,6 +425,56 @@ namespace NEA
                     txtCodeField.SelectionStart = txtCodeField.Text.Length;
                 }
             }
+            else if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                int start = txtCodeField.SelectionStart;
+                int line = txtCodeField.GetLineFromCharIndex(start);
+                string[] lines = txtCodeField.Lines;
+                int nextLineStart = txtCodeField.GetFirstCharIndexFromLine(line + 1);
+                int lineEnd = txtCodeField.TextLength;
+                if (nextLineStart != -1)
+                {
+                    lineEnd = nextLineStart - 1;
+                }
+
+                if (line < lines.Length)
+                {
+                    string[] words = lines[line].TrimStart().Split(' ');
+                    string[] toIndent = { "FUNCTION", "IF", "ELSE", "COUNT", "REPEAT", "WHILE", "DO" };
+                    string[] unIndent = { "END" };
+
+                    if (words.Length > 0 && toIndent.Contains(words[0].ToUpper()) && lineEnd == start)
+                    {
+                        currentIndent++;
+                    }
+                    else if (words.Length > 0 && unIndent.Contains(words[0].ToUpper()))
+                    {
+                        currentIndent = Math.Max(0, currentIndent - 1);
+                        string currentLine = lines[line].TrimStart('\t');
+                        for (int i = 0; i < currentIndent; i++)
+                        {
+                            currentLine = "\t" + currentLine;
+                        }
+
+                        int lineStart = txtCodeField.GetFirstCharIndexFromLine(line);
+                        int lineLength = lines[line].Length;
+
+                        txtCodeField.Select(lineStart, lineLength);
+                        txtCodeField.SelectedText = currentLine;
+                        txtCodeField.SelectionStart = lineStart + txtCodeField.Lines[line].Length;
+                    }
+
+                    string insert = "\n";
+
+                    for (int i = 0; i < currentIndent; i++)
+                    {
+                        insert += "\t";
+                    }
+
+                    txtCodeField.SelectedText = insert;
+                }
+            }
         }
         
         // Fix for tab seleting elements of the applications
@@ -578,10 +630,7 @@ namespace NEA
                 currentFilePath = saveFileDialog.FileName;
                 File.WriteAllText(currentFilePath, txtCodeField.Text);
                 isSaved = true;
-                if (currentFilePath != null)
-                {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
-                }
+                this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
             }
         }
 
@@ -801,5 +850,21 @@ namespace NEA
             }
         }
 
+        private void btnCopy_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtConsole.SelectedText))
+            {
+                Clipboard.SetText(txtConsole.SelectedText);
+            }
+            else
+            {
+                Clipboard.SetText(txtConsole.Text);
+            }
+        }
+
+        private void btnClear_Click_1(object sender, EventArgs e)
+        {
+            txtConsole.Text = "";
+        }
     }
 }
