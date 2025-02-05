@@ -41,7 +41,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
-                                     "INPUT", "PROMPT", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
+                                     "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
         public Machine(string sourceCode)
@@ -297,8 +297,8 @@ namespace NEA
                     return TokenType.THAN;
                 case "INPUT":
                     return TokenType.INPUT;
-                case "PROMPT":
-                    return TokenType.PROMPT;
+                case "MESSAGE":
+                    return TokenType.MESSAGE;
                 case "OR":
                     return TokenType.OR;
                 case "AND":
@@ -948,7 +948,7 @@ namespace NEA
                 }
                 catch
                 {
-                    throw new Exception($"SYNTAX ERROR on Line {e.GetLine() + 1}: No prompt given after \"PROMPT\".");
+                    throw new Exception($"SYNTAX ERROR on Line {e.GetLine() + 1}: No message for the user was given after \"MESSAGE\".");
                 }
 
                 string[] inputStatement = MapInputStatement(inputPrompt);
@@ -1595,6 +1595,8 @@ namespace NEA
             int nestCounter = 1;
 
             int initialIndex = index;
+            index--;
+
 
             while (nestCounter > 0 && index < tokens.Length - 1)
             {
@@ -1603,6 +1605,11 @@ namespace NEA
                 //MessageBox.Show($"token = {nextToken.GetTokenType()}");
                 if (structures.Contains(nextToken.GetTokenType().ToString().ToUpper()) && !Is(tokens[index - 1], TokenType.END))
                 {
+                    if (Is(nextToken, TokenType.ELSE) && Is(tokens[index + 1], TokenType.IF))
+                    {
+                        // Skip IF in ELSE IF
+                        index++;
+                    }
                     nestCounter++;
                     //MessageBox.Show($"+\n{nestCounter}");
                 }
@@ -1882,8 +1889,10 @@ namespace NEA
                                 // Limitation: in an if statement the prompt cannot contain multiple strings or variable - not necessarily an issue for a KS3 usage
                                 else if (IsInput(nextToken))
                                 {
+                                    // Correct Syntax:
+                                    // INPUT WITH MESSAGE
                                     expression.Add(nextToken);
-                                    // Increment by 2 more to skip filler "WITH PROMPT"
+                                    // Increment by 2 more to skip filler "WITH MESSAGE"
                                     // Continue onto the following string prompt
                                     j += 3;
                                 }
@@ -2008,9 +2017,9 @@ namespace NEA
                                 {
                                     throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
                                 }
-                                if (!Is(internalTokens[i + j + 4], TokenType.PROMPT))
+                                if (!Is(internalTokens[i + j + 4], TokenType.MESSAGE))
                                 {
-                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"PROMPT\" after \"WITH\".");
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
                                 }
                                 expression.Add(nextToken);
                                 j += 3;
@@ -2085,9 +2094,9 @@ namespace NEA
                                 {
                                     throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
                                 }
-                                if (!Is(internalTokens[i + j + 4], TokenType.PROMPT))
+                                if (!Is(internalTokens[i + j + 4], TokenType.MESSAGE))
                                 {
-                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"PROMPT\" after \"WITH\".");
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
                                 }
                                 expression.Add(nextToken);
                                 j += 3;
@@ -2703,9 +2712,9 @@ namespace NEA
                                 {
                                     throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
                                 }
-                                if (!Is(internalTokens[i + j + 2], TokenType.PROMPT))
+                                if (!Is(internalTokens[i + j + 2], TokenType.MESSAGE))
                                 {
-                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"PROMPT\" after \"WITH\".");
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
                                 }
                                 expression.Add(nextToken);
                                 j += 1;
