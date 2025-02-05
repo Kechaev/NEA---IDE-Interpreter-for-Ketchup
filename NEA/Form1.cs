@@ -38,7 +38,6 @@ namespace NEA
             InitializeStacks();
             WindowState = FormWindowState.Maximized;
             txtCodeField.Select();
-            timer.Start();
         }
 
         private void InitializeStacks()
@@ -504,6 +503,7 @@ namespace NEA
             ClearConsole();
         }
 
+        #region File Interactions
         private void tsFileOpen_Click(object sender, EventArgs e)
         {
             if (PromptToSaveChanges())
@@ -599,6 +599,15 @@ namespace NEA
             }
             return true;
         }
+
+        private void tsFileNew_Click(object sender, EventArgs e)
+        {
+            // Temp fix
+            PromptToSaveChanges();
+
+            txtCodeField.Text = "";
+        }
+        #endregion
 
         private void IDE_MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -745,5 +754,22 @@ namespace NEA
         {
             return token1.GetLine() == token2.GetLine();
         }
+
+        private void stripCopy_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
+            {
+                Clipboard.SetText(txtCodeField.SelectedText);
+            }
+            else if (!string.IsNullOrEmpty(txtConsole.SelectedText))
+            {
+                Clipboard.SetText(txtConsole.SelectedText);
+            }
+            else
+            {
+                MessageBox.Show("Please select some text to copy.");
+            }
+        }
+
     }
 }

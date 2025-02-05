@@ -30,7 +30,6 @@ namespace NEA
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IDE_MainWindow));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.tsFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,6 +60,8 @@ namespace NEA
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.stripComment = new System.Windows.Forms.ToolStripButton();
             this.stripFormat = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.stripCopy = new System.Windows.Forms.ToolStripButton();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.statusLineInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusColumnInfo = new System.Windows.Forms.ToolStripStatusLabel();
@@ -68,14 +69,18 @@ namespace NEA
             this.txtLineNumber = new System.Windows.Forms.RichTextBox();
             this.txtCodeField = new System.Windows.Forms.RichTextBox();
             this.tableMain = new System.Windows.Forms.TableLayoutPanel();
+            this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.lblConsole = new System.Windows.Forms.Label();
-            this.timer = new System.Windows.Forms.Timer(this.components);
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
             this.tableMain.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
+            this.splitContainer.Panel1.SuspendLayout();
+            this.splitContainer.Panel2.SuspendLayout();
+            this.splitContainer.SuspendLayout();
             this.tableCodeSpace.SuspendLayout();
             this.tableConsole.SuspendLayout();
             this.SuspendLayout();
@@ -108,6 +113,7 @@ namespace NEA
             // 
             this.tsFileNew.Name = "tsFileNew";
             resources.ApplyResources(this.tsFileNew, "tsFileNew");
+            this.tsFileNew.Click += new System.EventHandler(this.tsFileNew_Click);
             // 
             // tsFileOpen
             // 
@@ -236,7 +242,9 @@ namespace NEA
             this.stripRun,
             this.toolStripSeparator1,
             this.stripComment,
-            this.stripFormat});
+            this.stripFormat,
+            this.toolStripSeparator3,
+            this.stripCopy});
             resources.ApplyResources(this.toolStrip, "toolStrip");
             this.toolStrip.Name = "toolStrip";
             // 
@@ -285,6 +293,18 @@ namespace NEA
             resources.ApplyResources(this.stripFormat, "stripFormat");
             this.stripFormat.Name = "stripFormat";
             this.stripFormat.Click += new System.EventHandler(this.stripFormat_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            resources.ApplyResources(this.toolStripSeparator3, "toolStripSeparator3");
+            // 
+            // stripCopy
+            // 
+            this.stripCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            resources.ApplyResources(this.stripCopy, "stripCopy");
+            this.stripCopy.Name = "stripCopy";
+            this.stripCopy.Click += new System.EventHandler(this.stripCopy_Click);
             // 
             // statusBar
             // 
@@ -337,9 +357,21 @@ namespace NEA
             // tableMain
             // 
             resources.ApplyResources(this.tableMain, "tableMain");
-            this.tableMain.Controls.Add(this.tableCodeSpace, 1, 1);
-            this.tableMain.Controls.Add(this.tableConsole, 1, 2);
+            this.tableMain.Controls.Add(this.splitContainer, 1, 1);
             this.tableMain.Name = "tableMain";
+            // 
+            // splitContainer
+            // 
+            resources.ApplyResources(this.splitContainer, "splitContainer");
+            this.splitContainer.Name = "splitContainer";
+            // 
+            // splitContainer.Panel1
+            // 
+            this.splitContainer.Panel1.Controls.Add(this.tableCodeSpace);
+            // 
+            // splitContainer.Panel2
+            // 
+            this.splitContainer.Panel2.Controls.Add(this.tableConsole);
             // 
             // tableCodeSpace
             // 
@@ -360,10 +392,6 @@ namespace NEA
             resources.ApplyResources(this.lblConsole, "lblConsole");
             this.lblConsole.Name = "lblConsole";
             // 
-            // timer
-            // 
-            this.timer.Interval = 1;
-            // 
             // IDE_MainWindow
             // 
             resources.ApplyResources(this, "$this");
@@ -382,6 +410,10 @@ namespace NEA
             this.statusBar.ResumeLayout(false);
             this.statusBar.PerformLayout();
             this.tableMain.ResumeLayout(false);
+            this.splitContainer.Panel1.ResumeLayout(false);
+            this.splitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
+            this.splitContainer.ResumeLayout(false);
             this.tableCodeSpace.ResumeLayout(false);
             this.tableConsole.ResumeLayout(false);
             this.tableConsole.PerformLayout();
@@ -428,10 +460,12 @@ namespace NEA
         private ToolStripMenuItem tsTokenView;
         private ToolStripMenuItem tsConsole;
         private ToolStripMenuItem tsClear;
-        private Timer timer;
         private ToolStripButton stripFormat;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripSeparator toolStripSeparator1;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripButton stripCopy;
+        private SplitContainer splitContainer;
     }
 }
 
