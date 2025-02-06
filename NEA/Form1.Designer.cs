@@ -331,7 +331,7 @@ namespace NEA
             // 
             this.txtConsole.BackColor = System.Drawing.SystemColors.MenuBar;
             this.txtConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tableConsole.SetColumnSpan(this.txtConsole, 3);
+            this.tableConsole.SetColumnSpan(this.txtConsole, 4);
             resources.ApplyResources(this.txtConsole, "txtConsole");
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;

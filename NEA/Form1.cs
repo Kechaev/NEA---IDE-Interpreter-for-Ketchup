@@ -40,6 +40,7 @@ namespace NEA
             InitializeStacks();
             WindowState = FormWindowState.Maximized;
             txtCodeField.Select();
+            inString = false;
         }
 
         private void InitializeStacks()
@@ -275,9 +276,21 @@ namespace NEA
             txtConsole.Text = "";
         }
 
+        private bool inString;
+
         private void txtCodeField_TextChanged(object sender, EventArgs e)
         {
             isSaved = false;
+            if (KeywordEntered())
+            {
+                SyntaxHighlightLine();
+                txtCodeField.SelectionColor = Color.Black;
+            }
+            else if (InStrLiteral())
+            {
+                SyntaxHighlightLine();
+                txtCodeField.SelectionColor = Color.Green;
+            }
             if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
             {
                 undoStack.Push(txtCodeField.Text);
@@ -478,99 +491,152 @@ namespace NEA
                 {
                     txtCodeField.SelectedText = "\n";
                 }
+                txtCodeField.SelectionStart--;
+                SyntaxHighlightLine();
+                txtCodeField.SelectionStart++;
             }
             else
             {
                 txtCodeField.SelectionColor = Color.Black;
             }
-            if (txtCodeField.Text.Length > 0)
+            if (txtCodeField.Text.Length > 0 && txtCodeField.Focused && e.KeyCode == Keys.Back)
             {
-                //SyntaxHighlight();
+                if (e.KeyCode == Keys.Back)
+                {
+                    e.SuppressKeyPress = true;
+                    if (txtCodeField.SelectionLength != txtCodeField.Text.Length)
+                    {
+                        txtCodeField.SelectionStart--;
+                        txtCodeField.SelectionLength = 1;
+                        txtCodeField.SelectedText = "";
+                    }
+                    else
+                    {
+                        txtCodeField.Text = "";
+                    }
+                }
+                SyntaxHighlightLine();
+                txtCodeField.SelectionColor = Color.Black;
             }
             if (e.KeyCode == Keys.B && e.Control)
             {
-                SyntaxHighlight();
+                SyntaxHighlightLine();
             }
         }
-        
-        private void SyntaxHighlight()
+
+        private bool InStrLiteral()
         {
-            string code = txtCodeField.Text;
-            machine = new Machine(code);
-            Token[] tokens = machine.ShortTokenize();
-            List<string> words = new List<string>();
-            Color[] colours = { Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.Blue, Color.Purple, Color.Black };
-            int carterLocation = txtCodeField.SelectionStart;
-            int carterLength = txtCodeField.SelectionLength;
-            foreach (Token token in tokens)
+            if (txtCodeField.Text.Length > 0)
             {
-                if (token.GetLiteral() != null)
+                string code = txtCodeField.Text;
+                int quotes = 0;
+                foreach (char s in code)
                 {
-                    words.Add(token.GetLiteral());
+                    if (s == '"')
+                    {
+                        quotes++;
+                    }
+                }
+                if (quotes % 2 == 1)
+                {
+                    return true;
                 }
             }
-            if (words.Count > 0)
+            return false;
+        }
+
+        private bool KeywordEntered()
+        {
+            if (txtCodeField.Text.Length > 0)
             {
-                int index = 0;
-                int totalLength = code.Length;
-                //foreach (string word in words)
-                //{
-                //    if (word != null)
-                //    {
-                //        totalLength += word.Length;
-                //        MessageBox.Show($"Adding to total\n{word}\ntotal = {totalLength}");
-                //    }
-                //}
-                for (int i = 0; i < words.Count; i++)
+                string code = txtCodeField.Text;
+                string endPart = code.Substring(code.Length - 1);
+                for (int i = 0; endPart[0] != ' ' && i < code.Length; i++)
                 {
-                    //MessageBox.Show($"i = {i}\nword count = {words.Count}");
-                    string word = words[i];
+                    endPart = code.Substring(code.Length - i - 1);
+                }
+                endPart.TrimStart(' ');
+                try
+                {
+                    machine = new Machine(txtCodeField.Text);
+                    machine.GetTokenType(endPart);
+                    return true;
+                }
+                catch { }
+            }
+            return false;
+        }
+        
+        // Work out the colour for the current line
+        private void SyntaxHighlightLine()
+        {
+            if (txtCodeField.Text.Length > 0)
+            {
+                int start = txtCodeField.SelectionStart;
+                int line = txtCodeField.GetLineFromCharIndex(start);
+                string[] lines = txtCodeField.Lines;
+
+                int caretPosition = txtCodeField.SelectionStart;
+                int caretLength = txtCodeField.SelectionLength;
+
+                int firstChar = txtCodeField.GetFirstCharIndexFromLine(line);
+                txtCodeField.SelectionStart = firstChar;
+
+                int index = 0;
+                int totalLength = lines[line].Length;
+
+                machine = new Machine(txtCodeField.Text);
+                Token[] tokens = machine.ShortTokenize(lines[line], firstChar, firstChar + totalLength);
+                for (int i = 0; i < tokens.Length; i++)
+                {
+                    string word = tokens[i].GetLiteral();
                     if (word != null)
                     {
                         bool ready = false;
-                        if (txtCodeField.Text[index].ToString().ToUpper() == word[0].ToString().ToUpper())
+                        // Checking if the caret is at the same character as in the sanitised tokens
+                        if (lines[line][index].ToString().ToUpper() == word[0].ToString().ToUpper())
                         {
-                            //MessageBox.Show("Ready for next word");
                             ready = true;
                         }
                         else
                         {
-                            //MessageBox.Show($"Not ready. Searching\nindex = {index}\ntotal len = {totalLength}");
-                            for (int j = 0; index < totalLength && txtCodeField.Text[index].ToString().ToUpper() != word[0].ToString().ToUpper(); j++)
+                            for (int j = 0; index < totalLength && lines[line][index].ToString().ToUpper() != word[0].ToString().ToUpper(); j++)
                             {
                                 index++;
-                                //MessageBox.Show($"Next char = {txtCodeField.Text[index]}\nFirst char = {word[0]}\n{txtCodeField.Text[index] == word[0]}");
                             }
-                            if (txtCodeField.Text[index].ToString().ToUpper() == word[0].ToString().ToUpper())
+                            if (lines[line][index].ToString().ToUpper() == word[0].ToString().ToUpper())
                             {
                                 ready = true;
                             }
                         }
                         if (ready)
                         {
-                            //MessageBox.Show($"Word {i + 1}: {word}\nLen = {word.Length}");
-                            txtCodeField.SelectionStart = index;
-                            if (Is(tokens[i], TokenType.STR_LITERAL))
-                            {
-                                txtCodeField.SelectionLength++;
-                            }
-                            txtCodeField.SelectionLength += word.Length;
+                            txtCodeField.SelectionStart = firstChar + index;
+                            Color syntaxColour;
                             if (Is(tokens[i], TokenType.WITH) && i > 0)
                             {
-                                txtCodeField.SelectionColor = ColourDefinition(tokens[i], tokens[i - 1]);
+                                syntaxColour = ColourDefinition(tokens[i], tokens[i - 1]);
                             }
                             else
                             {
-                                txtCodeField.SelectionColor = ColourDefinition(tokens[i]);
+                                syntaxColour = ColourDefinition(tokens[i]);
                             }
-                            index += word.Length;
-                            txtCodeField.SelectionLength = carterLength;
-                            txtCodeField.SelectionStart = carterLocation;
+                            if (syntaxColour != Color.Black)
+                            {
+                                txtCodeField.SelectionLength = word.Length;
+                                txtCodeField.SelectionColor = syntaxColour;
+                            }
+                            else
+                            {
+                                txtCodeField.SelectionLength = word.Length;
+                                txtCodeField.SelectionColor = Color.Black;
+                            }
                         }
-                        
                     }
-                    
                 }
+
+                txtCodeField.SelectionStart = caretPosition;
+                txtCodeField.SelectionLength = caretLength;
             }
         }
 

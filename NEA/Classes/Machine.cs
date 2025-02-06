@@ -185,7 +185,7 @@ namespace NEA
         }
 
         // Token definitions
-        private TokenType GetTokenType(string token)
+        public TokenType GetTokenType(string token)
         {
             switch (token.ToUpper())
             {
@@ -431,7 +431,7 @@ namespace NEA
 
         private bool IsComparisonOperatorChar(char c)
         {
-            return c == '=' || /*/ Temp /*/ c == '!' || c == '>' || c == '<';
+            return c == '=' || c == '>' || c == '<';
         }
 
         private string[] FindSubroutineNames()
@@ -531,7 +531,7 @@ namespace NEA
             return tokensList.ToArray();
         }
 
-        public Token[] ShortTokenize()
+        public Token[] ShortTokenize(string line, int startIndex, int endIndex)
         {
             List<Token> tokensList = new List<Token>();
             char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^', ',' };
@@ -539,21 +539,20 @@ namespace NEA
             string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
 
             string[] subroutineNames = FindSubroutineNames();
-            subroutineParametersCount = new int[subroutineNames.Length];
-            subroutineLocalVariableCounter = new int[subroutineNames.Length];
 
-            while (current < sourceCode.Length)
+            current = startIndex;
+
+            while (current < endIndex)
             {
                 start = current;
                 char c = sourceCode[current++];
                 if (singleCharKeyword.Contains(c))
                 {
-                    tokensList.Add(new Token(GetTokenType(c.ToString()), c.ToString(), line));
+                    tokensList.Add(new Token(GetTokenType(c.ToString()), c.ToString(), 0));
                 }
                 else if (c == '\n')
                 {
-                    line++;
-                    //tokensList.Add(new Token(TokenType.NEWLINE, "\n", line));
+                    break;
                 }
                 else if (c == '\t')
                 {
@@ -567,7 +566,7 @@ namespace NEA
                         {
                             if (Peek() == '\n')
                             {
-                                line++;
+                                break;
                             }
                             current++;
                         }
@@ -581,7 +580,7 @@ namespace NEA
 
                         string text = sourceCode.Substring(start, current - start);
 
-                        tokensList.Add(new Token(TokenType.STR_LITERAL, text, line));
+                        tokensList.Add(new Token(TokenType.STR_LITERAL, text, 0));
                     }
                     catch
                     {
@@ -589,14 +588,14 @@ namespace NEA
                         {
                             if (Peek() == '\n')
                             {
-                                line++;
+                                break;
                             }
                             current++;
                         }
 
-                        string text = sourceCode.Substring(start, current - start - 1);
+                        string text = sourceCode.Substring(start, current - start);
 
-                        tokensList.Add(new Token(TokenType.STR_LITERAL, text, line));
+                        tokensList.Add(new Token(TokenType.STR_LITERAL, text, 0));
                     }
                 }
                 else if (char.IsWhiteSpace(c))
@@ -611,27 +610,27 @@ namespace NEA
                         TokenType type = GetTokenType(word);
                         if (type == TokenType.END)
                         {
-                            tokensList.Add(new Token(TokenType.EON, null, line));
+                            tokensList.Add(new Token(TokenType.EON, null, 0));
                         }
-                        tokensList.Add(new Token(type, word, line));
+                        tokensList.Add(new Token(type, word, 0));
                     }
                     else if (dataTypes.Contains(word.ToUpper()))
                     {
-                        tokensList.Add(new Token(TokenType.DATA_TYPE, word, line));
+                        tokensList.Add(new Token(TokenType.DATA_TYPE, word, 0));
                     }
                     else if (subroutineNames.Contains(word))
                     {
-                        tokensList.Add(new Token(TokenType.SUBROUTINE_NAME, word, line));
+                        tokensList.Add(new Token(TokenType.SUBROUTINE_NAME, word, 0));
                     }
                     else
                     {
-                        tokensList.Add(new Token(TokenType.VARIABLE, word.ToUpper(), line));
+                        tokensList.Add(new Token(TokenType.VARIABLE, word.ToUpper(), 0));
                     }
                 }
                 else if (IsComparisonOperatorChar(c))
                 {
                     string op = GetComparisonOperator();
-                    tokensList.Add(new Token(GetTokenType(op), op, line));
+                    tokensList.Add(new Token(GetTokenType(op), op, 0));
                 }
                 else if (IsDigit(c))
                 {
@@ -642,8 +641,6 @@ namespace NEA
                     SkipToEndOfLine();
                 }
             }
-
-            tokensList.Add(new Token(TokenType.EOF, null, line + 1));
 
             return tokensList.ToArray();
         }
