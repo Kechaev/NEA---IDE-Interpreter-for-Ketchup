@@ -479,7 +479,15 @@ namespace NEA
                     txtCodeField.SelectedText = "\n";
                 }
             }
+            else
+            {
+                txtCodeField.SelectionColor = Color.Black;
+            }
             if (txtCodeField.Text.Length > 0)
+            {
+                //SyntaxHighlight();
+            }
+            if (e.KeyCode == Keys.B && e.Control)
             {
                 SyntaxHighlight();
             }
@@ -496,27 +504,131 @@ namespace NEA
             int carterLength = txtCodeField.SelectionLength;
             foreach (Token token in tokens)
             {
-                words.Add(token.GetLiteral());
+                if (token.GetLiteral() != null)
+                {
+                    words.Add(token.GetLiteral());
+                }
             }
-            if (tokens.Length > 0)
+            if (words.Count > 0)
             {
                 int index = 0;
+                int totalLength = code.Length;
+                //foreach (string word in words)
+                //{
+                //    if (word != null)
+                //    {
+                //        totalLength += word.Length;
+                //        MessageBox.Show($"Adding to total\n{word}\ntotal = {totalLength}");
+                //    }
+                //}
                 for (int i = 0; i < words.Count; i++)
                 {
+                    //MessageBox.Show($"i = {i}\nword count = {words.Count}");
                     string word = words[i];
                     if (word != null)
                     {
-                        txtCodeField.SelectionStart = index;
-                        txtCodeField.SelectionLength += word.Length;
-                        txtCodeField.SelectionColor = colours[i];
-                        index += word.Length;
-                        txtCodeField.SelectionLength = carterLength;
-                        txtCodeField.SelectionStart = carterLocation;
+                        bool ready = false;
+                        if (txtCodeField.Text[index].ToString().ToUpper() == word[0].ToString().ToUpper())
+                        {
+                            //MessageBox.Show("Ready for next word");
+                            ready = true;
+                        }
+                        else
+                        {
+                            //MessageBox.Show($"Not ready. Searching\nindex = {index}\ntotal len = {totalLength}");
+                            for (int j = 0; index < totalLength && txtCodeField.Text[index].ToString().ToUpper() != word[0].ToString().ToUpper(); j++)
+                            {
+                                index++;
+                                //MessageBox.Show($"Next char = {txtCodeField.Text[index]}\nFirst char = {word[0]}\n{txtCodeField.Text[index] == word[0]}");
+                            }
+                            if (txtCodeField.Text[index].ToString().ToUpper() == word[0].ToString().ToUpper())
+                            {
+                                ready = true;
+                            }
+                        }
+                        if (ready)
+                        {
+                            //MessageBox.Show($"Word {i + 1}: {word}\nLen = {word.Length}");
+                            txtCodeField.SelectionStart = index;
+                            if (Is(tokens[i], TokenType.STR_LITERAL))
+                            {
+                                txtCodeField.SelectionLength++;
+                            }
+                            txtCodeField.SelectionLength += word.Length;
+                            if (Is(tokens[i], TokenType.WITH) && i > 0)
+                            {
+                                txtCodeField.SelectionColor = ColourDefinition(tokens[i], tokens[i - 1]);
+                            }
+                            else
+                            {
+                                txtCodeField.SelectionColor = ColourDefinition(tokens[i]);
+                            }
+                            index += word.Length;
+                            txtCodeField.SelectionLength = carterLength;
+                            txtCodeField.SelectionStart = carterLocation;
+                        }
+                        
                     }
                     
                 }
             }
-            
+        }
+
+        private Color ColourDefinition(Token token, Token prev = null)
+        {
+            TokenType type = token.GetTokenType();
+            switch (type)
+            {
+                case TokenType.DECLARATION:
+                case TokenType.ASSIGNMENT:
+                case TokenType.ADDITION:
+                case TokenType.TAKE:
+                case TokenType.AWAY:
+                case TokenType.MULTIPLICATION:
+                case TokenType.DIVISION:
+                case TokenType.GET:
+                case TokenType.THE:
+                case TokenType.REMAINDER:
+                case TokenType.OF:
+                    return Color.DeepPink;
+                case TokenType.IF:
+                case TokenType.COUNT:
+                case TokenType.FUNCTION:
+                case TokenType.PROCEDURE:
+                case TokenType.WHILE:
+                case TokenType.REPEAT:
+                case TokenType.ELSE:
+                case TokenType.THEN:
+                case TokenType.DO:
+                    return Color.Orange;
+                case TokenType.TO:
+                case TokenType.FROM:
+                case TokenType.GOING:
+                case TokenType.UP:
+                case TokenType.DOWN:
+                case TokenType.BY:
+                    return Color.DarkCyan;
+                case TokenType.STR_LITERAL:
+                    return Color.Green;
+                case TokenType.SUBROUTINE_NAME:
+                case TokenType.PRINT:
+                case TokenType.INPUT:
+                case TokenType.MESSAGE:
+                    return Color.Purple;
+                case TokenType.WITH:
+                    if (Is(prev, TokenType.COUNT))
+                    {
+                        return Color.DarkCyan;
+                    }
+                    else
+                    {
+                        return Color.Purple;
+                    }
+                case TokenType.END:
+                    return Color.DarkRed;
+                default:
+                    return Color.Black;
+            }
         }
 
         // Fix for tab seleting elements of the applications

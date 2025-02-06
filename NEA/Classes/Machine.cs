@@ -563,7 +563,25 @@ namespace NEA
                 {
                     try
                     {
-                        tokensList.Add(GetString());
+                        while (Peek() != '"' && current < sourceCode.Length)
+                        {
+                            if (Peek() == '\n')
+                            {
+                                line++;
+                            }
+                            current++;
+                        }
+
+                        if (current >= sourceCode.Length)
+                        {
+                            throw new Exception($"SYNTAX ERROR: String does not have a \" to end on.");
+                        }
+
+                        current++;
+
+                        string text = sourceCode.Substring(start, current - start);
+
+                        tokensList.Add(new Token(TokenType.STR_LITERAL, text, line));
                     }
                     catch
                     {
