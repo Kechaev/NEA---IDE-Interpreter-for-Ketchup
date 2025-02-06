@@ -459,7 +459,13 @@ namespace NEA
 
                     if (words.Length > 0 && toIndent.Contains(words[0].ToUpper()) && lineEnd == start)
                     {
-                        currentIndent++;
+                        //currentIndent++;
+                        string beforeSubstring = "";
+                        for (int i = 0; i <= line; i++)
+                        {
+                            beforeSubstring += $"{lines[i]} ";
+                        }
+                        currentIndent = FindIndent(beforeSubstring);
                     }
                     else if (words.Length > 0 && unIndent.Contains(words[0].ToUpper()))
                     {
@@ -522,6 +528,26 @@ namespace NEA
             {
                 SyntaxHighlightLine();
             }
+        }
+
+        private int FindIndent(string beforeSubstring)
+        {
+            int indent = 0;
+            string[] toIndent = { "FUNCTION", "IF", "ELSE", "COUNT", "REPEAT", "WHILE", "DO" };
+            string[] unIndent = { "END" };
+            string[] words = beforeSubstring.Split(' ');
+            foreach (string word in words)
+            {
+                if (toIndent.Contains(word))
+                {
+                    indent++;
+                }
+                else if (unIndent.Contains(word))
+                {
+                    indent--;
+                }
+            }
+            return indent;
         }
 
         private bool InStrLiteral()
