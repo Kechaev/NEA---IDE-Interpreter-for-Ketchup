@@ -530,6 +530,105 @@ namespace NEA
 
             return tokensList.ToArray();
         }
+
+        public Token[] ShortTokenize()
+        {
+            List<Token> tokensList = new List<Token>();
+            char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^', ',' };
+            string[] multiCharKeywords = { "=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
+            string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
+
+            string[] subroutineNames = FindSubroutineNames();
+            subroutineParametersCount = new int[subroutineNames.Length];
+            subroutineLocalVariableCounter = new int[subroutineNames.Length];
+
+            while (current < sourceCode.Length)
+            {
+                start = current;
+                char c = sourceCode[current++];
+                if (singleCharKeyword.Contains(c))
+                {
+                    tokensList.Add(new Token(GetTokenType(c.ToString()), c.ToString(), line));
+                }
+                else if (c == '\n')
+                {
+                    line++;
+                    //tokensList.Add(new Token(TokenType.NEWLINE, "\n", line));
+                }
+                else if (c == '\t')
+                {
+                    continue;
+                }
+                else if (c == '"')
+                {
+                    try
+                    {
+                        tokensList.Add(GetString());
+                    }
+                    catch
+                    {
+                        while (Peek() != '"' && current < sourceCode.Length)
+                        {
+                            if (Peek() == '\n')
+                            {
+                                line++;
+                            }
+                            current++;
+                        }
+
+                        string text = sourceCode.Substring(start, current - start - 1);
+
+                        tokensList.Add(new Token(TokenType.STR_LITERAL, text, line));
+                    }
+                }
+                else if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+                else if (IsAlpha(c))
+                {
+                    string word = GetWord();
+                    if (keyword.Contains(word.ToUpper()))
+                    {
+                        TokenType type = GetTokenType(word);
+                        if (type == TokenType.END)
+                        {
+                            tokensList.Add(new Token(TokenType.EON, null, line));
+                        }
+                        tokensList.Add(new Token(type, word, line));
+                    }
+                    else if (dataTypes.Contains(word.ToUpper()))
+                    {
+                        tokensList.Add(new Token(TokenType.DATA_TYPE, word, line));
+                    }
+                    else if (subroutineNames.Contains(word))
+                    {
+                        tokensList.Add(new Token(TokenType.SUBROUTINE_NAME, word, line));
+                    }
+                    else
+                    {
+                        tokensList.Add(new Token(TokenType.VARIABLE, word.ToUpper(), line));
+                    }
+                }
+                else if (IsComparisonOperatorChar(c))
+                {
+                    string op = GetComparisonOperator();
+                    tokensList.Add(new Token(GetTokenType(op), op, line));
+                }
+                else if (IsDigit(c))
+                {
+                    tokensList.Add(GetNumber());
+                }
+                else if (c == '#')
+                {
+                    SkipToEndOfLine();
+                }
+            }
+
+            tokensList.Add(new Token(TokenType.EOF, null, line + 1));
+
+            return tokensList.ToArray();
+        }
         #endregion
 
         // Fields for Translation into Intermediate Code
@@ -2230,6 +2329,17 @@ namespace NEA
                         }
                         break;
                     case TokenType.IF:
+                        // Correct Syntax:
+                        // IF <condition> THEN
+                        // statement
+                        // END IF
+                        // ELSE IF <condition> THEN
+                        // statement
+                        // END IF
+                        // ELSE
+                        // statement
+                        // END IF
+
                         // Declare necessary variables
                         j = 0;
                         #region Variable Declarations

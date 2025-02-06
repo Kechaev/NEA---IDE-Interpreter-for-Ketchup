@@ -72,9 +72,9 @@ namespace NEA
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
-            this.lblConsole = new System.Windows.Forms.Label();
             this.btnCopy = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
+            this.lblConsole = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -377,6 +377,7 @@ namespace NEA
             // 
             // tableCodeSpace
             // 
+            this.tableCodeSpace.BackColor = System.Drawing.SystemColors.Control;
             resources.ApplyResources(this.tableCodeSpace, "tableCodeSpace");
             this.tableCodeSpace.Controls.Add(this.txtLineNumber, 0, 0);
             this.tableCodeSpace.Controls.Add(this.txtCodeField, 1, 0);
@@ -391,11 +392,6 @@ namespace NEA
             this.tableConsole.Controls.Add(this.lblConsole, 0, 0);
             this.tableConsole.Name = "tableConsole";
             // 
-            // lblConsole
-            // 
-            resources.ApplyResources(this.lblConsole, "lblConsole");
-            this.lblConsole.Name = "lblConsole";
-            // 
             // btnCopy
             // 
             resources.ApplyResources(this.btnCopy, "btnCopy");
@@ -409,6 +405,11 @@ namespace NEA
             this.btnClear.Name = "btnClear";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click_1);
+            // 
+            // lblConsole
+            // 
+            resources.ApplyResources(this.lblConsole, "lblConsole");
+            this.lblConsole.Name = "lblConsole";
             // 
             // IDE_MainWindow
             // 

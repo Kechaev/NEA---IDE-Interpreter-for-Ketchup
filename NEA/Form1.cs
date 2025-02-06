@@ -474,9 +474,51 @@ namespace NEA
 
                     txtCodeField.SelectedText = insert;
                 }
+                else
+                {
+                    txtCodeField.SelectedText = "\n";
+                }
+            }
+            if (txtCodeField.Text.Length > 0)
+            {
+                SyntaxHighlight();
             }
         }
         
+        private void SyntaxHighlight()
+        {
+            string code = txtCodeField.Text;
+            machine = new Machine(code);
+            Token[] tokens = machine.ShortTokenize();
+            List<string> words = new List<string>();
+            Color[] colours = { Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.Blue, Color.Purple, Color.Black };
+            int carterLocation = txtCodeField.SelectionStart;
+            int carterLength = txtCodeField.SelectionLength;
+            foreach (Token token in tokens)
+            {
+                words.Add(token.GetLiteral());
+            }
+            if (tokens.Length > 0)
+            {
+                int index = 0;
+                for (int i = 0; i < words.Count; i++)
+                {
+                    string word = words[i];
+                    if (word != null)
+                    {
+                        txtCodeField.SelectionStart = index;
+                        txtCodeField.SelectionLength += word.Length;
+                        txtCodeField.SelectionColor = colours[i];
+                        index += word.Length;
+                        txtCodeField.SelectionLength = carterLength;
+                        txtCodeField.SelectionStart = carterLocation;
+                    }
+                    
+                }
+            }
+            
+        }
+
         // Fix for tab seleting elements of the applications
         // Overrides the ProcessCmdKey method
         // Injects new function of the tab and does not affect other Command Keys
