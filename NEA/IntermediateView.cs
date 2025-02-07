@@ -45,6 +45,9 @@ namespace NEA
             {"HALT", "Indicates the end of the program and stops the execution of the program." },
         };
 
+        // Redo the Intermediate View Window and make it with a LIST BOX instead of TEXT BOX
+        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
         // Add support for explaining what the individual words mean
         public IntermediateView(string[] intermediate, List<string[]> subroutineIntermediate, Dictionary<string, int> subroutineDict)
         {

@@ -283,7 +283,7 @@ namespace NEA
             isSaved = false;
             if (KeywordEntered())
             {
-                SyntaxHighlightLine();
+                SyntaxHighlightLastWord();
                 txtCodeField.SelectionColor = Color.Black;
             }
             //else if (InStrLiteral())
@@ -459,7 +459,6 @@ namespace NEA
 
                     if (words.Length > 0 && toIndent.Contains(words[0].ToUpper()) && lineEnd == start)
                     {
-                        //currentIndent++;
                         string beforeSubstring = "";
                         for (int i = 0; i <= line; i++)
                         {
@@ -497,37 +496,6 @@ namespace NEA
                 {
                     txtCodeField.SelectedText = "\n";
                 }
-                txtCodeField.SelectionStart--;
-                SyntaxHighlightLine();
-                txtCodeField.SelectionStart++;
-            }
-            else
-            {
-                txtCodeField.SelectionColor = Color.Black;
-            }
-            if (txtCodeField.Text.Length > 0 && txtCodeField.Focused && e.KeyCode == Keys.Back)
-            {
-                if (e.KeyCode == Keys.Back)
-                {
-                    e.SuppressKeyPress = true;
-                    if (txtCodeField.SelectionLength != txtCodeField.Text.Length)
-                    {
-                        txtCodeField.SelectionStart--;
-                        txtCodeField.SelectionLength = 1;
-                        txtCodeField.SelectedText = "";
-                    }
-                    else
-                    {
-                        txtCodeField.Text = "";
-                    }
-                }
-                SyntaxHighlightLine();
-                txtCodeField.SelectionColor = Color.Black;
-            }
-            else if (txtCodeField.Text.Length > 0 && txtCodeField.Focused && e.KeyCode == Keys.Space)
-            {
-                SyntaxHighlightLine();
-                txtCodeField.SelectionColor = Color.Black;
             }
             if (e.KeyCode == Keys.B && e.Control)
             {
@@ -580,22 +548,68 @@ namespace NEA
         {
             if (txtCodeField.Text.Length > 0)
             {
+                int selectionStart = txtCodeField.SelectionStart;
                 string code = txtCodeField.Text;
                 string endPart = code.Substring(code.Length - 1);
-                for (int i = 0; endPart[0] != ' ' && i < code.Length; i++)
+                for (int i = 0; endPart[0] != ' ' && i < selectionStart; i++)
                 {
-                    endPart = code.Substring(code.Length - i - 1);
+                    endPart = code.Substring(selectionStart - i - 1, i + 1);
                 }
-                endPart.TrimStart(' ');
-                try
+                endPart = endPart.TrimStart(' ');
+                if (ColourDefinitionTokenless(endPart, "") != Color.Black)
                 {
-                    machine = new Machine(txtCodeField.Text);
-                    machine.GetTokenType(endPart);
                     return true;
                 }
-                catch { }
             }
             return false;
+        }
+
+        private void SyntaxHighlightLastWord()
+        {
+            // Only works for first word
+            int selectionStart = txtCodeField.SelectionStart;
+            int selectionLength = txtCodeField.SelectionLength;
+            if (txtCodeField.Text.Length > 0)
+            {
+                string code = txtCodeField.Text;
+                string substring = code.Substring(selectionStart - 1, 1);
+                int i = 0;
+                for (; substring[0] != ' ' && i < code.Length; i++)
+                {
+                    substring = code.Substring(selectionStart - 1 - i, 1 + i);
+                }
+                int beginningOfWord = selectionStart - i;
+                string word = substring.TrimStart(' ');
+                // Selected last word
+                txtCodeField.SelectionStart = beginningOfWord;
+                txtCodeField.SelectionLength = 1 + i;
+                // Change colour)
+                if (txtCodeField.SelectionLength > 0)
+                {
+                    Color syntaxColour;
+                    MessageBox.Show($"Word = {word}");
+                    if (word.ToUpper() == "WITH")
+                    {
+                        int j = 0;
+                        string prev = code.Substring(beginningOfWord - 1, 1);
+                        MessageBox.Show($"Beginning = {beginningOfWord}");
+                        for (; j < code.Length; j++)
+                        {
+                            prev = code.Substring(beginningOfWord - j, 1 + j);
+                        }
+                        prev = prev.TrimStart(' ').TrimEnd(' ');
+                        syntaxColour = ColourDefinitionTokenless(word, prev);
+                    }
+                    else
+                    {
+                        syntaxColour = ColourDefinitionTokenless(word);
+                    }
+                    txtCodeField.SelectionColor = syntaxColour;
+                }
+                txtCodeField.SelectionStart = selectionStart;
+                txtCodeField.SelectionLength = selectionLength;
+                txtCodeField.SelectionColor = Color.Black;
+            }
         }
         
         // Work out the colour for the current line
@@ -668,6 +682,53 @@ namespace NEA
 
                 txtCodeField.SelectionStart = caretPosition;
                 txtCodeField.SelectionLength = caretLength;
+            }
+        }
+
+        private Color ColourDefinitionTokenless(string word, string prev = null)
+        {
+            switch (word.ToUpper())
+            {
+                case "SET":
+                case "CREATE":
+                case "ADD":
+                case "TAKE":
+                case "AWAY":
+                case "MULTIPLY":
+                case "DIVIDE":
+                case "GET":
+                case "THE":
+                case "REMAINDER":
+                case "OF":
+                    return Color.DeepPink;
+                case "IF":
+                case "ELSE":
+                case "COUNT":
+                case "WHILE":
+                case "DO":
+                case "REPEAT":
+                case "FUNCTION":
+                case "PROCEDURE":
+                    return Color.DarkOrange;
+                case "PRINT":
+                case "INPUT":
+                case "MESSAGE":
+                    return Color.Purple;
+                case "FROM":
+                case "TO":
+                case "GOING":
+                case "UP":
+                case "DOWN":
+                case "BY":
+                    return Color.DarkCyan;
+                case "WITH":
+                    if (prev.ToUpper() == "INPUT")
+                    {
+                        return Color.Purple;
+                    }
+                    return Color.DarkCyan;
+                default:
+                    return Color.Black;
             }
         }
 
