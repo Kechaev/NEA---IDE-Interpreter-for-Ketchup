@@ -377,7 +377,7 @@ namespace NEA
             // 
             // tableCodeSpace
             // 
-            this.tableCodeSpace.BackColor = System.Drawing.SystemColors.Control;
+            this.tableCodeSpace.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.tableCodeSpace, "tableCodeSpace");
             this.tableCodeSpace.Controls.Add(this.txtLineNumber, 0, 0);
             this.tableCodeSpace.Controls.Add(this.txtCodeField, 1, 0);

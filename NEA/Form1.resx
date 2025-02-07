@@ -278,9 +278,6 @@
   <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="menuStrip.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 2, 0, 2</value>
-  </data>
   <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
     <value>1920, 33</value>
   </data>
@@ -353,15 +350,15 @@
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7Ze9SxxRFMUnMSGFmjRpApF10EIsgn+DpEod
-        uyCkDIpFGlEI2EYhdUgTbGJIkaAgNgkoBsxHFbC1E6yMXwQb3c05671wGe7svll0Fd/84Ae+s7ML94zz
-        3m5SUlJSUpKlltaSWnJDVhFSLwDupieSRIYWoFb7euSVSMgWoEaDN7x6kv6Qq64x3uBZW+crXIIf4bz4
-        Fr6Gj+AVwBs4z+L8hXxfnmPwkvEGbWhlSN4Zgi3gHZyBiybjyXPJR7A7ZIBh2AIeMBA2oebDDMAU3BHH
-        GQiabddXSfIQ7ou/4Qv4B57CdTgAC+ANF+pphc93I/IK2ILM+B/QwQCwAL32OQNBs4P66qwAzTi0/q1+
-        gQXwBitqPraASci79d5ktkBbwCgDQTOvABY5C5+ZrAoLPFbeQEXNp9EmuAItrRTwjYHwGWreyyAMb6Bg
-        k5vyKXnYAvicHpv1NLS8hPpaaAGrDIQFqHk/gzDcwZp4mP6TdzcjuweMmDXlWuGRqHloAd8ZCB+g5hdY
-        QDG8TXAOakYrkDyFmnGfuA+fmMwrYIOB8AlqfiEF8AwvilcAWYOaHzEAg1AzT68AHoPKMtT8nAtonbwC
-        eNftfvATkjeQu7g6AXnU0T1IWIBmvxgI3A/0886rgMEuuaqd9MHHsLO+8rlnVLwsAG/w3ZTtRkJ2+OjQ
-        wau9rySJjCjvevvhd3NrdPAX3x2x2dfna8lteBd2w1sMSkraTZL8B1b7bMEDEgf6AAAAAElFTkSuQmCC
+        uyCkDIpFGlEI2EYhdUgTbGJIkaAgNgkoBsxHFbC1E2wkfhFsdDfnrPfCZbiz+2bRVXzzgx/4zs4u3DPO
+        e7tJSUlJSUmWWlpLaskNWUVIvQC4m55IEhlagFrt65FXIiFbgBoN3vDqSfpDrrrGeINnbZ2vcAl+hPPi
+        W/gaPoJXAG/gPIvzF/J9eY7BS8YbtKGVIXlnCLaAd3AGLpqMJ88lH8HukAGGYQt4wEDYhJoPMwBTcEcc
+        ZyBotl1fJclDuC/+hi/gH3gK1+EALIA3XKinFT7fjcgrYAsy439ABwPAAvTa5wwEzQ7qq7MCNOPQ+rf6
+        BRbAG6yo+dgCJiHv1nuT2QJtAaMMBM28AljkLHxmsios8Fh5AxU1n0ab4Aq0tFLANwbCZ6h5L4MwvIGC
+        TW7Kp+RhC+BzemzW09DyEuproQWsMhAWoOb9DMJwB2viYfpP3t2M7B4wYtaUa4VHouahBXxnIHyAml9g
+        AcXwNsE5qBmtQPIUasZ94j58YjKvgA0Gwieo+YUUwDO8KF4BZA1qfsQADELNPL0CeAwqy1Dzcy6gdfIK
+        4F23+8FPSN5A7uLqBORRR/cgYQGa/WIgcD/QzzuvAga75Kp20gcfw876yueeUfGyALzBd1O2GwnZ4aND
+        B6/2vpIkMqK86+2H382t0cFffHfEZl+fryW34V3YDW8xKClpN0nyHzQgbL+nIEKzAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -787,7 +784,7 @@
     <value>0</value>
   </data>
   <data name="tableCodeSpace.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="txtLineNumber" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="txtCodeField" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,40,Percent,100" /&gt;&lt;Rows Styles="Percent,100,Absolute,331" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="txtLineNumber" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="txtCodeField" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,40,Percent,100" /&gt;&lt;Rows Styles="Percent,100,Absolute,220" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <data name="&gt;&gt;splitContainer.Panel1.Name" xml:space="preserve">
     <value>splitContainer.Panel1</value>

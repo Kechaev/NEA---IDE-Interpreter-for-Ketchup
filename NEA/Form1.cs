@@ -286,11 +286,11 @@ namespace NEA
                 SyntaxHighlightLine();
                 txtCodeField.SelectionColor = Color.Black;
             }
-            else if (InStrLiteral())
-            {
-                SyntaxHighlightLine();
-                txtCodeField.SelectionColor = Color.Green;
-            }
+            //else if (InStrLiteral())
+            //{
+            //    SyntaxHighlightLine();
+            //    txtCodeField.SelectionColor = Color.Green;
+            //}
             if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
             {
                 undoStack.Push(txtCodeField.Text);
@@ -521,6 +521,11 @@ namespace NEA
                         txtCodeField.Text = "";
                     }
                 }
+                SyntaxHighlightLine();
+                txtCodeField.SelectionColor = Color.Black;
+            }
+            else if (txtCodeField.Text.Length > 0 && txtCodeField.Focused && e.KeyCode == Keys.Space)
+            {
                 SyntaxHighlightLine();
                 txtCodeField.SelectionColor = Color.Black;
             }
