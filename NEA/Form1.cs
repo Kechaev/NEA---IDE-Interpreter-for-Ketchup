@@ -1191,7 +1191,8 @@ namespace NEA
             bool searching = true;
             for (; i >= 0 && searching; i--)
             {
-                Regex rg = new Regex(@"={3} .+ \d{2}:\d{2}:\d{2} ={3}");
+                // Regex not working
+                Regex rg = new Regex(@"={3} (Unsaved Program \d+)|(.*\.ktch) - \d{2}:\d{2}:\d{2} ={3}");
                 Match match = rg.Match(lines[i]);
                 if (match.Success)
                 {
