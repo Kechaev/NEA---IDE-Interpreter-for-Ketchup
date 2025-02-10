@@ -1191,16 +1191,26 @@ namespace NEA
             bool searching = true;
             for (; i >= 0 && searching; i--)
             {
-                Regex rg = new Regex(@"={3} .+ \d{2}/\d{2}/\d{2} ={3}");
+                Regex rg = new Regex(@"={3} .+ \d{2}:\d{2}:\d{2} ={3}");
                 Match match = rg.Match(lines[i]);
                 if (match.Success)
                 {
                     searching = false;
                 }
             }
+            i++;
             if (!searching)
             {
-
+                string output = "";
+                for (int j = lines.Length - 2; j > i; j--)
+                {
+                    output = lines[j] + "\n" + output;
+                }
+                Clipboard.SetText(output);
+            }
+            else
+            {
+                MessageBox.Show($"No text was copied");
             }
         }
     }
