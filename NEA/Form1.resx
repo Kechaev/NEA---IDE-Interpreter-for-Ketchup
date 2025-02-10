@@ -120,11 +120,42 @@
   <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1920, 33</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="menuStrip.Text" xml:space="preserve">
+    <value>menuStrip1</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Name" xml:space="preserve">
+    <value>menuStrip</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;menuStrip.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>54, 29</value>
+  </data>
+  <data name="tsFile.Text" xml:space="preserve">
+    <value>&amp;File</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="tsFileNew.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+N</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="tsFileNew.Size" type="System.Drawing.Size, System.Drawing">
     <value>285, 34</value>
   </data>
@@ -167,11 +198,11 @@
   <data name="tsFileExit.Text" xml:space="preserve">
     <value>E&amp;xit</value>
   </data>
-  <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 29</value>
+  <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 29</value>
   </data>
-  <data name="tsFile.Text" xml:space="preserve">
-    <value>&amp;File</value>
+  <data name="tsEdit.Text" xml:space="preserve">
+    <value>&amp;Edit</value>
   </data>
   <data name="tsEditCut.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+X</value>
@@ -200,11 +231,11 @@
   <data name="tsEditPaste.Text" xml:space="preserve">
     <value>Paste</value>
   </data>
-  <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 29</value>
+  <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 29</value>
   </data>
-  <data name="tsEdit.Text" xml:space="preserve">
-    <value>&amp;Edit</value>
+  <data name="tsView.Text" xml:space="preserve">
+    <value>&amp;View</value>
   </data>
   <data name="tsViewConsoleView.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Alt+C</value>
@@ -233,11 +264,11 @@
   <data name="tsTokenView.Text" xml:space="preserve">
     <value>View Token</value>
   </data>
-  <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 29</value>
+  <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>82, 29</value>
   </data>
-  <data name="tsView.Text" xml:space="preserve">
-    <value>&amp;View</value>
+  <data name="tsDebug.Text" xml:space="preserve">
+    <value>&amp;Debug</value>
   </data>
   <data name="tsDebugTraceTable.Size" type="System.Drawing.Size, System.Drawing">
     <value>264, 34</value>
@@ -257,11 +288,11 @@
   <data name="tsDebugBreakpoints.Text" xml:space="preserve">
     <value>Enable Breakpoints</value>
   </data>
-  <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>82, 29</value>
+  <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
+    <value>92, 29</value>
   </data>
-  <data name="tsDebug.Text" xml:space="preserve">
-    <value>&amp;Debug</value>
+  <data name="tsConsole.Text" xml:space="preserve">
+    <value>&amp;Console</value>
   </data>
   <data name="tsClear.Size" type="System.Drawing.Size, System.Drawing">
     <value>153, 34</value>
@@ -269,40 +300,36 @@
   <data name="tsClear.Text" xml:space="preserve">
     <value>Clear</value>
   </data>
-  <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>92, 29</value>
-  </data>
-  <data name="tsConsole.Text" xml:space="preserve">
-    <value>&amp;Console</value>
-  </data>
-  <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1920, 33</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="menuStrip.Text" xml:space="preserve">
-    <value>menuStrip1</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Name" xml:space="preserve">
-    <value>menuStrip</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;menuStrip.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
   <metadata name="toolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>174, 16</value>
   </metadata>
+  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 33</value>
+  </data>
+  <data name="toolStrip.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 3, 0</value>
+  </data>
+  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1920, 41</value>
+  </data>
+  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="toolStrip.Text" xml:space="preserve">
+    <value>toolStrip1</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
+    <value>toolStrip</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
   <data name="stripUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -350,15 +377,15 @@
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7Ze9SxxRFMUnMSGFmjRpApF10EIsgn+DpEod
-        uyCkDIpFGlEI2EYhdUgTbGJIkaAgNgkoBsxHFbC1E2wkfhFsdDfnrPfCZbiz+2bRVXzzgx/4zs4u3DPO
-        e7tJSUlJSUmWWlpLaskNWUVIvQC4m55IEhlagFrt65FXIiFbgBoN3vDqSfpDrrrGeINnbZ2vcAl+hPPi
-        W/gaPoJXAG/gPIvzF/J9eY7BS8YbtKGVIXlnCLaAd3AGLpqMJ88lH8HukAGGYQt4wEDYhJoPMwBTcEcc
-        ZyBotl1fJclDuC/+hi/gH3gK1+EALIA3XKinFT7fjcgrYAsy439ABwPAAvTa5wwEzQ7qq7MCNOPQ+rf6
-        BRbAG6yo+dgCJiHv1nuT2QJtAaMMBM28AljkLHxmsios8Fh5AxU1n0ab4Aq0tFLANwbCZ6h5L4MwvIGC
-        TW7Kp+RhC+BzemzW09DyEuproQWsMhAWoOb9DMJwB2viYfpP3t2M7B4wYtaUa4VHouahBXxnIHyAml9g
-        AcXwNsE5qBmtQPIUasZ94j58YjKvgA0Gwieo+YUUwDO8KF4BZA1qfsQADELNPL0CeAwqy1Dzcy6gdfIK
-        4F23+8FPSN5A7uLqBORRR/cgYQGa/WIgcD/QzzuvAga75Kp20gcfw876yueeUfGyALzBd1O2GwnZ4aND
-        B6/2vpIkMqK86+2H382t0cFffHfEZl+fryW34V3YDW8xKClpN0nyHzQgbL+nIEKzAAAAAElFTkSuQmCC
+        uyCkDIpFGlEI2EYhdUgTbGJIkaAgNgkoBsxHFbC1EyyE+EWw0d2cs94Ll+HO7ptFV/HND37gOzu7cM84
+        7+0mJSUlJSVZamktqSU3ZBUh9QLgbnoiSWRoAWq1r0deiYRsAWo0eMOrJ+kPueoa4w2etXW+wiX4Ec6L
+        b+Fr+AheAbyB8yzOX8j35TkGLxlv0IZWhuSdIdgC3sEZuGgynjyXfAS7QwYYhi3gAQNhE2o+zABMwR1x
+        nIGg2XZ9lSQP4b74G76Af+ApXIcDsADecKGeVvh8NyKvgC3IjP8BHQwAC9BrnzMQNDuor84K0IxD69/q
+        F1gAb7Ci5mMLmIS8W+9NZgu0BYwyEDTzCmCRs/CZyaqwwGPlDVTUfBptgivQ0koB3xgIn6HmvQzC8AYK
+        Nrkpn5KHLYDP6bFZT0PLS6ivhRawykBYgJr3MwjDHayJh+k/eXczsnvAiFlTrhUeiZqHFvCdgfABan6B
+        BRTD2wTnoGa0AslTqBn3ifvwicm8AjYYCJ+g5hdSAM/wongFkDWo+REDMAg18/QK4DGoLEPNz7mA1skr
+        gHfd7gc/IXkDuYurE5BHHd2DhAVo9ouBwP1AP++8ChjskqvaSR98DDvrK597RsXLAvAG303ZbiRkh48O
+        Hbza+0qSyIjyrrcffje3Rgd/8d0Rm319vpbchndhN7zFoKSk3STJfxFFbL3CHoauAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -441,48 +468,9 @@
   <data name="stripCopy.Text" xml:space="preserve">
     <value>toolStripButton1</value>
   </data>
-  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 33</value>
-  </data>
-  <data name="toolStrip.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 3, 0</value>
-  </data>
-  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1920, 41</value>
-  </data>
-  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="toolStrip.Text" xml:space="preserve">
-    <value>toolStrip1</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
-    <value>toolStrip</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <metadata name="statusBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>320, 17</value>
   </metadata>
-  <data name="statusLineInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 25</value>
-  </data>
-  <data name="statusLineInfo.Text" xml:space="preserve">
-    <value>Line: 1</value>
-  </data>
-  <data name="statusColumnInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>93, 25</value>
-  </data>
-  <data name="statusColumnInfo.Text" xml:space="preserve">
-    <value>Column: 1</value>
-  </data>
   <data name="statusBar.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 670</value>
   </data>
@@ -510,14 +498,26 @@
   <data name="&gt;&gt;statusBar.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="statusLineInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 25</value>
+  </data>
+  <data name="statusLineInfo.Text" xml:space="preserve">
+    <value>Line: 1</value>
+  </data>
+  <data name="statusColumnInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>93, 25</value>
+  </data>
+  <data name="statusColumnInfo.Text" xml:space="preserve">
+    <value>Column: 1</value>
+  </data>
   <data name="tableConsole.ColumnCount" type="System.Int32, mscorlib">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="btnCopy.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
   <data name="btnCopy.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1681, 3</value>
+    <value>1581, 3</value>
   </data>
   <data name="btnCopy.Size" type="System.Drawing.Size, System.Drawing">
     <value>94, 34</value>
@@ -539,36 +539,6 @@
   </data>
   <data name="&gt;&gt;btnCopy.ZOrder" xml:space="preserve">
     <value>1</value>
-  </data>
-  <data name="btnClear.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="btnClear.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="btnClear.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1781, 3</value>
-  </data>
-  <data name="btnClear.Size" type="System.Drawing.Size, System.Drawing">
-    <value>94, 34</value>
-  </data>
-  <data name="btnClear.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
-  </data>
-  <data name="btnClear.Text" xml:space="preserve">
-    <value>Clear</value>
-  </data>
-  <data name="&gt;&gt;btnClear.Name" xml:space="preserve">
-    <value>btnClear</value>
-  </data>
-  <data name="&gt;&gt;btnClear.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;btnClear.Parent" xml:space="preserve">
-    <value>tableConsole</value>
-  </data>
-  <data name="&gt;&gt;btnClear.ZOrder" xml:space="preserve">
-    <value>2</value>
   </data>
   <data name="lblConsole.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -601,7 +571,67 @@
     <value>tableConsole</value>
   </data>
   <data name="&gt;&gt;lblConsole.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="btnClear.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="btnClear.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnClear.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1781, 3</value>
+  </data>
+  <data name="btnClear.Size" type="System.Drawing.Size, System.Drawing">
+    <value>94, 34</value>
+  </data>
+  <data name="btnClear.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="btnClear.Text" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="&gt;&gt;btnClear.Name" xml:space="preserve">
+    <value>btnClear</value>
+  </data>
+  <data name="&gt;&gt;btnClear.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnClear.Parent" xml:space="preserve">
+    <value>tableConsole</value>
+  </data>
+  <data name="&gt;&gt;btnClear.ZOrder" xml:space="preserve">
     <value>3</value>
+  </data>
+  <data name="btnCopyLastProgram.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="btnCopyLastProgram.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnCopyLastProgram.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1681, 3</value>
+  </data>
+  <data name="btnCopyLastProgram.Size" type="System.Drawing.Size, System.Drawing">
+    <value>94, 34</value>
+  </data>
+  <data name="btnCopyLastProgram.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="btnCopyLastProgram.Text" xml:space="preserve">
+    <value>Copy Last</value>
+  </data>
+  <data name="&gt;&gt;btnCopyLastProgram.Name" xml:space="preserve">
+    <value>btnCopyLastProgram</value>
+  </data>
+  <data name="&gt;&gt;btnCopyLastProgram.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnCopyLastProgram.Parent" xml:space="preserve">
+    <value>tableConsole</value>
+  </data>
+  <data name="&gt;&gt;btnCopyLastProgram.ZOrder" xml:space="preserve">
+    <value>4</value>
   </data>
   <data name="tableConsole.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -631,7 +661,7 @@
     <value>0</value>
   </data>
   <data name="tableConsole.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="txtConsole" Row="1" RowSpan="1" Column="0" ColumnSpan="4" /&gt;&lt;Control Name="btnCopy" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="btnClear" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="lblConsole" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100,Absolute,100,Absolute,100,Absolute,30" /&gt;&lt;Rows Styles="Absolute,40,Percent,100,Absolute,5" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="txtConsole" Row="1" RowSpan="1" Column="0" ColumnSpan="5" /&gt;&lt;Control Name="btnCopy" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="lblConsole" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="btnClear" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="btnCopyLastProgram" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100,Absolute,100,Absolute,100,Absolute,100,Absolute,30" /&gt;&lt;Rows Styles="Absolute,40,Percent,100,Absolute,5" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <data name="txtConsole.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>

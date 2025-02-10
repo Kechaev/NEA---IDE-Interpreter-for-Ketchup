@@ -16,6 +16,7 @@ using System.Reflection;
 using NEA.Classes;
 using System.Collections;
 using System.Diagnostics.PerformanceData;
+using System.Text.RegularExpressions;
 
 namespace NEA
 {
@@ -281,11 +282,11 @@ namespace NEA
         private void txtCodeField_TextChanged(object sender, EventArgs e)
         {
             isSaved = false;
-            if (KeywordEntered())
-            {
+            //if (KeywordEntered())
+            //{
                 SyntaxHighlightLastWord();
                 txtCodeField.SelectionColor = Color.Black;
-            }
+            //}
             //else if (InStrLiteral())
             //{
             //    SyntaxHighlightLine();
@@ -419,6 +420,7 @@ namespace NEA
                 {
                     txtCodeField.ScrollToCaret();
                 }
+                txtCodeField.SelectionColor = Color.Black;
             }
             else if (e.KeyCode == Keys.Up)
             {
@@ -551,11 +553,13 @@ namespace NEA
                 int selectionStart = txtCodeField.SelectionStart;
                 string code = txtCodeField.Text;
                 string endPart = code.Substring(code.Length - 1);
-                for (int i = 0; endPart[0] != ' ' && i < selectionStart; i++)
+                for (int i = 0; endPart[0] != ' ' && endPart[0] != '\n' && i < selectionStart; i++)
                 {
                     endPart = code.Substring(selectionStart - i - 1, i + 1);
                 }
-                endPart = endPart.TrimStart(' ');
+                char[] removeChars = { ' ', '\t', '\n' };
+                endPart = endPart.TrimStart(removeChars);
+                //MessageBox.Show($"Last word = {endPart}\nColor = {ColourDefinitionTokenless(endPart, "")}\n{endPart == "COUNT"}");
                 if (ColourDefinitionTokenless(endPart, "") != Color.Black)
                 {
                     return true;
@@ -566,46 +570,45 @@ namespace NEA
 
         private void SyntaxHighlightLastWord()
         {
-            // Only works for first word
+            // Only works for first line
             int selectionStart = txtCodeField.SelectionStart;
             int selectionLength = txtCodeField.SelectionLength;
-            if (txtCodeField.Text.Length > 0)
+
+            int line = txtCodeField.GetLineFromCharIndex(selectionStart);
+            int firstChar = txtCodeField.GetFirstCharIndexFromLine(line);
+            if (txtCodeField.Text.Length > 0 && selectionStart > 0)
             {
                 string code = txtCodeField.Text;
                 string substring = code.Substring(selectionStart - 1, 1);
                 int i = 0;
-                for (; substring[0] != ' ' && i < code.Length; i++)
+                for (; substring[0] != ' ' && substring[0] != '\n' && i < code.Length; i++)
                 {
                     substring = code.Substring(selectionStart - 1 - i, 1 + i);
                 }
                 int beginningOfWord = selectionStart - i;
-                string word = substring.TrimStart(' ');
+                char[] removeChars = { ' ', '\t', '\n' };
+                string word = substring.TrimStart(removeChars);
                 // Selected last word
                 txtCodeField.SelectionStart = beginningOfWord;
                 txtCodeField.SelectionLength = 1 + i;
-                // Change colour)
-                if (txtCodeField.SelectionLength > 0)
+                // Change colour
+                Color syntaxColour;
+                if (word.ToUpper() == "WITH")
                 {
-                    Color syntaxColour;
-                    MessageBox.Show($"Word = {word}");
-                    if (word.ToUpper() == "WITH")
+                    int j = 0;
+                    string prev = code.Substring(beginningOfWord - 1, 1);
+                    for (; j < code.Length - beginningOfWord; j++)
                     {
-                        int j = 0;
-                        string prev = code.Substring(beginningOfWord - 1, 1);
-                        MessageBox.Show($"Beginning = {beginningOfWord}");
-                        for (; j < code.Length; j++)
-                        {
-                            prev = code.Substring(beginningOfWord - j, 1 + j);
-                        }
-                        prev = prev.TrimStart(' ').TrimEnd(' ');
-                        syntaxColour = ColourDefinitionTokenless(word, prev);
+                        prev = code.Substring(beginningOfWord - j, 1 + j);
                     }
-                    else
-                    {
-                        syntaxColour = ColourDefinitionTokenless(word);
-                    }
-                    txtCodeField.SelectionColor = syntaxColour;
+                    prev = prev.TrimStart(' ').TrimEnd(' ');
+                    syntaxColour = ColourDefinitionTokenless(word, prev);
                 }
+                else
+                {
+                    syntaxColour = ColourDefinitionTokenless(word);
+                }
+                txtCodeField.SelectionColor = syntaxColour;
                 txtCodeField.SelectionStart = selectionStart;
                 txtCodeField.SelectionLength = selectionLength;
                 txtCodeField.SelectionColor = Color.Black;
@@ -721,6 +724,8 @@ namespace NEA
                 case "DOWN":
                 case "BY":
                     return Color.DarkCyan;
+                case "END":
+                    return Color.DarkRed;
                 case "WITH":
                     if (prev.ToUpper() == "INPUT")
                     {
@@ -1177,6 +1182,26 @@ namespace NEA
         private void btnClear_Click_1(object sender, EventArgs e)
         {
             txtConsole.Text = "";
+        }
+
+        private void btnCopyLastProgram_Click(object sender, EventArgs e)
+        {
+            string[] lines = txtConsole.Lines;
+            int i = lines.Length - 1;
+            bool searching = true;
+            for (; i >= 0 && searching; i--)
+            {
+                Regex rg = new Regex(@"={3} .+ \d{2}/\d{2}/\d{2} ={3}");
+                Match match = rg.Match(lines[i]);
+                if (match.Success)
+                {
+                    searching = false;
+                }
+            }
+            if (!searching)
+            {
+
+            }
         }
     }
 }

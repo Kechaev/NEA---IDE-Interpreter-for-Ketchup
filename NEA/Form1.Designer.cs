@@ -75,6 +75,7 @@ namespace NEA
             this.btnCopy = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.lblConsole = new System.Windows.Forms.Label();
+            this.btnCopyLastProgram = new System.Windows.Forms.Button();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -331,7 +332,7 @@ namespace NEA
             // 
             this.txtConsole.BackColor = System.Drawing.SystemColors.MenuBar;
             this.txtConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tableConsole.SetColumnSpan(this.txtConsole, 4);
+            this.tableConsole.SetColumnSpan(this.txtConsole, 5);
             resources.ApplyResources(this.txtConsole, "txtConsole");
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;
@@ -388,8 +389,9 @@ namespace NEA
             resources.ApplyResources(this.tableConsole, "tableConsole");
             this.tableConsole.Controls.Add(this.txtConsole, 0, 1);
             this.tableConsole.Controls.Add(this.btnCopy, 1, 0);
-            this.tableConsole.Controls.Add(this.btnClear, 2, 0);
             this.tableConsole.Controls.Add(this.lblConsole, 0, 0);
+            this.tableConsole.Controls.Add(this.btnClear, 3, 0);
+            this.tableConsole.Controls.Add(this.btnCopyLastProgram, 2, 0);
             this.tableConsole.Name = "tableConsole";
             // 
             // btnCopy
@@ -410,6 +412,13 @@ namespace NEA
             // 
             resources.ApplyResources(this.lblConsole, "lblConsole");
             this.lblConsole.Name = "lblConsole";
+            // 
+            // btnCopyLastProgram
+            // 
+            resources.ApplyResources(this.btnCopyLastProgram, "btnCopyLastProgram");
+            this.btnCopyLastProgram.Name = "btnCopyLastProgram";
+            this.btnCopyLastProgram.UseVisualStyleBackColor = true;
+            this.btnCopyLastProgram.Click += new System.EventHandler(this.btnCopyLastProgram_Click);
             // 
             // IDE_MainWindow
             // 
@@ -487,6 +496,7 @@ namespace NEA
         private SplitContainer splitContainer;
         private Button btnCopy;
         private Button btnClear;
+        private Button btnCopyLastProgram;
     }
 }
 
