@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,7 +18,6 @@ namespace NEA
         private string[] intermediate;
         private List<string[]> subroutineIntermediate;
         private Dictionary<string, int> subroutineDict;
-        private int[,] map;
         private Dictionary<string, string> nameDescription = new Dictionary<string, string>()
         {
             {"LABEL", "A point to which the program can jump to." },
@@ -44,6 +44,7 @@ namespace NEA
             {"RETURN", "Takes the top value of the stack and goes back to the main branch." },
             {"HALT", "Indicates the end of the program and stops the execution of the program." },
         };
+        private ListBox lstBox;
 
         // Redo the Intermediate View Window and make it with a LIST BOX instead of TEXT BOX
         // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -55,7 +56,6 @@ namespace NEA
             this.intermediate = intermediate;
             this.subroutineIntermediate = subroutineIntermediate;
             this.subroutineDict = subroutineDict;
-            txtIntermediateCode.Select();
         }
 
         private void IntermediateView_Load(object sender, EventArgs e)
@@ -72,56 +72,48 @@ namespace NEA
                 }
             }
 
-            if (maxLength > 20)
+            if (maxLength > 30)
             {
                 this.Width = maxLength * 10 + 35;
-                txtIntermediateCode.Width = maxLength * 10;
                 txtDescription.Width = maxLength * 10;
             }
-            txtIntermediateCode.Lines = intermediate;
-            txtIntermediateCode.Select(intermediateString.Length,0);
-            
-            map = new int[txtIntermediateCode.Lines.Length + 1, 2];
 
-            for (int i = 0; i < txtIntermediateCode.Lines.Length + 1; i++)
+            lstBox = new ListBox();
+
+            lstBox.SelectedIndexChanged += new EventHandler(lstBox_SelectedIndexChanged);
+
+            lstBox.Size = new System.Drawing.Size(200, 100);
+            lstBox.Font = new Font("Courier New", 16);
+
+            tabMain.Controls.Add(lstBox);
+
+            lstBox.Dock = DockStyle.Fill;
+
+            foreach (string line in intermediate)
             {
-                map[i, 0] = i * 18;
-                map[i, 1] = i * 18 + 18;
+                lstBox.Items.Add(line);
             }
+
+            lstBox.EndUpdate();
+            lstBox.SetSelected(0,false);
 
             for (int i = 0; i < subroutineIntermediate.Count; i++)
             {
                 TabPage tp = new TabPage($"Subroutine {KeyByValue(subroutineDict, i)}");
                 tabControlIntermediate.Controls.Add(tp);
 
-                RichTextBox txtIntermediate = new RichTextBox();
-                txtIntermediate.Dock = DockStyle.Fill;
-                txtIntermediate.BackColor = SystemColors.ControlLight;
-                Font f = new Font("Courier New", 12);
-                txtIntermediate.Font = f;
-                txtIntermediate.Lines = subroutineIntermediate[i];
-                txtIntermediate.BorderStyle = BorderStyle.None;
+                ListBox lstBox = new ListBox();
 
-                tp.Controls.Add(txtIntermediate);
-            }
-        }
+                lstBox.SelectedIndexChanged += new EventHandler(lstBox_SelectedIndexChanged);
 
-        private void txtIntermediateCode_Click(object sender, EventArgs e)
-        {
-            // CHANGE THIS
-            Point p = PointToClient(new Point(MousePosition.X, MousePosition.Y));
-            lblName.Text = "HALT";
-            txtDescription.Text = nameDescription["HALT"];
-            txtIntermediateCode.Select(txtIntermediateCode.GetFirstCharIndexFromLine(txtIntermediateCode.Lines.Length - 1),4);
-            for (int i = 0; i < txtIntermediateCode.Lines.Length - 1; i++)
-            {
-                if (map[i, 0] < p.Y && map[i + 1, 0] > p.Y)
+                lstBox.Dock = DockStyle.Fill;
+                lstBox.Font = new Font("Courier New", 16);
+                foreach (string line in subroutineIntermediate[i])
                 {
-                    string keyword = txtIntermediateCode.Lines[i].Split(' ')[0];
-                    lblName.Text = RemoveUnderscore(keyword);
-                    txtDescription.Text = nameDescription[keyword];
-                    txtIntermediateCode.Select(txtIntermediateCode.GetFirstCharIndexFromLine(i), txtIntermediateCode.Lines[i].Length);
+                    lstBox.Items.Add(line);
                 }
+
+                tp.Controls.Add(lstBox);
             }
         }
 
@@ -152,6 +144,36 @@ namespace NEA
                 }
             }
             return null;
+        }
+
+        private void lstBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstBox.SelectedIndex != -1)
+            {
+                string instruction = lstBox.Items[lstBox.SelectedIndex].ToString();
+                string[] parts = instruction.Split(' ');
+
+                string opcode = parts[0];
+                string operand = "";
+                if (parts.Length > 1)
+                {
+                    operand = parts[1];
+                }
+
+                lblName.Text = opcode;
+                try
+                {
+                    txtDescription.Text = nameDescription[opcode];
+                }
+                catch
+                {
+                    txtDescription.Text = "An error occurred.";
+                }
+            }
+            else
+            {
+                txtDescription.Text = "";
+            }
         }
     }
 }

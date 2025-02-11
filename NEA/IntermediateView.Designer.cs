@@ -30,14 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IntermediateView));
             this.txtDescription = new System.Windows.Forms.TextBox();
-            this.txtIntermediateCode = new System.Windows.Forms.RichTextBox();
             this.tableMain = new System.Windows.Forms.TableLayoutPanel();
             this.lblName = new System.Windows.Forms.Label();
             this.tabControlIntermediate = new System.Windows.Forms.TabControl();
             this.tabMain = new System.Windows.Forms.TabPage();
             this.tableMain.SuspendLayout();
             this.tabControlIntermediate.SuspendLayout();
-            this.tabMain.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtDescription
@@ -52,25 +50,11 @@
             this.txtDescription.Size = new System.Drawing.Size(644, 194);
             this.txtDescription.TabIndex = 2;
             // 
-            // txtIntermediateCode
-            // 
-            this.txtIntermediateCode.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.txtIntermediateCode.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtIntermediateCode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtIntermediateCode.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtIntermediateCode.Location = new System.Drawing.Point(3, 3);
-            this.txtIntermediateCode.Name = "txtIntermediateCode";
-            this.txtIntermediateCode.ReadOnly = true;
-            this.txtIntermediateCode.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtIntermediateCode.Size = new System.Drawing.Size(630, 436);
-            this.txtIntermediateCode.TabIndex = 3;
-            this.txtIntermediateCode.Text = "";
-            this.txtIntermediateCode.Click += new System.EventHandler(this.txtIntermediateCode_Click);
-            // 
             // tableMain
             // 
             this.tableMain.ColumnCount = 1;
-            this.tableMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableMain.Controls.Add(this.txtDescription, 0, 2);
             this.tableMain.Controls.Add(this.lblName, 0, 1);
             this.tableMain.Controls.Add(this.tabControlIntermediate, 0, 0);
@@ -81,7 +65,6 @@
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
-            this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableMain.Size = new System.Drawing.Size(650, 711);
             this.tableMain.TabIndex = 4;
             // 
@@ -108,7 +91,6 @@
             // 
             // tabMain
             // 
-            this.tabMain.Controls.Add(this.txtIntermediateCode);
             this.tabMain.Location = new System.Drawing.Point(4, 29);
             this.tabMain.Name = "tabMain";
             this.tabMain.Padding = new System.Windows.Forms.Padding(3);
@@ -130,14 +112,12 @@
             this.tableMain.ResumeLayout(false);
             this.tableMain.PerformLayout();
             this.tabControlIntermediate.ResumeLayout(false);
-            this.tabMain.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
         private System.Windows.Forms.TextBox txtDescription;
-        private System.Windows.Forms.RichTextBox txtIntermediateCode;
         private System.Windows.Forms.TableLayoutPanel tableMain;
         private System.Windows.Forms.Label lblName;
         private System.Windows.Forms.TabControl tabControlIntermediate;

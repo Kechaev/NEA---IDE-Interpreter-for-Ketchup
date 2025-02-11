@@ -434,7 +434,7 @@ namespace NEA
             return c == '=' || c == '>' || c == '<';
         }
 
-        private string[] FindSubroutineNames()
+        public string[] FindSubroutineNames()
         {
             List<string> subroutineNames = new List<string>();
             char[] seperators = { ' ', '\n', '(', ')' };
