@@ -30,6 +30,7 @@ namespace NEA
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IDE_MainWindow));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.tsFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,15 +67,14 @@ namespace NEA
             this.statusLineInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusColumnInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.txtConsole = new System.Windows.Forms.TextBox();
-            this.txtLineNumber = new System.Windows.Forms.RichTextBox();
-            this.txtCodeField = new System.Windows.Forms.RichTextBox();
             this.tableMain = new System.Windows.Forms.TableLayoutPanel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
+            this.txtCodeField = new FastColoredTextBoxNS.FastColoredTextBox();
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.btnCopy = new System.Windows.Forms.Button();
-            this.btnClear = new System.Windows.Forms.Button();
             this.lblConsole = new System.Windows.Forms.Label();
+            this.btnClear = new System.Windows.Forms.Button();
             this.btnCopyLastProgram = new System.Windows.Forms.Button();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -85,6 +85,7 @@ namespace NEA
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
             this.tableCodeSpace.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtCodeField)).BeginInit();
             this.tableConsole.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -337,26 +338,6 @@ namespace NEA
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;
             // 
-            // txtLineNumber
-            // 
-            this.txtLineNumber.BackColor = System.Drawing.SystemColors.Control;
-            this.txtLineNumber.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            resources.ApplyResources(this.txtLineNumber, "txtLineNumber");
-            this.txtLineNumber.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.txtLineNumber.Name = "txtLineNumber";
-            this.txtLineNumber.ReadOnly = true;
-            // 
-            // txtCodeField
-            // 
-            this.txtCodeField.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            resources.ApplyResources(this.txtCodeField, "txtCodeField");
-            this.txtCodeField.Name = "txtCodeField";
-            this.txtCodeField.ContentsResized += new System.Windows.Forms.ContentsResizedEventHandler(this.txtCodeField_ContentsResized);
-            this.txtCodeField.SelectionChanged += new System.EventHandler(this.txtCodeField_SelectionChanged_1);
-            this.txtCodeField.VScroll += new System.EventHandler(this.txtCodeField_VScroll);
-            this.txtCodeField.TextChanged += new System.EventHandler(this.txtCodeField_TextChanged);
-            this.txtCodeField.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
-            // 
             // tableMain
             // 
             resources.ApplyResources(this.tableMain, "tableMain");
@@ -380,9 +361,47 @@ namespace NEA
             // 
             this.tableCodeSpace.BackColor = System.Drawing.SystemColors.ButtonFace;
             resources.ApplyResources(this.tableCodeSpace, "tableCodeSpace");
-            this.tableCodeSpace.Controls.Add(this.txtLineNumber, 0, 0);
-            this.tableCodeSpace.Controls.Add(this.txtCodeField, 1, 0);
+            this.tableCodeSpace.Controls.Add(this.txtCodeField, 0, 0);
             this.tableCodeSpace.Name = "tableCodeSpace";
+            // 
+            // txtCodeField
+            // 
+            this.txtCodeField.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.txtCodeField.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:" +
+    "]*(?<range>:)\\s*(?<range>[^;]+);\r\n";
+            resources.ApplyResources(this.txtCodeField, "txtCodeField");
+            this.txtCodeField.BackBrush = null;
+            this.txtCodeField.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
+            this.txtCodeField.CharHeight = 27;
+            this.txtCodeField.CharWidth = 14;
+            this.txtCodeField.CommentPrefix = "#";
+            this.txtCodeField.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtCodeField.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.txtCodeField.Hotkeys = resources.GetString("txtCodeField.Hotkeys");
+            this.txtCodeField.IsReplaceMode = false;
+            this.txtCodeField.LeftBracket = '(';
+            this.txtCodeField.LeftBracket2 = '{';
+            this.txtCodeField.LineNumberColor = System.Drawing.Color.MidnightBlue;
+            this.txtCodeField.Name = "txtCodeField";
+            this.txtCodeField.Paddings = new System.Windows.Forms.Padding(0);
+            this.txtCodeField.RightBracket = ')';
+            this.txtCodeField.RightBracket2 = '}';
+            this.txtCodeField.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.txtCodeField.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtCodeField.ServiceColors")));
+            this.txtCodeField.ShowCaretWhenInactive = true;
+            this.txtCodeField.Zoom = 100;
+            this.txtCodeField.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.txtCodeField_TextChanged);
+            this.txtCodeField.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
             // 
             // tableConsole
             // 
@@ -401,17 +420,17 @@ namespace NEA
             this.btnCopy.UseVisualStyleBackColor = true;
             this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
+            // lblConsole
+            // 
+            resources.ApplyResources(this.lblConsole, "lblConsole");
+            this.lblConsole.Name = "lblConsole";
+            // 
             // btnClear
             // 
             resources.ApplyResources(this.btnClear, "btnClear");
             this.btnClear.Name = "btnClear";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click_1);
-            // 
-            // lblConsole
-            // 
-            resources.ApplyResources(this.lblConsole, "lblConsole");
-            this.lblConsole.Name = "lblConsole";
             // 
             // btnCopyLastProgram
             // 
@@ -431,6 +450,7 @@ namespace NEA
             this.MainMenuStrip = this.menuStrip;
             this.Name = "IDE_MainWindow";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.IDE_MainWindow_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
@@ -443,6 +463,7 @@ namespace NEA
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
             this.tableCodeSpace.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.txtCodeField)).EndInit();
             this.tableConsole.ResumeLayout(false);
             this.tableConsole.PerformLayout();
             this.ResumeLayout(false);
@@ -477,8 +498,6 @@ namespace NEA
         private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel statusLineInfo;
         private System.Windows.Forms.ToolStripStatusLabel statusColumnInfo;
-        private RichTextBox txtLineNumber;
-        private RichTextBox txtCodeField;
         internal TextBox txtConsole;
         private ToolStripMenuItem tsIntermediateCodeView;
         private TableLayoutPanel tableMain;
@@ -497,6 +516,7 @@ namespace NEA
         private Button btnCopy;
         private Button btnClear;
         private Button btnCopyLastProgram;
+        private FastColoredTextBoxNS.FastColoredTextBox txtCodeField;
     }
 }
 

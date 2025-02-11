@@ -17,6 +17,7 @@ using NEA.Classes;
 using System.Collections;
 using System.Diagnostics.PerformanceData;
 using System.Text.RegularExpressions;
+using FastColoredTextBoxNS;
 
 namespace NEA
 {
@@ -114,112 +115,112 @@ namespace NEA
 
         private void UpdateLineNumbers()
         {
-            // Update Line Numbers
+            //// Update Line Numbers
 
-            int lineCount = txtCodeField.Lines.Length;
-            string lineNumbers = "1";
-            for (int i = 2; i <= lineCount; i++)
-            {
-                lineNumbers += "\n" + i.ToString();
-            }
+            //int lineCount = txtCodeField.Lines.Length;
+            //string lineNumbers = "1";
+            //for (int i = 2; i <= lineCount; i++)
+            //{
+            //    lineNumbers += "\n" + i.ToString();
+            //}
 
-            txtLineNumber.Text = lineNumbers;
+            //txtLineNumber.Text = lineNumbers;
 
-            // Update Scroll
-            // https://stackoverflow.com/questions/1827323/synchronize-scroll-position-of-two-richtextboxes
+            //// Update Scroll
+            //// https://stackoverflow.com/questions/1827323/synchronize-scroll-position-of-two-richtextboxes
 
-            int nPos = NativeScroller.GetScrollPos(txtCodeField.Handle, 1);
-            nPos <<= 16;
-            uint wParam = (uint)NativeScroller.ScrollBarCommands.SB_THUMBPOSITION | (uint)nPos;
-            NativeScroller.SendMessage(txtLineNumber.Handle, (int)NativeScroller.Message.WM_VSCROLL, new IntPtr(wParam), new IntPtr(0));
+            //int nPos = NativeScroller.GetScrollPos(txtCodeField.Handle, 1);
+            //nPos <<= 16;
+            //uint wParam = (uint)NativeScroller.ScrollBarCommands.SB_THUMBPOSITION | (uint)nPos;
+            //NativeScroller.SendMessage(txtLineNumber.Handle, (int)NativeScroller.Message.WM_VSCROLL, new IntPtr(wParam), new IntPtr(0));
         }
 
         private void Comment()
         {
-            int index = txtCodeField.SelectionStart;
-            int line = txtCodeField.GetLineFromCharIndex(index);
-            int firstCharOfLine = txtCodeField.GetFirstCharIndexOfCurrentLine();
-            int lineLength;
-            bool isLastLine = false;
+            //int index = txtCodeField.SelectionStart;
+            //int line = txtCodeField.GetLineFromCharIndex(index);
+            //int firstCharOfLine = txtCodeField.GetFirstCharIndexOfCurrentLine();
+            //int lineLength;
+            //bool isLastLine = false;
 
-            if (line == txtCodeField.Lines.Length - 1)
-            {
-                lineLength = txtCodeField.Text.Length - firstCharOfLine;
-                isLastLine = true;
-            }
-            else
-            {
-                int nextLineFirstChar = txtCodeField.GetFirstCharIndexFromLine(line + 1);
-                lineLength = nextLineFirstChar - firstCharOfLine;
-            }
+            //if (line == txtCodeField.Lines.Length - 1)
+            //{
+            //    lineLength = txtCodeField.Text.Length - firstCharOfLine;
+            //    isLastLine = true;
+            //}
+            //else
+            //{
+            //    int nextLineFirstChar = txtCodeField.GetFirstCharIndexFromLine(line + 1);
+            //    lineLength = nextLineFirstChar - firstCharOfLine;
+            //}
 
-            int selectionStart = txtCodeField.SelectionStart;
-            int selectionLength = txtCodeField.SelectionLength;
+            //int selectionStart = txtCodeField.SelectionStart;
+            //int selectionLength = txtCodeField.SelectionLength;
 
-            // No selection
-            // Caret is on a single line
-            if (selectionLength == 0)
-            {
-                txtCodeField.Text = txtCodeField.Text.Insert(firstCharOfLine, "# ");
-                int offset = 1;
-                if (isLastLine)
-                {
-                    offset = 2;
-                }
-                txtCodeField.Select(firstCharOfLine + lineLength + offset, 0);
-            }
-            // Selection
-            // Selection spans one line
-            else if (selectionLength < lineLength - (index - firstCharOfLine) + 1)
-            {
-                txtCodeField.Text = txtCodeField.Text.Insert(firstCharOfLine, "# ");
-                int offset = 1;
-                if (isLastLine)
-                {
-                    offset = 2;
-                }
-                txtCodeField.Select(firstCharOfLine + lineLength + offset, 0);
-            }
-            // Multiline selection
-            // Selections spans multiple lines
-            else
-            {
-                int firstLine = firstCharOfLine;
-                int lastLine = txtCodeField.GetLineFromCharIndex(index + selectionLength);
+            //// No selection
+            //// Caret is on a single line
+            //if (selectionLength == 0)
+            //{
+            //    txtCodeField.Text = txtCodeField.Text.Insert(firstCharOfLine, "# ");
+            //    int offset = 1;
+            //    if (isLastLine)
+            //    {
+            //        offset = 2;
+            //    }
+            //    txtCodeField.Select(firstCharOfLine + lineLength + offset, 0);
+            //}
+            //// Selection
+            //// Selection spans one line
+            //else if (selectionLength < lineLength - (index - firstCharOfLine) + 1)
+            //{
+            //    txtCodeField.Text = txtCodeField.Text.Insert(firstCharOfLine, "# ");
+            //    int offset = 1;
+            //    if (isLastLine)
+            //    {
+            //        offset = 2;
+            //    }
+            //    txtCodeField.Select(firstCharOfLine + lineLength + offset, 0);
+            //}
+            //// Multiline selection
+            //// Selections spans multiple lines
+            //else
+            //{
+            //    int firstLine = firstCharOfLine;
+            //    int lastLine = txtCodeField.GetLineFromCharIndex(index + selectionLength);
 
-                string[] lines = txtCodeField.Lines;
+            //    string[] lines = txtCodeField.Lines;
 
-                int totalAddedChars = 0;
+            //    int totalAddedChars = 0;
 
-                for (int i = firstCharOfLine; i <= lastLine; i++)
-                {
-                    lines[i] = "# " + lines[i];
-                    totalAddedChars += 2;
-                }
+            //    for (int i = firstCharOfLine; i <= lastLine; i++)
+            //    {
+            //        lines[i] = "# " + lines[i];
+            //        totalAddedChars += 2;
+            //    }
 
-                txtCodeField.Lines = lines;
-                txtCodeField.Select(selectionStart + selectionLength + totalAddedChars, 0);
-            }
+            //    txtCodeField.Lines = lines;
+            //    txtCodeField.Select(selectionStart + selectionLength + totalAddedChars, 0);
+            //}
         }
 
         private void Cut()
         {
-            string[] lines = txtCodeField.Lines;
-            int selectionStart = txtCodeField.SelectionStart;
-            int selectionLength = txtCodeField.SelectionLength;
+            //string[] lines = txtCodeField.Lines;
+            //int selectionStart = txtCodeField.SelectionStart;
+            //int selectionLength = txtCodeField.SelectionLength;
 
-            if (selectionLength == 0)
-            {
-                int line = txtCodeField.GetLineFromCharIndex(selectionStart);
-                List<string> linesAsList = new List<string>(lines);
-                linesAsList.RemoveAt(line);
-                txtCodeField.Lines = linesAsList.ToArray();
-                txtCodeField.SelectionStart = selectionStart;
-            }
-            else
-            {
-                txtCodeField.Text.Remove(selectionStart, selectionLength);
-            }
+            //if (selectionLength == 0)
+            //{
+            //    int line = txtCodeField.GetLineFromCharIndex(selectionStart);
+            //    List<string> linesAsList = new List<string>(lines);
+            //    linesAsList.RemoveAt(line);
+            //    txtCodeField.Lines = linesAsList.ToArray();
+            //    txtCodeField.SelectionStart = selectionStart;
+            //}
+            //else
+            //{
+            //    txtCodeField.Text.Remove(selectionStart, selectionLength);
+            //}
         }
 
         private void Undo()
@@ -249,12 +250,12 @@ namespace NEA
 
         private void UpdateCaretPosition()
         {
-            int index = txtCodeField.SelectionStart;
-            int line = txtCodeField.GetLineFromCharIndex(index);
-            int column = index - txtCodeField.GetFirstCharIndexOfCurrentLine();
+            //int index = txtCodeField.SelectionStart;
+            //int line = txtCodeField.GetLineFromCharIndex(index);
+            //int column = index - txtCodeField.GetFirstCharIndexOfCurrentLine();
 
-            statusLineInfo.Text = $"Line: {line + 1}";
-            statusColumnInfo.Text = $"Column: {column + 1}";
+            //statusLineInfo.Text = $"Line: {line + 1}";
+            //statusColumnInfo.Text = $"Column: {column + 1}";
         }
 
         private void AddTabSpace()
@@ -264,7 +265,7 @@ namespace NEA
 
             txtCodeField.Text = txtCodeField.Text.Remove(selectionStart, selectionLength).Insert(selectionStart, "\t");
 
-            txtCodeField.Select(selectionStart + 1, 0);
+            //txtCodeField.Select(selectionStart + 1, 0);
         }
 
         public void ConsoleWrite(string text)
@@ -284,8 +285,8 @@ namespace NEA
             isSaved = false;
             //if (KeywordEntered())
             //{
-                SyntaxHighlightLastWord();
-                txtCodeField.SelectionColor = Color.Black;
+                //SyntaxHighlightLastWord();
+                //txtCodeField.SelectionColor = Color.Black;
             //}
             //else if (InStrLiteral())
             //{
@@ -337,7 +338,7 @@ namespace NEA
 
                 txtCodeField.Text = txtCodeField.Text.Insert(selectionStart, toPaste);
 
-                txtCodeField.Select(selectionStart + toPaste.Length, 0);
+                //txtCodeField.Select(selectionStart + toPaste.Length, 0);
             }
             else
             {
@@ -416,92 +417,89 @@ namespace NEA
             }
             else if (e.KeyCode == Keys.Back && txtCodeField.Focused)
             {
-                if (txtCodeField.SelectionStart == txtCodeField.Text.Length)
-                {
-                    txtCodeField.ScrollToCaret();
-                }
-                txtCodeField.SelectionColor = Color.Black;
+                //if (txtCodeField.SelectionStart == txtCodeField.Text.Length)
+                //{
+                //    txtCodeField.ScrollToCaret();
+                //}
+                //txtCodeField.SelectionColor = Color.Black;
             }
             else if (e.KeyCode == Keys.Up)
             {
-                int selected = txtCodeField.SelectionStart;
-                int line = txtCodeField.GetLineFromCharIndex(selected);
-                if (line == 0)
-                {
-                    txtCodeField.SelectionStart = 0;
-                }
+                //int selected = txtCodeField.SelectionStart;
+                //int line = txtCodeField.GetLineFromCharIndex(selected);
+                //if (line == 0)
+                //{
+                //    txtCodeField.SelectionStart = 0;
+                //}
             }
             else if (e.KeyCode == Keys.Down)
             {
-                int selected = txtCodeField.SelectionStart;
-                int line = txtCodeField.GetLineFromCharIndex(selected);
-                if (line == txtCodeField.Lines.Length - 1)
-                {
-                    txtCodeField.SelectionStart = txtCodeField.Text.Length;
-                }
+                //int selected = txtCodeField.SelectionStart;
+                //int line = txtCodeField.GetLineFromCharIndex(selected);
+                //if (line == txtCodeField.Lines.Length - 1)
+                //{
+                //    txtCodeField.SelectionStart = txtCodeField.Text.Length;
+                //}
             }
             else if (e.KeyCode == Keys.Enter)
             {
-                e.SuppressKeyPress = true;
-                int start = txtCodeField.SelectionStart;
-                int line = txtCodeField.GetLineFromCharIndex(start);
-                string[] lines = txtCodeField.Lines;
-                int nextLineStart = txtCodeField.GetFirstCharIndexFromLine(line + 1);
-                int lineEnd = txtCodeField.TextLength;
-                if (nextLineStart != -1)
-                {
-                    lineEnd = nextLineStart - 1;
-                }
+                //e.SuppressKeyPress = true;
+                //int start = txtCodeField.SelectionStart;
+                //int line = txtCodeField.GetLineFromCharIndex(start);
+                //string[] lines = txtCodeField.Lines;
+                //int nextLineStart = txtCodeField.GetFirstCharIndexFromLine(line + 1);
+                //int lineEnd = txtCodeField.TextLength;
+                //if (nextLineStart != -1)
+                //{
+                //    lineEnd = nextLineStart - 1;
+                //}
 
-                if (line < lines.Length)
-                {
-                    string[] words = lines[line].TrimStart().Split(' ');
-                    string[] toIndent = { "FUNCTION", "IF", "ELSE", "COUNT", "REPEAT", "WHILE", "DO" };
-                    string[] unIndent = { "END" };
+                //if (line < lines.Length)
+                //{
+                //    string[] words = lines[line].TrimStart().Split(' ');
+                //    string[] toIndent = { "FUNCTION", "IF", "ELSE", "COUNT", "REPEAT", "WHILE", "DO" };
+                //    string[] unIndent = { "END" };
 
-                    if (words.Length > 0 && toIndent.Contains(words[0].ToUpper()) && lineEnd == start)
-                    {
-                        string beforeSubstring = "";
-                        for (int i = 0; i <= line; i++)
-                        {
-                            beforeSubstring += $"{lines[i]} ";
-                        }
-                        currentIndent = FindIndent(beforeSubstring);
-                    }
-                    else if (words.Length > 0 && unIndent.Contains(words[0].ToUpper()))
-                    {
-                        currentIndent = Math.Max(0, currentIndent - 1);
-                        string currentLine = lines[line].TrimStart('\t');
-                        for (int i = 0; i < currentIndent; i++)
-                        {
-                            currentLine = "\t" + currentLine;
-                        }
+                //    string beforeSubstring = "";
+                //    for (int i = 0; i <= line; i++)
+                //    {
+                //        beforeSubstring += $"{lines[i]}\n";
+                //    }
 
-                        int lineStart = txtCodeField.GetFirstCharIndexFromLine(line);
-                        int lineLength = lines[line].Length;
+                //    if (words.Length > 0 && toIndent.Contains(words[0].ToUpper()) && lineEnd == start)
+                //    {
+                //        currentIndent = FindIndent(beforeSubstring);
+                //    }
+                //    else if (words.Length > 0 && unIndent.Contains(words[0].ToUpper()))
+                //    {
+                //        currentIndent = FindIndent(beforeSubstring) - 1;
+                //        string currentLine = lines[line].TrimStart('\t');
+                //        for (int i = 0; i < currentIndent; i++)
+                //        {
+                //            currentLine = "\t" + currentLine;
+                //        }
 
-                        txtCodeField.Select(lineStart, lineLength);
-                        txtCodeField.SelectedText = currentLine;
-                        txtCodeField.SelectionStart = lineStart + txtCodeField.Lines[line].Length;
-                    }
+                //        int lineStart = txtCodeField.GetFirstCharIndexFromLine(line);
+                //        int lineLength = lines[line].Length;
 
-                    string insert = "\n";
+                //        txtCodeField.Select(lineStart, lineLength);
+                //        txtCodeField.SelectedText = currentLine;
+                //        txtCodeField.SelectionStart = lineStart + txtCodeField.Lines[line].Length;
+                //    }
 
-                    for (int i = 0; i < currentIndent; i++)
-                    {
-                        insert += "\t";
-                    }
+                //    string insert = "\n";
 
-                    txtCodeField.SelectedText = insert;
-                }
-                else
-                {
-                    txtCodeField.SelectedText = "\n";
-                }
-            }
-            if (e.KeyCode == Keys.B && e.Control)
-            {
-                SyntaxHighlightLine();
+                //    for (int i = 0; i < currentIndent; i++)
+                //    {
+                //        insert += "\t";
+                //    }
+
+                //    txtCodeField.SelectedText = insert;
+                //}
+                //else
+                //{
+                //    txtCodeField.SelectedText = "\n";
+                //}
             }
         }
 
@@ -525,289 +523,20 @@ namespace NEA
             return indent;
         }
 
-        private bool InStrLiteral()
-        {
-            if (txtCodeField.Text.Length > 0)
-            {
-                string code = txtCodeField.Text;
-                int quotes = 0;
-                foreach (char s in code)
-                {
-                    if (s == '"')
-                    {
-                        quotes++;
-                    }
-                }
-                if (quotes % 2 == 1)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private bool KeywordEntered()
-        {
-            if (txtCodeField.Text.Length > 0)
-            {
-                int selectionStart = txtCodeField.SelectionStart;
-                string code = txtCodeField.Text;
-                string endPart = code.Substring(code.Length - 1);
-                for (int i = 0; endPart[0] != ' ' && endPart[0] != '\n' && i < selectionStart; i++)
-                {
-                    endPart = code.Substring(selectionStart - i - 1, i + 1);
-                }
-                char[] removeChars = { ' ', '\t', '\n' };
-                endPart = endPart.TrimStart(removeChars);
-                //MessageBox.Show($"Last word = {endPart}\nColor = {ColourDefinitionTokenless(endPart, "")}\n{endPart == "COUNT"}");
-                if (ColourDefinitionTokenless(endPart, "") != Color.Black)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void SyntaxHighlightLastWord()
-        {
-            // Only works for first line
-            int selectionStart = txtCodeField.SelectionStart;
-            int selectionLength = txtCodeField.SelectionLength;
-
-            int line = txtCodeField.GetLineFromCharIndex(selectionStart);
-            int firstChar = txtCodeField.GetFirstCharIndexFromLine(line);
-            if (txtCodeField.Text.Length > 0 && selectionStart > 0)
-            {
-                string code = txtCodeField.Text;
-                string substring = code.Substring(selectionStart - 1, 1);
-                int i = 0;
-                for (; substring[0] != ' ' && substring[0] != '\n' && i < code.Length; i++)
-                {
-                    substring = code.Substring(selectionStart - 1 - i, 1 + i);
-                }
-                int beginningOfWord = selectionStart - i;
-                char[] removeChars = { ' ', '\t', '\n' };
-                string word = substring.TrimStart(removeChars);
-                // Selected last word
-                txtCodeField.SelectionStart = beginningOfWord;
-                txtCodeField.SelectionLength = 1 + i;
-                // Change colour
-                Color syntaxColour;
-                if (word.ToUpper() == "WITH")
-                {
-                    int j = 0;
-                    string prev = code.Substring(beginningOfWord - 1, 1);
-                    for (; j < code.Length - beginningOfWord; j++)
-                    {
-                        prev = code.Substring(beginningOfWord - j, 1 + j);
-                    }
-                    prev = prev.TrimStart(' ').TrimEnd(' ');
-                    syntaxColour = ColourDefinitionTokenless(word, prev);
-                }
-                else
-                {
-                    syntaxColour = ColourDefinitionTokenless(word);
-                }
-                txtCodeField.SelectionColor = syntaxColour;
-                txtCodeField.SelectionStart = selectionStart;
-                txtCodeField.SelectionLength = selectionLength;
-                txtCodeField.SelectionColor = Color.Black;
-            }
-        }
-        
-        // Work out the colour for the current line
-        private void SyntaxHighlightLine()
-        {
-            if (txtCodeField.Text.Length > 0)
-            {
-                int start = txtCodeField.SelectionStart;
-                int line = txtCodeField.GetLineFromCharIndex(start);
-                string[] lines = txtCodeField.Lines;
-
-                int caretPosition = txtCodeField.SelectionStart;
-                int caretLength = txtCodeField.SelectionLength;
-
-                int firstChar = txtCodeField.GetFirstCharIndexFromLine(line);
-                txtCodeField.SelectionStart = firstChar;
-
-                int index = 0;
-                int totalLength = lines[line].Length;
-
-                machine = new Machine(txtCodeField.Text);
-                Token[] tokens = machine.ShortTokenize(lines[line], firstChar, firstChar + totalLength);
-                for (int i = 0; i < tokens.Length; i++)
-                {
-                    string word = tokens[i].GetLiteral();
-                    if (word != null)
-                    {
-                        bool ready = false;
-                        // Checking if the caret is at the same character as in the sanitised tokens
-                        if (lines[line][index].ToString().ToUpper() == word[0].ToString().ToUpper())
-                        {
-                            ready = true;
-                        }
-                        else
-                        {
-                            for (int j = 0; index < totalLength && lines[line][index].ToString().ToUpper() != word[0].ToString().ToUpper(); j++)
-                            {
-                                index++;
-                            }
-                            if (lines[line][index].ToString().ToUpper() == word[0].ToString().ToUpper())
-                            {
-                                ready = true;
-                            }
-                        }
-                        if (ready)
-                        {
-                            txtCodeField.SelectionStart = firstChar + index;
-                            Color syntaxColour;
-                            if (Is(tokens[i], TokenType.WITH) && i > 0)
-                            {
-                                syntaxColour = ColourDefinition(tokens[i], tokens[i - 1]);
-                            }
-                            else
-                            {
-                                syntaxColour = ColourDefinition(tokens[i]);
-                            }
-                            if (syntaxColour != Color.Black)
-                            {
-                                txtCodeField.SelectionLength = word.Length;
-                                txtCodeField.SelectionColor = syntaxColour;
-                            }
-                            else
-                            {
-                                txtCodeField.SelectionLength = word.Length;
-                                txtCodeField.SelectionColor = Color.Black;
-                            }
-                        }
-                    }
-                }
-
-                txtCodeField.SelectionStart = caretPosition;
-                txtCodeField.SelectionLength = caretLength;
-            }
-        }
-
-        private Color ColourDefinitionTokenless(string word, string prev = null)
-        {
-            switch (word.ToUpper())
-            {
-                case "SET":
-                case "CREATE":
-                case "ADD":
-                case "TAKE":
-                case "AWAY":
-                case "MULTIPLY":
-                case "DIVIDE":
-                case "GET":
-                case "THE":
-                case "REMAINDER":
-                case "OF":
-                    return Color.DeepPink;
-                case "IF":
-                case "ELSE":
-                case "COUNT":
-                case "WHILE":
-                case "DO":
-                case "REPEAT":
-                case "FUNCTION":
-                case "PROCEDURE":
-                    return Color.DarkOrange;
-                case "PRINT":
-                case "INPUT":
-                case "MESSAGE":
-                    return Color.Purple;
-                case "FROM":
-                case "TO":
-                case "GOING":
-                case "UP":
-                case "DOWN":
-                case "BY":
-                    return Color.DarkCyan;
-                case "END":
-                    return Color.DarkRed;
-                case "WITH":
-                    if (prev.ToUpper() == "INPUT")
-                    {
-                        return Color.Purple;
-                    }
-                    return Color.DarkCyan;
-                default:
-                    return Color.Black;
-            }
-        }
-
-        private Color ColourDefinition(Token token, Token prev = null)
-        {
-            TokenType type = token.GetTokenType();
-            switch (type)
-            {
-                case TokenType.DECLARATION:
-                case TokenType.ASSIGNMENT:
-                case TokenType.ADDITION:
-                case TokenType.TAKE:
-                case TokenType.AWAY:
-                case TokenType.MULTIPLICATION:
-                case TokenType.DIVISION:
-                case TokenType.GET:
-                case TokenType.THE:
-                case TokenType.REMAINDER:
-                case TokenType.OF:
-                    return Color.DeepPink;
-                case TokenType.IF:
-                case TokenType.COUNT:
-                case TokenType.FUNCTION:
-                case TokenType.PROCEDURE:
-                case TokenType.WHILE:
-                case TokenType.REPEAT:
-                case TokenType.ELSE:
-                case TokenType.THEN:
-                case TokenType.DO:
-                    return Color.Orange;
-                case TokenType.TO:
-                case TokenType.FROM:
-                case TokenType.GOING:
-                case TokenType.UP:
-                case TokenType.DOWN:
-                case TokenType.BY:
-                    return Color.DarkCyan;
-                case TokenType.STR_LITERAL:
-                    return Color.Green;
-                case TokenType.SUBROUTINE_NAME:
-                case TokenType.PRINT:
-                case TokenType.INPUT:
-                case TokenType.MESSAGE:
-                    return Color.Purple;
-                case TokenType.WITH:
-                    if (Is(prev, TokenType.COUNT))
-                    {
-                        return Color.DarkCyan;
-                    }
-                    else
-                    {
-                        return Color.Purple;
-                    }
-                case TokenType.END:
-                    return Color.DarkRed;
-                default:
-                    return Color.Black;
-            }
-        }
-
         // Fix for tab seleting elements of the applications
         // Overrides the ProcessCmdKey method
         // Injects new function of the tab and does not affect other Command Keys
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (keyData == Keys.Tab)
-            {
-                AddTabSpace();
+        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        //{
+        //    if (keyData == Keys.Tab)
+        //    {
+        //        AddTabSpace();
 
-                return true;
-            }
+        //        return true;
+        //    }
 
-            return base.ProcessCmdKey(ref msg, keyData);
-        }
+        //    return base.ProcessCmdKey(ref msg, keyData);
+        //}
 
         private void txtCodeField_SelectionChanged(object sender, EventArgs e)
         {
@@ -821,6 +550,7 @@ namespace NEA
 
         private void tsIntermediateView_Click(object sender, EventArgs e)
         {
+            // List boxes
             if (txtCodeField.Text == "")
             {
                 MessageBox.Show("No program has been entered.\nCannot open Intermediate View.");
@@ -846,6 +576,7 @@ namespace NEA
 
         private void tsTokenView_Click(object sender, EventArgs e)
         {
+            // Lists boxes
             if (txtCodeField.Text == "")
             {
                 MessageBox.Show("No program has been entered.\nCannot open Token View.");
@@ -1032,16 +763,7 @@ namespace NEA
         {
             UpdateCaretPosition();
             txtCodeField.AppendText("");
-            txtCodeField.ScrollToCaret();
-        }
-
-        private void txtCodeField_ContentsResized(object sender, ContentsResizedEventArgs e)
-        {
-            // Dumbest piece of code I've ever written
-            if (txtCodeField.ZoomFactor != 1.0f)
-            {
-                txtCodeField.ZoomFactor = 1.0f;
-            }
+            //txtCodeField.ScrollToCaret();
         }
 
         private void stripFormat_Click(object sender, EventArgs e)
@@ -1213,6 +935,41 @@ namespace NEA
             {
                 MessageBox.Show($"No text was copied");
             }
+        }
+
+        Style GreenStyle = new TextStyle(Brushes.Green, null, FontStyle.Regular);
+        Style PurpleStyle = new TextStyle(Brushes.Purple, null, FontStyle.Regular);
+        Style PinkStyle = new TextStyle(Brushes.HotPink, null, FontStyle.Regular);
+        Style OrangeStyle = new TextStyle(Brushes.DarkOrange, null, FontStyle.Regular);
+        Style CyanStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
+        Style RedStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
+        Style BlueStyle = new TextStyle(Brushes.DarkBlue, null, FontStyle.Regular);
+        Style GreyStyle = new TextStyle(Brushes.Gray, null, FontStyle.Italic);
+
+        private void txtCodeField_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
+        {
+            // Regex explanation
+            // \b - boundary character (beginning of a word)
+            // (?i) - case insensitivity
+            // | - OR operator
+            // (?!\S) - Matches only whitespace characters ( ,\n,\t)
+
+            e.ChangedRange.ClearStyle(GreenStyle);
+            e.ChangedRange.ClearStyle(PurpleStyle);
+            e.ChangedRange.ClearStyle(PinkStyle);
+            e.ChangedRange.ClearStyle(OrangeStyle);
+            e.ChangedRange.ClearStyle(CyanStyle);
+            e.ChangedRange.ClearStyle(RedStyle);
+            e.ChangedRange.ClearStyle(BlueStyle);
+            e.ChangedRange.ClearStyle(GreyStyle);
+            // String not working after "" (false positive)
+            e.ChangedRange.SetStyle(GreenStyle, @"\"".*(\"")?$", RegexOptions.Multiline);
+            e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message)(?!\S)");
+            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|of)(?!\S)");
+            e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times)(?!\S)");
+            e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(integer|decimal|string|character|boolean|array|list)(?!\S)");
+            e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by)(?!\S)");
+            e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
         }
     }
 }
