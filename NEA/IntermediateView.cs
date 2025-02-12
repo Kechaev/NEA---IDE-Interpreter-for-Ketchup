@@ -45,11 +45,6 @@ namespace NEA
             {"HALT", "Indicates the end of the program and stops the execution of the program." },
         };
         private ListBox lstBox;
-
-        // Redo the Intermediate View Window and make it with a LIST BOX instead of TEXT BOX
-        // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-        // Add support for explaining what the individual words mean
         public IntermediateView(string[] intermediate, List<string[]> subroutineIntermediate, Dictionary<string, int> subroutineDict)
         {
             InitializeComponent();
@@ -60,7 +55,6 @@ namespace NEA
 
         private void IntermediateView_Load(object sender, EventArgs e)
         {
-            string intermediateString = "";
             int maxLength = 0;
             
             foreach (string line in intermediate)
@@ -148,6 +142,7 @@ namespace NEA
 
         private void lstBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ListBox lstBox = sender as ListBox;
             if (lstBox.SelectedIndex != -1)
             {
                 string instruction = lstBox.Items[lstBox.SelectedIndex].ToString();
@@ -167,7 +162,7 @@ namespace NEA
                 }
                 catch
                 {
-                    txtDescription.Text = "An error occurred.";
+                    MessageBox.Show("An error occurred when trying to read instruction.");
                 }
             }
             else

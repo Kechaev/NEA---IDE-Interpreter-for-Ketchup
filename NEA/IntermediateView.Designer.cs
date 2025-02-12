@@ -43,18 +43,17 @@
             this.txtDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtDescription.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtDescription.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDescription.Location = new System.Drawing.Point(3, 514);
+            this.txtDescription.Location = new System.Drawing.Point(3, 564);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.ReadOnly = true;
-            this.txtDescription.Size = new System.Drawing.Size(644, 194);
+            this.txtDescription.Size = new System.Drawing.Size(644, 144);
             this.txtDescription.TabIndex = 2;
             // 
             // tableMain
             // 
             this.tableMain.ColumnCount = 1;
             this.tableMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableMain.Controls.Add(this.txtDescription, 0, 2);
             this.tableMain.Controls.Add(this.lblName, 0, 1);
             this.tableMain.Controls.Add(this.tabControlIntermediate, 0, 0);
@@ -64,7 +63,7 @@
             this.tableMain.RowCount = 3;
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableMain.Size = new System.Drawing.Size(650, 711);
             this.tableMain.TabIndex = 4;
             // 
@@ -73,7 +72,7 @@
             this.lblName.AutoSize = true;
             this.lblName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblName.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblName.Location = new System.Drawing.Point(3, 481);
+            this.lblName.Location = new System.Drawing.Point(3, 531);
             this.lblName.Name = "lblName";
             this.lblName.Size = new System.Drawing.Size(644, 30);
             this.lblName.TabIndex = 4;
@@ -86,7 +85,7 @@
             this.tabControlIntermediate.Location = new System.Drawing.Point(3, 3);
             this.tabControlIntermediate.Name = "tabControlIntermediate";
             this.tabControlIntermediate.SelectedIndex = 0;
-            this.tabControlIntermediate.Size = new System.Drawing.Size(644, 475);
+            this.tabControlIntermediate.Size = new System.Drawing.Size(644, 525);
             this.tabControlIntermediate.TabIndex = 5;
             // 
             // tabMain
@@ -94,7 +93,7 @@
             this.tabMain.Location = new System.Drawing.Point(4, 29);
             this.tabMain.Name = "tabMain";
             this.tabMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMain.Size = new System.Drawing.Size(636, 442);
+            this.tabMain.Size = new System.Drawing.Size(636, 492);
             this.tabMain.TabIndex = 0;
             this.tabMain.Text = "Main Branch";
             this.tabMain.UseVisualStyleBackColor = true;
