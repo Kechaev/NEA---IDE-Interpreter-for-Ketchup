@@ -349,16 +349,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7Zexa1NRFMafVnHQ1qWLUEke6SAdxL+hdHK2
-        WxEcRXFwkRaErlroLC7iYsVBaUFcFBQFbZ0EV8kiuNlqkS5p4ve9ngOHx3nJfaFJSu/7wQ96v7wEzvf6
-        7k2SioqKioo8nbSTdJITsoqQrADYTFuSRIYWoLYbF+WVSMgXoEaDN7zaSr/IVccYb/C8/fMWbsDn8Kn4
-        CD6Al+ERwBu4yPL8hnxfkbfgiPEG7WrtirwzBFvAY7gM103Gk2fER7A7ZIBh2AIuMBC+Q81nGYBF+Eu8
-        zUDQ7Ge2SpIpuCN+hTfhN7gPP8JLsATecKHu1/h8d6OogB+QGf8DxhgAFqDX3mAgaPYnWx0UoBmH1r/V
-        V7AE3mBlLcYWcA/ybj0xmS3QFnCdgaCZVwCLfAgXTNaGJR4rb6CyFtNtE3wDLf0U8I6B8BJqXmcQhjdQ
-        sMlJ+ZQibAF8TvfMegla7kJ9LbSA9wyENaj5NIMw3MF6+Df9J+/uRX4PmDdryrXCI1Hz0AI+MRCeQc0H
-        WEA5vE1wBWpGa5Bcg5pxn5iEV03mFfCZgfACaj6QAniGl8UrgHyAmu8yADNQM0+vAB6Dymuo+SEX0D9F
-        BfCu2/1gE5JVyF1cvQN51NFtSFiAZlsMBO4H+nmHVcDMOblqmDTgHDybrXzOGxUvC8AbvJmy3UjIDx8d
-        Oni7fl+SyIjyrg8ffje3Rgd/8Z0Re319PpachhNwHJ5iUFExbJLkP27jbKVMuZWiAAAAAElFTkSuQmCC
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7Ze9SxxRFMUnMSFF/GhsAoZ10EIsxL9BrFLH
+        TgIpQ0KKNKIQsFXBOqQRGxWLBIWQJoGEBBJNlWCbLpAufhFsdNdz1nvhMtzZfbPoKr75wQ98Z2cX7hnn
+        vd2kpKSkpCRLLa0lteSGrCKkXgDcSY8liQwtQK0O3JdXIiFbgBoN3vDqcfpdrrrGeINnbZ0PcBOuwWXx
+        FZyDI/AK4A2cZ3H+Qb4vz6fwkvEGbWhlVN4Zgi3gNZyFGybjyXPJR7A7ZIBh2ALuMRB2oOZjDMA0/Cs+
+        YyBo9qe+SpI+uCf+gE/gT3gCv8AhWABvuFBPKny+G5FXwG/IjP8BHQwAC9BrHzMQNNuvr84K0IxD69/q
+        W1gAb7Ci5mMLmIK8W0smswXaAh4xEDTzCmCR83DSZFVY4LHyBipqPo02wffQ0koBHxkIb6Dm/QzC8AYK
+        Nrkpn5KHLYDP6ZFZz0DLC6ivhRbwiYGwCjUfZBCGO1gTD9L/8u5mZPeACbOmXCs8EjUPLeArA2EFan6B
+        BRTD2wQXoGa0AslDqBn3iV74wGReAd8YCOtQ8wspgGd4UbwCyGeo+SEDMAw18/QK4DGovIOan3MBrZNX
+        AO+63Q+2IFmE3MXV55BHHd2FhAVots1A4H6gn3deBQx3ylXtZACOw7v1lU+PUfGyALzBf6VsNxKyw0eH
+        Dl7tfylJZER519sPv5tbo4O/+O6Izb4+X0tuw27YBW8xKClpN0lyCt2ebI1GpNpwAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -517,7 +517,7 @@
     <value>Fill</value>
   </data>
   <data name="btnCopy.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1581, 3</value>
+    <value>1585, 3</value>
   </data>
   <data name="btnCopy.Size" type="System.Drawing.Size, System.Drawing">
     <value>94, 34</value>
@@ -580,7 +580,7 @@
     <value>NoControl</value>
   </data>
   <data name="btnClear.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1781, 3</value>
+    <value>1785, 3</value>
   </data>
   <data name="btnClear.Size" type="System.Drawing.Size, System.Drawing">
     <value>94, 34</value>
@@ -610,7 +610,7 @@
     <value>NoControl</value>
   </data>
   <data name="btnCopyLastProgram.Location" type="System.Drawing.Point, System.Drawing">
-    <value>1681, 3</value>
+    <value>1685, 3</value>
   </data>
   <data name="btnCopyLastProgram.Size" type="System.Drawing.Size, System.Drawing">
     <value>94, 34</value>
@@ -643,7 +643,7 @@
     <value>3</value>
   </data>
   <data name="tableConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1908, 341</value>
+    <value>1912, 349</value>
   </data>
   <data name="tableConsole.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -675,14 +675,11 @@
   <data name="txtConsole.Multiline" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="txtConsole.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
-    <value>Vertical</value>
-  </data>
   <data name="txtConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1902, 290</value>
+    <value>1906, 298</value>
   </data>
   <data name="txtConsole.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+    <value>0</value>
   </data>
   <data name="&gt;&gt;txtConsole.Name" xml:space="preserve">
     <value>txtConsole</value>
@@ -697,13 +694,13 @@
     <value>0</value>
   </data>
   <data name="tableMain.ColumnCount" type="System.Int32, mscorlib">
-    <value>2</value>
+    <value>1</value>
   </data>
   <data name="splitContainer.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
   <data name="splitContainer.Location" type="System.Drawing.Point, System.Drawing">
-    <value>8, 105</value>
+    <value>4, 95</value>
   </data>
   <data name="splitContainer.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 5, 4, 5</value>
@@ -722,9 +719,6 @@
   </data>
   <data name="txtCodeField.Font" type="System.Drawing.Font, System.Drawing">
     <value>Courier New, 12pt</value>
-  </data>
-  <data name="txtCodeField.Hotkeys" xml:space="preserve">
-    <value>Tab=IndentIncrease, Escape=ClearHints, PgUp=GoPageUp, PgDn=GoPageDown, End=GoEnd, Home=GoHome, Left=GoLeft, Up=GoUp, Right=GoRight, Down=GoDown, Ins=ReplaceMode, Del=DeleteCharRight, F3=FindNext, Shift+Tab=IndentDecrease, Shift+PgUp=GoPageUpWithSelection, Shift+PgDn=GoPageDownWithSelection, Shift+End=GoEndWithSelection, Shift+Home=GoHomeWithSelection, Shift+Left=GoLeftWithSelection, Shift+Up=GoUpWithSelection, Shift+Right=GoRightWithSelection, Shift+Down=GoDownWithSelection, Shift+Ins=Paste, Shift+Del=Cut, Ctrl+Back=ClearWordLeft, Ctrl+Space=AutocompleteMenu, Ctrl+End=GoLastLine, Ctrl+Home=GoFirstLine, Ctrl+Left=GoWordLeft, Ctrl+Up=ScrollUp, Ctrl+Right=GoWordRight, Ctrl+Down=ScrollDown, Ctrl+Ins=Copy, Ctrl+Del=ClearWordRight, Ctrl+0=ZoomNormal, Ctrl+A=SelectAll, Ctrl+B=BookmarkLine, Ctrl+C=Copy, Ctrl+E=MacroExecute, Ctrl+F=FindDialog, Ctrl+G=GoToDialog, Ctrl+H=ReplaceDialog, Ctrl+I=AutoIndentChars, Ctrl+M=MacroRecord, Ctrl+N=GoNextBookmark, Ctrl+R=Redo, Ctrl+U=UpperCase, Ctrl+V=Paste, Ctrl+X=Cut, Ctrl+Z=Undo, Ctrl+Add=ZoomIn, Ctrl+Subtract=ZoomOut, Ctrl+OemMinus=NavigateBackward, Ctrl+Shift+End=GoLastLineWithSelection, Ctrl+Shift+Home=GoFirstLineWithSelection, Ctrl+Shift+Left=GoWordLeftWithSelection, Ctrl+Shift+Right=GoWordRightWithSelection, Ctrl+Shift+B=UnbookmarkLine, Ctrl+Shift+C=CommentSelected, Ctrl+Shift+N=GoPrevBookmark, Ctrl+Shift+U=LowerCase, Ctrl+Shift+Z=Redo, Ctrl+Shift+OemMinus=NavigateForward, Alt+Back=Undo, Alt+Up=MoveSelectedLinesUp, Alt+Down=MoveSelectedLinesDown, Alt+F=FindChar, Alt+Shift+Left=GoLeft_ColumnSelectionMode, Alt+Shift+Up=GoUp_ColumnSelectionMode, Alt+Shift+Right=GoRight_ColumnSelectionMode, Alt+Shift+Down=GoDown_ColumnSelectionMode</value>
   </data>
   <data name="txtCodeField.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 3</value>
@@ -748,10 +742,10 @@
 </value>
   </data>
   <data name="txtCodeField.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1902, 214</value>
+    <value>1892, 177</value>
   </data>
   <data name="txtCodeField.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
+    <value>0</value>
   </data>
   <data name="&gt;&gt;txtCodeField.Name" xml:space="preserve">
     <value>txtCodeField</value>
@@ -760,9 +754,63 @@
     <value>FastColoredTextBoxNS.FastColoredTextBox, FastColoredTextBox, Version=2.16.26.0, Culture=neutral, PublicKeyToken=fb8aa12b994ef61b</value>
   </data>
   <data name="&gt;&gt;txtCodeField.Parent" xml:space="preserve">
-    <value>tableCodeSpace</value>
+    <value>tabPageCode</value>
   </data>
   <data name="&gt;&gt;txtCodeField.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tabPageCode.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 29</value>
+  </data>
+  <data name="tabPageCode.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="tabPageCode.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1898, 183</value>
+  </data>
+  <data name="tabPageCode.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="tabPageCode.Text" xml:space="preserve">
+    <value>&lt;untitled&gt;</value>
+  </data>
+  <data name="&gt;&gt;tabPageCode.Name" xml:space="preserve">
+    <value>tabPageCode</value>
+  </data>
+  <data name="&gt;&gt;tabPageCode.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabPageCode.Parent" xml:space="preserve">
+    <value>tabCodeControl</value>
+  </data>
+  <data name="&gt;&gt;tabPageCode.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tabCodeControl.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="tabCodeControl.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 8pt</value>
+  </data>
+  <data name="tabCodeControl.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="tabCodeControl.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1906, 216</value>
+  </data>
+  <data name="tabCodeControl.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;tabCodeControl.Name" xml:space="preserve">
+    <value>tabCodeControl</value>
+  </data>
+  <data name="&gt;&gt;tabCodeControl.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabCodeControl.Parent" xml:space="preserve">
+    <value>tableCodeSpace</value>
+  </data>
+  <data name="&gt;&gt;tabCodeControl.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="tableCodeSpace.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
@@ -775,7 +823,7 @@
     <value>1</value>
   </data>
   <data name="tableCodeSpace.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1908, 220</value>
+    <value>1912, 222</value>
   </data>
   <data name="tableCodeSpace.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -793,7 +841,7 @@
     <value>0</value>
   </data>
   <data name="tableCodeSpace.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="txtCodeField" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Absolute,20,Absolute,20" /&gt;&lt;Rows Styles="Percent,100" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="tabCodeControl" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,50" /&gt;&lt;Rows Styles="Percent,100" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <data name="&gt;&gt;splitContainer.Panel1.Name" xml:space="preserve">
     <value>splitContainer.Panel1</value>
@@ -826,10 +874,10 @@
     <value>100</value>
   </data>
   <data name="splitContainer.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1908, 567</value>
+    <value>1912, 577</value>
   </data>
   <data name="splitContainer.SplitterDistance" type="System.Int32, mscorlib">
-    <value>220</value>
+    <value>222</value>
   </data>
   <data name="splitContainer.SplitterWidth" type="System.Int32, mscorlib">
     <value>6</value>
@@ -877,7 +925,28 @@
     <value>3</value>
   </data>
   <data name="tableMain.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="splitContainer" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,4,AutoSize,0,Absolute,30" /&gt;&lt;Rows Styles="Absolute,100,Percent,100,Absolute,25,Absolute,31" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="splitContainer" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Absolute,20" /&gt;&lt;Rows Styles="Absolute,90,Percent,100,Absolute,25" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="tabPage2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 38</value>
+  </data>
+  <data name="tabPage2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="tabPage2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>1894, 172</value>
+  </data>
+  <data name="tabPage2.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="tabPage2.Text" xml:space="preserve">
+    <value>tabPage2</value>
+  </data>
+  <data name="&gt;&gt;tabPage2.Name" xml:space="preserve">
+    <value>tabPage2</value>
+  </data>
+  <data name="&gt;&gt;tabPage2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -965,10 +1034,10 @@
 </value>
   </data>
   <data name="$this.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>3830, 2133</value>
+    <value>3828, 2124</value>
   </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>1268, 690</value>
+    <value>1266, 681</value>
   </data>
   <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 0, 4, 0</value>

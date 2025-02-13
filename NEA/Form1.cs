@@ -39,33 +39,9 @@ namespace NEA
         public IDE_MainWindow()
         {
             InitializeComponent();
-            InitializeStacks();
             WindowState = FormWindowState.Maximized;
             txtCodeField.Select();
             inString = false;
-        }
-
-        private void InitializeStacks()
-        {
-            undoStack.Push("");
-            undoStackCaretPosition.Push(0);
-        }
-
-        private int GetMaxLineLength()
-        {
-            string[] lines = txtConsole.Lines;
-            int max = 0;
-
-            foreach (string line in lines)
-            {
-                int length = line.Length;
-                if (length > max)
-                {
-                    max = length;
-                }
-            }
-
-            return Math.Max(max,10);
         }
         
         private void Run()
@@ -111,28 +87,6 @@ namespace NEA
                 txtConsole.SelectionStart = txtConsole.Text.Length;
                 txtConsole.ScrollToCaret(); 
             }
-        }
-
-        private void UpdateLineNumbers()
-        {
-            //// Update Line Numbers
-
-            //int lineCount = txtCodeField.Lines.Length;
-            //string lineNumbers = "1";
-            //for (int i = 2; i <= lineCount; i++)
-            //{
-            //    lineNumbers += "\n" + i.ToString();
-            //}
-
-            //txtLineNumber.Text = lineNumbers;
-
-            //// Update Scroll
-            //// https://stackoverflow.com/questions/1827323/synchronize-scroll-position-of-two-richtextboxes
-
-            //int nPos = NativeScroller.GetScrollPos(txtCodeField.Handle, 1);
-            //nPos <<= 16;
-            //uint wParam = (uint)NativeScroller.ScrollBarCommands.SB_THUMBPOSITION | (uint)nPos;
-            //NativeScroller.SendMessage(txtLineNumber.Handle, (int)NativeScroller.Message.WM_VSCROLL, new IntPtr(wParam), new IntPtr(0));
         }
 
         private void Comment()
@@ -223,49 +177,32 @@ namespace NEA
             //}
         }
 
-        private void Undo()
-        {
-            if (undoStack.Count > 1)
-            {
-                // Pops the current state
-                string currentState = undoStack.Pop();
-                redoStack.Push(currentState);
-                int currentPos = undoStackCaretPosition.Pop();
-                redoStackCaretPosition.Push(currentPos);
-
-                // Sets the previous state
-                txtCodeField.Text = undoStack.Peek();
-                txtCodeField.SelectionStart = undoStackCaretPosition.Peek();
-            }
-        }
-
-        private void Redo()
-        {
-            if (redoStack.Count > 1)
-            {
-                txtCodeField.Text = redoStack.Pop();
-                txtCodeField.SelectionStart = redoStackCaretPosition.Pop();
-            }
-        }
-
         private void UpdateCaretPosition()
         {
-            //int index = txtCodeField.SelectionStart;
-            //int line = txtCodeField.GetLineFromCharIndex(index);
-            //int column = index - txtCodeField.GetFirstCharIndexOfCurrentLine();
+            int index = txtCodeField.SelectionStart;
+            string text = txtCodeField.Text;
+            int line = 0;
 
-            //statusLineInfo.Text = $"Line: {line + 1}";
-            //statusColumnInfo.Text = $"Column: {column + 1}";
-        }
+            for (int i = 0; i < index; i++)
+            {
+                if (text[i] == '\n')
+                    line++;
+            }
 
-        private void AddTabSpace()
-        {
-            int selectionLength = txtCodeField.SelectionLength;
-            int selectionStart = txtCodeField.SelectionStart;
+            int column = 0;
 
-            txtCodeField.Text = txtCodeField.Text.Remove(selectionStart, selectionLength).Insert(selectionStart, "\t");
+            for (int i = index - 1; i >= 0; i--)
+            {
+                if (text[i] == '\n')
+                {
+                    break;
+                }
 
-            //txtCodeField.Select(selectionStart + 1, 0);
+                column++;
+            }
+
+            statusLineInfo.Text = $"Line: {line + 1}";
+            statusColumnInfo.Text = $"Column: {column + 1}";
         }
 
         public void ConsoleWrite(string text)
@@ -279,34 +216,7 @@ namespace NEA
         }
 
         private bool inString;
-
-        private void txtCodeField_TextChanged(object sender, EventArgs e)
-        {
-            isSaved = false;
-            //if (KeywordEntered())
-            //{
-                //SyntaxHighlightLastWord();
-                //txtCodeField.SelectionColor = Color.Black;
-            //}
-            //else if (InStrLiteral())
-            //{
-            //    SyntaxHighlightLine();
-            //    txtCodeField.SelectionColor = Color.Green;
-            //}
-            if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
-            {
-                undoStack.Push(txtCodeField.Text);
-                undoStackCaretPosition.Push(txtCodeField.SelectionStart);
-            }
-            UpdateCaretPosition();
-            UpdateLineNumbers();
-        }
-
-        private void txtCodeField_VScroll(object sender, EventArgs e)
-        {
-            UpdateLineNumbers();
-        }
-
+        
         private void tsEditCopy_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
@@ -348,12 +258,12 @@ namespace NEA
 
         private void stripUndo_Click(object sender, EventArgs e)
         {
-            Undo();
+            txtCodeField.Undo();
         }
 
         private void stripRedo_Click(object sender, EventArgs e)
         {
-            Redo();
+            txtCodeField.Redo();
         }
 
         private void stripRun_Click(object sender, EventArgs e)
@@ -364,33 +274,12 @@ namespace NEA
         private void stripComment_Click(object sender, EventArgs e)
         {
             Comment();
-            if (undoStack.Count == 0 || undoStack.Peek() != txtCodeField.Text)
-            {
-                undoStack.Push(txtCodeField.Text);
-                undoStackCaretPosition.Push(txtCodeField.SelectionStart);
-            }
             UpdateCaretPosition();
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
             ClearConsole();
-        }
-
-        private void btnMinusFont_Click(object sender, EventArgs e)
-        {
-            txtConsole.Font = new Font("Courier New", txtConsole.Font.Size - 1);
-        }
-
-        private void btnPlusFont_Click(object sender, EventArgs e)
-        {
-            txtConsole.Font = new Font("Courier New", txtConsole.Font.Size + 1);
-        }
-
-        private void btnReset_Click(object sender, EventArgs e)
-        {
-            ClearConsole();
-            txtConsole.Font = new Font("Courier New", 12);
         }
 
         private void tsFileExit_Click(object sender, EventArgs e)
@@ -405,11 +294,11 @@ namespace NEA
         {
             if (e.KeyCode == Keys.Z && e.Control && e.Shift)
             {
-                Redo();
+                txtCodeField.Redo();
             }
             else if (e.KeyCode == Keys.Z && e.Control)
             {
-                Undo();
+                txtCodeField.Undo();
             }
             else if (e.KeyCode == Keys.F5)
             {
@@ -537,11 +426,6 @@ namespace NEA
 
         //    return base.ProcessCmdKey(ref msg, keyData);
         //}
-
-        private void txtCodeField_SelectionChanged(object sender, EventArgs e)
-        {
-            UpdateCaretPosition();
-        }
 
         private void tsEditCut_Click(object sender, EventArgs e)
         {
@@ -690,6 +574,7 @@ namespace NEA
                 if (currentFilePath != null)
                 {
                     this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                    tabCodeControl.SelectedTab.Name = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5);
                 }
             }
             else
@@ -699,6 +584,7 @@ namespace NEA
                 if (currentFilePath != null)
                 {
                     this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                    tabCodeControl.SelectedTab.Name = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5);
                 }
             }
         }
@@ -757,13 +643,6 @@ namespace NEA
         private void tsDebugBreakpoints_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Breakpoints");
-        }
-
-        private void txtCodeField_SelectionChanged_1(object sender, EventArgs e)
-        {
-            UpdateCaretPosition();
-            txtCodeField.AppendText("");
-            //txtCodeField.ScrollToCaret();
         }
 
         private void stripFormat_Click(object sender, EventArgs e)
@@ -963,13 +842,15 @@ namespace NEA
             e.ChangedRange.ClearStyle(BlueStyle);
             e.ChangedRange.ClearStyle(GreyStyle);
             // String not working after "" (false positive)
-            e.ChangedRange.SetStyle(GreenStyle, @"\"".*(\"")?$", RegexOptions.Multiline);
+            e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
             e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message)(?!\S)");
             e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|of)(?!\S)");
             e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times)(?!\S)");
             e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(integer|decimal|string|character|boolean|array|list)(?!\S)");
             e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by)(?!\S)");
             e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
+
+            UpdateCaretPosition();
         }
     }
 }
