@@ -27,12 +27,14 @@ namespace NEA
         private Stack<int> undoStackCaretPosition = new Stack<int>();
         private Stack<string> redoStack = new Stack<string>();
         private Stack<int> redoStackCaretPosition = new Stack<int>();
-        private int currentIndent = 0;
         private Machine machine;
 
         private string currentFilePath = null;
         private bool isSaved = true;
         private static int NoOfRuns = 1;
+
+        private List<FastColoredTextBox> arrayCodeFields;
+        private FastColoredTextBox currentCodeField;
 
         // IntelliSense Hack 101
         // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
@@ -41,7 +43,9 @@ namespace NEA
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
             txtCodeField.Select();
-            inString = false;
+            currentCodeField = txtCodeField;
+            arrayCodeFields = new List<FastColoredTextBox>();
+            arrayCodeFields.Add(currentCodeField);
         }
         
         private void Run()
@@ -214,8 +218,6 @@ namespace NEA
         {
             txtConsole.Text = "";
         }
-
-        private bool inString;
         
         private void tsEditCopy_Click(object sender, EventArgs e)
         {
@@ -392,41 +394,6 @@ namespace NEA
             }
         }
 
-        private int FindIndent(string beforeSubstring)
-        {
-            int indent = 0;
-            string[] toIndent = { "FUNCTION", "IF", "ELSE", "COUNT", "REPEAT", "WHILE", "DO" };
-            string[] unIndent = { "END" };
-            string[] words = beforeSubstring.Split(' ');
-            foreach (string word in words)
-            {
-                if (toIndent.Contains(word))
-                {
-                    indent++;
-                }
-                else if (unIndent.Contains(word))
-                {
-                    indent--;
-                }
-            }
-            return indent;
-        }
-
-        // Fix for tab seleting elements of the applications
-        // Overrides the ProcessCmdKey method
-        // Injects new function of the tab and does not affect other Command Keys
-        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        //{
-        //    if (keyData == Keys.Tab)
-        //    {
-        //        AddTabSpace();
-
-        //        return true;
-        //    }
-
-        //    return base.ProcessCmdKey(ref msg, keyData);
-        //}
-
         private void tsEditCut_Click(object sender, EventArgs e)
         {
             Cut();
@@ -496,6 +463,7 @@ namespace NEA
                 if (currentFilePath != null)
                 {
                     this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5).ToString();
                 }
             }
         }
@@ -508,6 +476,7 @@ namespace NEA
                 if (currentFilePath != null)
                 {
                     this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5).ToString();
                 }
             }
         }
@@ -527,6 +496,7 @@ namespace NEA
                     this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
                 }
             }
+            tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5).ToString();
         }
 
         private void OpenFile()
@@ -571,21 +541,16 @@ namespace NEA
             if (currentFilePath == null)
             {
                 SaveFileAs();
-                if (currentFilePath != null)
-                {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
-                    tabCodeControl.SelectedTab.Name = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5);
-                }
+                isSaved = true;
             }
             else
             {
                 File.WriteAllText(currentFilePath, txtCodeField.Text);
                 isSaved = true;
-                if (currentFilePath != null)
-                {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
-                    tabCodeControl.SelectedTab.Name = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5);
-                }
+            }
+            if (currentFilePath != null && tabCodeControl.SelectedTab != null)
+            {
+                this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
             }
         }
 
@@ -616,7 +581,24 @@ namespace NEA
             // Temp fix
             PromptToSaveChanges();
 
-            txtCodeField.Text = "";
+            TabPage tabPage = new TabPage();
+
+            FastColoredTextBox newTxtCodeField = new FastColoredTextBox();
+
+            newTxtCodeField.TextChanged += txtCodeField_TextChanged;
+            newTxtCodeField.Dock = DockStyle.Fill;
+            newTxtCodeField.LineNumberColor = Color.MidnightBlue;
+            newTxtCodeField.Font = new Font("Courier New", 12);
+
+            arrayCodeFields.Add(newTxtCodeField);
+
+            tabPage.Controls.Add(newTxtCodeField);
+
+            tabPage.Text = "<untitled>";
+
+            tabCodeControl.Controls.Add(tabPage);
+
+            tabCodeControl.SelectedTab = tabPage;
 
             this.Text = "Ketchup™️ IDE";
         }
@@ -827,6 +809,7 @@ namespace NEA
 
         private void txtCodeField_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
+            isSaved = false;
             // Regex explanation
             // \b - boundary character (beginning of a word)
             // (?i) - case insensitivity

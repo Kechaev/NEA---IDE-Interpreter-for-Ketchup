@@ -350,15 +350,15 @@
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7Ze9SxxRFMUnMSFF/GhsAoZ10EIsxL9BrFLH
-        TgIpQ0KKNKIQsFXBOqQRGxWLBIWQJoGEBBJNlWCbLpAufhFsdNdz1nvhMtzZfbPoKr75wQ98Z2cX7hnn
-        vd2kpKSkpCRLLa0lteSGrCKkXgDcSY8liQwtQK0O3JdXIiFbgBoN3vDqcfpdrrrGeINnbZ0PcBOuwWXx
-        FZyDI/AK4A2cZ3H+Qb4vz6fwkvEGbWhlVN4Zgi3gNZyFGybjyXPJR7A7ZIBh2ALuMRB2oOZjDMA0/Cs+
-        YyBo9qe+SpI+uCf+gE/gT3gCv8AhWABvuFBPKny+G5FXwG/IjP8BHQwAC9BrHzMQNNuvr84K0IxD69/q
-        W1gAb7Ci5mMLmIK8W0smswXaAh4xEDTzCmCR83DSZFVY4LHyBipqPo02wffQ0koBHxkIb6Dm/QzC8AYK
-        Nrkpn5KHLYDP6ZFZz0DLC6ivhRbwiYGwCjUfZBCGO1gTD9L/8u5mZPeACbOmXCs8EjUPLeArA2EFan6B
-        BRTD2wQXoGa0AslDqBn3iV74wGReAd8YCOtQ8wspgGd4UbwCyGeo+SEDMAw18/QK4DGovIOan3MBrZNX
-        AO+63Q+2IFmE3MXV55BHHd2FhAVots1A4H6gn3deBQx3ylXtZACOw7v1lU+PUfGyALzBf6VsNxKyw0eH
-        Dl7tfylJZER519sPv5tbo4O/+O6Izb4+X0tuw27YBW8xKClpN0lyCt2ebI1GpNpwAAAAAElFTkSuQmCC
+        TgIpQ0KKNKIQsFXBOqQRGxWLBIWQJoGEBBJNk4BtukC6+EWw0V3PWe+Fy3Bn982iq/jmBz/wnZ1duGec
+        93aTkpKSkpIstbSW1JIbsoqQegFwJz2WJDK0ALU6cF9eiYRsAWo0eMOrx+l3ueoa4w2etXU+wE24BpfF
+        V3AOjsArgDdwnsX5B/m+PJ/CS8YbtKGVUXlnCLaA13AWbpiMJ88lH8HukAGGYQu4x0DYgZqPMQDT8K/4
+        jIGg2Z/6Kkn64J74Az6Bv+AJ/AKHYAG84UI9qfD5bkReAb8hM/4HdDAALECvfcxA0Gy/vjorQDMOrX+r
+        b2EBvMGKmo8tYArybi2ZzBZoC3jEQNDMK4BFzsNJk1VhgcfKG6io+TTaBN9DSysFfGQgvIGa9zMIwxso
+        2OSmfEoetgA+p0dmPQMtL6C+FlrAJwbCKtR8kEEY7mBNPEj/y7ubkd0DJsyacq3wSNQ8tICvDIQVqPkF
+        FlAMbxNcgJrRCiQPoWbcJ3rhA5N5BXxjIKxDzS+kAJ7hRfEKIJ+h5ocMwDDUzNMrgMeg8g5qfs4FtE5e
+        Abzrdj/YgmQRchdXn0MedXQXEhag2TYDgfuBft55FTDcKVe1kwE4Du/WVz49RsXLAvAG/5my3UjIDh8d
+        Oni1/6UkkRHlXW8//G5ujQ7+4rsjNvv6fC25DbthF7zFoKSk3STJKcvgbIul14kWAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -754,36 +754,36 @@
     <value>FastColoredTextBoxNS.FastColoredTextBox, FastColoredTextBox, Version=2.16.26.0, Culture=neutral, PublicKeyToken=fb8aa12b994ef61b</value>
   </data>
   <data name="&gt;&gt;txtCodeField.Parent" xml:space="preserve">
-    <value>tabPageCode</value>
+    <value>tab0</value>
   </data>
   <data name="&gt;&gt;txtCodeField.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="tabPageCode.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="tab0.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 29</value>
   </data>
-  <data name="tabPageCode.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="tab0.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
-  <data name="tabPageCode.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="tab0.Size" type="System.Drawing.Size, System.Drawing">
     <value>1898, 183</value>
   </data>
-  <data name="tabPageCode.TabIndex" type="System.Int32, mscorlib">
+  <data name="tab0.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="tabPageCode.Text" xml:space="preserve">
+  <data name="tab0.Text" xml:space="preserve">
     <value>&lt;untitled&gt;</value>
   </data>
-  <data name="&gt;&gt;tabPageCode.Name" xml:space="preserve">
-    <value>tabPageCode</value>
+  <data name="&gt;&gt;tab0.Name" xml:space="preserve">
+    <value>tab0</value>
   </data>
-  <data name="&gt;&gt;tabPageCode.Type" xml:space="preserve">
+  <data name="&gt;&gt;tab0.Type" xml:space="preserve">
     <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;tabPageCode.Parent" xml:space="preserve">
+  <data name="&gt;&gt;tab0.Parent" xml:space="preserve">
     <value>tabCodeControl</value>
   </data>
-  <data name="&gt;&gt;tabPageCode.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;tab0.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="tabCodeControl.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">

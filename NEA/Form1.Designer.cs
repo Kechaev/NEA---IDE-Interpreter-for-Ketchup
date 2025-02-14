@@ -71,7 +71,7 @@ namespace NEA
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
             this.tabCodeControl = new System.Windows.Forms.TabControl();
-            this.tabPageCode = new System.Windows.Forms.TabPage();
+            this.tab0 = new System.Windows.Forms.TabPage();
             this.txtCodeField = new FastColoredTextBoxNS.FastColoredTextBox();
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.btnCopy = new System.Windows.Forms.Button();
@@ -89,7 +89,7 @@ namespace NEA
             this.splitContainer.SuspendLayout();
             this.tableCodeSpace.SuspendLayout();
             this.tabCodeControl.SuspendLayout();
-            this.tabPageCode.SuspendLayout();
+            this.tab0.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtCodeField)).BeginInit();
             this.tableConsole.SuspendLayout();
             this.SuspendLayout();
@@ -371,17 +371,17 @@ namespace NEA
             // 
             // tabCodeControl
             // 
-            this.tabCodeControl.Controls.Add(this.tabPageCode);
+            this.tabCodeControl.Controls.Add(this.tab0);
             resources.ApplyResources(this.tabCodeControl, "tabCodeControl");
             this.tabCodeControl.Name = "tabCodeControl";
             this.tabCodeControl.SelectedIndex = 0;
             // 
-            // tabPageCode
+            // tab0
             // 
-            this.tabPageCode.Controls.Add(this.txtCodeField);
-            resources.ApplyResources(this.tabPageCode, "tabPageCode");
-            this.tabPageCode.Name = "tabPageCode";
-            this.tabPageCode.UseVisualStyleBackColor = true;
+            this.tab0.Controls.Add(this.txtCodeField);
+            resources.ApplyResources(this.tab0, "tab0");
+            this.tab0.Name = "tab0";
+            this.tab0.UseVisualStyleBackColor = true;
             // 
             // txtCodeField
             // 
@@ -484,7 +484,7 @@ namespace NEA
             this.splitContainer.ResumeLayout(false);
             this.tableCodeSpace.ResumeLayout(false);
             this.tabCodeControl.ResumeLayout(false);
-            this.tabPageCode.ResumeLayout(false);
+            this.tab0.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.txtCodeField)).EndInit();
             this.tableConsole.ResumeLayout(false);
             this.tableConsole.PerformLayout();
@@ -540,7 +540,7 @@ namespace NEA
         private Button btnCopyLastProgram;
         private TabControl tabCodeControl;
         private TabPage tabPage2;
-        private TabPage tabPageCode;
+        private TabPage tab0;
         private FastColoredTextBoxNS.FastColoredTextBox txtCodeField;
     }
 }
