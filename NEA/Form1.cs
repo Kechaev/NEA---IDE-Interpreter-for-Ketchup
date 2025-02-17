@@ -62,23 +62,23 @@ namespace NEA
             machine = new Machine(txtCodeField.Text);
 
             // Error Checking
-            try
-            {
-                machine.Interpret();
+            //try
+            //{
+            //    machine.Interpret();
 
-                string[] intermediate = machine.GetIntermediateCode();
+            //    string[] intermediate = machine.GetIntermediateCode();
 
-                StartExecution(intermediate);
-            }
-            catch (Exception e)
-            {
-                ConsoleWrite(e.Message);
-            }
+            //    StartExecution(intermediate);
+            //}
+            //catch (Exception e)
+            //{
+            //    ConsoleWrite(e.Message);
+            //}
 
             //No Error Checking
-            //machine.Interpret();
-            //string[] intermediate = machine.GetIntermediateCode();
-            //StartExecution(intermediate);
+            machine.Interpret();
+            string[] intermediate = machine.GetIntermediateCode();
+            StartExecution(intermediate);
         }
 
         public void StartExecution(string[] intermediateCode)

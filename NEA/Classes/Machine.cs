@@ -1167,6 +1167,7 @@ namespace NEA
 
             foreach (Variable p in parameters)
             {
+                MessageBox.Show($"Param = {p.GetName()}\nvalue = {p.GetValue()}");
                 instructions.Add($"LOAD_CONST {p.GetValue()}");
             }
 
@@ -2084,7 +2085,7 @@ namespace NEA
                                     {
                                         // Read as an expression until a comma then convert to instructions with Shunting Yard
                                         nextToken = internalTokens[i + j + 2];
-                                        //MessageBox.Show($"Next token = {nextToken.GetTokenType()}");
+                                        Console.WriteLine($"Next token = {nextToken.GetTokenType()}");
                                         if (Is(nextToken, TokenType.RIGHT_BRACKET))
                                         {
                                             areParamsToRead = false;
@@ -2098,7 +2099,10 @@ namespace NEA
                                         else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
                                         {
                                             // Deal with variable
-                                            throw new Exception("DEV ERROR: NOT DEALT WITH VARIBLE IN FUNCTION CALL");
+                                            int num = variablesDict[nextToken.GetLiteral()];
+                                            MessageBox.Show(num.ToString());
+                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", variables[variablesDict[nextToken.GetLiteral()]]));
+                                            //throw new Exception("DEV ERROR: NOT DEALT WITH VARIBLE IN FUNCTION CALL");
                                             readyForNextParam = false;
                                         }
                                         else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
@@ -2107,7 +2111,7 @@ namespace NEA
                                         }
                                         else
                                         {
-                                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
+                                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetTokenType()}\" in the arguement.");
                                         }
                                     }
 
@@ -2984,6 +2988,14 @@ namespace NEA
                                 readyForNextParam = false;
                                 //MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
                             }
+                            else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                            {
+                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", variables[variablesDict[nextToken.GetLiteral()]].GetValue()));
+                                MessageBox.Show($"Var val = {variables[variablesDict[nextToken.GetLiteral()]].GetValue()}");
+                                // Issue with getting the current variable valueW
+                                //throw new Exception("DEV ERROR: NOT DEALT WITH VARIBLE IN FUNCTION CALL");
+                                areParamsToRead = false;
+                            }
                             else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
                             {
                                 readyForNextParam = true;
@@ -3014,7 +3026,7 @@ namespace NEA
 
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements));
 
-                        i += j + 1;
+                        i += j + 1 + 1;
                         break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
