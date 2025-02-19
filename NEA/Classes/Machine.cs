@@ -1161,14 +1161,22 @@ namespace NEA
 
         // Anything else required for functions
 
-        private string[] MapSubroutineCall(string subroutineName, List<Variable> parameters)
+        private string[] MapSubroutineCall(string subroutineName, List<Variable> parameters, List<bool> isLiteral)
         {
             List<string> instructions = new List<string>();
 
-            foreach (Variable p in parameters)
+            for (int i = 0; i < parameters.Count; i++)
             {
-                MessageBox.Show($"Param = {p.GetName()}\nvalue = {p.GetValue()}");
-                instructions.Add($"LOAD_CONST {p.GetValue()}");
+                Variable p = parameters[i];
+                if (isLiteral[i])
+                {
+                    instructions.Add($"LOAD_CONST {p.GetValue()}");
+                }
+                else
+                {
+                    MessageBox.Show($"name = {p.GetValue()}");
+                    instructions.Add($"LOAD_VAR {variablesDict[p.GetValue().ToString()]}");
+                }
             }
 
             instructions.Add($"CALL {subroutineName}");
@@ -2016,9 +2024,11 @@ namespace NEA
             int bodyStart, bodyEnd;
             bool areParamsToRead = true, readyForNextParam = true;
             Stack<Variable> arguementsStack;
+            Stack<bool> isLiteralArguementStack;
             int paramCounter;
             int localCounter;
             List<Variable> arguements;
+            List<bool> isLiteralList;
 
             while (i < internalTokens.Length)
             {
@@ -2072,6 +2082,7 @@ namespace NEA
                                     subroutineName = nextToken.GetLiteral().ToUpper();
 
                                     arguementsStack = new Stack<Variable>();
+                                    isLiteralArguementStack = new Stack<bool>();
                                     paramCounter = 0;
                                     nextToken = internalTokens[i + 2];
 
@@ -2093,16 +2104,16 @@ namespace NEA
                                         else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
                                         {
                                             arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                            isLiteralArguementStack.Push(true);
                                             readyForNextParam = false;
                                             //MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
                                         }
                                         else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
                                         {
                                             // Deal with variable
-                                            int num = variablesDict[nextToken.GetLiteral()];
-                                            MessageBox.Show(num.ToString());
-                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", variables[variablesDict[nextToken.GetLiteral()]]));
+                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", variablesDict[nextToken.GetLiteral()]));
                                             //throw new Exception("DEV ERROR: NOT DEALT WITH VARIBLE IN FUNCTION CALL");
+                                            isLiteralArguementStack.Push(false);
                                             readyForNextParam = false;
                                         }
                                         else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
@@ -2119,12 +2130,15 @@ namespace NEA
                                     subroutineParametersCount[subroutineDict[subroutineName]] = paramCounter;
                                     subroutineLocalVariableCounter[subroutineDict[subroutineName]] = localCounter;
                                     arguements = new List<Variable>();
+                                    isLiteralList = new List<bool>();
                                     while (arguementsStack.Count > 0)
                                     {
                                         arguements.Add(arguementsStack.Pop());
+                                        isLiteralList.Add(isLiteralArguementStack.Pop());
+
                                     }
 
-                                    intermediateList.AddRange(MapSubroutineCall(subroutineName, arguements));
+                                    intermediateList.AddRange(MapSubroutineCall(subroutineName, arguements, isLiteralList));
 
                                     i += 2;
                                 }
@@ -2965,6 +2979,7 @@ namespace NEA
                         // Current Syntax:
                         // FunctionName (arg1,arg2,...)
                         arguementsStack = new Stack<Variable>();
+                        isLiteralArguementStack = new Stack<bool>();
                         nextToken = internalTokens[i + 1];
                         paramCounter = 0;
 
@@ -2985,14 +3000,17 @@ namespace NEA
                             else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
                             {
                                 arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                isLiteralArguementStack.Push(true);
                                 readyForNextParam = false;
                                 //MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
                             }
                             else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
                             {
-                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", variables[variablesDict[nextToken.GetLiteral()]].GetValue()));
-                                MessageBox.Show($"Var val = {variables[variablesDict[nextToken.GetLiteral()]].GetValue()}");
-                                // Issue with getting the current variable valueW
+                                //MessageBox.Show($"name = {variables[variablesDict[nextToken.GetLiteral()]].GetName()}\ntoken literal = {nextToken.GetLiteral()}\nvar = {variablesDict[nextToken.GetLiteral()]}\nvar = {variables[variablesDict[nextToken.GetLiteral()]]}\nvalue = {variables[variablesDict[nextToken.GetLiteral()]].GetValue()}");
+                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                isLiteralArguementStack.Push(false);
+                                //MessageBox.Show($"Var val = {variables[variablesDict[nextToken.GetLiteral()]].GetValue()}");
+                                // Issue with getting the current variable value
                                 //throw new Exception("DEV ERROR: NOT DEALT WITH VARIBLE IN FUNCTION CALL");
                                 areParamsToRead = false;
                             }
@@ -3019,12 +3037,15 @@ namespace NEA
                         // Return address found in the stack frame
                         // Which is referred to in the RETURN statement
                         arguements = new List<Variable>();
+                        isLiteralList = new List<bool>();
                         while (arguementsStack.Count > 0)
                         {
                             arguements.Add(arguementsStack.Pop());
+                            isLiteralList.Add(isLiteralArguementStack.Pop());
                         }
 
-                        intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements));
+                        // Removed isLiteralList
+                        intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements, isLiteralList));
 
                         i += j + 1 + 1;
                         break;
