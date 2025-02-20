@@ -46,6 +46,8 @@ namespace NEA
             currentCodeField = txtCodeField;
             arrayCodeFields = new List<FastColoredTextBox>();
             arrayCodeFields.Add(currentCodeField);
+            txtCodeField.TabLength = 4;
+            txtCodeField.AutoIndent = true;
         }
         
         private void Run()
@@ -59,6 +61,8 @@ namespace NEA
 
             txtConsole.Text += $"=== {name} - {time} ===\r\n";
 
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
             machine = new Machine(txtCodeField.Text);
 
             // Error Checking
@@ -586,9 +590,11 @@ namespace NEA
             FastColoredTextBox newTxtCodeField = new FastColoredTextBox();
 
             newTxtCodeField.TextChanged += txtCodeField_TextChanged;
+            newTxtCodeField.KeyDown += txtCodeField_KeyDown;
             newTxtCodeField.Dock = DockStyle.Fill;
             newTxtCodeField.LineNumberColor = Color.MidnightBlue;
             newTxtCodeField.Font = new Font("Courier New", 12);
+
 
             arrayCodeFields.Add(newTxtCodeField);
 
@@ -834,6 +840,43 @@ namespace NEA
             e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
 
             UpdateCaretPosition();
+        }
+
+        private void txtCodeField_AutoIndentNeeded(object sender, AutoIndentEventArgs e)
+        {
+            string trimmedLine = e.LineText.Trim();
+
+            Regex blockStartRegex = new Regex(@"^\s*count\s+with", RegexOptions.IgnoreCase);
+            Regex blockEndRegex = new Regex(@"^\s*end\s+count", RegexOptions.IgnoreCase);
+
+            if (blockEndRegex.IsMatch(trimmedLine))
+            {
+                e.Shift = -e.TabLength;
+            }
+            else
+            {
+                int lineNumber = txtCodeField.Selection.Start.iLine;
+                if (lineNumber > 0)
+                {
+                    string prevLine = txtCodeField.Lines[lineNumber - 1].Trim();
+                    if (blockStartRegex.IsMatch(prevLine))
+                    {
+                        e.ShiftNextLines = e.TabLength;
+                    }
+                    else if (blockEndRegex.IsMatch(prevLine))
+                    {
+                        e.Shift = -e.TabLength;
+                        e.ShiftNextLines = -e.TabLength;
+                    }
+                }
+            }
+        }
+
+        private void tabCodeControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+            machine = new Machine(txtCodeField.Text);
         }
     }
 }

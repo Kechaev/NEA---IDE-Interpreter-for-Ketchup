@@ -96,7 +96,6 @@ namespace NEA
             // 
             // menuStrip
             // 
-            this.menuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsFile,
@@ -375,6 +374,7 @@ namespace NEA
             resources.ApplyResources(this.tabCodeControl, "tabCodeControl");
             this.tabCodeControl.Name = "tabCodeControl";
             this.tabCodeControl.SelectedIndex = 0;
+            this.tabCodeControl.SelectedIndexChanged += new System.EventHandler(this.tabCodeControl_SelectedIndexChanged);
             // 
             // tab0
             // 
@@ -400,8 +400,8 @@ namespace NEA
     "(?<range>:)\\s*(?<range>[^;]+);";
             resources.ApplyResources(this.txtCodeField, "txtCodeField");
             this.txtCodeField.BackBrush = null;
-            this.txtCodeField.CharHeight = 27;
-            this.txtCodeField.CharWidth = 14;
+            this.txtCodeField.CharHeight = 18;
+            this.txtCodeField.CharWidth = 10;
             this.txtCodeField.CommentPrefix = "#";
             this.txtCodeField.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtCodeField.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
@@ -415,6 +415,7 @@ namespace NEA
             this.txtCodeField.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtCodeField.ServiceColors")));
             this.txtCodeField.Zoom = 100;
             this.txtCodeField.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.txtCodeField_TextChanged);
+            this.txtCodeField.AutoIndentNeeded += new System.EventHandler<FastColoredTextBoxNS.AutoIndentEventArgs>(this.txtCodeField_AutoIndentNeeded);
             this.txtCodeField.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
             // 
             // tableConsole
