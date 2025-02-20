@@ -1174,7 +1174,6 @@ namespace NEA
                 }
                 else
                 {
-                    MessageBox.Show($"name = {p.GetValue()}");
                     instructions.Add($"LOAD_VAR {variablesDict[p.GetValue().ToString()]}");
                 }
             }
@@ -3002,17 +3001,13 @@ namespace NEA
                                 arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
                                 isLiteralArguementStack.Push(true);
                                 readyForNextParam = false;
-                                //MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
                             }
                             else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
                             {
-                                //MessageBox.Show($"name = {variables[variablesDict[nextToken.GetLiteral()]].GetName()}\ntoken literal = {nextToken.GetLiteral()}\nvar = {variablesDict[nextToken.GetLiteral()]}\nvar = {variables[variablesDict[nextToken.GetLiteral()]]}\nvalue = {variables[variablesDict[nextToken.GetLiteral()]].GetValue()}");
+                                // Get the variable name and parse it through as the literal of localParam
                                 arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
                                 isLiteralArguementStack.Push(false);
-                                //MessageBox.Show($"Var val = {variables[variablesDict[nextToken.GetLiteral()]].GetValue()}");
-                                // Issue with getting the current variable value
-                                //throw new Exception("DEV ERROR: NOT DEALT WITH VARIBLE IN FUNCTION CALL");
-                                areParamsToRead = false;
+                                readyForNextParam = false;
                             }
                             else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
                             {
@@ -3046,7 +3041,6 @@ namespace NEA
 
                         // Removed isLiteralList
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements, isLiteralList));
-
                         i += j + 1 + 1;
                         break;
                     case TokenType.EOF:
