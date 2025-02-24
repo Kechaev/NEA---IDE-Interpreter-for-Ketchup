@@ -46,7 +46,6 @@ namespace NEA
             currentCodeField = txtCodeField;
             arrayCodeFields = new List<FastColoredTextBox>();
             arrayCodeFields.Add(currentCodeField);
-            txtCodeField.TabLength = 4;
             txtCodeField.AutoIndent = true;
         }
         
@@ -66,23 +65,23 @@ namespace NEA
             machine = new Machine(txtCodeField.Text);
 
             // Error Checking
-            //try
-            //{
-            //    machine.Interpret();
+            try
+            {
+                machine.Interpret();
 
-            //    string[] intermediate = machine.GetIntermediateCode();
+                string[] intermediate = machine.GetIntermediateCode();
 
-            //    StartExecution(intermediate);
-            //}
-            //catch (Exception e)
-            //{
-            //    ConsoleWrite(e.Message);
-            //}
+                StartExecution(intermediate);
+            }
+            catch (Exception e)
+            {
+                ConsoleWrite(e.Message);
+            }
 
             //No Error Checking
-            machine.Interpret();
-            string[] intermediate = machine.GetIntermediateCode();
-            StartExecution(intermediate);
+            //machine.Interpret();
+            //string[] intermediate = machine.GetIntermediateCode();
+            //StartExecution(intermediate);
         }
 
         public void StartExecution(string[] intermediateCode)
@@ -310,92 +309,6 @@ namespace NEA
             {
                 Run();
             }
-            else if (e.KeyCode == Keys.Back && txtCodeField.Focused)
-            {
-                //if (txtCodeField.SelectionStart == txtCodeField.Text.Length)
-                //{
-                //    txtCodeField.ScrollToCaret();
-                //}
-                //txtCodeField.SelectionColor = Color.Black;
-            }
-            else if (e.KeyCode == Keys.Up)
-            {
-                //int selected = txtCodeField.SelectionStart;
-                //int line = txtCodeField.GetLineFromCharIndex(selected);
-                //if (line == 0)
-                //{
-                //    txtCodeField.SelectionStart = 0;
-                //}
-            }
-            else if (e.KeyCode == Keys.Down)
-            {
-                //int selected = txtCodeField.SelectionStart;
-                //int line = txtCodeField.GetLineFromCharIndex(selected);
-                //if (line == txtCodeField.Lines.Length - 1)
-                //{
-                //    txtCodeField.SelectionStart = txtCodeField.Text.Length;
-                //}
-            }
-            else if (e.KeyCode == Keys.Enter)
-            {
-                //e.SuppressKeyPress = true;
-                //int start = txtCodeField.SelectionStart;
-                //int line = txtCodeField.GetLineFromCharIndex(start);
-                //string[] lines = txtCodeField.Lines;
-                //int nextLineStart = txtCodeField.GetFirstCharIndexFromLine(line + 1);
-                //int lineEnd = txtCodeField.TextLength;
-                //if (nextLineStart != -1)
-                //{
-                //    lineEnd = nextLineStart - 1;
-                //}
-
-                //if (line < lines.Length)
-                //{
-                //    string[] words = lines[line].TrimStart().Split(' ');
-                //    string[] toIndent = { "FUNCTION", "IF", "ELSE", "COUNT", "REPEAT", "WHILE", "DO" };
-                //    string[] unIndent = { "END" };
-
-                //    string beforeSubstring = "";
-                //    for (int i = 0; i <= line; i++)
-                //    {
-                //        beforeSubstring += $"{lines[i]}\n";
-                //    }
-
-                //    if (words.Length > 0 && toIndent.Contains(words[0].ToUpper()) && lineEnd == start)
-                //    {
-                //        currentIndent = FindIndent(beforeSubstring);
-                //    }
-                //    else if (words.Length > 0 && unIndent.Contains(words[0].ToUpper()))
-                //    {
-                //        currentIndent = FindIndent(beforeSubstring) - 1;
-                //        string currentLine = lines[line].TrimStart('\t');
-                //        for (int i = 0; i < currentIndent; i++)
-                //        {
-                //            currentLine = "\t" + currentLine;
-                //        }
-
-                //        int lineStart = txtCodeField.GetFirstCharIndexFromLine(line);
-                //        int lineLength = lines[line].Length;
-
-                //        txtCodeField.Select(lineStart, lineLength);
-                //        txtCodeField.SelectedText = currentLine;
-                //        txtCodeField.SelectionStart = lineStart + txtCodeField.Lines[line].Length;
-                //    }
-
-                //    string insert = "\n";
-
-                //    for (int i = 0; i < currentIndent; i++)
-                //    {
-                //        insert += "\t";
-                //    }
-
-                //    txtCodeField.SelectedText = insert;
-                //}
-                //else
-                //{
-                //    txtCodeField.SelectedText = "\n";
-                //}
-            }
         }
 
         private void tsEditCut_Click(object sender, EventArgs e)
@@ -403,6 +316,7 @@ namespace NEA
             Cut();
         }
 
+        #region Code Views
         private void tsIntermediateView_Click(object sender, EventArgs e)
         {
             // List boxes
@@ -457,6 +371,7 @@ namespace NEA
         {
             ClearConsole();
         }
+        #endregion
 
         #region File Interactions
         private void tsFileOpen_Click(object sender, EventArgs e)
@@ -580,6 +495,7 @@ namespace NEA
             return true;
         }
 
+        #region Tabs
         private void tsFileNew_Click(object sender, EventArgs e)
         {
             // Temp fix
@@ -608,6 +524,14 @@ namespace NEA
 
             this.Text = "Ketchup™️ IDE";
         }
+
+        private void tabCodeControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+            machine = new Machine(txtCodeField.Text);
+        }
+        #endregion
         #endregion
 
         private void IDE_MainWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -633,8 +557,144 @@ namespace NEA
             MessageBox.Show("Breakpoints");
         }
 
+        private void stripCopy_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
+            {
+                Clipboard.SetText(txtCodeField.SelectedText);
+            }
+            else if (!string.IsNullOrEmpty(txtConsole.SelectedText))
+            {
+                Clipboard.SetText(txtConsole.SelectedText);
+            }
+            else
+            {
+                MessageBox.Show("Please select some text to copy.");
+            }
+        }
+
+        private void btnCopy_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtConsole.SelectedText))
+            {
+                Clipboard.SetText(txtConsole.SelectedText);
+            }
+            else
+            {
+                Clipboard.SetText(txtConsole.Text);
+            }
+        }
+
+        private void btnClear_Click_1(object sender, EventArgs e)
+        {
+            arrayCodeFields[tabCodeControl.SelectedIndex].Text = "";
+        }
+
+        private void btnCopyLastProgram_Click(object sender, EventArgs e)
+        {
+            string[] lines = txtConsole.Lines;
+            int i = lines.Length - 1;
+            bool searching = true;
+            for (; i >= 0 && searching; i--)
+            {
+                // Regex not working
+                Regex rg = new Regex(@"={3} (Unsaved Program \d+)|(.*\.ktch) - \d{2}:\d{2}:\d{2} ={3}");
+                Match match = rg.Match(lines[i]);
+                if (match.Success)
+                {
+                    searching = false;
+                }
+            }
+            i++;
+            if (!searching)
+            {
+                string output = "";
+                for (int j = lines.Length - 2; j > i; j--)
+                {
+                    output = lines[j] + "\n" + output;
+                }
+                Clipboard.SetText(output);
+            }
+            else
+            {
+                MessageBox.Show($"No text was copied");
+            }
+        }
+
+        #region Syntax Highlighting
+        Style GreenStyle = new TextStyle(Brushes.Green, null, FontStyle.Regular);
+        Style PurpleStyle = new TextStyle(Brushes.Purple, null, FontStyle.Regular);
+        Style PinkStyle = new TextStyle(Brushes.HotPink, null, FontStyle.Regular);
+        Style OrangeStyle = new TextStyle(Brushes.DarkOrange, null, FontStyle.Regular);
+        Style CyanStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
+        Style RedStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
+        Style BlueStyle = new TextStyle(Brushes.DarkBlue, null, FontStyle.Regular);
+        Style GreyStyle = new TextStyle(Brushes.Gray, null, FontStyle.Italic);
+
+        private void txtCodeField_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
+        {
+            isSaved = false;
+            // Regex explanation
+            // \b - boundary character (beginning of a word)
+            // (?i) - case insensitivity
+            // | - OR operator
+            // (?!\S) - Matches only whitespace characters ( ,\n,\t)
+
+            e.ChangedRange.ClearStyle(GreenStyle);
+            e.ChangedRange.ClearStyle(PurpleStyle);
+            e.ChangedRange.ClearStyle(PinkStyle);
+            e.ChangedRange.ClearStyle(OrangeStyle);
+            e.ChangedRange.ClearStyle(CyanStyle);
+            e.ChangedRange.ClearStyle(RedStyle);
+            e.ChangedRange.ClearStyle(BlueStyle);
+            e.ChangedRange.ClearStyle(GreyStyle);
+            // String not working after "" (false positive)
+            e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
+            e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message)(?!\S)");
+            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|of)(?!\S)");
+            e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times)(?!\S)");
+            e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(integer|decimal|string|character|boolean|array|list)(?!\S)");
+            e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by)(?!\S)");
+            e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
+
+            UpdateCaretPosition();
+        }
+        #endregion
+
+        #region Indentation (Formatting)
+        private void txtCodeField_AutoIndentNeeded(object sender, AutoIndentEventArgs e)
+        {
+            string trimmedLine = e.LineText.Trim();
+
+            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+.+from\s+.+to\s+((.+going\s+(up|down)\s+by.+)|.+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*\)|if\s+.+then|else(\s+if\s+.+then)?|repeat\s+[a-zA-Z0-9_]+\stimes)$", RegexOptions.IgnoreCase);
+            Regex blockEndRegex = new Regex(@"^\s*end", RegexOptions.IgnoreCase);
+
+            if (blockEndRegex.IsMatch(trimmedLine))
+            {
+                e.Shift = -e.TabLength;
+            }
+            else
+            {
+                int lineNumber = txtCodeField.Selection.Start.iLine;
+                if (lineNumber > 0)
+                {
+                    string prevLine = txtCodeField.Lines[lineNumber - 1].Trim();
+                    if (blockStartRegex.IsMatch(prevLine))
+                    {
+                        e.ShiftNextLines = e.TabLength;
+                    }
+                    else if (blockEndRegex.IsMatch(prevLine))
+                    {
+                        e.ShiftNextLines = -e.TabLength;
+                    }
+                }
+            }
+        }
+
         private void stripFormat_Click(object sender, EventArgs e)
         {
+            int selectionStart = txtCodeField.SelectionStart;
+            int selectionLength = txtCodeField.SelectionLength;
             string usersCode = txtCodeField.Text;
 
             // Get Tokens and sort by need for capitalisation
@@ -694,12 +754,12 @@ namespace NEA
             {
                 string line = lines[i];
                 string[] words = line.Split(' ');
-                
+
                 if (unIndent.Contains(words[0].ToUpper()))
                 {
                     currentIndent--;
                 }
-                
+
                 for (int j = 0; j < currentIndent; j++)
                 {
                     usersCode += '\t';
@@ -715,6 +775,9 @@ namespace NEA
             usersCode = usersCode.TrimEnd('\n');
 
             txtCodeField.Text = usersCode;
+
+            txtCodeField.SelectionStart = selectionStart;
+            txtCodeField.SelectionLength = selectionLength;
         }
 
         private bool IsVariable(Token token)
@@ -739,144 +802,6 @@ namespace NEA
         {
             return token1.GetLine() == token2.GetLine();
         }
-
-        private void stripCopy_Click(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
-            {
-                Clipboard.SetText(txtCodeField.SelectedText);
-            }
-            else if (!string.IsNullOrEmpty(txtConsole.SelectedText))
-            {
-                Clipboard.SetText(txtConsole.SelectedText);
-            }
-            else
-            {
-                MessageBox.Show("Please select some text to copy.");
-            }
-        }
-
-        private void btnCopy_Click(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtConsole.SelectedText))
-            {
-                Clipboard.SetText(txtConsole.SelectedText);
-            }
-            else
-            {
-                Clipboard.SetText(txtConsole.Text);
-            }
-        }
-
-        private void btnClear_Click_1(object sender, EventArgs e)
-        {
-            txtConsole.Text = "";
-        }
-
-        private void btnCopyLastProgram_Click(object sender, EventArgs e)
-        {
-            string[] lines = txtConsole.Lines;
-            int i = lines.Length - 1;
-            bool searching = true;
-            for (; i >= 0 && searching; i--)
-            {
-                // Regex not working
-                Regex rg = new Regex(@"={3} (Unsaved Program \d+)|(.*\.ktch) - \d{2}:\d{2}:\d{2} ={3}");
-                Match match = rg.Match(lines[i]);
-                if (match.Success)
-                {
-                    searching = false;
-                }
-            }
-            i++;
-            if (!searching)
-            {
-                string output = "";
-                for (int j = lines.Length - 2; j > i; j--)
-                {
-                    output = lines[j] + "\n" + output;
-                }
-                Clipboard.SetText(output);
-            }
-            else
-            {
-                MessageBox.Show($"No text was copied");
-            }
-        }
-
-        Style GreenStyle = new TextStyle(Brushes.Green, null, FontStyle.Regular);
-        Style PurpleStyle = new TextStyle(Brushes.Purple, null, FontStyle.Regular);
-        Style PinkStyle = new TextStyle(Brushes.HotPink, null, FontStyle.Regular);
-        Style OrangeStyle = new TextStyle(Brushes.DarkOrange, null, FontStyle.Regular);
-        Style CyanStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
-        Style RedStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
-        Style BlueStyle = new TextStyle(Brushes.DarkBlue, null, FontStyle.Regular);
-        Style GreyStyle = new TextStyle(Brushes.Gray, null, FontStyle.Italic);
-
-        private void txtCodeField_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
-        {
-            isSaved = false;
-            // Regex explanation
-            // \b - boundary character (beginning of a word)
-            // (?i) - case insensitivity
-            // | - OR operator
-            // (?!\S) - Matches only whitespace characters ( ,\n,\t)
-
-            e.ChangedRange.ClearStyle(GreenStyle);
-            e.ChangedRange.ClearStyle(PurpleStyle);
-            e.ChangedRange.ClearStyle(PinkStyle);
-            e.ChangedRange.ClearStyle(OrangeStyle);
-            e.ChangedRange.ClearStyle(CyanStyle);
-            e.ChangedRange.ClearStyle(RedStyle);
-            e.ChangedRange.ClearStyle(BlueStyle);
-            e.ChangedRange.ClearStyle(GreyStyle);
-            // String not working after "" (false positive)
-            e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
-            e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message)(?!\S)");
-            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|of)(?!\S)");
-            e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times)(?!\S)");
-            e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(integer|decimal|string|character|boolean|array|list)(?!\S)");
-            e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by)(?!\S)");
-            e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
-
-            UpdateCaretPosition();
-        }
-
-        private void txtCodeField_AutoIndentNeeded(object sender, AutoIndentEventArgs e)
-        {
-            string trimmedLine = e.LineText.Trim();
-
-            Regex blockStartRegex = new Regex(@"^\s*count\s+with", RegexOptions.IgnoreCase);
-            Regex blockEndRegex = new Regex(@"^\s*end\s+count", RegexOptions.IgnoreCase);
-
-            if (blockEndRegex.IsMatch(trimmedLine))
-            {
-                e.Shift = -e.TabLength;
-            }
-            else
-            {
-                int lineNumber = txtCodeField.Selection.Start.iLine;
-                if (lineNumber > 0)
-                {
-                    string prevLine = txtCodeField.Lines[lineNumber - 1].Trim();
-                    if (blockStartRegex.IsMatch(prevLine))
-                    {
-                        e.ShiftNextLines = e.TabLength;
-                    }
-                    else if (blockEndRegex.IsMatch(prevLine))
-                    {
-                        e.Shift = -e.TabLength;
-                        e.ShiftNextLines = -e.TabLength;
-                    }
-                }
-            }
-        }
-
-        private void tabCodeControl_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
-            machine = new Machine(txtCodeField.Text);
-        }
+        #endregion
     }
 }

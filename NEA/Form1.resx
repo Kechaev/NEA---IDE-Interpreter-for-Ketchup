@@ -282,7 +282,7 @@
     <value>4, 1, 0, 1</value>
   </data>
   <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>853, 24</value>
+    <value>1271, 24</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
@@ -352,16 +352,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIpSURBVGhD7ZfNS1RhFMZvWbTIj42bwBgvuhAX4t8grlrn
-        ToKWUbRoIwqBWxVcRxtxo+KiUIg2BUVBaRAEbtsF7fKLcKMzPs94Dhwu5868d9BRfO8PfuD7zJ2B81zv
-        +84kJSUlJSVZamktqSU3ZBUh9QLgTnosSWRoAWp14L68EgnZAtRo8IZXj9PvctU1xhs8a+t8gJtwDS6L
-        r+AcHIFXAG/gPIvzD/J9eT6Fl4w3aEMro/LOEGwBr+Es3DAZT55LPoLdIQMMwxZwj4GwAzUfYwCm4V/x
-        GQNBsz/1VZL0wT3xB3wCf8ET+AUOwQJ4w4V6UuHz3Yi8An5DZvwP6GAAWIBe+5iBoNl+fXVWgGYcWv9W
-        38ICeIMVNR9bwBTk3VoymS3QFvCIgaCZVwCLnIeTJqvCAo+VN1BR82m0Cb6HllYK+MhAeAM172cQhjdQ
-        sMlN+ZQ8bAF8To/MegZaXkB9LbSATwyEVaj5IIMw3MGaeJD+l3c3I7sHTJg15Vrhkah5aAFfGQgrUPML
-        LKAY3ia4ADWjFUgeQs24T/TCBybzCvjGQFiHml9IATzDi+IVQD5DzQ8ZgGGomadXAI9B5R3U/JwLaJ28
-        AnjX7X6wBcki5C6uPoc86uguJCxAs20GAvcD/bzzKmC4U65qJwNwHN6tr3x6jIqXBeAN/jNlu5GQHT46
-        dPBq/0tJIiPKu95++N3cGh38xXdHbPb1+VpyG3bDLniLQUlJu0mSU7oibIkBq5CVAAAAAElFTkSuQmCC
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIpSURBVGhD7Zexa1NRFMafVnGw6tJFsCSPOkgG6d9QOnW2
+        mxQ6FqWDS7FQ6KqCs7hIFysOFgVxUVBaaDWTkLWb4GZbS+nSJH5fPAcOj/OS+0Kblt73gx/0fnkJnO/1
+        3ZskJSUlJSVZ2mk7aScXZBUhnQJgIz2SJDK0ALU1NiqvREK2ADUavOHVo3RLrjrHeINn7Z/P8AN8A1fE
+        F/AJvAvPAN7AeRbnD+T78nwATxlv0K5WxuWdIdgCXsJl+N5kPHlO+Qh2hwwwDFvATQZCA2o+wQA8hr/F
+        hwwEzX51VklyC+6KdTgHf8ImXId3YAG84UJtVvh8dyOvgG3IjP8BQwwAC9BrZxkImu11Vv8L0IxD69/q
+        GiyAN1hR87EFLEDerVcmswXaAmYYCJp5BbDIp/C+yVqwwGPlDVTUfLptgp+gpZ8CvjAQ3kHNqwzC8AYK
+        Nrkon5KHLYDP6aFZL0LLI6ivhRbwlYGwCjW/zSAMd7Ae/k0P5N29yO4B02ZNuVZ4JGoeWsAGA+E11PwE
+        CyiGtwk+g5rRCiT3oGbcJ0bglMm8AjYZCG+h5idSAM/wongFkG9Q830GoAY18/QK4DGofISaH3MB/ZNX
+        AO+63Q++Q/IcchdX5yGPOroDCQvQ7AcDgfuBft5xFVAblqsGyRichFc7K58bRsXLAvAGr6dsNxKyw0eH
+        Dt6qLkkSGVHe9cHD7+bW6OAvvitir6/P55LL8Dq8Bi8xKCkZNEnyD5+FbIaMCkddAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -451,7 +451,7 @@
     <value>0, 0, 2, 0</value>
   </data>
   <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>853, 39</value>
+    <value>1271, 39</value>
   </data>
   <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -487,13 +487,13 @@
     <value>Column: 1</value>
   </data>
   <data name="statusBar.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 434</value>
+    <value>0, 555</value>
   </data>
   <data name="statusBar.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>1, 0, 9, 0</value>
   </data>
   <data name="statusBar.Size" type="System.Drawing.Size, System.Drawing">
-    <value>853, 22</value>
+    <value>1271, 22</value>
   </data>
   <data name="statusBar.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -658,7 +658,7 @@
     <value>3</value>
   </data>
   <data name="tableConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1275, 228</value>
+    <value>1275, 248</value>
   </data>
   <data name="tableConsole.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -693,8 +693,11 @@
   <data name="txtConsole.Multiline" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <data name="txtConsole.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
+    <value>Vertical</value>
+  </data>
   <data name="txtConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1271, 195</value>
+    <value>1271, 215</value>
   </data>
   <data name="txtConsole.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -760,7 +763,7 @@
 </value>
   </data>
   <data name="txtCodeField.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1259, 110</value>
+    <value>1259, 211</value>
   </data>
   <data name="txtCodeField.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -787,7 +790,7 @@
     <value>2, 2, 2, 2</value>
   </data>
   <data name="tab0.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1263, 114</value>
+    <value>1263, 215</value>
   </data>
   <data name="tab0.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -820,7 +823,7 @@
     <value>2, 2, 2, 2</value>
   </data>
   <data name="tabCodeControl.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1271, 140</value>
+    <value>1271, 241</value>
   </data>
   <data name="tabCodeControl.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -850,7 +853,7 @@
     <value>1</value>
   </data>
   <data name="tableCodeSpace.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1275, 144</value>
+    <value>1275, 245</value>
   </data>
   <data name="tableCodeSpace.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -901,10 +904,10 @@
     <value>100</value>
   </data>
   <data name="splitContainer.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1275, 376</value>
+    <value>1275, 497</value>
   </data>
   <data name="splitContainer.SplitterDistance" type="System.Int32, mscorlib">
-    <value>144</value>
+    <value>245</value>
   </data>
   <data name="splitContainer.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
@@ -934,7 +937,7 @@
     <value>3</value>
   </data>
   <data name="tableMain.Size" type="System.Drawing.Size, System.Drawing">
-    <value>853, 456</value>
+    <value>1271, 577</value>
   </data>
   <data name="tableMain.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -982,7 +985,7 @@
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>856, 456</value>
+    <value>1274, 577</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

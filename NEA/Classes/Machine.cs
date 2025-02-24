@@ -2105,13 +2105,10 @@ namespace NEA
                                             arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
                                             isLiteralArguementStack.Push(true);
                                             readyForNextParam = false;
-                                            //MessageBox.Show($"Valid Parameter Literal found - {nextToken.GetLiteral()}\nParamCounter = {paramCounter}");
                                         }
                                         else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
                                         {
-                                            // Deal with variable
-                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", variablesDict[nextToken.GetLiteral()]));
-                                            //throw new Exception("DEV ERROR: NOT DEALT WITH VARIBLE IN FUNCTION CALL");
+                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
                                             isLiteralArguementStack.Push(false);
                                             readyForNextParam = false;
                                         }
