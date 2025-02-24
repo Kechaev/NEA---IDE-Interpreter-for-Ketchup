@@ -40,7 +40,7 @@ namespace NEA
         private string[] keyword = { "CREATE", "SET", /*"CHANGE",*/ "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
-                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
+                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR", "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
@@ -223,8 +223,6 @@ namespace NEA
                     return TokenType.DECLARATION;
                 case "SET":
                     return TokenType.ASSIGNMENT;
-                //case "CHANGE":
-                //    return TokenType.REASSIGNMENT;
                 case "ADD":
                     return TokenType.ADDITION;
                 case "TAKE":
@@ -243,6 +241,14 @@ namespace NEA
                     return TokenType.REMAINDER;
                 case "OF":
                     return TokenType.OF;
+                //case "IS":
+                //    return TokenType.IS;
+                //case "A":
+                //    return TokenType.A;
+                //case "FACTOR":
+                //    return TokenType.FACTOR;
+                //case "MULTIPLE":
+                //    return TokenType.MULTIPLE;
                 case "IF":
                     return TokenType.IF;
                 case "ELSE":
@@ -705,8 +711,11 @@ namespace NEA
                 }
                 else if (IsBinary(token))
                 {
-                    while ((stack.Count > 0) && ((Precedence(token) <= Precedence(stack.Peek())) || IsUnary(stack.Peek()) && (!Is(stack.Peek(), TokenType.LEFT_BRACKET)) && IsLeftAssociative(token)))
+                    while ((stack.Count > 0) && ((Precedence(token) < Precedence(stack.Peek())) ||
+                    ((Precedence(token) == Precedence(stack.Peek())) && IsLeftAssociative(token) &&
+                    (!Is(stack.Peek(), TokenType.LEFT_BRACKET)))))
                     {
+                        MessageBox.Show($"Added to output {stack.Peek().GetTokenType()}");
                         output.Add(stack.Pop().GetTokenType().ToString());
                     }
                     stack.Push(token);
@@ -715,18 +724,61 @@ namespace NEA
                 {
                     stack.Push(token);
                 }
-                else if (Is(token, TokenType.RIGHT_BRACKET) && stack.Count > 0)
+                else if (Is(token, TokenType.RIGHT_BRACKET))
                 {
-                    while (!Is(stack.Peek(), TokenType.RIGHT_BRACKET))
+                    while (stack.Count > 0 && !Is(stack.Peek(), TokenType.LEFT_BRACKET))
                     {
                         output.Add(stack.Pop().GetTokenType().ToString());
                     }
                     stack.Pop();
-                    if (IsUnary(stack.Peek()))
+                    if (stack.Count > 0 && IsUnary(stack.Peek()))
                     {
                         output.Add(stack.Pop().GetTokenType().ToString());
                     }
                 }
+                // DO THIS LATER 
+                // UNFINISHED
+                //else if (false/*/Is(token, TokenType.IS)/*/)
+                //{
+                //    if (i + 4 < tokens.Count)
+                //    {
+                //        Token nextToken = tokens[i + 1];
+                //        if (!Is(nextToken, TokenType.A))
+                //        {
+                //            throw new Exception($"DEV ERROR: Parsed \"A\" without enough tokens.");
+                //        }
+                //        nextToken = tokens[i + 2];
+                //        if (Is(nextToken, TokenType.MULTIPLE))
+                //        {
+                //            while ((stack.Count > 0) && ((Precedence(token) <= Precedence(stack.Peek())) || IsUnary(stack.Peek()) && (!Is(stack.Peek(), TokenType.LEFT_BRACKET)) && IsLeftAssociative(token)))
+                //            {
+                //                output.Add(stack.Pop().GetTokenType().ToString());
+                //            }
+                //            stack.Push(new Token(TokenType.MOD, "%", nextToken.GetLine()));
+                //            nextToken = tokens[i + 3];
+                //            if (!Is(nextToken, TokenType.OF))
+                //            {
+                //                throw new Exception($"DEV ERROR: Parsed \"OF\" without enough tokens.");
+                //            }
+                //            nextToken = tokens[i + 4];
+                //            if (IsLiteral(nextToken))
+                //            {
+                //                output.Add("LOAD_CONST " + nextToken.GetLiteral());
+                //            }
+                //        }
+                //        else if (Is(nextToken, TokenType.FACTOR))
+                //        {
+                //            // DONT FORGET TO PUT IT BACK ON THE OUTPUT
+                //            string instructionForLargerNumber = output[output.Count - 1];
+
+
+                //        }
+                //    }
+                //    else
+                //    {
+                //        throw new Exception($"DEV ERROR: Parsed \"IS\" without enough tokens.");
+                //    }
+                //}
             }
 
             while (stack.Count > 0)
@@ -747,7 +799,7 @@ namespace NEA
             switch (token.GetTokenType())
             {
                 case TokenType.NOT:
-                    return 8;
+                    return 0;
                 case TokenType.EXP:
                     return 7;
                 case TokenType.MUL:
@@ -776,11 +828,13 @@ namespace NEA
 
         private bool IsLeftAssociative(Token op)
         {
-            if (op.GetTokenType() != TokenType.EXP)
+            switch (op.GetTokenType())
             {
-                return true;
+                case TokenType.EXP:
+                    return false;
+                default:
+                    return true;
             }
-            return false;
         }
 
         private bool ContainsExpressions(List<Token> expression)
@@ -1136,7 +1190,7 @@ namespace NEA
                 }
                 else
                 {
-                    throw new Exception($"SYNTAX ERROR on Line {e.GetLine() + 1}: Invalid token in string.");
+                    throw new Exception($"SYNTAX ERROR on Line {e.GetLine() + 1}: Invalid token ({e.GetLiteral()}) in string.");
                 }
             }
 
@@ -2162,7 +2216,15 @@ namespace NEA
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No variable found after \"SET\".");
+                            string literal = nextToken.GetLiteral();
+                            if (literal == null)
+                            {
+                                if (i + 2 < internalTokens.Length)
+                                {
+                                    literal = internalTokens[i + 2].GetLiteral();
+                                }
+                            }    
+                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No variable found after \"SET\". \"{literal}\" is a keyword in Ketchup and cannot be used as a variable name.");
                         }
                         nextToken = internalTokens[i + 2];
                         if (nextToken.GetTokenType() != TokenType.TO)
@@ -2766,7 +2828,7 @@ namespace NEA
                         break;
                     case TokenType.RAISE:
                         // Current Syntax:
-                        // RAISE variable TO THE POWER 2
+                        // RAISE variable TO THE POWER (OF) 2
                         nextToken = internalTokens[i + 1];
                         if (!Is(nextToken, TokenType.VARIABLE))
                         {

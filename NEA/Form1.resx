@@ -126,7 +126,7 @@
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="tsFileNew.Size" type="System.Drawing.Size, System.Drawing">
-    <value>186, 22</value>
+    <value>285, 34</value>
   </data>
   <data name="tsFileNew.Text" xml:space="preserve">
     <value>&amp;New</value>
@@ -135,7 +135,7 @@
     <value>Ctrl+O</value>
   </data>
   <data name="tsFileOpen.Size" type="System.Drawing.Size, System.Drawing">
-    <value>186, 22</value>
+    <value>285, 34</value>
   </data>
   <data name="tsFileOpen.Text" xml:space="preserve">
     <value>&amp;Open</value>
@@ -144,7 +144,7 @@
     <value>Ctrl+S</value>
   </data>
   <data name="tsFileSave.Size" type="System.Drawing.Size, System.Drawing">
-    <value>186, 22</value>
+    <value>285, 34</value>
   </data>
   <data name="tsFileSave.Text" xml:space="preserve">
     <value>&amp;Save</value>
@@ -153,7 +153,7 @@
     <value>Ctrl+Shift+S</value>
   </data>
   <data name="tsFileSaveAs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>186, 22</value>
+    <value>285, 34</value>
   </data>
   <data name="tsFileSaveAs.Text" xml:space="preserve">
     <value>Save As</value>
@@ -162,13 +162,13 @@
     <value>Alt+F4</value>
   </data>
   <data name="tsFileExit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>186, 22</value>
+    <value>285, 34</value>
   </data>
   <data name="tsFileExit.Text" xml:space="preserve">
     <value>E&amp;xit</value>
   </data>
   <data name="tsFile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>37, 22</value>
+    <value>54, 34</value>
   </data>
   <data name="tsFile.Text" xml:space="preserve">
     <value>&amp;File</value>
@@ -177,7 +177,7 @@
     <value>Ctrl+X</value>
   </data>
   <data name="tsEditCut.Size" type="System.Drawing.Size, System.Drawing">
-    <value>144, 22</value>
+    <value>218, 34</value>
   </data>
   <data name="tsEditCut.Text" xml:space="preserve">
     <value>Cut</value>
@@ -186,7 +186,7 @@
     <value>Ctrl+C</value>
   </data>
   <data name="tsEditCopy.Size" type="System.Drawing.Size, System.Drawing">
-    <value>144, 22</value>
+    <value>218, 34</value>
   </data>
   <data name="tsEditCopy.Text" xml:space="preserve">
     <value>Copy</value>
@@ -195,13 +195,13 @@
     <value>Ctrl+V</value>
   </data>
   <data name="tsEditPaste.Size" type="System.Drawing.Size, System.Drawing">
-    <value>144, 22</value>
+    <value>218, 34</value>
   </data>
   <data name="tsEditPaste.Text" xml:space="preserve">
     <value>Paste</value>
   </data>
   <data name="tsEdit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>39, 22</value>
+    <value>58, 34</value>
   </data>
   <data name="tsEdit.Text" xml:space="preserve">
     <value>&amp;Edit</value>
@@ -210,7 +210,7 @@
     <value>Ctrl+Alt+C</value>
   </data>
   <data name="tsViewConsoleView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>272, 22</value>
+    <value>406, 34</value>
   </data>
   <data name="tsViewConsoleView.Text" xml:space="preserve">
     <value>Internal/External Console</value>
@@ -219,7 +219,7 @@
     <value>Ctrl+I</value>
   </data>
   <data name="tsIntermediateCodeView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>272, 22</value>
+    <value>406, 34</value>
   </data>
   <data name="tsIntermediateCodeView.Text" xml:space="preserve">
     <value>View Intermediate Code</value>
@@ -228,49 +228,49 @@
     <value>Ctrl+T</value>
   </data>
   <data name="tsTokenView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>272, 22</value>
+    <value>406, 34</value>
   </data>
   <data name="tsTokenView.Text" xml:space="preserve">
     <value>View Token</value>
   </data>
   <data name="tsView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>44, 22</value>
+    <value>65, 34</value>
   </data>
   <data name="tsView.Text" xml:space="preserve">
     <value>&amp;View</value>
   </data>
   <data name="tsDebugTraceTable.Size" type="System.Drawing.Size, System.Drawing">
-    <value>174, 22</value>
+    <value>264, 34</value>
   </data>
   <data name="tsDebugTraceTable.Text" xml:space="preserve">
     <value>Trace Table</value>
   </data>
   <data name="tsDebugSyntaxCheck.Size" type="System.Drawing.Size, System.Drawing">
-    <value>174, 22</value>
+    <value>264, 34</value>
   </data>
   <data name="tsDebugSyntaxCheck.Text" xml:space="preserve">
     <value>Check Syntax</value>
   </data>
   <data name="tsDebugBreakpoints.Size" type="System.Drawing.Size, System.Drawing">
-    <value>174, 22</value>
+    <value>264, 34</value>
   </data>
   <data name="tsDebugBreakpoints.Text" xml:space="preserve">
     <value>Enable Breakpoints</value>
   </data>
   <data name="tsDebug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 22</value>
+    <value>82, 34</value>
   </data>
   <data name="tsDebug.Text" xml:space="preserve">
     <value>&amp;Debug</value>
   </data>
   <data name="tsClear.Size" type="System.Drawing.Size, System.Drawing">
-    <value>101, 22</value>
+    <value>153, 34</value>
   </data>
   <data name="tsClear.Text" xml:space="preserve">
     <value>Clear</value>
   </data>
   <data name="tsConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 22</value>
+    <value>92, 34</value>
   </data>
   <data name="tsConsole.Text" xml:space="preserve">
     <value>&amp;Console</value>
@@ -282,7 +282,7 @@
     <value>4, 1, 0, 1</value>
   </data>
   <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1271, 24</value>
+    <value>1271, 36</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="menuStrip.TabIndex" type="System.Int32, mscorlib">
@@ -309,7 +309,7 @@
   <data name="stripUndo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABpSURBVFhH7c1BCsQwDARB///TyckgnJYix9IhMAV9WDIr
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAABpSURBVFhH7c1BCsQwDARB///TyckgnJYix9IhMAV9WDIr
         DxGRP7oStaCHMh2jo7ul0NgeqSi0Du3vylw07shF40wTffNCNKR20P9nDzRa+yp1i0a2U6/31gF1Krxj
         H4pqQ49RIiJSaIwbOFfTLQe59twAAAAASUVORK5CYII=
 </value>
@@ -329,7 +329,7 @@
   <data name="stripRedo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABtSURBVFhH7c1LDoAgDEVR9r9pPwOSWi7aKh2YvJPcgVJo
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAABtSURBVFhH7c1LDoAgDEVR9r9pPwOSWi7aKh2YvJPcgVJo
         ExH5my3QcrQk0hL0cLZX6KEvWfTvwl5c2cl/IztUGaLBWR2dRRrQUC+D7lOD0FAQveUbPA4k+fd86PYw
         wS6aVYaWUWVoGSUiIofWdjLC0y2WkU7yAAAAAElFTkSuQmCC
 </value>
@@ -347,21 +347,21 @@
     <value>Redo</value>
   </data>
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>6, 39</value>
+    <value>6, 41</value>
   </data>
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIpSURBVGhD7Zexa1NRFMafVnGw6tJFsCSPOkgG6d9QOnW2
-        mxQ6FqWDS7FQ6KqCs7hIFysOFgVxUVBaaDWTkLWb4GZbS+nSJH5fPAcOj/OS+0Kblt73gx/0fnkJnO/1
-        3ZskJSUlJSVZ2mk7aScXZBUhnQJgIz2SJDK0ALU1NiqvREK2ADUavOHVo3RLrjrHeINn7Z/P8AN8A1fE
-        F/AJvAvPAN7AeRbnD+T78nwATxlv0K5WxuWdIdgCXsJl+N5kPHlO+Qh2hwwwDFvATQZCA2o+wQA8hr/F
-        hwwEzX51VklyC+6KdTgHf8ImXId3YAG84UJtVvh8dyOvgG3IjP8BQwwAC9BrZxkImu11Vv8L0IxD69/q
-        GiyAN1hR87EFLEDerVcmswXaAmYYCJp5BbDIp/C+yVqwwGPlDVTUfLptgp+gpZ8CvjAQ3kHNqwzC8AYK
-        Nrkon5KHLYDP6aFZL0LLI6ivhRbwlYGwCjW/zSAMd7Ae/k0P5N29yO4B02ZNuVZ4JGoeWsAGA+E11PwE
-        CyiGtwk+g5rRCiT3oGbcJ0bglMm8AjYZCG+h5idSAM/wongFkG9Q830GoAY18/QK4DGofISaH3MB/ZNX
-        AO+63Q++Q/IcchdX5yGPOroDCQvQ7AcDgfuBft5xFVAblqsGyRichFc7K58bRsXLAvAGr6dsNxKyw0eH
-        Dt6qLkkSGVHe9cHD7+bW6OAvvitir6/P55LL8Dq8Bi8xKCkZNEnyD5+FbIaMCkddAAAAAElFTkSuQmCC
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7ZfBS1RRFMZfWbTIauMmSMaHLcJF+DeIK9e5
+        i8ClFC7aSILgtoLW0SbcZLRICqJNQZGgTavArTvBXWoibnSm73udA4fHeTP3DeMoc98PfuD95s3A+Z7v
+        3pmkoqKioiJPM20mzeSCrCIkKwBupseSRIYWoDZGh+WVSMgXoEaDN7x6nG7IVX2MN3jezvkCP8K3cFl8
+        CZ/Cu/Ac4A1cZHn+QL6vyIfwjPEGbWltXN4Zgi3gFVyCH0zGk+eMj2B3yADDsAXcZCBsQs0nGIAncEd8
+        xEDQbDtbJcktuCf+grPwNzyBP+AdWAJvuFBPany+W1FUwBZkxv+AAQaABei1MwwEzfaz1f8CNOPQ+re6
+        CkvgDVbWYmwB85B367XJbIG2gAcMBM28AljkM3jfZA1Y4rHyBiprMa02wc/Q0kkBXxkI76HmIwzC8AYK
+        Nrkon1KELYDP6ZFZL0DLY6ivhRbwjYGwAjW/zSAMd7A2/k0P5d3tyO8B02ZNuVZ4JGoeWsAaA+EN1PwU
+        CyiHtwk+h5rRGiT3oGbcJ4bglMm8AtYZCO+g5qdSAM/wsngFkO9Q8wMGYAxq5ukVwGNQ+QQ173IBnVNU
+        AO+63Q9+QvICchdX5yCPOroLCQvQrM5A4H6gn9etAsYG5apeMgon4dVs5XPDqHhZAN7g9ZTtRkJ++OjQ
+        wRsji5JERpR3vffwu7k1OviL74rY7utzX3IZXofX4CUGFRW9Jkn+AZambIXDF2jzAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -377,12 +377,12 @@
     <value>Run</value>
   </data>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>6, 39</value>
+    <value>6, 41</value>
   </data>
   <data name="stripComment.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIdSURBVFhH7dY5aFRRFIfxUVEJBhE0oFiYNGIpaCoRhJgm
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIdSURBVFhH7dY5aFRRFIfxUVEJBhE0oFiYNGIpaCoRhJgm
         jZULmBTBQlIpiGiMC7g1ShCCRnHFECVREA2KoBaKhYVWFgEbbSwUQVFxiev3gQeGMHfgkStDIH/4FXPn
         zOXOmznnvdJUJlOWYQ2Wo8GFRBZjJZZivgu5cgLf8B7dLiSyAx/xBscwDRPOdFzBn392IpXjiDoPnSWz
         cRexcSdSuYio2+tCjszFE7jpD6xDpczETcQBupAlCzEKN/2M1aiUOXgE635iAwqlCSdxCV5KXcAwPsGN
@@ -416,12 +416,12 @@
     <value>Auto Format</value>
   </data>
   <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>6, 39</value>
+    <value>6, 41</value>
   </data>
   <data name="stripCopy.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKRSURBVFhH7Zc7i1pREMd9v8VXKaKCSFIkK0iS0k4hICm2
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAKRSURBVFhH7Zc7i1pREMd9v8VXKaKCSFIkK0iS0k4hICm2
         EQmpxE7wG1ybJbWNNnZ+AcHCLiRbRA2xCNFUYpWgTZJiGx+rk/8c7gZXvKLc1W0c+HPn7rnO/Dx7jzOj
         kSRJ5/P53phMps9Go3Gq0WhIjbRaLSHWjcFgaPj9/ldEpIcMsoyQabVamSErfJvGarWm8fCvbcHUymw2
         f8OXewJf2XQ63RdcCFeKxWKUSqVUKxKJrENccR5Fs1gsc1woEAjQYDCg2WymStPplJrNJmFnBYDD4WgV
@@ -442,16 +442,13 @@
     <value>36, 36</value>
   </data>
   <data name="stripCopy.Text" xml:space="preserve">
-    <value>toolStripButton1</value>
+    <value>Copy</value>
   </data>
   <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 24</value>
-  </data>
-  <data name="toolStrip.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 2, 0</value>
+    <value>0, 36</value>
   </data>
   <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1271, 39</value>
+    <value>1271, 41</value>
   </data>
   <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -475,25 +472,25 @@
     <value>320, 17</value>
   </metadata>
   <data name="statusLineInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>41, 17</value>
+    <value>62, 25</value>
   </data>
   <data name="statusLineInfo.Text" xml:space="preserve">
     <value>Line: 1</value>
   </data>
   <data name="statusColumnInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 17</value>
+    <value>93, 25</value>
   </data>
   <data name="statusColumnInfo.Text" xml:space="preserve">
     <value>Column: 1</value>
   </data>
   <data name="statusBar.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 555</value>
+    <value>0, 545</value>
   </data>
   <data name="statusBar.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>1, 0, 9, 0</value>
   </data>
   <data name="statusBar.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1271, 22</value>
+    <value>1271, 32</value>
   </data>
   <data name="statusBar.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -559,7 +556,7 @@
     <value>2, 3, 2, 0</value>
   </data>
   <data name="lblConsole.Size" type="System.Drawing.Size, System.Drawing">
-    <value>78, 18</value>
+    <value>110, 23</value>
   </data>
   <data name="lblConsole.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -730,7 +727,7 @@
     <value>1</value>
   </data>
   <data name="txtCodeField.AutoScrollMinSize" type="System.Drawing.Size, System.Drawing">
-    <value>31, 18</value>
+    <value>39, 27</value>
   </data>
   <data name="txtCodeField.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -763,7 +760,7 @@
 </value>
   </data>
   <data name="txtCodeField.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1259, 211</value>
+    <value>1259, 204</value>
   </data>
   <data name="txtCodeField.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -781,7 +778,7 @@
     <value>0</value>
   </data>
   <data name="tab0.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 22</value>
+    <value>4, 29</value>
   </data>
   <data name="tab0.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>
@@ -790,7 +787,7 @@
     <value>2, 2, 2, 2</value>
   </data>
   <data name="tab0.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1263, 215</value>
+    <value>1263, 208</value>
   </data>
   <data name="tab0.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>

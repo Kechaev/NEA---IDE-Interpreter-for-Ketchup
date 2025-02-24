@@ -96,6 +96,7 @@ namespace NEA
             // 
             // menuStrip
             // 
+            this.menuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsFile,
@@ -400,8 +401,8 @@ namespace NEA
     "(?<range>:)\\s*(?<range>[^;]+);";
             resources.ApplyResources(this.txtCodeField, "txtCodeField");
             this.txtCodeField.BackBrush = null;
-            this.txtCodeField.CharHeight = 18;
-            this.txtCodeField.CharWidth = 10;
+            this.txtCodeField.CharHeight = 27;
+            this.txtCodeField.CharWidth = 14;
             this.txtCodeField.CommentPrefix = "#";
             this.txtCodeField.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtCodeField.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));

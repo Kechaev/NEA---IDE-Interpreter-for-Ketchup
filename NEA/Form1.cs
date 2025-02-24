@@ -30,7 +30,7 @@ namespace NEA
         private Machine machine;
 
         private string currentFilePath = null;
-        private bool isSaved = true;
+        private bool isSaved;
         private static int NoOfRuns = 1;
 
         private List<FastColoredTextBox> arrayCodeFields;
@@ -47,6 +47,7 @@ namespace NEA
             arrayCodeFields = new List<FastColoredTextBox>();
             arrayCodeFields.Add(currentCodeField);
             txtCodeField.AutoIndent = true;
+            isSaved = true;
         }
         
         private void Run()
@@ -65,23 +66,23 @@ namespace NEA
             machine = new Machine(txtCodeField.Text);
 
             // Error Checking
-            try
-            {
-                machine.Interpret();
+            //try
+            //{
+            //    machine.Interpret();
 
-                string[] intermediate = machine.GetIntermediateCode();
+            //    string[] intermediate = machine.GetIntermediateCode();
 
-                StartExecution(intermediate);
-            }
-            catch (Exception e)
-            {
-                ConsoleWrite(e.Message);
-            }
+            //    StartExecution(intermediate);
+            //}
+            //catch (Exception e)
+            //{
+            //    ConsoleWrite(e.Message);
+            //}
 
             //No Error Checking
-            //machine.Interpret();
-            //string[] intermediate = machine.GetIntermediateCode();
-            //StartExecution(intermediate);
+            machine.Interpret();
+            string[] intermediate = machine.GetIntermediateCode();
+            StartExecution(intermediate);
         }
 
         public void StartExecution(string[] intermediateCode)
@@ -486,6 +487,7 @@ namespace NEA
                 if (result == DialogResult.Yes)
                 {
                     SaveFile();
+
                 }
                 else if (result == DialogResult.Cancel)
                 {
@@ -499,7 +501,10 @@ namespace NEA
         private void tsFileNew_Click(object sender, EventArgs e)
         {
             // Temp fix
-            PromptToSaveChanges();
+            if (!isSaved)
+            {
+                PromptToSaveChanges();
+            }
 
             TabPage tabPage = new TabPage();
 
@@ -639,6 +644,7 @@ namespace NEA
             // (?i) - case insensitivity
             // | - OR operator
             // (?!\S) - Matches only whitespace characters ( ,\n,\t)
+            // (?<=\bSTRING\s+) - The STRING text must preced the current position (Positive Lookback)
 
             e.ChangedRange.ClearStyle(GreenStyle);
             e.ChangedRange.ClearStyle(PurpleStyle);
@@ -650,12 +656,13 @@ namespace NEA
             e.ChangedRange.ClearStyle(GreyStyle);
             // String not working after "" (false positive)
             e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
-            e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message)(?!\S)");
-            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|of)(?!\S)");
-            e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times)(?!\S)");
+            e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message|(?<=\binput\s+)with\b)(?!\S)");
+            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|raise)(?!\S)");
+            e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times|not|and|or)(?!\S)");
             e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(integer|decimal|string|character|boolean|array|list)(?!\S)");
-            e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by)(?!\S)");
+            e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by|the|power|(?<=\bpower\s+)of|divided)(?!\S)");
             e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
+            e.ChangedRange.SetStyle(GreyStyle, @"#.*");
 
             UpdateCaretPosition();
         }
@@ -680,7 +687,7 @@ namespace NEA
             // ELSE (IF anything THEN)?
             // REPEAT statement format:
             // REPEAT (num|var) TIMES
-            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+[a-zA-Z_][a-zA-Z0-9_]*\s+from\s+[a-zA-Z0-9_]+\s+to\s+(([a-zA-Z0-9_]+\s+going\s+(up|down)\s+by\s+[a-zA-Z0-9_])|[a-zA-Z0-9_]+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*\)|if\s+.+then|else(\s+if\s+.+then)?|repeat\s+[a-zA-Z0-9_]+\stimes)$", RegexOptions.IgnoreCase);
+            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+[a-zA-Z_][a-zA-Z0-9_]*\s+from\s+[a-zA-Z0-9_]+\s+to\s+(([a-zA-Z0-9_]+\s+going\s+(up|down)\s+by\s+[a-zA-Z0-9_])|[a-zA-Z0-9_]+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*\)|if\s+.+then|else(\s+if\s+.+then)?|repeat\s+[a-zA-Z0-9_]+\stimes|while\s+.+then|do)$", RegexOptions.IgnoreCase);
             Regex blockEndRegex = new Regex(@"^\s*end", RegexOptions.IgnoreCase);
 
             if (blockEndRegex.IsMatch(trimmedLine))
