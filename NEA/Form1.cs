@@ -686,6 +686,8 @@ namespace NEA
             if (blockEndRegex.IsMatch(trimmedLine))
             {
                 e.Shift = -e.TabLength;
+                e.ShiftNextLines = -e.TabLength;
+                return;
             }
             else
             {
@@ -696,10 +698,7 @@ namespace NEA
                     if (blockStartRegex.IsMatch(prevLine))
                     {
                         e.ShiftNextLines = e.TabLength;
-                    }
-                    else if (blockEndRegex.IsMatch(prevLine))
-                    {
-                        e.ShiftNextLines = -e.TabLength;
+                        return;
                     }
                 }
             }

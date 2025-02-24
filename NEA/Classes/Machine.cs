@@ -1862,14 +1862,9 @@ namespace NEA
             return bitwiseOperations.Contains(token.GetTokenType());
         }
 
-        private bool IsUnaryBitwise(Token token)
-        {
-            return token.GetTokenType() == TokenType.NOT;
-        }
-
         private bool IsUnary(Token token)
         {
-            return token.GetTokenType() == TokenType.NOT;
+            return token.GetTokenType() == TokenType.NOT || token.GetTokenType() == TokenType.SUB;
         }
 
         private bool IsBinary(Token token)
@@ -2054,7 +2049,7 @@ namespace NEA
                         // - Left Bracket
                         // - Function call
                         nextToken = internalTokens[i + 1];
-                        if (!IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken) || IsUnaryBitwise(nextToken) || IsSubroutineCall(nextToken))
+                        if (!IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftBracket(nextToken) || IsUnary(nextToken) || IsSubroutineCall(nextToken))
                         {
                             expression = new List<Token>();
                             j = 1;
