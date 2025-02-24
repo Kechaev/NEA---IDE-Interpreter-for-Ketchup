@@ -666,7 +666,21 @@ namespace NEA
         {
             string trimmedLine = e.LineText.Trim();
 
-            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+.+from\s+.+to\s+((.+going\s+(up|down)\s+by.+)|.+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*\)|if\s+.+then|else(\s+if\s+.+then)?|repeat\s+[a-zA-Z0-9_]+\stimes)$", RegexOptions.IgnoreCase);
+            // Ignoring case in all words
+            // \s* - accounts for tabspaces
+            // COUNT statement format:
+            // COUNT WITH var FROM (num|var) TO (num|var) (GOING (UP|DOWN) BY (num|var))?
+            // FUNCTION definition format:
+            // FUNCTION subroutineName (var,var,var)
+            // subroutineName must begin with a letter or an underscore
+            // The list of parameters must end with a single var with no comma after it
+            // IF statement format:
+            // IF anything (SPECIFY) THEN
+            // ELSE statement format:
+            // ELSE (IF anything THEN)?
+            // REPEAT statement format:
+            // REPEAT (num|var) TIMES
+            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+[a-zA-Z_][a-zA-Z0-9_]*\s+from\s+[a-zA-Z0-9_]+\s+to\s+(([a-zA-Z0-9_]+\s+going\s+(up|down)\s+by\s+[a-zA-Z0-9_])|[a-zA-Z0-9_]+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*\)|if\s+.+then|else(\s+if\s+.+then)?|repeat\s+[a-zA-Z0-9_]+\stimes)$", RegexOptions.IgnoreCase);
             Regex blockEndRegex = new Regex(@"^\s*end", RegexOptions.IgnoreCase);
 
             if (blockEndRegex.IsMatch(trimmedLine))
