@@ -715,7 +715,6 @@ namespace NEA
                     ((Precedence(token) == Precedence(stack.Peek())) && IsLeftAssociative(token) &&
                     (!Is(stack.Peek(), TokenType.LEFT_BRACKET)))))
                     {
-                        MessageBox.Show($"Added to output {stack.Peek().GetTokenType()}");
                         output.Add(stack.Pop().GetTokenType().ToString());
                     }
                     stack.Push(token);
@@ -799,7 +798,7 @@ namespace NEA
             switch (token.GetTokenType())
             {
                 case TokenType.NOT:
-                    return 0;
+                    return 8;
                 case TokenType.EXP:
                     return 7;
                 case TokenType.MUL:
@@ -3385,9 +3384,9 @@ namespace NEA
                             case DataType.DECIMAL:
                                 throw new Exception($"LOGIC ERROR: Cannot apply NOT to {object1.ToString()} as a decimal.");
                             case DataType.CHARACTER:
-                                throw new Exception($"LOGIC ERROR: Cannot apply NOT to {object1.ToString()} as acharacter.");
+                                throw new Exception($"LOGIC ERROR: Cannot apply NOT to \"{object1.ToString()}\" as acharacter.");
                             case DataType.STRING:
-                                throw new Exception($"LOGIC ERROR: Cannot apply NOT to {object1.ToString()} as a string.");
+                                throw new Exception($"LOGIC ERROR: Cannot apply NOT to \"{object1.ToString()}\" as a string.");
                             case DataType.BOOLEAN:
                                 result = !Convert.ToBoolean(object1);
                                 break;

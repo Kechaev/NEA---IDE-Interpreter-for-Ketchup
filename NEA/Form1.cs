@@ -29,12 +29,12 @@ namespace NEA
         private Stack<int> redoStackCaretPosition = new Stack<int>();
         private Machine machine;
 
-        private string currentFilePath = null;
         private bool isSaved;
         private static int NoOfRuns = 1;
 
         private List<FastColoredTextBox> arrayCodeFields;
         private FastColoredTextBox currentCodeField;
+        private List<string> currentFilePath;
 
         // IntelliSense Hack 101
         // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
@@ -46,6 +46,8 @@ namespace NEA
             currentCodeField = txtCodeField;
             arrayCodeFields = new List<FastColoredTextBox>();
             arrayCodeFields.Add(currentCodeField);
+            currentFilePath = new List<string>();
+            currentFilePath.Add(null);
             txtCodeField.AutoIndent = true;
             isSaved = true;
         }
@@ -53,9 +55,9 @@ namespace NEA
         private void Run()
         {
             string name = $"Unsaved Program {NoOfRuns++}";
-            if (Path.GetFileName(currentFilePath) != null)
+            if (Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]) != null)
             {
-                name = Path.GetFileName(currentFilePath);
+                name = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]);
             }
             string time = DateTime.Now.ToLongTimeString();
 
@@ -66,23 +68,23 @@ namespace NEA
             machine = new Machine(txtCodeField.Text);
 
             // Error Checking
-            //try
-            //{
-            //    machine.Interpret();
+            try
+            {
+                machine.Interpret();
 
-            //    string[] intermediate = machine.GetIntermediateCode();
+                string[] intermediate = machine.GetIntermediateCode();
 
-            //    StartExecution(intermediate);
-            //}
-            //catch (Exception e)
-            //{
-            //    ConsoleWrite(e.Message);
-            //}
+                StartExecution(intermediate);
+            }
+            catch (Exception e)
+            {
+                ConsoleWrite(e.Message);
+            }
 
             //No Error Checking
-            machine.Interpret();
-            string[] intermediate = machine.GetIntermediateCode();
-            StartExecution(intermediate);
+            //machine.Interpret();
+            //string[] intermediate = machine.GetIntermediateCode();
+            //StartExecution(intermediate);
         }
 
         public void StartExecution(string[] intermediateCode)
@@ -382,8 +384,8 @@ namespace NEA
                 OpenFile();
                 if (currentFilePath != null)
                 {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
-                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5).ToString();
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
                 }
             }
         }
@@ -395,28 +397,30 @@ namespace NEA
                 SaveFileAs();
                 if (currentFilePath != null)
                 {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
-                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5).ToString();
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
                 }
             }
         }
 
         private void tsFileSave_Click(object sender, EventArgs e)
         {
-            if (currentFilePath == null)
+            if (currentFilePath[tabCodeControl.SelectedIndex] == null)
             {
                 SaveFileAs();
             }
             else
             {
-                File.WriteAllText(currentFilePath, txtCodeField.Text);
+                TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+                File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
                 isSaved = true;
                 if (currentFilePath != null)
                 {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
                 }
             }
-            tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5).ToString();
+            tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
         }
 
         private void OpenFile()
@@ -429,12 +433,14 @@ namespace NEA
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                currentFilePath = openFileDialog.FileName;
-                txtCodeField.Text = File.ReadAllText(currentFilePath);
+                TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+                currentFilePath[tabCodeControl.SelectedIndex] = openFileDialog.FileName;
+                txtCodeField.Text = File.ReadAllText(currentFilePath[tabCodeControl.SelectedIndex]);
                 isSaved = true;
                 if (currentFilePath != null)
                 {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
                 }
             }
         }
@@ -449,28 +455,32 @@ namespace NEA
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                currentFilePath = saveFileDialog.FileName;
-                File.WriteAllText(currentFilePath, txtCodeField.Text);
+                TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+                currentFilePath[tabCodeControl.SelectedIndex] = saveFileDialog.FileName;
+                File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
                 isSaved = true;
-                this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
             }
         }
 
         private void SaveFile()
         {
-            if (currentFilePath == null)
+            if (currentFilePath[tabCodeControl.SelectedIndex] == null)
             {
                 SaveFileAs();
                 isSaved = true;
             }
             else
             {
-                File.WriteAllText(currentFilePath, txtCodeField.Text);
+                TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+                File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
                 isSaved = true;
             }
-            if (currentFilePath != null && tabCodeControl.SelectedTab != null)
+            if (currentFilePath[tabCodeControl.SelectedIndex] != null && tabCodeControl.SelectedTab != null)
             {
-                this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath).Remove(Path.GetFileName(currentFilePath).Length - 5, 5)}";
+                this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
             }
         }
 
@@ -500,12 +510,6 @@ namespace NEA
         #region Tabs
         private void tsFileNew_Click(object sender, EventArgs e)
         {
-            // Temp fix
-            if (!isSaved)
-            {
-                PromptToSaveChanges();
-            }
-
             TabPage tabPage = new TabPage();
 
             FastColoredTextBox newTxtCodeField = new FastColoredTextBox();
@@ -516,8 +520,8 @@ namespace NEA
             newTxtCodeField.LineNumberColor = Color.MidnightBlue;
             newTxtCodeField.Font = new Font("Courier New", 12);
 
-
             arrayCodeFields.Add(newTxtCodeField);
+            currentFilePath.Add(null);
 
             tabPage.Controls.Add(newTxtCodeField);
 
