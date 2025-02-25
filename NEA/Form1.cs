@@ -294,11 +294,6 @@ namespace NEA
             UpdateCaretPosition();
         }
 
-        private void btnClear_Click(object sender, EventArgs e)
-        {
-            ClearConsole();
-        }
-
         private void tsFileExit_Click(object sender, EventArgs e)
         {
             if (PromptToSaveChanges())
@@ -401,12 +396,23 @@ namespace NEA
 
         private void tsFileSaveAs_Click(object sender, EventArgs e)
         {
-            if (!isSaved)
+            if (currentFilePath[tabCodeControl.SelectedIndex] == null)
             {
-                SaveFileAs();
-                if (currentFilePath != null)
+                if (!isSaved)
                 {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                    SaveFileAs();
+                    if (currentFilePath != null)
+                    {
+                        this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                        tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
+                    }
+                }
+            }
+            else
+            {
+                DialogResult dialogResult = SaveFileAs();
+                if (dialogResult == DialogResult.OK)
+                {
                     tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
                 }
             }
@@ -621,7 +627,7 @@ namespace NEA
             }
         }
 
-        private void btnClear_Click_1(object sender, EventArgs e)
+        private void btnClear_Click(object sender, EventArgs e)
         {
             ClearConsole();
         }
