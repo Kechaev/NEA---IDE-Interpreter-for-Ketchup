@@ -227,6 +227,8 @@ namespace NEA
         
         private void tsEditCopy_Click(object sender, EventArgs e)
         {
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
             if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
             {
                 Clipboard.SetText(txtCodeField.SelectedText);
@@ -243,6 +245,8 @@ namespace NEA
 
         private void tsEditPaste_Click(object sender, EventArgs e)
         {
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
             if (Clipboard.ContainsText())
             {
                 string toPaste = Clipboard.GetText();
@@ -381,8 +385,8 @@ namespace NEA
         {
             if (PromptToSaveChanges())
             {
-                OpenFile();
-                if (currentFilePath != null)
+                DialogResult dialogResult = OpenFile();
+                if (currentFilePath != null && dialogResult == DialogResult.OK)
                 {
                     this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
                     tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
@@ -407,7 +411,11 @@ namespace NEA
         {
             if (currentFilePath[tabCodeControl.SelectedIndex] == null)
             {
-                SaveFileAs();
+                DialogResult dialogResult = SaveFileAs();
+                if (dialogResult == DialogResult.OK)
+                {
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
+                }
             }
             else
             {
@@ -420,10 +428,9 @@ namespace NEA
                     this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
                 }
             }
-            tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
         }
 
-        private void OpenFile()
+        private DialogResult OpenFile()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -442,10 +449,12 @@ namespace NEA
                 {
                     this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
                 }
+                return DialogResult.OK;
             }
+            return DialogResult.Cancel;
         }
 
-        private void SaveFileAs()
+        private DialogResult SaveFileAs()
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog()
             {
@@ -461,6 +470,11 @@ namespace NEA
                 File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
                 isSaved = true;
                 this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                return DialogResult.OK;
+            }
+            else
+            {
+                return DialogResult.Cancel;
             }
         }
 
@@ -516,6 +530,7 @@ namespace NEA
 
             newTxtCodeField.TextChanged += txtCodeField_TextChanged;
             newTxtCodeField.KeyDown += txtCodeField_KeyDown;
+            newTxtCodeField.AutoIndentNeeded += txtCodeField_AutoIndentNeeded;
             newTxtCodeField.Dock = DockStyle.Fill;
             newTxtCodeField.LineNumberColor = Color.MidnightBlue;
             newTxtCodeField.Font = new Font("Courier New", 12);
@@ -568,6 +583,8 @@ namespace NEA
 
         private void stripCopy_Click(object sender, EventArgs e)
         {
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
             if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
             {
                 Clipboard.SetText(txtCodeField.SelectedText);
@@ -596,7 +613,7 @@ namespace NEA
 
         private void btnClear_Click_1(object sender, EventArgs e)
         {
-            arrayCodeFields[tabCodeControl.SelectedIndex].Text = "";
+            txtConsole.Text = "";
         }
 
         private void btnCopyLastProgram_Click(object sender, EventArgs e)
@@ -675,6 +692,9 @@ namespace NEA
         #region Indentation (Formatting)
         private void txtCodeField_AutoIndentNeeded(object sender, AutoIndentEventArgs e)
         {
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+
             string trimmedLine = e.LineText.Trim();
 
             // Ignoring case in all words

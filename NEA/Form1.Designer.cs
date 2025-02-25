@@ -473,6 +473,7 @@ namespace NEA
             this.Name = "IDE_MainWindow";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.IDE_MainWindow_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
+            this.Leave += new System.EventHandler(this.tsFileExit_Click);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);

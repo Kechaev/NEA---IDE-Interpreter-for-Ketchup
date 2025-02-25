@@ -14,9 +14,9 @@ namespace NEA
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
+            // Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new IDE_MainWindow());
+            Application.Run(new SplashScreen());
         }
     }
 }
