@@ -40,6 +40,7 @@ namespace NEA
         // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
         public IDE_MainWindow()
         {
+            Application.EnableVisualStyles();
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
             txtCodeField.Select();
@@ -270,11 +271,15 @@ namespace NEA
 
         private void stripUndo_Click(object sender, EventArgs e)
         {
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
             txtCodeField.Undo();
         }
 
         private void stripRedo_Click(object sender, EventArgs e)
         {
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
             txtCodeField.Redo();
         }
 
@@ -298,7 +303,7 @@ namespace NEA
         {
             if (PromptToSaveChanges())
             {
-                Application.Exit();
+                CloseAllForms();
             }
         }
 
@@ -500,18 +505,13 @@ namespace NEA
 
         private bool PromptToSaveChanges()
         {
-            //MessageBox.Show($"Run?  {!isSaved}");
             if (!isSaved)
             {
-                // Fix this mess
-                // Not saving on exit - problem in this method
-                // Not prompting a save in other scenarios
                 var result = MessageBox.Show($"Do you want to save changes?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
                 if (result == DialogResult.Yes)
                 {
                     SaveFile();
-
                 }
                 else if (result == DialogResult.Cancel)
                 {
@@ -558,12 +558,22 @@ namespace NEA
         #endregion
         #endregion
 
+        private void CloseAllForms()
+        {
+            FormCollection openForms = Application.OpenForms;
+            for (int i = 0; i < openForms.Count; i++)
+            {
+                openForms[i].Close();
+            }
+        }
+
         private void IDE_MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!isSaved && !PromptToSaveChanges())
+            if (!PromptToSaveChanges())
             {
                 e.Cancel = true;
             }
+            CloseAllForms();
         }
 
         private void tsDebugTraceTable_Click(object sender, EventArgs e)
@@ -613,7 +623,7 @@ namespace NEA
 
         private void btnClear_Click_1(object sender, EventArgs e)
         {
-            txtConsole.Text = "";
+            ClearConsole();
         }
 
         private void btnCopyLastProgram_Click(object sender, EventArgs e)

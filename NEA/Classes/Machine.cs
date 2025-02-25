@@ -3809,7 +3809,7 @@ namespace NEA
         // Input Dialog Box
         // https://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputbox
         // Make this a correct size using the prompt length
-        private static Tuple<DialogResult, string> ShowInputDialog(ref string input)
+        private static Tuple<DialogResult, string> ShowInputDialog2(ref string input)
         {
             System.Drawing.Size size = new System.Drawing.Size(200, 100);
             Form inputBox = new Form();
@@ -3855,6 +3855,17 @@ namespace NEA
 
             Tuple<DialogResult, string> result = new Tuple<DialogResult, string>(dialogResult, input);
             return result;
+        }
+
+        private static Tuple<DialogResult, string> ShowInputDialog(ref string prompt)
+        {
+            InputDialog inputDialog = new InputDialog(prompt);
+
+            DialogResult dialogResult = inputDialog.ShowDialog();
+
+            string input = inputDialog.GetUserInput();
+
+            return new Tuple<DialogResult, string>(dialogResult, input);
         }
 
         private DataType IdentifyDataType(object object1)

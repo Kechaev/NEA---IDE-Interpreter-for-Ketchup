@@ -15,6 +15,7 @@ namespace NEA
         public SplashScreen()
         {
             InitializeComponent();
+            progressBar.ForeColor = Color.Red;
         }
 
         private void timer_Tick(object sender, EventArgs e)
