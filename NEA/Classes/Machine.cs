@@ -3587,13 +3587,17 @@ namespace NEA
                         }
                         else if (operand == "INPUT")
                         {
-                            Tuple<DialogResult, string> result = new Tuple<DialogResult, string>(DialogResult.Cancel, null);
+                            Tuple<DialogResult, string> result = new Tuple<DialogResult, string>(DialogResult.None, "");
                             string prompt = stack.Pop().ToString();
-                            while (result.Item1 != DialogResult.OK || result.Item2 == "")
+                            result = ShowInputDialog(ref prompt);
+                            if (result.Item2 == "")
                             {
-                                result = ShowInputDialog(ref prompt);
+                                console.Text += "[No Input Given]\r\n";
                             }
-                            console.Text += $"INPUT: {result.Item2}\r\n";
+                            else
+                            {
+                                console.Text += $"INPUT: {result.Item2}\r\n";
+                            }
                             stack.Push(result.Item2);
                         }
                         else
@@ -3809,53 +3813,6 @@ namespace NEA
         // Input Dialog Box
         // https://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputbox
         // Make this a correct size using the prompt length
-        private static Tuple<DialogResult, string> ShowInputDialog2(ref string input)
-        {
-            System.Drawing.Size size = new System.Drawing.Size(200, 100);
-            Form inputBox = new Form();
-            
-            Point location = new Point(250, 250);
-            inputBox.Location = location;
-            inputBox.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            inputBox.ClientSize = size;
-            inputBox.Text = "Prompt";
-
-            System.Windows.Forms.Label lblPrompt = new System.Windows.Forms.Label();
-            lblPrompt.Size = new System.Drawing.Size(size.Width - 10, 23);
-            lblPrompt.Location = new System.Drawing.Point(5, 5);
-            lblPrompt.Text = input;
-            inputBox.Controls.Add(lblPrompt);
-
-            TextBox textBox = new TextBox();
-            textBox.Size = new System.Drawing.Size(size.Width - 10, 23);
-            textBox.Location = new System.Drawing.Point(5, 30);
-            inputBox.Controls.Add(textBox);
-
-            Button okButton = new Button();
-            okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            okButton.Name = "okButton";
-            okButton.Size = new System.Drawing.Size(75, 23);
-            okButton.Text = "&OK";
-            okButton.Location = new System.Drawing.Point(size.Width - 80 - 80, 62);
-            inputBox.Controls.Add(okButton);
-
-            Button cancelButton = new Button();
-            cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            cancelButton.Name = "cancelButton";
-            cancelButton.Size = new System.Drawing.Size(75, 23);
-            cancelButton.Text = "&Cancel";
-            cancelButton.Location = new System.Drawing.Point(size.Width - 80, 62);
-            inputBox.Controls.Add(cancelButton);
-
-            inputBox.AcceptButton = okButton;
-            inputBox.CancelButton = cancelButton;
-
-            DialogResult dialogResult = inputBox.ShowDialog();
-            input = textBox.Text;
-
-            Tuple<DialogResult, string> result = new Tuple<DialogResult, string>(dialogResult, input);
-            return result;
-        }
 
         private static Tuple<DialogResult, string> ShowInputDialog(ref string prompt)
         {

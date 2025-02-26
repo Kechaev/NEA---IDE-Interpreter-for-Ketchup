@@ -69,23 +69,23 @@ namespace NEA
             machine = new Machine(txtCodeField.Text);
 
             // Error Checking
-            try
-            {
-                machine.Interpret();
+            //try
+            //{
+            //    machine.Interpret();
 
-                string[] intermediate = machine.GetIntermediateCode();
+            //    string[] intermediate = machine.GetIntermediateCode();
 
-                StartExecution(intermediate);
-            }
-            catch (Exception e)
-            {
-                ConsoleWrite(e.Message);
-            }
+            //    StartExecution(intermediate);
+            //}
+            //catch (Exception e)
+            //{
+            //    ConsoleWrite(e.Message);
+            //}
 
             //No Error Checking
-            //machine.Interpret();
-            //string[] intermediate = machine.GetIntermediateCode();
-            //StartExecution(intermediate);
+            machine.Interpret();
+            string[] intermediate = machine.GetIntermediateCode();
+            StartExecution(intermediate);
         }
 
         public void StartExecution(string[] intermediateCode)
@@ -557,9 +557,12 @@ namespace NEA
 
         private void tabCodeControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
-            machine = new Machine(txtCodeField.Text);
+            if (tabCodeControl.SelectedIndex != -1)
+            {
+                TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+                machine = new Machine(txtCodeField.Text);
+            }
         }
         #endregion
         #endregion
@@ -863,5 +866,16 @@ namespace NEA
             return token1.GetLine() == token2.GetLine();
         }
         #endregion
+
+        private void tabCodeControl_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            e.DrawBackground();
+        }
+
+        private void tabCodeControl_MouseClick(object sender, MouseEventArgs e)
+        {
+            tabCodeControl.Controls.Remove(tabCodeControl.SelectedTab);
+        }
     }
 }

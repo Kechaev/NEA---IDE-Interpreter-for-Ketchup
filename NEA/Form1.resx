@@ -278,9 +278,6 @@
   <data name="menuStrip.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="menuStrip.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 2, 0, 2</value>
-  </data>
   <data name="menuStrip.Size" type="System.Drawing.Size, System.Drawing">
     <value>1907, 33</value>
   </data>
@@ -352,16 +349,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIoSURBVGhD7Ze9SxxRFMXHqKTwq0kTMKyDFmIR8jeEVKmT
-        ToSUIZIijSgE0qpgLTYhjRELQwIhjUKCgcRYCbbpAuniF2Kju56z3guX4c7um0XX4Jsf/MB3dnbhnnHe
-        201KSkpKSrLU0lpSSzpkFSH1AuBueipJZGgBanX4nrwSCdkC1GjwhldP059y1Q3GGzxr66zDT3AFvhMX
-        4Sy8D/8DvIHzLM4/yPfl+QJeM96gDa08kHeGYAtYgm/gR5Px5LnmI9gdMsAwbAF3GQi7UPOHDMA0/CtO
-        MhA0+1NfJckg3Be34XO4A8/gJhyFBfCGC/Wswue7EXkF/IbM+B/QyQCwAL32GQNBs4P66qIAzTi0/q1+
-        gAXwBitqPraAKci79dZktkBbwAQDQTOvABY5B8dNVoUFHitvoKLm02gT/AItrRSwwUBYg5oPMQjDGyjY
-        5JZ8Sh62AD6nJ2Y9Ay2voL4WWsBXBsJ7qPkIgzDcwZp4mB7Lu5uR3QOemjXlWuGRqHloAd8ZCMtQ8yss
-        oBjeJjgPNaMVSJ5AzbhP3IGPTeYV8IOBsAo1v5ICeIYXxSuAfIOaHzEAY1AzT68AHoPKZ6j5JRfQOnkF
-        8K7b/WALkgXIXVx9CXnU0T1IWIBmvxgI3A/08y6rgLFeuaqdDMNHsKe+8hkwKl4WgDf4Vsp2IyE7fHTo
-        4NWh15JERpR3vf3wu7k1OviL77bY7OvzjaQb9sM+2MWgpKTdJMk5jcdshJftl30AAAAASUVORK5CYII=
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7Ze/a1NRFMefVnGw6tJFsCSPOEgG6d9QOnW2
+        mwiOonRwKRYEVxWcxUW6WHGwKIiLgqLQqpOQtVuhm20tpUt++P3Gc+DwOC+5LzRJ6X0f+EDvNy+B8319
+        9yZJSUlJSUmWTtpJOskpWUVItwDYSJuSRIYWoLZr0/JKJGQLUKPBG15tphty1QnGGzzr4HyC7+FruCI+
+        h4/hdXgM8AbOszh/IN+X5104ZrxBe1qZkXeGYAt4AR/BdybjyTPmI9gdMsAwbAGXGQgNqPksA/AAbov3
+        GAiabXVXSXIF7oq/4B34G7bgN3gNFsAbLtRWhc93L/IK2ITM+B8wwQCwAL32NgNBs73u6n8BmnFo/Vtd
+        gwXwBitqPraAJci79dJktkBbwC0GgmZeASzyCbxpsjYs8Fh5AxU1n16b4EdoGaSAzwyEt1DzKoMwvIGC
+        TU7Lp+RhC+BzemjWy9ByH+proQV8YSCsQs2vMgjDHayPf9MDeXc/snvAgllTrhUeiZqHFvCdgfAKaj7E
+        AorhbYJPoWa0AskNqBn3iSk4bzKvgHUGwhuo+VAK4BleFK8A8hVqvs8A1KFmnl4BPAaVD1DzIy5gcPIK
+        4F23+8EPSJ5B7uLqIuRRR3cgYQGa/WQgcD/QzzuqAuqTctUoqcE5eL678rlkVLwsAG/w9ZTtRkJ2+OjQ
+        wdvVh5JERpR3ffTwu7k1OviL75zY7+vzieQsvAgvwDMMSkpGTZL8A3wJbIKLuTQsAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
