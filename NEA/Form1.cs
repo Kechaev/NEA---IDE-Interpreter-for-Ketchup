@@ -389,7 +389,7 @@ namespace NEA
                 if (currentFilePath != null && dialogResult == DialogResult.OK)
                 {
                     this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
-                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
                 }
             }
         }
@@ -404,7 +404,7 @@ namespace NEA
                     if (currentFilePath != null)
                     {
                         this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
-                        tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
+                        tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
                     }
                 }
             }
@@ -413,7 +413,7 @@ namespace NEA
                 DialogResult dialogResult = SaveFileAs();
                 if (dialogResult == DialogResult.OK)
                 {
-                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
                 }
             }
         }
@@ -425,7 +425,7 @@ namespace NEA
                 DialogResult dialogResult = SaveFileAs();
                 if (dialogResult == DialogResult.OK)
                 {
-                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString();
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
                 }
             }
             else
@@ -546,7 +546,7 @@ namespace NEA
 
             tabPage.Controls.Add(newTxtCodeField);
 
-            tabPage.Text = "<untitled>";
+            tabPage.Text = "<untitled> ×";
 
             tabCodeControl.Controls.Add(tabPage);
 
@@ -867,15 +867,29 @@ namespace NEA
         }
         #endregion
 
-        private void tabCodeControl_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            e.DrawBackground();
-        }
-
         private void tabCodeControl_MouseClick(object sender, MouseEventArgs e)
         {
-            tabCodeControl.Controls.Remove(tabCodeControl.SelectedTab);
+            Graphics g = tabCodeControl.CreateGraphics();
+
+            if (tabCodeControl == null) return;
+
+            for (int i = 0; i < tabCodeControl.TabCount; i++)
+            {
+                Rectangle tabRect = tabCodeControl.GetTabRect(i);
+
+                SizeF textSize = g.MeasureString(tabCodeControl.TabPages[i].Text, tabCodeControl.Font);
+
+                Rectangle textRect = new Rectangle(tabRect.X,tabRect.Y, (int)textSize.Width - 5, tabRect.Height);
+
+                if (!textRect.Contains(e.Location) && tabRect.Contains(e.Location))
+                {
+                    if (PromptToSaveChanges())
+                    {
+                        tabCodeControl.Controls.RemoveAt(i);
+                    }
+                    break;
+                }
+            }
         }
     }
 }

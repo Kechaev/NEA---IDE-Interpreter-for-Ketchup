@@ -349,16 +349,16 @@
   <data name="stripRun.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7Ze/a1NRFMefVnGw6tJFsCSPOEgG6d9QOnW2
-        mwiOonRwKRYEVxWcxUW6WHGwKIiLgqLQqpOQtVuhm20tpUt++P3Gc+DwOC+5LzRJ6X0f+EDvNy+B8319
-        9yZJSUlJSUmWTtpJOskpWUVItwDYSJuSRIYWoLZr0/JKJGQLUKPBG15tphty1QnGGzzr4HyC7+FruCI+
-        h4/hdXgM8AbOszh/IN+X5104ZrxBe1qZkXeGYAt4AR/BdybjyTPmI9gdMsAwbAGXGQgNqPksA/AAbov3
-        GAiabXVXSXIF7oq/4B34G7bgN3gNFsAbLtRWhc93L/IK2ITM+B8wwQCwAL32NgNBs73u6n8BmnFo/Vtd
-        gwXwBitqPraAJci79dJktkBbwC0GgmZeASzyCbxpsjYs8Fh5AxU1n16b4EdoGaSAzwyEt1DzKoMwvIGC
-        TU7Lp+RhC+BzemjWy9ByH+proQV8YSCsQs2vMgjDHayPf9MDeXc/snvAgllTrhUeiZqHFvCdgfAKaj7E
-        AorhbYJPoWa0AskNqBn3iSk4bzKvgHUGwhuo+VAK4BleFK8A8hVqvs8A1KFmnl4BPAaVD1DzIy5gcPIK
-        4F23+8EPSJ5B7uLqIuRRR3cgYQGa/WQgcD/QzzuqAuqTctUoqcE5eL678rlkVLwsAG/w9ZTtRkJ2+OjQ
-        wdvVh5JERpR3ffTwu7k1OviL75zY7+vzieQsvAgvwDMMSkpGTZL8A3wJbIKLuTQsAAAAAElFTkSuQmCC
+        YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAIpSURBVGhD7Ze9SxxRFMUnMSFF/GhsAoZ10EIsxL9BrFLH
+        TgIpQ0KKNKIQsFXBOqQRGxWLBIWQJoGEhESTKmCbLpAufhFsdNdz1nvhMtzZfbPoKr75wQ98Z2cX7hnn
+        vd2kpKSkpCRLLa0lteSGrCKkXgDcSY8liQwtQK0O3JdXIiFbgBoN3vDqcbolV11jvMGzts4HuAnX4LL4
+        Cs7BEXgF8AbOszj/IN+X51N4yXiDNrQyKu8MwRbwGs7CDZPx5LnkI9gdMsAwbAH3GAg7UPMxBmAa/hWf
+        MRA0+1NfJUkf3BN/wifwFzyBX+AQLIA3XKgnFT7fjcgr4Ddkxv+ADgaABei1jxkImu3XV2cFaMah9W/1
+        LSyAN1hR87EFTEHerSWT2QJtAY8YCJp5BbDIeThpsios8Fh5AxU1n0ab4HtoaaWAjwyEN1DzfgZheAMF
+        m9yUT8nDFsDn9MisZ6DlBdTXQgv4xEBYhZoPMgjDHayJB+l/eXczsnvAhFlTrhUeiZqHFvCVgbACNb/A
+        AorhbYILUDNageQh1Iz7RC98YDKvgO8MhHWo+YUUwDO8KF4B5DPU/JABGIaaeXoF8BhU3kHNz7mA1skr
+        gHfd7gfbkCxC7uLqc8ijju5CwgI0+8FA4H6gn3deBQx3ylXtZACOw7v1lU+PUfGyALzBv6VsNxKyw0eH
+        Dl7tfylJZER519sPv5tbo4O/+O6Izb4+X0tuw27YBW8xKClpN0lyCnMqbIHwmrRTAAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="stripRun.ImageScaling" type="System.Windows.Forms.ToolStripItemImageScaling, System.Windows.Forms">
@@ -775,7 +775,7 @@
     <value>1</value>
   </data>
   <data name="tab0.Text" xml:space="preserve">
-    <value>&lt;untitled&gt;</value>
+    <value>&lt;untitled&gt; ×</value>
   </data>
   <data name="&gt;&gt;tab0.Name" xml:space="preserve">
     <value>tab0</value>

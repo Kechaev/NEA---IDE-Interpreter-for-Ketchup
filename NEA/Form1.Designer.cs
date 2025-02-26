@@ -375,7 +375,6 @@ namespace NEA
             resources.ApplyResources(this.tabCodeControl, "tabCodeControl");
             this.tabCodeControl.Name = "tabCodeControl";
             this.tabCodeControl.SelectedIndex = 0;
-            this.tabCodeControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabCodeControl_DrawItem);
             this.tabCodeControl.SelectedIndexChanged += new System.EventHandler(this.tabCodeControl_SelectedIndexChanged);
             this.tabCodeControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabCodeControl_MouseClick);
             // 
