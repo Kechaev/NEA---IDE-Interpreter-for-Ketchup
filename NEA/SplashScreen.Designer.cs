@@ -36,7 +36,7 @@
             // progressBar
             // 
             this.progressBar.ForeColor = System.Drawing.Color.Red;
-            this.progressBar.Location = new System.Drawing.Point(45, 381);
+            this.progressBar.Location = new System.Drawing.Point(45, 407);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(294, 36);
             this.progressBar.Step = 2;
@@ -55,7 +55,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::NEA.Properties.Resources.SplashScreen;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(384, 492);
+            this.ClientSize = new System.Drawing.Size(384, 533);
             this.Controls.Add(this.progressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "SplashScreen";

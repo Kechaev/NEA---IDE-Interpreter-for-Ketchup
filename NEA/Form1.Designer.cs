@@ -56,6 +56,11 @@ namespace NEA
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.stripUndo = new System.Windows.Forms.ToolStripButton();
             this.stripRedo = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.stripNewFile = new System.Windows.Forms.ToolStripButton();
+            this.stripOpenFile = new System.Windows.Forms.ToolStripButton();
+            this.stripSave = new System.Windows.Forms.ToolStripButton();
+            this.stripSaveAs = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.stripRun = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -79,6 +84,7 @@ namespace NEA
             this.btnClear = new System.Windows.Forms.Button();
             this.btnCopyLastProgram = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.stripPaste = new System.Windows.Forms.ToolStripButton();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -247,13 +253,19 @@ namespace NEA
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stripUndo,
             this.stripRedo,
+            this.toolStripSeparator4,
+            this.stripNewFile,
+            this.stripOpenFile,
+            this.stripSave,
+            this.stripSaveAs,
             this.toolStripSeparator2,
             this.stripRun,
             this.toolStripSeparator1,
             this.stripComment,
             this.stripFormat,
             this.toolStripSeparator3,
-            this.stripCopy});
+            this.stripCopy,
+            this.stripPaste});
             resources.ApplyResources(this.toolStrip, "toolStrip");
             this.toolStrip.Name = "toolStrip";
             // 
@@ -270,6 +282,39 @@ namespace NEA
             resources.ApplyResources(this.stripRedo, "stripRedo");
             this.stripRedo.Name = "stripRedo";
             this.stripRedo.Click += new System.EventHandler(this.stripRedo_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
+            // 
+            // stripNewFile
+            // 
+            this.stripNewFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            resources.ApplyResources(this.stripNewFile, "stripNewFile");
+            this.stripNewFile.Name = "stripNewFile";
+            this.stripNewFile.Click += new System.EventHandler(this.stripNewFile_Click);
+            // 
+            // stripOpenFile
+            // 
+            this.stripOpenFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            resources.ApplyResources(this.stripOpenFile, "stripOpenFile");
+            this.stripOpenFile.Name = "stripOpenFile";
+            this.stripOpenFile.Click += new System.EventHandler(this.stripOpenFile_Click);
+            // 
+            // stripSave
+            // 
+            this.stripSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            resources.ApplyResources(this.stripSave, "stripSave");
+            this.stripSave.Name = "stripSave";
+            this.stripSave.Click += new System.EventHandler(this.stripSave_Click);
+            // 
+            // stripSaveAs
+            // 
+            this.stripSaveAs.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            resources.ApplyResources(this.stripSaveAs, "stripSaveAs");
+            this.stripSaveAs.Name = "stripSaveAs";
+            this.stripSaveAs.Click += new System.EventHandler(this.stripSaveAs_Click);
             // 
             // toolStripSeparator2
             // 
@@ -298,7 +343,6 @@ namespace NEA
             // stripFormat
             // 
             this.stripFormat.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.stripFormat.Image = global::NEA.Properties.Resources.Indent_Icon;
             resources.ApplyResources(this.stripFormat, "stripFormat");
             this.stripFormat.Name = "stripFormat";
             this.stripFormat.Click += new System.EventHandler(this.stripFormat_Click);
@@ -336,12 +380,8 @@ namespace NEA
             // 
             // txtConsole
             // 
-            this.txtConsole.BackColor = System.Drawing.SystemColors.MenuBar;
-            this.txtConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tableConsole.SetColumnSpan(this.txtConsole, 5);
             resources.ApplyResources(this.txtConsole, "txtConsole");
             this.txtConsole.Name = "txtConsole";
-            this.txtConsole.ReadOnly = true;
             // 
             // tableMain
             // 
@@ -462,6 +502,13 @@ namespace NEA
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // stripPaste
+            // 
+            this.stripPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            resources.ApplyResources(this.stripPaste, "stripPaste");
+            this.stripPaste.Name = "stripPaste";
+            this.stripPaste.Click += new System.EventHandler(this.stripPaste_Click);
+            // 
             // IDE_MainWindow
             // 
             resources.ApplyResources(this, "$this");
@@ -546,6 +593,12 @@ namespace NEA
         private TabPage tabPage2;
         private TabPage tab0;
         private FastColoredTextBoxNS.FastColoredTextBox txtCodeField;
+        private ToolStripButton stripNewFile;
+        private ToolStripButton stripOpenFile;
+        private ToolStripButton stripSave;
+        private ToolStripButton stripSaveAs;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripButton stripPaste;
     }
 }
 

@@ -261,6 +261,8 @@ namespace NEA
 
                 txtCodeField.Text = txtCodeField.Text.Insert(selectionStart, toPaste);
 
+                txtCodeField.SelectionStart = selectionStart + toPaste.Length;
+
                 //txtCodeField.Select(selectionStart + toPaste.Length, 0);
             }
             else
@@ -890,6 +892,31 @@ namespace NEA
                     break;
                 }
             }
+        }
+
+        private void stripNewFile_Click(object sender, EventArgs e)
+        {
+            tsFileNew_Click(sender, e);
+        }
+
+        private void stripOpenFile_Click(object sender, EventArgs e)
+        {
+            tsFileOpen_Click(sender, e);
+        }
+
+        private void stripSave_Click(object sender, EventArgs e)
+        {
+            tsFileSave_Click(sender, e);
+        }
+
+        private void stripSaveAs_Click(object sender, EventArgs e)
+        {
+            tsFileSaveAs_Click(sender, e);
+        }
+
+        private void stripPaste_Click(object sender, EventArgs e)
+        {
+            tsEditPaste_Click(sender, e);
         }
     }
 }
