@@ -68,6 +68,7 @@ namespace NEA
             this.stripFormat = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.stripCopy = new System.Windows.Forms.ToolStripButton();
+            this.stripPaste = new System.Windows.Forms.ToolStripButton();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.statusLineInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusColumnInfo = new System.Windows.Forms.ToolStripStatusLabel();
@@ -84,7 +85,7 @@ namespace NEA
             this.btnClear = new System.Windows.Forms.Button();
             this.btnCopyLastProgram = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.stripPaste = new System.Windows.Forms.ToolStripButton();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -359,6 +360,13 @@ namespace NEA
             this.stripCopy.Name = "stripCopy";
             this.stripCopy.Click += new System.EventHandler(this.stripCopy_Click);
             // 
+            // stripPaste
+            // 
+            this.stripPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            resources.ApplyResources(this.stripPaste, "stripPaste");
+            this.stripPaste.Name = "stripPaste";
+            this.stripPaste.Click += new System.EventHandler(this.stripPaste_Click);
+            // 
             // statusBar
             // 
             this.statusBar.ImageScalingSize = new System.Drawing.Size(24, 24);
@@ -381,7 +389,13 @@ namespace NEA
             // txtConsole
             // 
             resources.ApplyResources(this.txtConsole, "txtConsole");
+            this.txtConsole.BackColor = System.Drawing.SystemColors.MenuBar;
+            this.txtConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtConsole.Dock = DockStyle.Fill;
+            this.txtConsole.Multiline = true;
             this.txtConsole.Name = "txtConsole";
+            this.txtConsole.ReadOnly = true;
+            this.tableConsole.SetColumnSpan(this.txtConsole, 5);
             // 
             // tableMain
             // 
@@ -502,13 +516,6 @@ namespace NEA
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // stripPaste
-            // 
-            this.stripPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            resources.ApplyResources(this.stripPaste, "stripPaste");
-            this.stripPaste.Name = "stripPaste";
-            this.stripPaste.Click += new System.EventHandler(this.stripPaste_Click);
-            // 
             // IDE_MainWindow
             // 
             resources.ApplyResources(this, "$this");
@@ -599,6 +606,7 @@ namespace NEA
         private ToolStripButton stripSaveAs;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton stripPaste;
+        private Timer timer1;
     }
 }
 
