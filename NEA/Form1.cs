@@ -18,15 +18,13 @@ using System.Collections;
 using System.Diagnostics.PerformanceData;
 using System.Text.RegularExpressions;
 using FastColoredTextBoxNS;
+using System.Security.Permissions;
 
 namespace NEA
 {
     public partial class IDE_MainWindow : Form
     {
-        private Stack<string> undoStack = new Stack<string>();
-        private Stack<int> undoStackCaretPosition = new Stack<int>();
-        private Stack<string> redoStack = new Stack<string>();
-        private Stack<int> redoStackCaretPosition = new Stack<int>();
+        private Thread executionLoop;
         private Machine machine;
 
         private bool isSaved;
@@ -35,6 +33,8 @@ namespace NEA
         private List<FastColoredTextBox> arrayCodeFields;
         private FastColoredTextBox currentCodeField;
         private List<string> currentFilePath;
+        private bool isRunning;
+        private bool isThreadAborted;
 
         // IntelliSense Hack 101
         // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
@@ -51,8 +51,10 @@ namespace NEA
             currentFilePath.Add(null);
             txtCodeField.AutoIndent = true;
             isSaved = true;
+            isRunning = false;
+            isThreadAborted = true;
         }
-        
+
         private void Run()
         {
             string name = $"Unsaved Program {NoOfRuns++}";
@@ -66,24 +68,34 @@ namespace NEA
 
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
             FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
-            machine = new Machine(txtCodeField.Text);
+            machine = new Machine(txtCodeField.Text, txtConsole.Text);
 
             // Error Checking
-            //try
-            //{
-            //    machine.Interpret();
+            try
+            {
+                machine.Interpret();
 
-            //    string[] intermediate = machine.GetIntermediateCode();
+                string[] intermediate = machine.GetIntermediateCode();
 
-            //    StartExecution(intermediate);
-            //}
-            //catch (Exception e)
-            //{
-            //    ConsoleWrite(e.Message);
-            //}
+                executionLoop = new Thread(ExecutionLoop);
+                executionLoop.Start();
+            }
+            catch (Exception e)
+            {
+                ConsoleWrite(e.Message);
+            }
 
             //No Error Checking
-            machine.Interpret();
+            //machine.Interpret();
+
+            //string[] intermediate = machine.GetIntermediateCode();
+
+            //executionLoop = new Thread(ExecutionLoop);
+            //executionLoop.Start();
+        }
+
+        private void ExecutionLoop()
+        {
             string[] intermediate = machine.GetIntermediateCode();
             StartExecution(intermediate);
         }
@@ -95,9 +107,25 @@ namespace NEA
             {
                 machine.FetchExecute(intermediateCode, ref txtConsole, false);
 
-                txtConsole.SelectionStart = txtConsole.Text.Length;
-                txtConsole.ScrollToCaret(); 
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    txtConsole.SelectionStart = txtConsole.Text.Length;
+                    txtConsole.ScrollToCaret();
+                }));
+
+                string consoleText = machine.GetConsoleText();
+                if (consoleText != txtConsole.Text)
+                {
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        txtConsole.Text = consoleText;
+                    }));
+                }
             }
+            stripRun.Image = Properties.Resources.RunSymbolSmall;
+            isRunning = false;
+            isThreadAborted = true;
+            executionLoop.Abort();
         }
 
         private void Comment()
@@ -285,9 +313,34 @@ namespace NEA
             txtCodeField.Redo();
         }
 
+        [SecurityPermissionAttribute(SecurityAction.Demand, ControlThread = true)]
         private void stripRun_Click(object sender, EventArgs e)
         {
-            Run();
+            ControlledRun();
+        }
+
+        private void ControlledRun()
+        {
+            if (!isRunning)
+            {
+                isRunning = true;
+                stripRun.Image = Properties.Resources.EndSymbolSmall;
+                if (!isThreadAborted)
+                {
+                    executionLoop.Resume();
+                }
+                else
+                {
+                    Run();
+                }
+            }
+            else
+            {
+                isRunning = false;
+                isThreadAborted = false;
+                stripRun.Image = Properties.Resources.RunSymbolSmall;
+                executionLoop.Suspend();
+            }
         }
         
         private void stripComment_Click(object sender, EventArgs e)
@@ -316,7 +369,7 @@ namespace NEA
             }
             else if (e.KeyCode == Keys.F5)
             {
-                Run();
+                ControlledRun();
             }
         }
 
@@ -337,7 +390,7 @@ namespace NEA
             {
                 try
                 {
-                    machine = new Machine(txtCodeField.Text);
+                    machine = new Machine(txtCodeField.Text, txtConsole.Text);
                     machine.Interpret();
 
                     string[] intermediate = machine.GetIntermediateCode();
@@ -361,7 +414,7 @@ namespace NEA
             }
             else
             {
-                machine = new Machine(txtCodeField.Text);
+                machine = new Machine(txtCodeField.Text, txtConsole.Text);
                 Token[] tokens = machine.Tokenize();
 
                 string[] tokensString = new string[tokens.Length];
@@ -563,7 +616,7 @@ namespace NEA
             {
                 TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
                 FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
-                machine = new Machine(txtCodeField.Text);
+                machine = new Machine(txtCodeField.Text, txtConsole.Text);
             }
         }
         #endregion
@@ -763,7 +816,7 @@ namespace NEA
             string usersCode = txtCodeField.Text;
 
             // Get Tokens and sort by need for capitalisation
-            machine = new Machine(usersCode);
+            machine = new Machine(usersCode, txtConsole.Text);
 
             Token[] tokens = machine.Tokenize();
 
@@ -869,6 +922,7 @@ namespace NEA
         }
         #endregion
 
+        // Deleting a tab
         private void tabCodeControl_MouseClick(object sender, MouseEventArgs e)
         {
             Graphics g = tabCodeControl.CreateGraphics();
@@ -877,12 +931,18 @@ namespace NEA
 
             for (int i = 0; i < tabCodeControl.TabCount; i++)
             {
+                // Entire tab as a rectangle
                 Rectangle tabRect = tabCodeControl.GetTabRect(i);
 
-                SizeF textSize = g.MeasureString(tabCodeControl.TabPages[i].Text, tabCodeControl.Font);
+                TabPage tab = tabCodeControl.TabPages[i];
 
-                Rectangle textRect = new Rectangle(tabRect.X,tabRect.Y, (int)textSize.Width - 5, tabRect.Height);
+                // Size of the text excluding the X
+                SizeF textSize = g.MeasureString(tab.Text.Substring(0, tab.Text.Length - 2), tabCodeControl.Font);
 
+                // Represents the clickable (to select) part of the tab
+                Rectangle textRect = new Rectangle(tabRect.X,tabRect.Y, (int)textSize.Width, tabRect.Height);
+
+                // If the click is not on the selecting area of the tab -> Delete the tab
                 if (!textRect.Contains(e.Location) && tabRect.Contains(e.Location))
                 {
                     if (PromptToSaveChanges())

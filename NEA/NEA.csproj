@@ -160,8 +160,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Images\EndSymbolSmall.png" />
     <Content Include="Images\KeTcHuP.png" />
+    <None Include="Resources\RunIcon.bmp" />
     <None Include="Images\SplashScreen.png" />
+    <None Include="Images\RunSymbolSmall.png" />
     <Content Include="KetchupIcon.ico" />
   </ItemGroup>
   <ItemGroup>

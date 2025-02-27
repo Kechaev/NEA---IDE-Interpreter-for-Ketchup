@@ -44,7 +44,7 @@ namespace NEA
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
-        public Machine(string sourceCode)
+        public Machine(string sourceCode, string console)
         {
             Variable.ResetVariables();
             this.sourceCode = sourceCode;
@@ -56,6 +56,7 @@ namespace NEA
             PC = 0;
             validProgram = true;
             stack = new Stack<object>();
+            consoleText = console;
 
             fixedLoopCounter = 0;
         }
@@ -1818,10 +1819,11 @@ namespace NEA
         #endregion
 
         #region Extra Token Utility
+
         private int FindEndIndex(int index, string structure, Token[] tokens)
         {
             //MessageBox.Show($"FindEndIndex({index}, {structure}, {tokens[tokens.Length - 1].GetTokenType()})");
-            string[] structures = { "IF", "COUNT", "WHILE", "DO", "REPEAT", "ELSE", "FUNCTION" };
+            string[] structures = { "IF", "COUNT", "WHILE", "DO", "REPEAT", "ELSE", "FUNCTION", "PROCEDURE" };
 
             int nestCounter = 1;
 
@@ -1833,7 +1835,15 @@ namespace NEA
             {
                 index++;
                 Token nextToken = tokens[index];
-                //MessageBox.Show($"token = {nextToken.GetTokenType()}");
+                if (Is(nextToken, TokenType.ELSE))
+                {
+                    nestCounter--;
+                    // Exit the loop and return the index if you meet a ELSE at nestCounter = 0
+                    if (nestCounter == 0)
+                    {
+                        continue;
+                    }
+                }
                 if (structures.Contains(nextToken.GetTokenType().ToString().ToUpper()) && !Is(tokens[index - 1], TokenType.END))
                 {
                     if (Is(nextToken, TokenType.ELSE) && Is(tokens[index + 1], TokenType.IF))
@@ -1842,16 +1852,18 @@ namespace NEA
                         index++;
                     }
                     nestCounter++;
-                    //MessageBox.Show($"+\n{nestCounter}");
                 }
-                else if (nextToken.GetTokenType() == TokenType.END)
+                else if (Is(nextToken, TokenType.END))
                 {
                     nestCounter--;
-                    //MessageBox.Show($"-\n{nestCounter}");
                 }
             }
 
-            if (tokens[index].GetTokenType() == TokenType.END && tokens[index + 1].GetLiteral().ToUpper() == structure)
+            if (Is(tokens[index], TokenType.END) && tokens[index + 1].GetLiteral().ToUpper() == structure)
+            {
+                return index;
+            }
+            if (Is(tokens[index], TokenType.ELSE))
             {
                 return index;
             }
@@ -2124,6 +2136,14 @@ namespace NEA
                                 {
                                     // Correct Syntax:
                                     // INPUT WITH MESSAGE
+                                    if (!Is(internalTokens[i + j + 1], TokenType.WITH))
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
+                                    }
+                                    if (!Is(internalTokens[i + j + 2], TokenType.MESSAGE))
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
+                                    }
                                     expression.Add(nextToken);
                                     // Increment by 2 more to skip filler "WITH MESSAGE"
                                     // Continue onto the following string prompt
@@ -2148,7 +2168,6 @@ namespace NEA
                                     {
                                         // Read as an expression until a comma then convert to instructions with Shunting Yard
                                         nextToken = internalTokens[i + j + 2];
-                                        Console.WriteLine($"Next token = {nextToken.GetTokenType()}");
                                         if (Is(nextToken, TokenType.RIGHT_BRACKET))
                                         {
                                             areParamsToRead = false;
@@ -2217,6 +2236,8 @@ namespace NEA
                         noType = true;
 
                         // Verify Valid Syntax
+
+                        // Checking for valid variable to which we are assigning
                         nextToken = internalTokens[i + 1];
                         if (!IsVariable(nextToken))
                         {
@@ -2258,7 +2279,7 @@ namespace NEA
                                 }
                                 if (!Is(internalTokens[i + j + 4], TokenType.MESSAGE))
                                 {
-                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"PROMPT\" after \"WITH\".");
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
                                 }
                                 expression.Add(nextToken);
                                 j += 3;
@@ -2269,7 +2290,7 @@ namespace NEA
                                 expression.Add(nextToken);
                                 j++;
                             }
-                            nextToken = internalTokens[i + j + 1];
+                            nextToken = internalTokens[i + j + 2];
                         }
                         j = expression.Count + inputOffset;
                         // Check for type declaration
@@ -2367,11 +2388,13 @@ namespace NEA
                         bodyStart = i + j + 2;
                         bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
 
-                        mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
+                        mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
+
                         // Set i to next section
-                        i = bodyEnd + 2;
+                        i = bodyEnd;
 
                         Token startToken = internalTokens[i];
+                        MessageBox.Show($"start = {startToken.GetLiteral()}");
                         // Identify if Else If statement(s)
                         while (!IsEndOfToken(startToken) && Is(startToken, TokenType.ELSE) && Is(internalTokens[i + 1], TokenType.IF))
                         {
@@ -2401,12 +2424,12 @@ namespace NEA
                             // Capture Else If 1 Body
                             bodyStart = i + j + 3;
                             bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
-                            body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
+                            body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
                             // Add body & expresison to lists
                             elseIfBodies.Add(body.ToArray());
                             elseIfExpressions.Add(expression.ToArray());
                             // Set i to next section
-                            i = bodyEnd + 2;
+                            i = bodyEnd;
                             // Needed for preparing the next iteration of ELSE IF
                             startToken = internalTokens[i];
                         }
@@ -2419,9 +2442,12 @@ namespace NEA
                             bodyStart = i + 1;
                             bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
 
-                            elseBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
-                            i = bodyEnd + 2;
+                            elseBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
+                            i = bodyEnd;
                         }
+                        // Account for the final END IF
+                        // Irregardless of what terms were used
+                        i += 2;
                         intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
                         break; 
                     case TokenType.COUNT:
@@ -3030,6 +3056,8 @@ namespace NEA
         private bool validProgram;
         private bool isRunning = false;
 
+        private string consoleText;
+
         #region Execution
         public void SetRunningStatus(bool status)
         {
@@ -3044,6 +3072,11 @@ namespace NEA
         public bool GetValidity()
         {
             return validProgram;
+        }
+
+        public string GetConsoleText()
+        {
+            return consoleText;
         }
 
         public void FetchExecute(string[] intermediateCode, ref TextBox console, bool inFunction)
@@ -3496,7 +3529,7 @@ namespace NEA
                         {
                             object object1 = stack.Pop();
                             //Thread.Sleep(delayMS);
-                            console.Text += $"{object1}\r\n";
+                            consoleText += $"{object1}\r\n";
                         }
                         else if (operand == "INPUT")
                         {
@@ -3505,11 +3538,11 @@ namespace NEA
                             result = ShowInputDialog(ref prompt);
                             if (result.Item2 == "")
                             {
-                                console.Text += "[No Input Given]\r\n";
+                                consoleText += "[No Input Given]\r\n";
                             }
                             else
                             {
-                                console.Text += $"INPUT: {result.Item2}\r\n";
+                                consoleText += $"INPUT: {result.Item2}\r\n";
                             }
                             stack.Push(result.Item2);
                         }

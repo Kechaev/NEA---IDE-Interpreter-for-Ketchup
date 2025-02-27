@@ -63,9 +63,9 @@ namespace NEA.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Indent_Icon {
+        internal static System.Drawing.Bitmap EndSymbolSmall {
             get {
-                object obj = ResourceManager.GetObject("Indent Icon", resourceCulture);
+                object obj = ResourceManager.GetObject("EndSymbolSmall", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -77,6 +77,16 @@ namespace NEA.Properties {
             get {
                 object obj = ResourceManager.GetObject("KetchupIcon", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RunSymbolSmall {
+            get {
+                object obj = ResourceManager.GetObject("RunSymbolSmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
