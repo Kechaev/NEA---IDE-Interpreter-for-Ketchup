@@ -61,6 +61,11 @@ namespace NEA
             fixedLoopCounter = 0;
         }
 
+        public string GetSourceCode()
+        {
+            return sourceCode;
+        }
+
         public string[] GetIntermediateCode()
         {
             return intermediate;

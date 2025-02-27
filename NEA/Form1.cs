@@ -35,6 +35,7 @@ namespace NEA
         private List<string> currentFilePath;
         private bool isRunning;
         private bool isThreadAborted;
+        private bool unchangedCode;
 
         // IntelliSense Hack 101
         // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
@@ -53,6 +54,7 @@ namespace NEA
             isSaved = true;
             isRunning = false;
             isThreadAborted = true;
+            unchangedCode = false;
         }
 
         private void Run()
@@ -317,6 +319,7 @@ namespace NEA
         private void stripRun_Click(object sender, EventArgs e)
         {
             ControlledRun();
+            unchangedCode = true;
         }
 
         private void ControlledRun()
@@ -325,7 +328,7 @@ namespace NEA
             {
                 isRunning = true;
                 stripRun.Image = Properties.Resources.EndSymbolSmall;
-                if (!isThreadAborted)
+                if (!isThreadAborted && unchangedCode)
                 {
                     executionLoop.Resume();
                 }
@@ -370,6 +373,7 @@ namespace NEA
             else if (e.KeyCode == Keys.F5)
             {
                 ControlledRun();
+                unchangedCode = true;
             }
         }
 
@@ -733,6 +737,7 @@ namespace NEA
 
         private void txtCodeField_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
+            unchangedCode = false;
             isSaved = false;
             // Regex explanation
             // \b - boundary character (beginning of a word)
