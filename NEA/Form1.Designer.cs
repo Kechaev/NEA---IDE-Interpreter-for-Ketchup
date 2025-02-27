@@ -388,14 +388,12 @@ namespace NEA
             // 
             // txtConsole
             // 
-            resources.ApplyResources(this.txtConsole, "txtConsole");
             this.txtConsole.BackColor = System.Drawing.SystemColors.MenuBar;
             this.txtConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtConsole.Dock = DockStyle.Fill;
-            this.txtConsole.Multiline = true;
+            this.tableConsole.SetColumnSpan(this.txtConsole, 5);
+            resources.ApplyResources(this.txtConsole, "txtConsole");
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;
-            this.tableConsole.SetColumnSpan(this.txtConsole, 5);
             // 
             // tableMain
             // 

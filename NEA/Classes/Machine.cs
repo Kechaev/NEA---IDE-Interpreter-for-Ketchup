@@ -1858,6 +1858,11 @@ namespace NEA
             throw new Exception($"SYNTAX ERROR following {tokens[initialIndex].GetLine()}: No \"END {structure}\" command was found.");
         }
 
+        private bool ValidLengthForIndexing(int index, int arrayLength)
+        {
+            return index < arrayLength;
+        }
+
         private bool IsEndOfToken(Token token)
         {
             return token.GetTokenType() == TokenType.EOF || token.GetTokenType() == TokenType.EON;
@@ -2233,12 +2238,6 @@ namespace NEA
                         // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
 
-                        // Disallows reusing the SET keyword for an already declared variable
-                        //if (PreviouslyDeclared(variableName, i, internalTokens))
-                        //{
-                        //    throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} already created or set, use \"CHANGE\" to modify the value after.");
-                        //}
-
                         expression = new List<Token>();
                         j = 1;
                         inputOffset = 0;
@@ -2247,8 +2246,7 @@ namespace NEA
                         {
                             throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
                         }
-
-                        while (!IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !Is(nextToken, TokenType.AS))
+                        while (ValidLengthForIndexing(i + j + 2, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !Is(nextToken, TokenType.AS))
                         {
                             // Limitation: in an if statement the prompt cannot contain multiple strings or variables
                             // Format without punctuation does not support this
@@ -2260,7 +2258,7 @@ namespace NEA
                                 }
                                 if (!Is(internalTokens[i + j + 4], TokenType.MESSAGE))
                                 {
-                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"PROMPT\" after \"WITH\".");
                                 }
                                 expression.Add(nextToken);
                                 j += 3;
@@ -2271,17 +2269,17 @@ namespace NEA
                                 expression.Add(nextToken);
                                 j++;
                             }
-                            nextToken = internalTokens[i + j + 2];
+                            nextToken = internalTokens[i + j + 1];
                         }
                         j = expression.Count + inputOffset;
                         // Check for type declaration
                         nextToken = internalTokens[i + j + 2];
-                        if (!IsEndOfToken(nextToken) && Is(internalTokens[i + j + 3],TokenType.AS) && Is(internalTokens[i + j + 4],TokenType.DATA_TYPE))
+                        if (ValidLengthForIndexing(i + j + 3, internalTokens.Length) && !IsEndOfToken(nextToken) && Is(internalTokens[i + j + 3],TokenType.AS) && Is(internalTokens[i + j + 4],TokenType.DATA_TYPE))
                         {
                             type = internalTokens[i + j + 4].GetLiteral();
                             noType = false;
                         }
-                        else if (!IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
+                        else if (ValidLengthForIndexing(i + j + 3, internalTokens.Length) && !IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No data type mentioned after \"AS\" keyword.");
                         }
@@ -2293,91 +2291,6 @@ namespace NEA
                             i += 2;
                         }
                         break;
-                    #region Reassignment - [REDACTED]
-                    //case TokenType.REASSIGNMENT:
-                    //    type = null;
-                    //    noType = true;
-
-                    //    // Verify Valid Syntax
-                    //    nextToken = internalTokens[i + 1];
-                    //    if (!IsVariable(nextToken))
-                    //    {
-                    //        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: When assigning no variable was found.");
-                    //    }
-                    //    nextToken = internalTokens[i + 2];
-                    //    if (!Is(nextToken,TokenType.TO))
-                    //    {
-                    //        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No value was mentioned for assignment.");
-                    //    }
-                    //    // Get Variable Name & Expression
-                    //    variableName = internalTokens[i + 1].GetLiteral();
-
-
-                    //    if (!PreviouslyDeclared(variableName, i, internalTokens) && DeclaredAfter(variableName, i, internalTokens))
-                    //    {
-                    //        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} was not created before changing. Try using \"SET\" in the first mention of the variable.");
-                    //    }
-                    //    if (!PreviouslyDeclared(variableName, i, internalTokens))
-                    //    {
-                    //        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Variable {variableName} was not created, therefore cannot be changed. Try using \"SET\" instead.");
-                    //    }
-
-                    //    expression = new List<Token>();
-                    //    j = 1;
-                    //    inputOffset = 0;
-                    //    nextToken = internalTokens[i + j + 2];
-                    //    while (!IsEndOfToken(nextToken) && nextToken.GetLine() == token.GetLine() && nextToken.GetTokenType() != TokenType.AS)
-                    //    {
-                    //        // Limitation: in an if statement the prompt cannot contain multiple strings or variables
-                    //        // Format without punctuation does not support this
-                    //        if (IsInput(nextToken))
-                    //        {
-                    //            if (!Is(internalTokens[i + j + 3], TokenType.WITH))
-                    //            {
-                    //                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
-                    //            }
-                    //            if (!Is(internalTokens[i + j + 4], TokenType.MESSAGE))
-                    //            {
-                    //                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
-                    //            }
-                    //            expression.Add(nextToken);
-                    //            j += 3;
-                    //            inputOffset += 2;
-                    //        }
-                    //        else
-                    //        {
-                    //            expression.Add(nextToken);
-                    //            j++;
-                    //        }
-                    //        nextToken = internalTokens[i + j + 2];
-                    //    }
-                    //    j = expression.Count + inputOffset;
-                    //    // Check for type declaration
-                    //    nextToken = internalTokens[i + j + 2];
-                    //    if (!IsEndOfToken(nextToken) && Is(internalTokens[i + j + 3],TokenType.AS) && Is(internalTokens[i + j + 4],TokenType.DATA_TYPE))
-                    //    {
-                    //        type = internalTokens[i + j + 4].GetLiteral();
-                    //        noType = false;
-                    //    }
-                    //    else if (!IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
-                    //    {
-                    //        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No data type mentioned.");
-                    //    }
-                    //    if (noType)
-                    //    {
-                    //        intermediateList.AddRange(MapReassignment(variableName, expression, null));
-                    //    }
-                    //    else
-                    //    {
-                    //        intermediateList.AddRange(MapReassignment(variableName, expression, type));
-                    //    }
-                    //    i += j + 3;
-                    //    if (!noType)
-                    //    {
-                    //        i += 2;
-                    //    }
-                    //    break;
-                    #endregion
                     case TokenType.DECLARATION:
                         type = "STRING";
                         noType = true;
