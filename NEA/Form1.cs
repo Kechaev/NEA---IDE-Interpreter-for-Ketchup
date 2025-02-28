@@ -76,16 +76,29 @@ namespace NEA
             try
             {
                 machine.Interpret();
-
                 string[] intermediate = machine.GetIntermediateCode();
-
-                executionLoop = new Thread(ExecutionLoop);
-                executionLoop.Start();
+                try
+                {
+                    executionLoop = new Thread(ExecutionLoop);
+                    executionLoop.Start();
+                }
+                catch (Exception e)
+                {
+                    // Failed to translate or execute
+                    // Show error
+                    ConsoleWrite(e.Message);
+                }
             }
             catch (Exception e)
             {
+                // Failed to interpret
+                // Set the stripRun back to RunSymbol
+                // Show error
                 ConsoleWrite(e.Message);
+                stripRun.Image = Properties.Resources.RunSymbolSmall;
             }
+
+
 
             //No Error Checking
             //machine.Interpret();
@@ -107,7 +120,14 @@ namespace NEA
             machine.SetRunningStatus(machine.GetValidity());
             while (machine.GetRunningStatus())
             {
-                machine.FetchExecute(intermediateCode, ref txtConsole, false);
+                try
+                {
+                    machine.FetchExecute(intermediateCode, ref txtConsole, false);
+                }
+                catch (Exception e)
+                {
+                    ConsoleWrite(e.Message);
+                }
 
                 this.Invoke(new MethodInvoker(delegate
                 {
@@ -127,7 +147,30 @@ namespace NEA
             stripRun.Image = Properties.Resources.RunSymbolSmall;
             isRunning = false;
             isThreadAborted = true;
-            executionLoop.Abort();
+        }
+
+        private void ControlledRun()
+        {
+            if (!isRunning || executionLoop == null)
+            {
+                isRunning = true;
+                stripRun.Image = Properties.Resources.EndSymbolSmall;
+                if (!isThreadAborted && unchangedCode)
+                {
+                    executionLoop.Resume();
+                }
+                else
+                {
+                    Run();
+                }
+            }
+            else
+            {
+                isRunning = false;
+                isThreadAborted = false;
+                stripRun.Image = Properties.Resources.RunSymbolSmall;
+                executionLoop.Suspend();
+            }
         }
 
         private void Comment()
@@ -315,35 +358,10 @@ namespace NEA
             txtCodeField.Redo();
         }
 
-        [SecurityPermissionAttribute(SecurityAction.Demand, ControlThread = true)]
         private void stripRun_Click(object sender, EventArgs e)
         {
             ControlledRun();
             unchangedCode = true;
-        }
-
-        private void ControlledRun()
-        {
-            if (!isRunning)
-            {
-                isRunning = true;
-                stripRun.Image = Properties.Resources.EndSymbolSmall;
-                if (!isThreadAborted && unchangedCode)
-                {
-                    executionLoop.Resume();
-                }
-                else
-                {
-                    Run();
-                }
-            }
-            else
-            {
-                isRunning = false;
-                isThreadAborted = false;
-                stripRun.Image = Properties.Resources.RunSymbolSmall;
-                executionLoop.Suspend();
-            }
         }
         
         private void stripComment_Click(object sender, EventArgs e)
@@ -418,18 +436,25 @@ namespace NEA
             }
             else
             {
-                machine = new Machine(txtCodeField.Text, txtConsole.Text);
-                Token[] tokens = machine.Tokenize();
-
-                string[] tokensString = new string[tokens.Length];
-
-                for (int i = 0; i < tokens.Length; i++)
+                try
                 {
-                    tokensString[i] = tokens[i].GetTokenType().ToString();
-                }
+                    machine = new Machine(txtCodeField.Text, txtConsole.Text);
+                    Token[] tokens = machine.Tokenize();
 
-                TokenView tokenForm = new TokenView(tokensString);
-                tokenForm.ShowDialog();
+                    string[] tokensString = new string[tokens.Length];
+
+                    for (int i = 0; i < tokens.Length; i++)
+                    {
+                        tokensString[i] = tokens[i].GetTokenType().ToString();
+                    }
+
+                    TokenView tokenForm = new TokenView(tokensString);
+                    tokenForm.ShowDialog();
+                }
+                catch
+                {
+                    MessageBox.Show("Invalid program entererd.\nCannot open Token View.");
+                }
             }
         }
 
@@ -628,6 +653,16 @@ namespace NEA
 
         private void CloseAllForms()
         {
+            if (executionLoop != null && executionLoop.ThreadState == ThreadState.Suspended)
+            {
+                executionLoop.Resume();
+                executionLoop.Abort();
+            }
+            else if (executionLoop != null)
+            {
+                executionLoop.Abort();
+            }
+            // Else to nothing - the thread is null and doesnt exist
             FormCollection openForms = Application.OpenForms;
             for (int i = 0; i < openForms.Count; i++)
             {

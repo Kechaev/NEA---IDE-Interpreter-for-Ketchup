@@ -543,119 +543,6 @@ namespace NEA
             return tokensList.ToArray();
         }
 
-        public Token[] ShortTokenize(string line, int startIndex, int endIndex)
-        {
-            List<Token> tokensList = new List<Token>();
-            char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^', ',' };
-            string[] multiCharKeywords = { "=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
-            string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
-
-            string[] subroutineNames = FindSubroutineNames();
-
-            current = startIndex;
-
-            while (current < endIndex)
-            {
-                start = current;
-                char c = sourceCode[current++];
-                if (singleCharKeyword.Contains(c))
-                {
-                    tokensList.Add(new Token(GetTokenType(c.ToString()), c.ToString(), 0));
-                }
-                else if (c == '\n')
-                {
-                    break;
-                }
-                else if (c == '\t')
-                {
-                    continue;
-                }
-                else if (c == '"')
-                {
-                    try
-                    {
-                        while (Peek() != '"' && current < sourceCode.Length)
-                        {
-                            if (Peek() == '\n')
-                            {
-                                break;
-                            }
-                            current++;
-                        }
-
-                        if (current >= sourceCode.Length)
-                        {
-                            throw new Exception($"SYNTAX ERROR: String does not have a \" to end on.");
-                        }
-
-                        current++;
-
-                        string text = sourceCode.Substring(start, current - start);
-
-                        tokensList.Add(new Token(TokenType.STR_LITERAL, text, 0));
-                    }
-                    catch
-                    {
-                        while (Peek() != '"' && current < sourceCode.Length)
-                        {
-                            if (Peek() == '\n')
-                            {
-                                break;
-                            }
-                            current++;
-                        }
-
-                        string text = sourceCode.Substring(start, current - start);
-
-                        tokensList.Add(new Token(TokenType.STR_LITERAL, text, 0));
-                    }
-                }
-                else if (char.IsWhiteSpace(c))
-                {
-                    continue;
-                }
-                else if (IsAlpha(c))
-                {
-                    string word = GetWord();
-                    if (keyword.Contains(word.ToUpper()))
-                    {
-                        TokenType type = GetTokenType(word);
-                        if (type == TokenType.END)
-                        {
-                            tokensList.Add(new Token(TokenType.EON, null, 0));
-                        }
-                        tokensList.Add(new Token(type, word, 0));
-                    }
-                    else if (dataTypes.Contains(word.ToUpper()))
-                    {
-                        tokensList.Add(new Token(TokenType.DATA_TYPE, word, 0));
-                    }
-                    else if (subroutineNames.Contains(word))
-                    {
-                        tokensList.Add(new Token(TokenType.SUBROUTINE_NAME, word, 0));
-                    }
-                    else
-                    {
-                        tokensList.Add(new Token(TokenType.VARIABLE, word.ToUpper(), 0));
-                    }
-                }
-                else if (IsComparisonOperatorChar(c))
-                {
-                    string op = GetComparisonOperator();
-                    tokensList.Add(new Token(GetTokenType(op), op, 0));
-                }
-                else if (IsDigit(c))
-                {
-                    tokensList.Add(GetNumber());
-                }
-                else if (c == '#')
-                {
-                    SkipToEndOfLine();
-                }
-            }
-
-            return tokensList.ToArray();
-        }
         #endregion
 
         // Fields for Translation into Intermediate Code
@@ -1125,31 +1012,6 @@ namespace NEA
                     instrLine.Add(statement);
                 }
             }
-            // This should not be called?
-            //else if (operators.Contains(e.GetLiteral()))
-            //{
-            //    switch (e.GetLiteral())
-            //    {
-            //        case "+":
-            //            instrLine.Add("ADD");
-            //            break;
-            //        case "-":
-            //            instrLine.Add("SUB");
-            //            break;
-            //        case "*":
-            //            instrLine.Add("MUL");
-            //            break;
-            //        case "/":
-            //            instrLine.Add("DIV");
-            //            break;
-            //        case "^":
-            //            instrLine.Add("EXP");
-            //            break;
-            //        case "%":
-            //            instrLine.Add("MOD");
-            //            break;
-            //    }
-            //}
             else if (bitwiseOperations.Contains(e.GetTokenType()))
             {
                 if (e.GetTokenType() == TokenType.AND)
@@ -1864,6 +1726,11 @@ namespace NEA
                 }
             }
 
+            if (tokens[index + 1].GetLiteral() == null)
+            {
+                throw new Exception($"SYNTAX ERROR following {tokens[index].GetLine() + 1}: No structure specified after \"{tokens[index].GetLiteral()}\".");
+            }
+
             if (Is(tokens[index], TokenType.END) && tokens[index + 1].GetLiteral().ToUpper() == structure)
             {
                 return index;
@@ -2468,12 +2335,12 @@ namespace NEA
                         nextToken = internalTokens[i + 2];
                         if (!Is(nextToken,TokenType.VARIABLE))
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing variable from \"COUNT WITH\".");
+                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Missing variable from \"COUNT WITH\".");
                         }
                         nextToken = internalTokens[i + 3];
                         if (!Is(nextToken,TokenType.FROM))
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"FROM\" keyword.");
+                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2].GetLine() + 1}: Missing \"FROM\" keyword.");
                         }
                         List<Token> expression1 = new List<Token>();
                         j = 1;
