@@ -173,92 +173,180 @@ namespace NEA
             }
         }
 
+        private int GetLinesFromCharIndex(FastColoredTextBox textBox, int selectionStart)
+        {
+            string text = textBox.Text;
+            int line = 0;
+            for (int i = 0; i < selectionStart && i < textBox.Text.Length; i++)
+            {
+                if (text[i] == '\n')
+                {
+                    line++;
+                }
+            }
+            return line;
+        }
+
+        private string[] GetLinesFromTextBox(FastColoredTextBox textBox)
+        {
+            List<string> linesList = new List<string>();
+
+            string lastLine = "";
+
+            foreach (char c in textBox.Text)
+            {
+                if (c == '\n')
+                {
+                    linesList.Add(lastLine);
+                    lastLine = "";
+                }
+                else
+                {
+                    lastLine += c;
+                }
+            }
+
+            linesList.Add(lastLine);
+
+            return linesList.ToArray();
+        }
+
+        private int GetFirstCharIndexOfLine(FastColoredTextBox textBox, int selectedLine)
+        {
+            int line = 0;
+            string[] lines = GetLinesFromTextBox(textBox);
+            for (int i = 0; i < textBox.Text.Length; i++)
+            {
+                char c = textBox.Text[i];
+                if (c == '\n')
+                {
+                    line++;
+                    
+                }
+                if (line == selectedLine)
+                {
+                    if (i == 0)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return i + 1;
+                    }
+                }
+            }
+            return -1;
+        }
+
         private void Comment()
         {
-            //int index = txtCodeField.SelectionStart;
-            //int line = txtCodeField.GetLineFromCharIndex(index);
-            //int firstCharOfLine = txtCodeField.GetFirstCharIndexOfCurrentLine();
-            //int lineLength;
-            //bool isLastLine = false;
+            int index = txtCodeField.SelectionStart;
+            int line = GetLinesFromCharIndex(currentCodeField, index);
+            int firstCharOfLine = GetFirstCharIndexOfLine(txtCodeField, line);
+            int lineLength;
+            bool isLastLine = false;
 
-            //if (line == txtCodeField.Lines.Length - 1)
-            //{
-            //    lineLength = txtCodeField.Text.Length - firstCharOfLine;
-            //    isLastLine = true;
-            //}
-            //else
-            //{
-            //    int nextLineFirstChar = txtCodeField.GetFirstCharIndexFromLine(line + 1);
-            //    lineLength = nextLineFirstChar - firstCharOfLine;
-            //}
+            if (line == GetLinesFromTextBox(txtCodeField).Length - 1)
+            {
+                lineLength = txtCodeField.Text.Length - firstCharOfLine;
+                isLastLine = true;
+            }
+            else
+            {
+                int nextLineFirstChar = GetFirstCharIndexOfLine(txtCodeField, line + 1);
+                lineLength = nextLineFirstChar - firstCharOfLine;
+            }
 
-            //int selectionStart = txtCodeField.SelectionStart;
-            //int selectionLength = txtCodeField.SelectionLength;
+            int selectionStart = txtCodeField.SelectionStart;
+            int selectionLength = txtCodeField.SelectionLength;
 
-            //// No selection
-            //// Caret is on a single line
-            //if (selectionLength == 0)
-            //{
-            //    txtCodeField.Text = txtCodeField.Text.Insert(firstCharOfLine, "# ");
-            //    int offset = 1;
-            //    if (isLastLine)
-            //    {
-            //        offset = 2;
-            //    }
-            //    txtCodeField.Select(firstCharOfLine + lineLength + offset, 0);
-            //}
-            //// Selection
-            //// Selection spans one line
-            //else if (selectionLength < lineLength - (index - firstCharOfLine) + 1)
-            //{
-            //    txtCodeField.Text = txtCodeField.Text.Insert(firstCharOfLine, "# ");
-            //    int offset = 1;
-            //    if (isLastLine)
-            //    {
-            //        offset = 2;
-            //    }
-            //    txtCodeField.Select(firstCharOfLine + lineLength + offset, 0);
-            //}
-            //// Multiline selection
-            //// Selections spans multiple lines
-            //else
-            //{
-            //    int firstLine = firstCharOfLine;
-            //    int lastLine = txtCodeField.GetLineFromCharIndex(index + selectionLength);
+            // No selection
+            // Caret is on a single line
+            if (selectionLength == 0)
+            {
+                if (txtCodeField.Text.Substring(firstCharOfLine, 2) == "  ")
+                {
+                    txtCodeField.Text = txtCodeField.Text.Remove(firstCharOfLine, 2).Insert(firstCharOfLine, "# ");
+                }
+                else
+                {
+                    txtCodeField.Text = txtCodeField.Text.Insert(firstCharOfLine, "# ");
+                }
+                txtCodeField.SelectionStart = firstCharOfLine + lineLength;
+            }
+            // Selection
+            // Selection spans one line
+            else if (selectionLength < lineLength - (index - firstCharOfLine) + 1)
+            {
+                if (txtCodeField.Text.Substring(firstCharOfLine, 2) == "  ")
+                {
+                    txtCodeField.Text = txtCodeField.Text.Remove(firstCharOfLine, 2).Insert(firstCharOfLine, "# ");
+                }
+                else
+                {
+                    txtCodeField.Text = txtCodeField.Text.Insert(firstCharOfLine, "# ");
+                }
+                txtCodeField.SelectionStart = firstCharOfLine + lineLength;
+            }
+            // Multiline selection
+            // Selections spans multiple lines
+            else
+            {
+                int firstLine = GetLinesFromCharIndex(txtCodeField, firstCharOfLine);
+                int lastLine = GetLinesFromCharIndex(txtCodeField, index + selectionLength);
 
-            //    string[] lines = txtCodeField.Lines;
+                string[] lines = GetLinesFromTextBox(txtCodeField);
 
-            //    int totalAddedChars = 0;
+                int totalAddedChars = 0;
 
-            //    for (int i = firstCharOfLine; i <= lastLine; i++)
-            //    {
-            //        lines[i] = "# " + lines[i];
-            //        totalAddedChars += 2;
-            //    }
+                for (int i = firstLine; i <= lastLine; i++)
+                {
+                    firstCharOfLine = GetFirstCharIndexOfLine(txtCodeField, GetLinesFromCharIndex(txtCodeField, lines[i][0]));
+                    if (lines[i].Substring(0, 2) == "  ")
+                    {
+                        lines[i] = lines[i].Remove(0, 2).Insert(0, "# ");
+                    }
+                    else
+                    {
+                        lines[i] = lines[i].Insert(0, "# ");
+                    }
+                    totalAddedChars += 2;
+                }
 
-            //    txtCodeField.Lines = lines;
-            //    txtCodeField.Select(selectionStart + selectionLength + totalAddedChars, 0);
-            //}
+                string newText = "";
+                foreach (string l in lines)
+                {
+                    newText += l + "\n";
+                }
+                
+                txtCodeField.Text = newText.Remove(newText.Length - 1);;
+                txtCodeField.SelectionStart = selectionStart + selectionLength + totalAddedChars;
+            }
         }
 
         private void Cut()
         {
-            //string[] lines = txtCodeField.Lines;
-            //int selectionStart = txtCodeField.SelectionStart;
-            //int selectionLength = txtCodeField.SelectionLength;
+            string[] lines = txtCodeField.Lines.ToArray();
+            int selectionStart = txtCodeField.SelectionStart;
+            int selectionLength = txtCodeField.SelectionLength;
 
-            //if (selectionLength == 0)
-            //{
-            //    int line = txtCodeField.GetLineFromCharIndex(selectionStart);
-            //    List<string> linesAsList = new List<string>(lines);
-            //    linesAsList.RemoveAt(line);
-            //    txtCodeField.Lines = linesAsList.ToArray();
-            //    txtCodeField.SelectionStart = selectionStart;
-            //}
-            //else
-            //{
-            //    txtCodeField.Text.Remove(selectionStart, selectionLength);
-            //}
+            if (selectionLength == 0)
+            {
+                int currentLine = GetLinesFromCharIndex(txtCodeField, selectionStart);
+                List<string> linesAsList = new List<string>(lines);
+                linesAsList.RemoveAt(currentLine);
+                string newText = "";
+                foreach (string line in linesAsList)
+                {
+                    newText += line + "\n";
+                }
+                txtCodeField.Text = newText;
+                txtCodeField.SelectionStart = selectionStart;
+            }
+            else
+            {
+                txtCodeField.Text = txtCodeField.Text.Remove(selectionStart, selectionLength);
+            }
         }
 
         private void UpdateCaretPosition()

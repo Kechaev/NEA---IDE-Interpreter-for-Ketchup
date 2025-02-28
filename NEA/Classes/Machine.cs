@@ -2266,7 +2266,6 @@ namespace NEA
                         i = bodyEnd;
 
                         Token startToken = internalTokens[i];
-                        MessageBox.Show($"start = {startToken.GetLiteral()}");
                         // Identify if Else If statement(s)
                         while (!IsEndOfToken(startToken) && Is(startToken, TokenType.ELSE) && Is(internalTokens[i + 1], TokenType.IF))
                         {

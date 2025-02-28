@@ -85,7 +85,6 @@ namespace NEA
             this.btnClear = new System.Windows.Forms.Button();
             this.btnCopyLastProgram = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusBar.SuspendLayout();
@@ -604,7 +603,6 @@ namespace NEA
         private ToolStripButton stripSaveAs;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton stripPaste;
-        private Timer timer1;
     }
 }
 
