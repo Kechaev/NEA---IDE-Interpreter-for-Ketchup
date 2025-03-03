@@ -1933,6 +1933,7 @@ namespace NEA
         // EOF (End of File)
         private string[] TokensToIntermediate(Token[] internalTokens, bool inFunction)
         {
+            #region Variable Setup
             List<string> intermediateList = new List<string>();
             List<Token> internalTokensList = internalTokens.ToList();
 
@@ -1965,6 +1966,7 @@ namespace NEA
             int localCounter;
             List<Variable> arguements;
             List<bool> isLiteralList;
+            #endregion
 
             while (i < internalTokens.Length)
             {

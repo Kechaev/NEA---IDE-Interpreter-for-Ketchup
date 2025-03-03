@@ -481,6 +481,10 @@ namespace NEA
                 ControlledRun();
                 unchangedCode = true;
             }
+            else
+            {
+                UpdateCaretPosition();
+            }
         }
 
         private void tsEditCut_Click(object sender, EventArgs e)
@@ -849,6 +853,7 @@ namespace NEA
         }
 
         #region Syntax Highlighting
+        Style GreyStyle = new TextStyle(Brushes.Gray, null, FontStyle.Italic);
         Style GreenStyle = new TextStyle(Brushes.Green, null, FontStyle.Regular);
         Style PurpleStyle = new TextStyle(Brushes.Purple, null, FontStyle.Regular);
         Style PinkStyle = new TextStyle(Brushes.HotPink, null, FontStyle.Regular);
@@ -856,7 +861,6 @@ namespace NEA
         Style CyanStyle = new TextStyle(Brushes.DarkCyan, null, FontStyle.Regular);
         Style RedStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
         Style BlueStyle = new TextStyle(Brushes.DarkBlue, null, FontStyle.Regular);
-        Style GreyStyle = new TextStyle(Brushes.Gray, null, FontStyle.Italic);
 
         private void txtCodeField_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
@@ -869,6 +873,7 @@ namespace NEA
             // (?!\S) - Matches only whitespace characters ( ,\n,\t)
             // (?<=\bSTRING\s+) - The STRING text must preced the current position (Positive Lookback)
 
+            e.ChangedRange.ClearStyle(GreyStyle);
             e.ChangedRange.ClearStyle(GreenStyle);
             e.ChangedRange.ClearStyle(PurpleStyle);
             e.ChangedRange.ClearStyle(PinkStyle);
@@ -876,8 +881,8 @@ namespace NEA
             e.ChangedRange.ClearStyle(CyanStyle);
             e.ChangedRange.ClearStyle(RedStyle);
             e.ChangedRange.ClearStyle(BlueStyle);
-            e.ChangedRange.ClearStyle(GreyStyle);
             // String not working after "" (false positive)
+            e.ChangedRange.SetStyle(GreyStyle, @"#.*");
             e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
             e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message|(?<=\binput\s+)with\b)(?!\S)");
             e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|raise)(?!\S)");
@@ -885,7 +890,6 @@ namespace NEA
             e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(integer|decimal|string|character|boolean|array|list)(?!\S)");
             e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by|the|power|(?<=\bpower\s+)of|divided)(?!\S)");
             e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
-            e.ChangedRange.SetStyle(GreyStyle, @"#.*");
 
             UpdateCaretPosition();
         }
@@ -1073,10 +1077,14 @@ namespace NEA
                 // If the click is not on the selecting area of the tab -> Delete the tab
                 if (!textRect.Contains(e.Location) && tabRect.Contains(e.Location))
                 {
+                    int prevTabIndex = tabCodeControl.SelectedIndex;
+                    tabCodeControl.SelectedIndex = i;
+                    tabCodeControl_SelectedIndexChanged(sender, e);
                     if (PromptToSaveChanges())
                     {
                         tabCodeControl.Controls.RemoveAt(i);
                     }
+                    tabCodeControl.SelectedIndex = prevTabIndex;
                     break;
                 }
             }
