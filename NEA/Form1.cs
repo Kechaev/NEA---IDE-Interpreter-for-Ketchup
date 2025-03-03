@@ -30,8 +30,8 @@ namespace NEA
         private bool isSaved;
         private static int NoOfRuns = 1;
 
-        private List<FastColoredTextBox> arrayCodeFields;
-        private FastColoredTextBox currentCodeField;
+        private List<CustomFastColoredTextBox> arrayCodeFields;
+        private CustomFastColoredTextBox currentCodeField;
         private List<string> currentFilePath;
         private bool isRunning;
         private bool isThreadAborted;
@@ -46,7 +46,7 @@ namespace NEA
             WindowState = FormWindowState.Maximized;
             txtCodeField.Select();
             currentCodeField = txtCodeField;
-            arrayCodeFields = new List<FastColoredTextBox>();
+            arrayCodeFields = new List<CustomFastColoredTextBox>();
             arrayCodeFields.Add(currentCodeField);
             currentFilePath = new List<string>();
             currentFilePath.Add(null);
@@ -69,7 +69,7 @@ namespace NEA
             txtConsole.Text += $"=== {name} - {time} ===\r\n";
 
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+            CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
             machine = new Machine(txtCodeField.Text, txtConsole.Text);
 
             // Error Checking
@@ -173,7 +173,7 @@ namespace NEA
             }
         }
 
-        private int GetLinesFromCharIndex(FastColoredTextBox textBox, int selectionStart)
+        private int GetLinesFromCharIndex(CustomFastColoredTextBox textBox, int selectionStart)
         {
             string text = textBox.Text;
             int line = 0;
@@ -187,7 +187,7 @@ namespace NEA
             return line;
         }
 
-        private string[] GetLinesFromTextBox(FastColoredTextBox textBox)
+        private string[] GetLinesFromTextBox(CustomFastColoredTextBox textBox)
         {
             List<string> linesList = new List<string>();
 
@@ -211,7 +211,7 @@ namespace NEA
             return linesList.ToArray();
         }
 
-        private int GetFirstCharIndexOfLine(FastColoredTextBox textBox, int selectedLine)
+        private int GetFirstCharIndexOfLine(CustomFastColoredTextBox textBox, int selectedLine)
         {
             int line = 0;
             string[] lines = GetLinesFromTextBox(textBox);
@@ -390,7 +390,7 @@ namespace NEA
         private void tsEditCopy_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+            CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
             if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
             {
                 Clipboard.SetText(txtCodeField.SelectedText);
@@ -408,7 +408,7 @@ namespace NEA
         private void tsEditPaste_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+            CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
             if (Clipboard.ContainsText())
             {
                 string toPaste = Clipboard.GetText();
@@ -435,14 +435,14 @@ namespace NEA
         private void stripUndo_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+            CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
             txtCodeField.Undo();
         }
 
         private void stripRedo_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+            CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
             txtCodeField.Redo();
         }
 
@@ -607,7 +607,7 @@ namespace NEA
             else
             {
                 TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+                CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
                 File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
                 isSaved = true;
                 if (currentFilePath != null)
@@ -628,7 +628,7 @@ namespace NEA
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+                CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
                 currentFilePath[tabCodeControl.SelectedIndex] = openFileDialog.FileName;
                 txtCodeField.Text = File.ReadAllText(currentFilePath[tabCodeControl.SelectedIndex]);
                 isSaved = true;
@@ -652,7 +652,7 @@ namespace NEA
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+                CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
                 currentFilePath[tabCodeControl.SelectedIndex] = saveFileDialog.FileName;
                 File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
                 isSaved = true;
@@ -667,22 +667,26 @@ namespace NEA
 
         private void SaveFile()
         {
-            if (currentFilePath[tabCodeControl.SelectedIndex] == null)
+            if (tabCodeControl.TabIndex > -1)
             {
-                SaveFileAs();
-                isSaved = true;
+                if (currentFilePath[tabCodeControl.SelectedIndex] == null)
+                {
+                    SaveFileAs();
+                    isSaved = true;
+                }
+                else
+                {
+                    TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+                    CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
+                    File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
+                    isSaved = true;
+                }
+                if (currentFilePath[tabCodeControl.SelectedIndex] != null && tabCodeControl.SelectedTab != null)
+                {
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                }
             }
-            else
-            {
-                TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
-                File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
-                isSaved = true;
-            }
-            if (currentFilePath[tabCodeControl.SelectedIndex] != null && tabCodeControl.SelectedTab != null)
-            {
-                this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
-            }
+            
         }
 
         private bool PromptToSaveChanges()
@@ -708,7 +712,7 @@ namespace NEA
         {
             TabPage tabPage = new TabPage();
 
-            FastColoredTextBox newTxtCodeField = new FastColoredTextBox();
+            CustomFastColoredTextBox newTxtCodeField = new CustomFastColoredTextBox();
 
             newTxtCodeField.TextChanged += txtCodeField_TextChanged;
             newTxtCodeField.KeyDown += txtCodeField_KeyDown;
@@ -736,7 +740,7 @@ namespace NEA
             if (tabCodeControl.SelectedIndex != -1)
             {
                 TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-                FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+                CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
                 machine = new Machine(txtCodeField.Text, txtConsole.Text);
             }
         }
@@ -789,7 +793,7 @@ namespace NEA
         private void stripCopy_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+            CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
             if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
             {
                 Clipboard.SetText(txtCodeField.SelectedText);
@@ -899,7 +903,7 @@ namespace NEA
         private void txtCodeField_AutoIndentNeeded(object sender, AutoIndentEventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            FastColoredTextBox txtCodeField = currentTab.Controls[0] as FastColoredTextBox;
+            CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
 
             string trimmedLine = e.LineText.Trim();
 

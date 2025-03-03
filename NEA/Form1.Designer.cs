@@ -78,7 +78,7 @@ namespace NEA
             this.tableCodeSpace = new System.Windows.Forms.TableLayoutPanel();
             this.tabCodeControl = new System.Windows.Forms.TabControl();
             this.tab0 = new System.Windows.Forms.TabPage();
-            this.txtCodeField = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.txtCodeField = new NEA.Classes.CustomFastColoredTextBox();
             this.tableConsole = new System.Windows.Forms.TableLayoutPanel();
             this.btnCopy = new System.Windows.Forms.Button();
             this.lblConsole = new System.Windows.Forms.Label();
@@ -459,11 +459,9 @@ namespace NEA
             this.txtCodeField.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtCodeField.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.txtCodeField.IsReplaceMode = false;
-            this.txtCodeField.LeftBracket = '(';
             this.txtCodeField.LineNumberColor = System.Drawing.Color.MidnightBlue;
             this.txtCodeField.Name = "txtCodeField";
             this.txtCodeField.Paddings = new System.Windows.Forms.Padding(0);
-            this.txtCodeField.RightBracket = ')';
             this.txtCodeField.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.txtCodeField.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtCodeField.ServiceColors")));
             this.txtCodeField.Zoom = 100;
@@ -596,13 +594,13 @@ namespace NEA
         private TabControl tabCodeControl;
         private TabPage tabPage2;
         private TabPage tab0;
-        private FastColoredTextBoxNS.FastColoredTextBox txtCodeField;
         private ToolStripButton stripNewFile;
         private ToolStripButton stripOpenFile;
         private ToolStripButton stripSave;
         private ToolStripButton stripSaveAs;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton stripPaste;
+        private Classes.CustomFastColoredTextBox txtCodeField;
     }
 }
 
