@@ -173,87 +173,22 @@ namespace NEA
             }
         }
 
-        private int GetLinesFromCharIndex(CustomFastColoredTextBox textBox, int selectionStart)
-        {
-            string text = textBox.Text;
-            int line = 0;
-            for (int i = 0; i < selectionStart && i < textBox.Text.Length; i++)
-            {
-                if (text[i] == '\n')
-                {
-                    line++;
-                }
-            }
-            return line;
-        }
-
-        private string[] GetLinesFromTextBox(CustomFastColoredTextBox textBox)
-        {
-            List<string> linesList = new List<string>();
-
-            string lastLine = "";
-
-            foreach (char c in textBox.Text)
-            {
-                if (c == '\n')
-                {
-                    linesList.Add(lastLine);
-                    lastLine = "";
-                }
-                else
-                {
-                    lastLine += c;
-                }
-            }
-
-            linesList.Add(lastLine);
-
-            return linesList.ToArray();
-        }
-
-        private int GetFirstCharIndexOfLine(CustomFastColoredTextBox textBox, int selectedLine)
-        {
-            int line = 0;
-            string[] lines = GetLinesFromTextBox(textBox);
-            for (int i = 0; i < textBox.Text.Length; i++)
-            {
-                char c = textBox.Text[i];
-                if (c == '\n')
-                {
-                    line++;
-                    
-                }
-                if (line == selectedLine)
-                {
-                    if (i == 0)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return i + 1;
-                    }
-                }
-            }
-            return -1;
-        }
-
         private void Comment()
         {
             int index = txtCodeField.SelectionStart;
-            int line = GetLinesFromCharIndex(currentCodeField, index);
-            int firstCharOfLine = GetFirstCharIndexOfLine(txtCodeField, line);
+            int line = currentCodeField.GetLinesFromCharIndex(index);
+            int firstCharOfLine = txtCodeField.GetFirstCharIndexOfLine(line);
             int lineLength;
             bool isLastLine = false;
 
-            if (line == GetLinesFromTextBox(txtCodeField).Length - 1)
+            if (line == txtCodeField.GetLinesFromTextBox().Length - 1)
             {
                 lineLength = txtCodeField.Text.Length - firstCharOfLine;
                 isLastLine = true;
             }
             else
             {
-                int nextLineFirstChar = GetFirstCharIndexOfLine(txtCodeField, line + 1);
+                int nextLineFirstChar = txtCodeField.GetFirstCharIndexOfLine(line + 1);
                 lineLength = nextLineFirstChar - firstCharOfLine;
             }
 
@@ -292,16 +227,16 @@ namespace NEA
             // Selections spans multiple lines
             else
             {
-                int firstLine = GetLinesFromCharIndex(txtCodeField, firstCharOfLine);
-                int lastLine = GetLinesFromCharIndex(txtCodeField, index + selectionLength);
+                int firstLine = txtCodeField.GetLinesFromCharIndex(firstCharOfLine);
+                int lastLine = txtCodeField.GetLinesFromCharIndex(index + selectionLength);
 
-                string[] lines = GetLinesFromTextBox(txtCodeField);
+                string[] lines = txtCodeField.GetLinesFromTextBox();
 
                 int totalAddedChars = 0;
 
                 for (int i = firstLine; i <= lastLine; i++)
                 {
-                    firstCharOfLine = GetFirstCharIndexOfLine(txtCodeField, GetLinesFromCharIndex(txtCodeField, lines[i][0]));
+                    firstCharOfLine = txtCodeField.GetFirstCharIndexOfLine(txtCodeField.GetLinesFromCharIndex(lines[i][0]));
                     if (lines[i].Substring(0, 2) == "  ")
                     {
                         lines[i] = lines[i].Remove(0, 2).Insert(0, "# ");
@@ -332,7 +267,7 @@ namespace NEA
 
             if (selectionLength == 0)
             {
-                int currentLine = GetLinesFromCharIndex(txtCodeField, selectionStart);
+                int currentLine = txtCodeField.GetLinesFromCharIndex(selectionStart);
                 List<string> linesAsList = new List<string>(lines);
                 linesAsList.RemoveAt(currentLine);
                 string newText = "";

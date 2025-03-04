@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace NEA.Classes
 {
@@ -16,7 +17,7 @@ namespace NEA.Classes
     // Required overriding and addition of methods native to RichTextBox
     class CustomFastColoredTextBox : FastColoredTextBox
     {
-        private IntellisensePopUp popUp;
+        private popUp popUp;
         private ListBox listBox;
         private bool isPopUpShowing;
         private bool isFromReplaceTab;
@@ -42,8 +43,8 @@ namespace NEA.Classes
             this.AcceptsTab = true;
             this.YOffset = 30;
 
-            popUp = new IntellisensePopUp();
-            popUp.Size = new Size(200, 200);
+            popUp = new popUp();
+            popUp.Size = new Size(100, 40);
             popUp.TopMost = true;
             listBox = new ListBox();
             listBox.Dock = DockStyle.Fill;
@@ -56,6 +57,8 @@ namespace NEA.Classes
 
             listBox.Click += ListBox_Click;
             listBox.SelectedIndexChanged += ListBox_SelectedIndexChanged;
+
+            // Add support for variables and function names
 
             intellisenseWords = new string[] { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
                                                "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
@@ -97,11 +100,6 @@ namespace NEA.Classes
             return intellisenseWords;
         }
 
-        public void SetintellisenseWords(string[] words)
-        {
-            intellisenseWords = words;
-        }
-
         public void AddIntellisenseWord(string word)
         {
             string[] newWords = new string[intellisenseWords.Length + 1];
@@ -111,26 +109,6 @@ namespace NEA.Classes
             }
             newWords[newWords.Length + 1] = word;
             intellisenseWords = newWords;
-        }
-
-        public int GetXOffset()
-        {
-            return XOffset;
-        }
-        
-        public int GetYOffset()
-        {
-            return YOffset;
-        }
-
-        public void SetXOffset(int XOffset)
-        {
-            this.XOffset = XOffset;
-        }
-
-        public void SetYOffset(int YOffset)
-        {
-            this.YOffset = YOffset;
         }
 
         private void TextBox_SelectionChanged(object sender, EventArgs e)
@@ -318,7 +296,6 @@ namespace NEA.Classes
             }
 
             outArray = tempWords.OrderBy(o => o.Key).Take(suggestionCount).Select(s => s.Value).ToArray();
-
             listBox.Items.AddRange(outArray);
 
             return outArray.Length > 0;
@@ -383,6 +360,73 @@ namespace NEA.Classes
             }
 
             isFromReplaceTab = true;
+        }
+
+        // Personal implementation of the built in methods for RichTextBox
+        // Which are not available for FastColoredTextBox
+        public int GetLinesFromCharIndex(int selectionStart)
+        {
+            string text = this.Text;
+            int line = 0;
+            for (int i = 0; i < selectionStart && i < this.Text.Length; i++)
+            {
+                if (text[i] == '\n')
+                {
+                    line++;
+                }
+            }
+            return line;
+        }
+
+        public string[] GetLinesFromTextBox()
+        {
+            List<string> linesList = new List<string>();
+
+            string lastLine = "";
+
+            foreach (char c in this.Text)
+            {
+                if (c == '\n')
+                {
+                    linesList.Add(lastLine);
+                    lastLine = "";
+                }
+                else
+                {
+                    lastLine += c;
+                }
+            }
+
+            linesList.Add(lastLine);
+
+            return linesList.ToArray();
+        }
+
+        public int GetFirstCharIndexOfLine(int selectedLine)
+        {
+            int line = 0;
+            string[] lines = GetLinesFromTextBox();
+            for (int i = 0; i < this.Text.Length; i++)
+            {
+                char c = this.Text[i];
+                if (c == '\n')
+                {
+                    line++;
+
+                }
+                if (line == selectedLine)
+                {
+                    if (i == 0)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return i + 1;
+                    }
+                }
+            }
+            return -1;
         }
     }
 }

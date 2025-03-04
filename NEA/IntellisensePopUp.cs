@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace NEA
 {
-    public partial class IntellisensePopUp : Form
+    public partial class popUp : Form
     {
-        public IntellisensePopUp()
+        public popUp()
         {
             InitializeComponent();
         }
