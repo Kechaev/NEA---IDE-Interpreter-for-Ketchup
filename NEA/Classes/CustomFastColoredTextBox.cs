@@ -203,7 +203,7 @@ namespace NEA.Classes
                         {
                             wordText = wordText.Substring(lastIndexOf + 1);
                         }
-                        if (PopulateIntelliListBox(wordText))
+                        if (PopulateListBox(wordText))
                         {
                             ShowAutoCompleteForm();
                         }
@@ -236,7 +236,7 @@ namespace NEA.Classes
                             {
                                 wordText = wordText.Substring(lastIndexOf + 1);
                             }
-                            if (PopulateIntelliListBox(wordText))
+                            if (PopulateListBox(wordText))
                             {
                                 ShowAutoCompleteForm();
                             }
@@ -266,35 +266,43 @@ namespace NEA.Classes
             }
         }
 
-        private bool PopulateIntelliListBox(string wordTyping)
+        private bool PopulateListBox(string wordTyping)
         {
             listBox.Items.Clear();
 
-            List<KeyValuePair<int, string>> tempWords = new List<KeyValuePair<int, string>>();
-            string[] outArray;
+            int wordTypingLength = wordTyping.Length;
 
-            for (int i = 0; i < intellisenseWords.Length; i++)
+            List<KeyValuePair<int, string>> tempWords = new List<KeyValuePair<int, string>>();
+            
+            foreach (string word in intellisenseWords)
             {
-                if (intellisenseWords[i].StartsWith(wordTyping, StringComparison.CurrentCultureIgnoreCase))
+                if (word.StartsWith(wordTyping.ToUpper()))
                 {
-                    tempWords.Add(new KeyValuePair<int, string>(1, intellisenseWords[i]));
+                    tempWords.Add(new KeyValuePair<int, string>(1, word));
                 }
             }
 
-            if (tempWords.Count < suggestionCount && wordTyping.Length > 1)
+            // No keywords have the same beginning
+            // Resort to minimal Levenshtein distance
+            if (tempWords.Count > 0)
             {
-                for (int i = 0; i < intellisenseWords.Length; i++)
+
+                // For small lengths of wordTyping use recursive algorithm
+                if (wordTypingLength < 3)
                 {
-                    if (intellisenseWords[i].Contains(wordTyping))
+                    foreach (string word in intellisenseWords)
                     {
-                        if (tempWords.Count(c => c.Value == intellisenseWords[i]) == 0)
+                        if (word.Length < 3)
                         {
-                            tempWords.Add(new KeyValuePair<int, string>(2, intellisenseWords[i]));
+
                         }
                     }
                 }
             }
 
+            string[] outArray;
+
+            // Sort the following using the key first and then by levenshtein distance
             outArray = tempWords.OrderBy(o => o.Key).Take(suggestionCount).Select(s => s.Value).ToArray();
             listBox.Items.AddRange(outArray);
 
@@ -360,6 +368,110 @@ namespace NEA.Classes
             }
 
             isFromReplaceTab = true;
+        }
+        
+        // Wagner Fischer Approach to the Levenshtein Algorithm - Dynamic implementation
+        private int LevenshteinRecursiveenshteinDynamic(string word1, string word2)
+        {
+            int word1Length = word1.Length;
+            int word2Length = word2.Length;
+            if (word1Length > 0 && word2Length > 0)
+            {
+                int[,] matrix = new int[word2Length + 1, word1Length + 1];
+
+                int longestLenth = Math.Max(word1Length, word2Length);
+
+                for (int i = 0; i <= longestLenth; i++)
+                {
+                    if (i <= word1Length)
+                    {
+                        matrix[0, i] = i;
+                    }
+                    if (i <= word2Length)
+                    {
+                        matrix[i, 0] = i;
+                    }
+                }
+
+                for (int j = 1; j <= word2Length; j++)
+                {
+                    for (int i = 1; i <= word1Length; i++)
+                    {
+                        // Deletion
+                        int aboveCell = matrix[j - 1, i];
+                        // Insertion
+                        int leftCell = matrix[j, i - 1];
+                        // Substitution
+                        int diagonalCell = matrix[j - 1, i - 1];
+
+                        if (word1[i - 1] != word2[j - 1])
+                        {
+                            matrix[j, i] = 1 + Min(aboveCell, diagonalCell, leftCell);
+                        }
+                        else
+                        {
+                            matrix[j, i] = diagonalCell;
+                        }
+                    }
+                }
+
+                return matrix[matrix.GetLength(0) - 1, matrix.GetLength(1) - 1];
+            }
+            return -1;
+        }
+
+        // Levenshtein Algoithm (Original) - Recursive implementation
+
+        static int LevenshteinRecursive(string a, string b)
+        {
+            if (Length(b) == 0)
+            {
+                return Length(a);
+            }
+            else if (Length(a) == 0)
+            {
+                return Length(b);
+            }
+            else if (Head(a) == Head(b))
+            {
+                return LevenshteinRecursive(Tail(a), Tail(b));
+            }
+            int delete = LevenshteinRecursive(Tail(a), b);
+            int insert = LevenshteinRecursive(a, Tail(b));
+            int substitute = LevenshteinRecursive(Tail(a), Tail(b));
+
+            int minimum = Min(delete, insert, substitute);
+            return 1 + minimum;
+        }
+
+        static int Length(string word)
+        {
+            return word.Length;
+        }
+
+        static string Head(string word)
+        {
+            return word[0].ToString();
+        }
+
+        static string Tail(string word)
+        {
+            string tail = "";
+            for (int i = 1; i < word.Length; i++)
+            {
+                tail += word[i];
+            }
+            return tail;
+        }
+
+        static int Min(int a, int b, int c)
+        {
+            return Math.Min(a, Math.Min(b, c));
+        }
+
+        static int Difference(int a, int b)
+        {
+            return Math.Abs(a - b);
         }
 
         // Personal implementation of the built in methods for RichTextBox
