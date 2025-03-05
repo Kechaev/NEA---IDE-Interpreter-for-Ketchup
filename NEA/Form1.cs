@@ -86,7 +86,11 @@ namespace NEA
                 {
                     // Failed to translate or execute
                     // Show error
-                    ConsoleWrite(e.Message);
+
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        ConsoleWrite(e.Message);
+                    }));
                 }
             }
             catch (Exception e)
@@ -94,7 +98,10 @@ namespace NEA
                 // Failed to interpret
                 // Set the stripRun back to RunSymbol
                 // Show error
-                ConsoleWrite(e.Message);
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    ConsoleWrite(e.Message);
+                }));
                 stripRun.Image = Properties.Resources.RunSymbolSmall;
             }
 
@@ -126,7 +133,10 @@ namespace NEA
                 }
                 catch (Exception e)
                 {
-                    ConsoleWrite(e.Message);
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        ConsoleWrite(e.Message);
+                    }));
                 }
 
                 this.Invoke(new MethodInvoker(delegate
@@ -449,7 +459,10 @@ namespace NEA
                 }
                 catch (Exception m)
                 {
-                    ConsoleWrite(m.Message);
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        ConsoleWrite(m.Message);
+                    }));
                 }
             }
         }

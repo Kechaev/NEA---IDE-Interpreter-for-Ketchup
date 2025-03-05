@@ -19,6 +19,7 @@ namespace NEA.Classes
     {
         private popUp popUp;
         private ListBox listBox;
+        private TableLayoutPanel tableLayout;
         private bool isPopUpShowing;
         private bool isFromReplaceTab;
         private bool isFromMouseClick;
@@ -44,11 +45,11 @@ namespace NEA.Classes
             this.YOffset = 30;
 
             popUp = new popUp();
-            popUp.Size = new Size(100, 40);
             popUp.TopMost = true;
+            tableLayout = popUp.Controls[0] as TableLayoutPanel;
             listBox = new ListBox();
-            listBox.Dock = DockStyle.Fill;
-            popUp.Controls.Add(listBox);
+            listBox.Size = new Size(160, 54);
+            tableLayout.Controls.Add(listBox);
 
             this.TextChanged += TextBox_TextChanged;
             this.KeyDown += TextBox_KeyDown;
@@ -60,16 +61,19 @@ namespace NEA.Classes
 
             // Add support for variables and function names
 
-            intellisenseWords = new string[] { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
-                                               "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
-                                               "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
-                                               "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR", "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
-                                               "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF" };
+            intellisenseWords = new string[] { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY",
+                                               "DIVIDE", "GET", "REMAINDER", "OF", "IF", "ELSE", "COUNT", "WITH", 
+                                               "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", 
+                                               "EACH", "IN", "FUNCTION", "PROCEDURE", "INPUTS", "AS", "TO", "THEN", 
+                                               "TRUE", "FALSE", "EQUAL", "GREATER", "LESS", "THAN", "INPUT", "MESSAGE", 
+                                               "OR", "AND", "NOT", "END", "PRINT", "RETURN", "TIMES", "DIVIDED", "RAISE", 
+                                               "POWER" };
 
             popUp.Show();
             popUp.Hide();
         }
 
+        // Preset number by Microsoft
         private const int EM_POSFROMCHAR = 0xD6; 
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -189,15 +193,17 @@ namespace NEA.Classes
                 int lastIndexOfSpace;
                 int lastIndexOfNewline;
                 int lastIndexOfTab;
+                int lastIndexOfQuote;
                 int lastIndexOf;
                 if (this.SelectionStart == this.Text.Length)
                 {
-                    if (this.SelectionStart > 0 && this.Text[this.SelectionStart - 1] != ' ' && this.Text[this.SelectionStart - 1] != '\t' && this.Text[this.SelectionStart - 1] != '\n')
+                    if (this.SelectionStart > 0 && this.Text[this.SelectionStart - 1] != ' ' && this.Text[this.SelectionStart - 1] != '\t' && this.Text[this.SelectionStart - 1] != '\n' && this.Text[this.SelectionStart - 1] != '"')
                     {
                         wordText = this.Text.Substring(0, this.SelectionStart);
                         lastIndexOfSpace = wordText.LastIndexOf(' ');
                         lastIndexOfNewline = wordText.LastIndexOf('\n');
                         lastIndexOfTab = wordText.LastIndexOf('\t');
+                        lastIndexOfQuote = wordText.LastIndexOf('"');
                         lastIndexOf = Math.Max(Math.Max(lastIndexOfSpace, lastIndexOfNewline), lastIndexOfTab);
                         if (lastIndexOf >= 0)
                         {
@@ -224,13 +230,14 @@ namespace NEA.Classes
                     char currentChar = this.Text[this.SelectionStart];
                     if (this.SelectionStart > 0)
                     {
-                        if (this.SelectionStart > 0 && this.Text[this.SelectionStart - 1] != ' ' && this.Text[this.SelectionStart - 1] != '\t' && this.Text[this.SelectionStart - 1] != '\n'
-                            && (this.Text[this.SelectionStart] == ' ' || this.Text[this.SelectionStart] == '\t' || this.Text[this.SelectionStart] == '\n'))
+                        if (this.SelectionStart > 0 && this.Text[this.SelectionStart - 1] != ' ' && this.Text[this.SelectionStart - 1] != '\t' && this.Text[this.SelectionStart - 1] != '\n' && this.Text[this.SelectionStart - 1] != '"'
+                            && (this.Text[this.SelectionStart] == ' ' || this.Text[this.SelectionStart] == '\t' || this.Text[this.SelectionStart] == '\n' || this.Text[this.SelectionStart] == '"'))
                         {
                             wordText = this.Text.Substring(0, this.SelectionStart);
                             lastIndexOfSpace = wordText.LastIndexOf(' ');
                             lastIndexOfNewline = wordText.LastIndexOf('\n');
                             lastIndexOfTab = wordText.LastIndexOf('\t');
+                            lastIndexOfQuote = wordText.LastIndexOf('"');
                             lastIndexOf = Math.Max(Math.Max(lastIndexOfSpace, lastIndexOfNewline), lastIndexOfTab);
                             if (lastIndexOf >= 0)
                             {
@@ -265,6 +272,7 @@ namespace NEA.Classes
                 isPopUpShowing = false;
             }
         }
+        // End Unchecked
 
         private bool PopulateListBox(string wordTyping)
         {
@@ -284,18 +292,61 @@ namespace NEA.Classes
 
             // No keywords have the same beginning
             // Resort to minimal Levenshtein distance
-            if (tempWords.Count > 0)
+            if (tempWords.Count == 0 && wordTypingLength > 1)
             {
-
+                int distance = -1;
                 // For small lengths of wordTyping use recursive algorithm
                 if (wordTypingLength < 3)
                 {
                     foreach (string word in intellisenseWords)
                     {
+                        distance = -1;
                         if (word.Length < 3)
                         {
-
+                            distance = LevenshteinRecursive(word, wordTyping.ToUpper());
                         }
+                        else if (word.Length < 10)
+                        {
+                            distance = LevenshteinDynamic(word, wordTyping.ToUpper());
+                        }
+                        tempWords.Add(new KeyValuePair<int, string>(distance, word));
+                    }
+                }
+                else if (wordTypingLength < 10)
+                {
+                    foreach (string word in intellisenseWords)
+                    {
+                        distance = -1;
+                        if (word.Length < 10)
+                        {
+                            distance = LevenshteinDynamic(word, wordTyping.ToUpper());
+                        }
+                        tempWords.Add(new KeyValuePair<int, string>(distance, word));
+                    }
+                }
+
+                int minimumDistance = int.MaxValue;
+                foreach (var v in tempWords)
+                {
+                    int currentDistance = v.Key;
+                    if (currentDistance < minimumDistance && currentDistance > 1)
+                    {
+                        minimumDistance = v.Key;
+                    }
+                }
+
+                int differenceAllowed = 3;
+                if (wordTypingLength < 3)
+                {
+                    differenceAllowed = 1;
+                }
+
+                for (int i = 0; i < tempWords.Count; i++)
+                {
+                    var v = tempWords[i];
+                    if (v.Key < minimumDistance + differenceAllowed || v.Key < 2)
+                    {
+                        tempWords.Remove(v);
                     }
                 }
             }
@@ -303,12 +354,12 @@ namespace NEA.Classes
             string[] outArray;
 
             // Sort the following using the key first and then by levenshtein distance
-            outArray = tempWords.OrderBy(o => o.Key).Take(suggestionCount).Select(s => s.Value).ToArray();
+            outArray = tempWords.OrderBy(o => o.Key).ThenBy(x => x.Value).Take(suggestionCount).Select(s => s.Value).ToArray();
+
             listBox.Items.AddRange(outArray);
 
             return outArray.Length > 0;
         }
-        // End Unchecked
 
         private void ListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -371,7 +422,7 @@ namespace NEA.Classes
         }
         
         // Wagner Fischer Approach to the Levenshtein Algorithm - Dynamic implementation
-        private int LevenshteinRecursiveenshteinDynamic(string word1, string word2)
+        private int LevenshteinDynamic(string word1, string word2)
         {
             int word1Length = word1.Length;
             int word2Length = word2.Length;
@@ -467,11 +518,6 @@ namespace NEA.Classes
         static int Min(int a, int b, int c)
         {
             return Math.Min(a, Math.Min(b, c));
-        }
-
-        static int Difference(int a, int b)
-        {
-            return Math.Abs(a - b);
         }
 
         // Personal implementation of the built in methods for RichTextBox
