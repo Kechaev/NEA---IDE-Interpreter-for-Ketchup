@@ -68,7 +68,6 @@ namespace NEA.Classes
                                                "TRUE", "FALSE", "EQUAL", "GREATER", "LESS", "THAN", "INPUT", "MESSAGE", 
                                                "OR", "AND", "NOT", "END", "PRINT", "RETURN", "TIMES", "DIVIDED", "RAISE", 
                                                "POWER" };
-
             popUp.Show();
             popUp.Hide();
         }

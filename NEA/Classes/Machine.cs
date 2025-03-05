@@ -772,203 +772,149 @@ namespace NEA
             return false;
         }
 
-        // Questionable Method???
         private string[] GetIntermediateFromExpression(List<Token> expression)
         {
-            string output = "";
-            foreach (Token t in expression)
-            {
-                output += $"{t.GetLiteral()}\n";
-            }
-            //MessageBox.Show($"Ran GetIntermediateFromExpression\nArguement: {output}");
             List<string> instructions = new List<string>();
-            List<string> instrLine;
-            // Definitions
-            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
-                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
-                                     TokenType.BOOL_LITERAL };
-            TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
-                                                   TokenType.DIV, TokenType.MOD, TokenType.EXP };
-            TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
-
-            List<int> begins = new List<int>();
-            List<int> ends = new List<int>();
-            bool inExpression = false;
-            int nonExpressionTotalMembers = 0;
-            int numberOfExpressions = 0;
 
             if (ContainsExpressions(expression))
             {
-                //MessageBox.Show("Contains Expression");
-                for (int i = 0; i < expression.Count; i++)
-                {
-                    nonExpressionTotalMembers++;
-                    //MessageBox.Show($"token = {expression[i].GetLiteral()}\nnonExpressionTotalMembers = {nonExpressionTotalMembers}");
-                    if (expression[i].GetTokenType() != TokenType.STR_LITERAL)
-                    {
-                        begins.Add(i);
-                        inExpression = true;
-                        for (; i < expression.Count && inExpression; i++)
-                        {
-                            if (expression[i].GetTokenType() == TokenType.STR_LITERAL && expression[i - 1].GetTokenType() != TokenType.INPUT)
-                            {
-                                ends.Add(i);
-                                inExpression = false;
-                            }
-                            if (!inExpression)
-                            {
-                                i--;
-                                numberOfExpressions++;
-                            }
-                        }
-                    }
-                }
-                //MessageBox.Show($"Final Count:\nnonExpressionTotalMembers = {nonExpressionTotalMembers}");
-                if (begins.Count != ends.Count)
-                {
-                    ends.Add(expression.Count);
-                    numberOfExpressions++;
-                    nonExpressionTotalMembers--;
-                }
-                output = "";
-                for (int i = 0; i < begins.Count; i++)
-                {
-                    output += $"Begins: {begins[i]}\nEnds: {ends[i]}\n";
-                }
-                //MessageBox.Show(output);
-
-                List<Token> expressionForRPN;
-
-                for (int counter = 0; counter < begins.Count; counter++)
-                {
-                    expressionForRPN = new List<Token>();
-                    for (int i = 0; i < begins[counter] && counter == 0; i++)
-                    {
-                        instrLine = new List<string>();
-                        Token e = expression[i];
-
-                        instrLine.AddRange(GetInstructions(e, ref i, expression));
-                        instructions.AddRange(instrLine);
-                    }
-                    for (int i = begins[counter]; i < ends[counter]; i++)
-                    {
-                        Token e = expression[i];
-
-                        expressionForRPN.Add(e);
-                    }
-                    instructions.AddRange(ConvertToPostfix(expressionForRPN));
-                    // i < expression.Count 
-                    // Ensures that the last token is added in the case that it is by itself.
-                    // counter < begins.Count - 1
-                    // Ensures i < begins[counter + 1] does not crash for being out of bound.
-                    // i < begins[counter + 1]
-                    // Ensures the tokens after the expression go up until the beginning of the next expression.
-                    for (int i = ends[counter]; i < expression.Count || counter < begins.Count - 1 && i < begins[counter + 1]; i++)
-                    {
-                        instrLine = new List<string>();
-                        Token e = expression[i];
-
-                        instrLine.AddRange(GetInstructions(e, ref i, expression));
-                        instructions.AddRange(instrLine);
-                    }
-                }
-
-                instrLine = new List<string>();
-                for (int i = 0; i < nonExpressionTotalMembers + numberOfExpressions - 1; i++)
-                {
-                    instrLine = new List<string>();
-                    instrLine.Add("ADD");
-
-                    instructions.AddRange(instrLine);
-                }
+                ProcessExpression(expression, ref instructions);
             }
             else
             {
-                int inputOffset = 0;
-                instructions = new List<string>();
-                for (int i = 0; i < expression.Count; i++)
-                {
-                    instrLine = new List<string>();
-                    Token e = expression[i];
-
-                    if (e.GetTokenType() == TokenType.INPUT)
-                    {
-                        inputOffset++;
-                    }
-
-                    instrLine.AddRange(GetInstructions(e, ref i, expression));
-                    instructions.AddRange(instrLine);
-                }
-                for (int i = 0; i < expression.Count - inputOffset - 1; i++)
-                {
-                    instrLine = new List<string>();
-                    instrLine.Add("ADD");
-                    instructions.AddRange(instrLine);
-                }
+                ProcessSimpleExpression(expression, ref instructions);
             }
 
             return instructions.ToArray();
         }
 
-        private string[] GetIntermediateFromExpression2(List<Token> expression)
+        private void ProcessExpression(List<Token> expression, ref List<string> instruction)
         {
-            // Надо фиксить
-            List<string> instructions = new List<string>();
+            List<int> begins = new List<int>();
+            List<int> ends = new List<int>();
+            int NoOfNonSimpleExpressionTokens = 0;
+            int totalTokens = expression.Count;
+            IdentifyExpressions(expression, ref begins, ref ends, ref NoOfNonSimpleExpressionTokens);
+            
 
-            bool inExpression = false;
-            int stringLits = 0;
-
-            if (ContainsExpressions(expression))
+            for (int i = 0; i < begins.Count; i++)
             {
-                int i = 0;
-                Stack<Token> nonExpression = new Stack<Token>();
-                List<Token> tokensForRPN = new List<Token>();
-                for (; i < expression.Count; i++)
+                List<Token> expressionForRPN = SubexpressionFrom(expression, begins[i], ends[i]);
+                ProcessNonExpressionParts(expression, ref instruction, i, begins, ends);
+                instruction.AddRange(ConvertToPostfix(expressionForRPN));
+            }
+
+            AppendConcatenationOperators(ref instruction, NoOfNonSimpleExpressionTokens, totalTokens, begins.Count);
+        }
+
+        private void ProcessSimpleExpression(List<Token> expression, ref List<string> instructions)
+        {
+            int inputOffset = 0;
+
+            for (int i = 0; i < expression.Count; i++)
+            {
+                Token token = expression[i];
+                if (Is(token, TokenType.INPUT))
                 {
-                    Token token = expression[i];
-                    if (!IsVariable(token) && !IsLiteral(token))
+                    inputOffset++;
+                }
+
+                instructions.AddRange(GetInstructions(token, ref i, expression));
+            }
+
+            for (int i = 0; i < expression.Count - inputOffset - 1; i++)
+            {
+                instructions.Add("ADD");
+            }
+        }
+
+        private void IdentifyExpressions(List<Token> expression, ref List<int> begins, ref List<int> ends, ref int NoOfNonSimpleExpressionTokens)
+        {
+            bool inExpresison = false;
+
+            for (int i = 0; i < expression.Count; i++)
+            {
+                Token token = expression[i];
+                Console.WriteLine($"Token = {token.GetLiteral()}\nIsnt STR_LIT = {!Is(token, TokenType.STR_LITERAL)}");
+                if (!Is(token, TokenType.STR_LITERAL))
+                {
+                    begins.Add(i);
+                    inExpresison = true;
+
+                    while (i < expression.Count && inExpresison)
                     {
-                        //MessageBox.Show($"Not Var or Lit\n{token.GetLiteral()}");
-                        if (nonExpression.Count > 0)
+                        Console.WriteLine(i);
+                        token = expression[i];
+                        // Avoid crash on first iteration (i = -1)
+                        Token prevToken = expression[i];
+                        if (i - 1 >= 0)
                         {
-                            instructions.AddRange(GetInstructions(nonExpression.Pop(), ref i, expression));
+                            prevToken = expression[i - 1];
+                        }
+                        if (Is(token, TokenType.STR_LITERAL) && !Is(prevToken, TokenType.INPUT))
+                        {
+                            ends.Add(i);
+                            inExpresison = false;
+                        }
+                        if (!inExpresison)
+                        {
+                            // Out of expression step back one token
+                            i--;
+                            NoOfNonSimpleExpressionTokens--;
                         }
 
-                    }
-                    else
-                    {
-                        //MessageBox.Show($"Var or Lit\n{token.GetLiteral()}");
-                        if (nonExpression.Count > 0)
-                        {
-                            instructions.AddRange(GetInstructions(nonExpression.Pop(), ref i, expression));
-                        }
-                        nonExpression.Push(token);
-                        //MessageBox.Show($"Added to stack\n{nonExpression.Peek().GetLiteral()}");
+                        NoOfNonSimpleExpressionTokens++;
+                        i++;
                     }
                 }
+            }
+
+            if (begins.Count != ends.Count)
+            {
+                ends.Add(expression.Count);
+            }
+        }
+
+        private List<Token> SubexpressionFrom(List<Token> expression, int start, int end)
+        {
+            return expression.GetRange(start, end - start);
+        }
+
+        private void ProcessNonExpressionParts(List<Token> expression, ref List<string> instructions, int index, List<int> begins, List<int> ends)
+        {
+            int start;
+            if (index == 0)
+            {
+                start = 0;
             }
             else
             {
-                int inputOffset = 0;
-                instructions = new List<string>();
-                for (int i = 0; i < expression.Count; i++)
-                {
-                    Token e = expression[i];
-
-                    if (Is(e, TokenType.INPUT))
-                    {
-                        inputOffset++;
-                    }
-
-                    instructions.AddRange(GetInstructions(e, ref i, expression));
-                }
-                for (int i = 0; i < expression.Count - inputOffset - 1; i++)
-                {
-                    instructions.Add("ADD");
-                }
+                start = ends[index - 1];
             }
 
-            return instructions.ToArray();
+            int end;
+            if (index < begins.Count)
+            {
+                end = begins[index];
+            }
+            else
+            {
+                end = expression.Count;
+            }
+
+            Console.WriteLine($"Start = {start}\nEnd = {end}");
+            for (int i = start; i < end; i++)
+            {
+                instructions.AddRange(GetInstructions(expression[i], ref i, expression));
+            }
+        }
+
+        private void AppendConcatenationOperators(ref List<string> instructions, int NoOfNonSimpleExpressionTokens, int totalTokens, int NoOfExpressions)
+        {
+            for (int i = 0; i < totalTokens - NoOfNonSimpleExpressionTokens + NoOfExpressions - 1; i++)
+            {
+                instructions.Add("ADD");
+            }
         }
 
         // Returns the correct intermediate code instruction
@@ -978,7 +924,6 @@ namespace NEA
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
-            //string operators = "+-*/^%";
 
             List<string> instrLine = new List<string>();
 
@@ -1029,7 +974,6 @@ namespace NEA
             }
             else
             {
-                //MessageBox.Show($"Pre-crash: {e.GetTokenType()}");
                 throw new Exception($"SYNTAX ERROR on Line {e.GetLine() + 1}: Invalid keyword \"{e.GetLiteral()}\" in the expression. ");
             }
 
