@@ -15,6 +15,7 @@ namespace NEA.Classes
     // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
     // Had to adapt FastColoredTextBox into a hybrid between itself and a RichTextBox
     // Required overriding and addition of methods native to RichTextBox
+    // Added Levenshtein Algorithm for cases where there are no words with the same initial characters
     class CustomFastColoredTextBox : FastColoredTextBox
     {
         private popUp popUp;
@@ -183,86 +184,38 @@ namespace NEA.Classes
             }
         }
 
-        // Unchecked
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
-            if (intellisenseWords != null && intellisenseWords.Length > 0)
+            string wordText;
+            int lastIndexOfSpace;
+            int lastIndexOfNewline;
+            int lastIndexOfTab;
+            int lastIndexOfQuote;
+            int lastIndexOfLeftBracket;
+            int lastIndexOfRightBracket;
+            int lastIndexOf;
+            if (this.SelectionStart > 0 && this.Text[this.SelectionStart - 1] != ' ' && this.Text[this.SelectionStart - 1] != '\t' && this.Text[this.SelectionStart - 1] != '\n' && this.Text[this.SelectionStart - 1] != '"' && this.Text[this.SelectionStart - 1] != '(' && this.Text[this.SelectionStart - 1] != ')')
             {
-                string wordText;
-                int lastIndexOfSpace;
-                int lastIndexOfNewline;
-                int lastIndexOfTab;
-                int lastIndexOfQuote;
-                int lastIndexOf;
-                if (this.SelectionStart == this.Text.Length)
+                wordText = this.Text.Substring(0, this.SelectionStart);
+                lastIndexOfSpace = wordText.LastIndexOf(' ');
+                lastIndexOfNewline = wordText.LastIndexOf('\n');
+                lastIndexOfTab = wordText.LastIndexOf('\t');
+                lastIndexOfQuote = wordText.LastIndexOf('"');
+                lastIndexOfLeftBracket = wordText.LastIndexOf('(');
+                lastIndexOfRightBracket = wordText.LastIndexOf(')');
+                lastIndexOf = Math.Max(Math.Max(Math.Max(Math.Max(Math.Max(lastIndexOfRightBracket, lastIndexOfLeftBracket), lastIndexOfQuote), lastIndexOfSpace), lastIndexOfNewline), lastIndexOfTab);
+                if (lastIndexOf >= 0)
                 {
-                    if (this.SelectionStart > 0 && this.Text[this.SelectionStart - 1] != ' ' && this.Text[this.SelectionStart - 1] != '\t' && this.Text[this.SelectionStart - 1] != '\n' && this.Text[this.SelectionStart - 1] != '"')
-                    {
-                        wordText = this.Text.Substring(0, this.SelectionStart);
-                        lastIndexOfSpace = wordText.LastIndexOf(' ');
-                        lastIndexOfNewline = wordText.LastIndexOf('\n');
-                        lastIndexOfTab = wordText.LastIndexOf('\t');
-                        lastIndexOfQuote = wordText.LastIndexOf('"');
-                        lastIndexOf = Math.Max(Math.Max(lastIndexOfSpace, lastIndexOfNewline), lastIndexOfTab);
-                        if (lastIndexOf >= 0)
-                        {
-                            wordText = wordText.Substring(lastIndexOf + 1);
-                        }
-                        if (PopulateListBox(wordText))
-                        {
-                            ShowAutoCompleteForm();
-                        }
-                        else
-                        {
-                            popUp.Hide();
-                            isPopUpShowing = false;
-                        }
-                    }
-                    else
-                    {
-                        popUp.Hide();
-                        isPopUpShowing = false;
-                    }
+                    wordText = wordText.Substring(lastIndexOf + 1);
+                }
+                if (PopulateListBox(wordText))
+                {
+                    ShowAutoCompleteForm();
                 }
                 else
                 {
-                    char currentChar = this.Text[this.SelectionStart];
-                    if (this.SelectionStart > 0)
-                    {
-                        if (this.SelectionStart > 0 && this.Text[this.SelectionStart - 1] != ' ' && this.Text[this.SelectionStart - 1] != '\t' && this.Text[this.SelectionStart - 1] != '\n' && this.Text[this.SelectionStart - 1] != '"'
-                            && (this.Text[this.SelectionStart] == ' ' || this.Text[this.SelectionStart] == '\t' || this.Text[this.SelectionStart] == '\n' || this.Text[this.SelectionStart] == '"'))
-                        {
-                            wordText = this.Text.Substring(0, this.SelectionStart);
-                            lastIndexOfSpace = wordText.LastIndexOf(' ');
-                            lastIndexOfNewline = wordText.LastIndexOf('\n');
-                            lastIndexOfTab = wordText.LastIndexOf('\t');
-                            lastIndexOfQuote = wordText.LastIndexOf('"');
-                            lastIndexOf = Math.Max(Math.Max(lastIndexOfSpace, lastIndexOfNewline), lastIndexOfTab);
-                            if (lastIndexOf >= 0)
-                            {
-                                wordText = wordText.Substring(lastIndexOf + 1);
-                            }
-                            if (PopulateListBox(wordText))
-                            {
-                                ShowAutoCompleteForm();
-                            }
-                            else
-                            {
-                                popUp.Hide();
-                                isPopUpShowing = false;
-                            }
-                        }
-                        else
-                        {
-                            popUp.Hide();
-                            isPopUpShowing = false;
-                        }
-                    }
-                    else
-                    {
-                        popUp.Hide();
-                        isPopUpShowing = false;
-                    }
+                    popUp.Hide();
+                    isPopUpShowing = false;
                 }
             }
             else
@@ -271,7 +224,6 @@ namespace NEA.Classes
                 isPopUpShowing = false;
             }
         }
-        // End Unchecked
 
         private bool PopulateListBox(string wordTyping)
         {

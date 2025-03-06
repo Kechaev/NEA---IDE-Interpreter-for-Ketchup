@@ -37,10 +37,11 @@ namespace NEA
 
         // Fields for Tokenization
         private Token[] tokens;
-        private string[] keyword = { "CREATE", "SET", /*"CHANGE",*/ "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
+        private string[] keyword = { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
-                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR", "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
+                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR",  "SQUARE_LEFT_BRACKET", "SQUARE_RIGHT_BRACKET",
+                                     "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
@@ -195,6 +196,10 @@ namespace NEA
         {
             switch (token.ToUpper())
             {
+                case "[":
+                    return TokenType.SQUARE_LEFT_BRACKET;
+                case "]":
+                    return TokenType.SQUARE_RIGHT_BRACKET;
                 case "(":
                     return TokenType.LEFT_BRACKET;
                 case ")":
@@ -1137,7 +1142,7 @@ namespace NEA
         #endregion
 
         #region If Statement
-        private string[] MapIfStatement(Token[] mainExpression, Token[] mainBody, List<Token[]> elseIfExpression, List<Token[]> elseIfBodies, bool isElse, Token[] elseBody)
+        private string[] MapIfStatement(Token[] mainExpression, Token[] mainBody, List<Token[]> elseIfExpression, List<Token[]> elseIfBodies, bool isElse, Token[] elseBody, bool inFunction)
         {
             List<string> instructions = new List<string>();
             string instrLine;
@@ -1167,7 +1172,7 @@ namespace NEA
             }
             instructions.Add(instrLine);
 
-            string[] statements = TokensToIntermediate(mainBody, false);
+            string[] statements = TokensToIntermediate(mainBody, inFunction);
             instructions.AddRange(statements);
 
             instrLine = "JUMP " + (localCounter - length).ToString();
@@ -1200,7 +1205,7 @@ namespace NEA
 
                 instructions.Add(instrLine);
 
-                statements = TokensToIntermediate(elseIfBodies[i], false);
+                statements = TokensToIntermediate(elseIfBodies[i], inFunction);
                 instructions.AddRange(statements);
 
                 instrLine = "JUMP " + (localCounter - length).ToString();
@@ -1212,7 +1217,7 @@ namespace NEA
                 instrLine = "LABEL " + (localCounter - 1).ToString();
                 instructions.Add(instrLine);
 
-                statements = TokensToIntermediate(elseBody, false);
+                statements = TokensToIntermediate(elseBody, inFunction);
                 instructions.AddRange(statements);
             }
 
@@ -1224,123 +1229,7 @@ namespace NEA
         #endregion
 
         #region Loops
-
-        #region Old For Loops [REDACTED]
-        //private string[] MapForLoop3(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
-        //{
-        //    List<string> instructions = new List<string>();
-        //    counterVar = variablesDict[variable];
-
-        //    counter += 2;
-
-        //    int localCounter = counter;
-        //    int localCounterVar = counterVar;
-
-        //    instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
-
-        //    instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
-
-        //    instructions.Add("STORE_VAR " + localCounterVar.ToString());
-
-        //    instructions.Add("LABEL " + (localCounter - 2).ToString());
-
-        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
-
-        //    instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
-
-        //    instructions.Add("LESS_EQUAL");
-
-        //    instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
-
-        //    string[] statement = TokensToIntermediate(body, false);
-
-        //    instructions.AddRange(statement);
-
-        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
-
-        //    instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
-
-        //    instructions.Add("ADD");
-
-        //    instructions.Add("STORE_VAR " + localCounterVar.ToString());
-
-        //    instructions.Add("JUMP " + (localCounter - 2).ToString());
-
-        //    instructions.Add("LABEL " + (localCounter - 1).ToString());
-
-        //    return instructions.ToArray();
-        //}
-
-        //private string[] MapForLoop2(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, Token[] body)
-        //{
-        //    List<string> instructions = new List<string>();
-        //    counterVar = variablesDict[variable];
-        //    counter += 4;
-
-        //    int localCounter = counter;
-        //    int localCounterVar = counterVar;
-
-        //    instructions.AddRange(ConvertToPostfix(startExpression.ToList()));
-
-        //    instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
-
-        //    instructions.Add("STORE_VAR " + localCounterVar.ToString());
-
-        //    instructions.Add("LABEL " + (localCounter - 2).ToString());
-
-        //    instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
-
-        //    instructions.Add("LOAD_CONST 0");
-
-        //    instructions.Add("GREATER");
-
-        //    instructions.Add("JUMP_FALSE " + (localCounter - 4).ToString());
-
-        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
-
-        //    instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
-
-        //    instructions.Add("LESS_EQUAL");
-
-        //    instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
-
-        //    instructions.Add("JUMP " + (localCounter - 3).ToString());
-
-        //    instructions.Add("LABEL " + (localCounter - 4).ToString());
-
-        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
-
-        //    instructions.AddRange(ConvertToPostfix(endExpression.ToList()));
-
-        //    instructions.Add("GREATER_EQUAL");
-
-        //    instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
-
-        //    instructions.Add("JUMP " + (localCounter - 3).ToString());
-
-        //    instructions.Add("LABEL " + (localCounter - 3).ToString());
-
-        //    string[] statement = TokensToIntermediate(body, false);
-
-        //    instructions.AddRange(statement);
-
-        //    instructions.Add("LOAD_VAR " + localCounterVar.ToString());
-
-        //    instructions.AddRange(ConvertToPostfix(stepExpression.ToList()));
-
-        //    instructions.Add("ADD");
-
-        //    instructions.Add("STORE_VAR " + localCounterVar.ToString());
-
-        //    instructions.Add("JUMP " + (localCounter - 2).ToString());
-
-        //    instructions.Add("LABEL " + (localCounter - 1).ToString());
-
-        //    return instructions.ToArray();
-        //}
-        #endregion
-
-        private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, bool negativeStep, Token[] body)
+        private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, bool negativeStep, Token[] body, bool inFunction)
         {
             List<string> instructions = new List<string>();
             counterVar = variablesDict[variable];
@@ -1373,7 +1262,7 @@ namespace NEA
 
             instructions.Add("JUMP_FALSE " + (localCounter - 1).ToString());
 
-            string[] statement = TokensToIntermediate(body, false);
+            string[] statement = TokensToIntermediate(body, inFunction);
 
             instructions.AddRange(statement);
 
@@ -1399,7 +1288,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] MapWhileLoop(Token[] expression, Token[] body)
+        private string[] MapWhileLoop(Token[] expression, Token[] body, bool inFunction)
         {
             List<string> instructions = new List<string>();
             string instrLine;
@@ -1416,7 +1305,7 @@ namespace NEA
             instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
-            instructions.AddRange(TokensToIntermediate(body, false));
+            instructions.AddRange(TokensToIntermediate(body, inFunction));
 
             instrLine = "JUMP " + (localCounter - 2).ToString();
             instructions.Add(instrLine);
@@ -1427,7 +1316,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] MapDoWhileLoop(Token[] expression, Token[] body)
+        private string[] MapDoWhileLoop(Token[] expression, Token[] body, bool inFunction)
         {
             List<string> instructions = new List<string>();
             string instrLine;
@@ -1439,7 +1328,7 @@ namespace NEA
             instrLine = "LABEL " + (localCounter - 2).ToString();
             instructions.Add(instrLine);
 
-            instructions.AddRange(TokensToIntermediate(body, false));
+            instructions.AddRange(TokensToIntermediate(body, inFunction));
 
             instructions.AddRange(ConvertToPostfix(expression.ToList()));
 
@@ -1455,7 +1344,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] MapFixedLengthLoop(string variable, Token[] expression,Token[] body)
+        private string[] MapFixedLengthLoop(string variable, Token[] expression,Token[] body, bool inFunction)
         {
             List<string> instructions = new List<string>();
             string instrLine;
@@ -1489,7 +1378,7 @@ namespace NEA
             instrLine = "JUMP_FALSE " + (localCounter - 1).ToString();
             instructions.Add(instrLine);
 
-            instructions.AddRange(TokensToIntermediate(body, false));
+            instructions.AddRange(TokensToIntermediate(body, inFunction));
 
             instrLine = "LOAD_VAR " + localCounterVar.ToString();
             instructions.Add(instrLine);
@@ -2265,7 +2154,7 @@ namespace NEA
                         // Account for the final END IF
                         // Irregardless of what terms were used
                         i += 2;
-                        intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray()));
+                        intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray(), inFunction));
                         break; 
                     case TokenType.COUNT:
                         // Current Syntax:
@@ -2360,7 +2249,7 @@ namespace NEA
                         nextToken = internalTokens[bodyEnd + 1];
                         body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
 
-                        intermediateList.AddRange(MapForLoop(variableName, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), negativeStep, body.ToArray()));
+                        intermediateList.AddRange(MapForLoop(variableName, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), negativeStep, body.ToArray(), inFunction));
                         i = bodyEnd + 2;
                         break;
                     case TokenType.WHILE:
@@ -2386,7 +2275,7 @@ namespace NEA
                         bodyStart = i + j + 1;
                         bodyEnd = FindEndIndex(bodyStart, "WHILE", internalTokens);
                         body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
-                        intermediateList.AddRange(MapWhileLoop(expression.ToArray(), body.ToArray()));
+                        intermediateList.AddRange(MapWhileLoop(expression.ToArray(), body.ToArray(), inFunction));
                         i = bodyEnd + 2;
                         break;
                     case TokenType.DO:
@@ -2419,7 +2308,7 @@ namespace NEA
                             j++;
                             nextToken = internalTokens[i + j + 1];
                         }
-                        intermediateList.AddRange(MapDoWhileLoop(expression.ToArray(), body.ToArray()));
+                        intermediateList.AddRange(MapDoWhileLoop(expression.ToArray(), body.ToArray(), inFunction));
                         i = i + j + 1;
                         break;
                     case TokenType.REPEAT:
@@ -2444,7 +2333,7 @@ namespace NEA
                         bodyEnd = FindEndIndex(bodyStart, "REPEAT", internalTokens);
                         body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
                         variableName = $"CounterVariable{fixedLoopCounter++}";
-                        intermediateList.AddRange(MapFixedLengthLoop(variableName, expression.ToArray(), body.ToArray()));
+                        intermediateList.AddRange(MapFixedLengthLoop(variableName, expression.ToArray(), body.ToArray(), inFunction));
                         i = bodyEnd + 2;
                         break;
                     case TokenType.ADDITION:
@@ -2761,6 +2650,51 @@ namespace NEA
                                 j += 1;
                                 inputOffset += 2;
                             }
+                            else if (IsSubroutineCall(nextToken))
+                            {
+                                subroutineName = nextToken.GetLiteral().ToUpper();
+
+                                arguementsStack = new Stack<Variable>();
+                                isLiteralArguementStack = new Stack<bool>();
+                                paramCounter = 0;
+                                nextToken = internalTokens[i + 2];
+
+                                if (!Is(nextToken, TokenType.LEFT_BRACKET))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
+                                }
+                                areParamsToRead = true;
+                                readyForNextParam = true;
+                                for (j = 1; areParamsToRead; j++)
+                                {
+                                    // Read as an expression until a comma then convert to instructions with Shunting Yard
+                                    nextToken = internalTokens[i + j + 2];
+                                    if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                                    {
+                                        areParamsToRead = false;
+                                    }
+                                    else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
+                                    {
+                                        arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                        isLiteralArguementStack.Push(true);
+                                        readyForNextParam = false;
+                                    }
+                                    else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                                    {
+                                        arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                        isLiteralArguementStack.Push(false);
+                                        readyForNextParam = false;
+                                    }
+                                    else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                                    {
+                                        readyForNextParam = true;
+                                    }
+                                    else
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetTokenType()}\" in the arguement.");
+                                    }
+                                }
+                            }
                             else
                             {
                                 expression.Add(nextToken);
@@ -2770,15 +2704,6 @@ namespace NEA
                         }
                         j = expression.Count + inputOffset;
                         i += j + 1;
-
-                        string output = "";
-
-                        foreach (string inter in intermediateList)
-                        {
-                            output += $"{inter}\n";
-                        }
-
-                        //MessageBox.Show($"{output}");
 
                         intermediateList.AddRange(MapReturn(expression));
                         break;
@@ -3345,7 +3270,6 @@ namespace NEA
                         if (operand == "PRINT")
                         {
                             object object1 = stack.Pop();
-                            //Thread.Sleep(delayMS);
                             consoleText += $"{object1}\r\n";
                         }
                         else if (operand == "INPUT")
@@ -3408,20 +3332,8 @@ namespace NEA
                             }
                             output += $"Return Address = {PC}";
 
-                            //MessageBox.Show(output);
-
-                            output = "";
-
-                            foreach (string s in intermediateSubroutines[index])
-                            {
-                                output += $"{s}\n";
-                            }
-
-                            //MessageBox.Show(output);
-
                             PC = 0;
                             StartSubroutineExecution(intermediateSubroutines[index], ref console);
-                            //MessageBox.Show($"End of Function Call\nTop of stack: {stack.Peek()}");
                         }
                         break;
                     case "LOAD_CONST":
@@ -3572,10 +3484,6 @@ namespace NEA
             }
             return null;
         }
-
-        // Input Dialog Box
-        // https://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputbox
-        // Make this a correct size using the prompt length
 
         private static Tuple<DialogResult, string> ShowInputDialog(ref string prompt)
         {
