@@ -53,9 +53,9 @@
             this.lblInstructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblInstructions.Location = new System.Drawing.Point(3, 59);
             this.lblInstructions.Name = "lblInstructions";
-            this.lblInstructions.Size = new System.Drawing.Size(162, 22);
+            this.lblInstructions.Size = new System.Drawing.Size(165, 22);
             this.lblInstructions.TabIndex = 0;
-            this.lblInstructions.Text = "Press Tab or Enter";
+            this.lblInstructions.Text = "Press Tab to select";
             // 
             // popUp
             // 

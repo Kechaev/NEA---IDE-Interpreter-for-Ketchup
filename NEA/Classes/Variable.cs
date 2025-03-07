@@ -13,19 +13,42 @@ namespace NEA.Classes
         private static int counter;
         private int ID;
         private string name;
+
         private object value;
+        private List<object> listOfValues;
+
         private DataType type;
         private bool declared;
+        private bool isList;
         
-        public Variable(string name, object value)
+        public Variable(string name, List<object> listOfValues, bool isList)
         {
             ID = counter++;
             this.name = name;
-            this.value = value;
-            type = IdentifyBestDataType();
-            declared = false;
+            if (isList)
+            {
+                this.listOfValues = listOfValues;
+                type = DataType.LIST;
+                declared = false;
+                this.isList = true;
+            }
+            else
+            {
+                if (listOfValues != null && listOfValues.Count > 0)
+                {
+                    value = listOfValues[0];
+                }
+                else
+                {
+                    value = null;
+                }
+                type = IdentifyBestDataType();
+                declared = false;
+                this.isList = false;
+            }
         }
 
+        // Do we need a specific data type declaration?
         public Variable(string name, object value, DataType type)
         {
             ID = counter++;
@@ -107,6 +130,11 @@ namespace NEA.Classes
             return value;
         }
 
+        public List<object> GetValuesList()
+        {
+            return listOfValues;
+        }
+
         public void Declare()
         {
             declared = true;
@@ -120,11 +148,12 @@ namespace NEA.Classes
         public void SetNull()
         {
             value = null;
+            listOfValues = null;
         }
 
         public bool IsNull()
         {
-            return value == null;
+            return value == null && listOfValues == null;
         }
     }
 }

@@ -363,12 +363,12 @@ namespace NEA
             int noNormalVariables = GetNoVariables();
             for (int i = 0; i < noNormalVariables; i++)
             {
-                variables[i] = new Variable(KeyByValue(i), null);
+                variables[i] = new Variable(KeyByValue(i), null, false);
             }
             for (int i = noNormalVariables; i < noNormalVariables + GetNoUnnamedVariables(); i++)
             {
                 variablesDict.Add($"CounterVariable{i - noNormalVariables}", counter++);
-                variables[i] = new Variable($"CounterVariable{i - noNormalVariables}", null);
+                variables[i] = new Variable($"CounterVariable{i - noNormalVariables}", null, false);
             }
         }
 
@@ -1881,13 +1881,13 @@ namespace NEA
                                         }
                                         else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
                                         {
-                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
                                             isLiteralArguementStack.Push(true);
                                             readyForNextParam = false;
                                         }
                                         else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
                                         {
-                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
                                             isLiteralArguementStack.Push(false);
                                             readyForNextParam = false;
                                         }
@@ -2675,13 +2675,13 @@ namespace NEA
                                     }
                                     else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
                                     {
-                                        arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                        arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
                                         isLiteralArguementStack.Push(true);
                                         readyForNextParam = false;
                                     }
                                     else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
                                     {
-                                        arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                        arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
                                         isLiteralArguementStack.Push(false);
                                         readyForNextParam = false;
                                     }
@@ -2732,14 +2732,14 @@ namespace NEA
                             }
                             else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
                             {
-                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
                                 isLiteralArguementStack.Push(true);
                                 readyForNextParam = false;
                             }
                             else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
                             {
                                 // Get the variable name and parse it through as the literal of localParam
-                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral()));
+                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
                                 isLiteralArguementStack.Push(false);
                                 readyForNextParam = false;
                             }
@@ -3305,16 +3305,16 @@ namespace NEA
 
                                 // DO NOT CREATE DUPLICATE VARIABLES THIS MAKES EXECUTION MUCH HARDER
 
-                                parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", parameterValue);
+                                parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", new List<object> { parameterValue }, false);
                                 parameters[i].Declare();
                                 // Parameters are also considered local variables, therefore add them to variables too.
-                                local[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", parameterValue);
+                                local[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", new List<object> { parameterValue }, false);
                                 local[i].Declare();
                                 //MessageBox.Show($"param = {parameters[i].GetName()}\nvalue = {parameters[i].GetValue()}");
                             }
                             for (int i = parameterCount; i < localVariablesCounter; i++)
                             {
-                                local[i] = new Variable($"subroutine{subroutineDict[operand]}Local{i}", null);
+                                local[i] = new Variable($"subroutine{subroutineDict[operand]}Local{i}", null, false);
                             }
                             StackFrame sf = new StackFrame(parameters, local, PC, true, intermediateSubroutines[index]);
                             callStack.Push(sf);

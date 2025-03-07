@@ -832,7 +832,6 @@ namespace NEA
             e.ChangedRange.ClearStyle(CyanStyle);
             e.ChangedRange.ClearStyle(RedStyle);
             e.ChangedRange.ClearStyle(BlueStyle);
-            // String not working after "" (false positive)
             e.ChangedRange.SetStyle(GreyStyle, @"#.*");
             e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
             e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message|(?<=\binput\s+)with\b)(?!\S)");

@@ -165,14 +165,14 @@ namespace NEA.Classes
                         e.Handled = true;
                     }
                 }
-                else if (e.KeyCode == Keys.Enter)
-                {
-                    if (listBox.SelectedIndex >= 0)
-                    {
-                        ReplaceCurrentWordWith(listBox.Items[listBox.SelectedIndex].ToString());
-                    }
-                    e.Handled = true;
-                }
+                //else if (e.KeyCode == Keys.Enter)
+                //{
+                //    if (listBox.SelectedIndex >= 0)
+                //    {
+                //        ReplaceCurrentWordWith(listBox.Items[listBox.SelectedIndex].ToString());
+                //    }
+                //    e.Handled = true;
+                //}
                 else if (e.KeyCode == Keys.Tab)
                 {
                     if (listBox.SelectedIndex >= 0)
