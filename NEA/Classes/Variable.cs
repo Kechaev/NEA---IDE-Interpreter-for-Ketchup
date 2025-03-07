@@ -127,7 +127,20 @@ namespace NEA.Classes
             
         public object GetValue()
         {
+            if (isList)
+            {
+                throw new Exception("LOGIC ERROR: Failed to access general value for a list");
+            }
             return value;
+        }
+
+        public object GetValueFromIndex(int index)
+        {
+            if (!isList && !(IdentifyBestDataType() == DataType.STRING))
+            {
+                throw new Exception("LOGIC ERROR: Failed to index a non-list variable");
+            }
+            return listOfValues[index];
         }
 
         public List<object> GetValuesList()
