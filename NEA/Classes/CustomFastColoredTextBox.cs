@@ -6,8 +6,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace NEA.Classes
@@ -29,6 +31,8 @@ namespace NEA.Classes
         public string[] intellisenseWords;
         public int YOffset;
         public int XOffset;
+
+        private List<string> identifierNames;
 
         public int GetSuggestionCount()
         {
@@ -73,7 +77,7 @@ namespace NEA.Classes
             popUp.Hide();
         }
 
-        // Preset number by Microsoft
+        // Preset number by Microsoft (Windows API Message constant)
         private const int EM_POSFROMCHAR = 0xD6; 
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -111,8 +115,75 @@ namespace NEA.Classes
             {
                 newWords[i] = intellisenseWords[i];
             }
-            newWords[newWords.Length + 1] = word;
+            newWords[newWords.Length - 1] = word;
+            intellisenseWords = new string[intellisenseWords.Length + 1]; 
             intellisenseWords = newWords;
+        }
+
+        public void RemoveIntellisenseWord(string word)
+        {
+            List<string> intellisenseWordsList = intellisenseWords.ToList();
+
+            intellisenseWordsList.ToList().Remove(word);
+
+            intellisenseWords = intellisenseWordsList.ToArray();
+        }
+
+        private void CheckForIdentifiers()
+        {
+            char[] separators = new char[] { ' ', ',', '(', ')', '\n', '\t' };
+            
+            // Remove the currently selected word
+            
+            int selectedIndex = this.SelectionStart;
+            int wordStart = selectedIndex;
+            string text = this.Text;
+            while (wordStart > 0 && text[wordStart - 1] != ' ')
+            {
+                wordStart--;
+            }
+
+            // Find the end of the word
+            int wordEnd = selectedIndex;
+            while (wordEnd < text.Length && text[wordEnd] != ' ')
+            {
+                wordEnd++;
+            }
+
+            text = text.Remove(wordStart, wordEnd - wordStart);
+
+            string[] words = text.Split(separators);
+
+            List<string> identifiers = new List<string>();
+
+            foreach (string word in words)
+            {
+                if (IsValidIdentifier(word))
+                {
+                    identifiers.Add(word);
+                }
+            }
+
+            // Using a HashSet (Set) to create a set, which by definition has no duplicates
+            // Converting the set back into a list, removing all duplicate identifier names
+            List<string> noDuplicateList = new HashSet<string>(identifiers).ToList();
+
+            identifierNames = noDuplicateList;
+        }
+
+        private bool IsValidIdentifier(string word)
+        {
+            string[] invalidWords = new string[] { ">=", "<=", "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "REMAINDER", "OF", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION", "PROCEDURE", "INPUTS", "AS", "TO", "THEN", "TRUE", "FALSE", "EQUAL", "GREATER", "LESS", "THAN", "INPUT", "MESSAGE", "OR", "AND", "NOT", "END", "PRINT", "RETURN", "TIMES", "DIVIDED", "RAISE", "POWER", "[", "]", "(", ")", ",", "-", "+", "*", "/", "^", ">", "<", "=" };
+            Regex validVariable = new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*");
+            if (invalidWords.Contains(word))
+            {
+                return false;
+            }
+            if (validVariable.IsMatch(word))
+            {
+                return true;
+            }
+            return false;
         }
 
         private void TextBox_SelectionChanged(object sender, EventArgs e)
@@ -165,14 +236,6 @@ namespace NEA.Classes
                         e.Handled = true;
                     }
                 }
-                //else if (e.KeyCode == Keys.Enter)
-                //{
-                //    if (listBox.SelectedIndex >= 0)
-                //    {
-                //        ReplaceCurrentWordWith(listBox.Items[listBox.SelectedIndex].ToString());
-                //    }
-                //    e.Handled = true;
-                //}
                 else if (e.KeyCode == Keys.Tab)
                 {
                     if (listBox.SelectedIndex >= 0)
@@ -222,6 +285,20 @@ namespace NEA.Classes
             {
                 popUp.Hide();
                 isPopUpShowing = false;
+            }
+            if (identifierNames != null)
+            {
+                foreach (string identifier in identifierNames)
+                {
+                    RemoveIntellisenseWord(identifier);
+                }
+            }
+
+            CheckForIdentifiers();
+
+            foreach (string identifier in identifierNames)
+            {
+                AddIntellisenseWord(identifier);
             }
         }
 
@@ -305,7 +382,7 @@ namespace NEA.Classes
             string[] outArray;
 
             // Sort the following using the key first and then by levenshtein distance
-            outArray = tempWords.OrderBy(o => o.Key).ThenBy(x => x.Value).Take(suggestionCount).Select(s => s.Value).ToArray();
+            outArray = tempWords.OrderBy(o => o.Key).Take(suggestionCount).Select(s => s.Value).Distinct().ToArray();
 
             listBox.Items.AddRange(outArray);
 
@@ -423,7 +500,6 @@ namespace NEA.Classes
         }
 
         // Levenshtein Algoithm (Original) - Recursive implementation
-
         static int LevenshteinRecursive(string a, string b)
         {
             if (Length(b) == 0)

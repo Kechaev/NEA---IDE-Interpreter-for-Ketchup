@@ -19,6 +19,7 @@ using System.Diagnostics.PerformanceData;
 using System.Text.RegularExpressions;
 using FastColoredTextBoxNS;
 using System.Security.Permissions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NEA
 {
@@ -39,7 +40,7 @@ namespace NEA
 
         public IDE_MainWindow()
         {
-            Application.EnableVisualStyles();
+            System.Windows.Forms.Application.EnableVisualStyles();
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
             txtCodeField.Select();
@@ -53,7 +54,6 @@ namespace NEA
             isRunning = false;
             isThreadAborted = true;
             unchangedCode = false;
-            identifierNames = new List<string>();
         }
 
         private void Run()
@@ -706,7 +706,7 @@ namespace NEA
                 executionLoop.Abort();
             }
             // Else to nothing - the thread is null and doesnt exist
-            FormCollection openForms = Application.OpenForms;
+            FormCollection openForms = System.Windows.Forms.Application.OpenForms;
             for (int i = 0; i < openForms.Count; i++)
             {
                 openForms[i].Close();
@@ -842,7 +842,6 @@ namespace NEA
             e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
 
             UpdateCaretPosition();
-            CheckForIdentifiers();
         }
         #endregion
 
@@ -1048,215 +1047,6 @@ namespace NEA
             }
         }
         #endregion
-
-        private List<string> identifierNames;
-        private void CheckForIdentifiers()
-        {
-            // Do this later
-
-            //int selectionStart = txtCodeField.SelectionStart;
-            //string allText = txtCodeField.Text;
-            //char[] splittingChars =  new char[] { ' ', ',', '(', ')' };
-            //string[] words = allText.Split(splittingChars);
-            //List<string> listOfIdentifiers = new List<string>();
-            //if (words.Length == 1)
-            //{
-            //    try
-            //    {
-            //        GetTokenType(words[0]);
-            //    }
-            //    catch
-            //    {
-            //        listOfIdentifiers.Add(words[0]);
-            //    }
-            //    identifierNames = listOfIdentifiers;
-            //    return;
-            //}
-
-            //if (string.IsNullOrWhiteSpace(allText))
-            //{
-            //    // Do nothing
-            //    return;
-            //}
-
-            //foreach (string word in words)
-            //{
-            //    try
-            //    {
-            //        GetTokenType(word);
-            //    }
-            //    catch
-            //    {
-            //        listOfIdentifiers.Add(word);
-            //    }
-            //}
-
-            //string output = "";
-
-            //foreach (string word in listOfIdentifiers)
-            //{
-            //    output += $"{word}\n";
-            //}
-
-            //Console.WriteLine($"Identifiers:\n{output}");
-
-            //identifierNames = listOfIdentifiers;
-        }
-
-        private TokenType GetTokenType(string token)
-        {
-            switch (token.ToUpper())
-            {
-                case "[":
-                    return TokenType.SQUARE_LEFT_BRACKET;
-                case "]":
-                    return TokenType.SQUARE_RIGHT_BRACKET;
-                case "(":
-                    return TokenType.LEFT_BRACKET;
-                case ")":
-                    return TokenType.RIGHT_BRACKET;
-                case ",":
-                    return TokenType.COMMA;
-                case "+":
-                    return TokenType.ADD;
-                case "-":
-                    return TokenType.SUB;
-                case "*":
-                    return TokenType.MUL;
-                case "/":
-                    return TokenType.DIV;
-                case "%":
-                    return TokenType.MOD;
-                case "^":
-                    return TokenType.EXP;
-                case "=":
-                    return TokenType.EQUAL;
-                case ">":
-                    return TokenType.GREATER;
-                case "<":
-                    return TokenType.LESS;
-                case ">=":
-                    return TokenType.GREATER_EQUAL;
-                case "<=":
-                    return TokenType.LESS_EQUAL;
-                case "<>":
-                    return TokenType.NOT_EQUAL;
-                case "CREATE":
-                    return TokenType.DECLARATION;
-                case "SET":
-                    return TokenType.ASSIGNMENT;
-                case "ADD":
-                    return TokenType.ADDITION;
-                case "TAKE":
-                    return TokenType.TAKE;
-                case "AWAY":
-                    return TokenType.AWAY;
-                case "MULTIPLY":
-                    return TokenType.MULTIPLICATION;
-                case "DIVIDE":
-                    return TokenType.DIVISION;
-                case "GET":
-                    return TokenType.GET;
-                case "THE":
-                    return TokenType.THE;
-                case "REMAINDER":
-                    return TokenType.REMAINDER;
-                case "OF":
-                    return TokenType.OF;
-                //case "IS":
-                //    return TokenType.IS;
-                //case "A":
-                //    return TokenType.A;
-                //case "FACTOR":
-                //    return TokenType.FACTOR;
-                //case "MULTIPLE":
-                //    return TokenType.MULTIPLE;
-                case "IF":
-                    return TokenType.IF;
-                case "ELSE":
-                    return TokenType.ELSE;
-                case "COUNT":
-                    return TokenType.COUNT;
-                case "WITH":
-                    return TokenType.WITH;
-                case "FROM":
-                    return TokenType.FROM;
-                case "GOING":
-                    return TokenType.GOING;
-                case "UP":
-                    return TokenType.UP;
-                case "DOWN":
-                    return TokenType.DOWN;
-                case "BY":
-                    return TokenType.BY;
-                case "WHILE":
-                    return TokenType.WHILE;
-                case "DO":
-                    return TokenType.DO;
-                case "REPEAT":
-                    return TokenType.REPEAT;
-                case "FOR":
-                    return TokenType.FOR;
-                case "EACH":
-                    return TokenType.EACH;
-                case "IN":
-                    return TokenType.IN;
-                case "FUNCTION":
-                    return TokenType.FUNCTION;
-                case "PROCEDURE":
-                    return TokenType.PROCEDURE;
-                case "INPUTS":
-                    return TokenType.INPUTS;
-                case "AS":
-                    return TokenType.AS;
-                case "TO":
-                    return TokenType.TO;
-                case "THEN":
-                    return TokenType.THEN;
-                case "\n":
-                    return TokenType.NEWLINE;
-                case "\t":
-                    return TokenType.TABSPACE;
-                case "TRUE":
-                    return TokenType.BOOL_LITERAL;
-                case "FALSE":
-                    return TokenType.BOOL_LITERAL;
-                case "EQUAL":
-                    return TokenType.EQUAL;
-                case "GREATER":
-                    return TokenType.GREATER;
-                case "LESS":
-                    return TokenType.LESS;
-                case "THAN":
-                    return TokenType.THAN;
-                case "INPUT":
-                    return TokenType.INPUT;
-                case "MESSAGE":
-                    return TokenType.MESSAGE;
-                case "OR":
-                    return TokenType.OR;
-                case "AND":
-                    return TokenType.AND;
-                case "NOT":
-                    return TokenType.NOT;
-                case "END":
-                    return TokenType.END;
-                case "PRINT":
-                    return TokenType.PRINT;
-                case "RETURN":
-                    return TokenType.RETURN;
-                case "TIMES":
-                    return TokenType.TIMES;
-                case "DIVIDED":
-                    return TokenType.DIVIDED;
-                case "RAISE":
-                    return TokenType.RAISE;
-                case "POWER":
-                    return TokenType.POWER;
-                default:
-                    throw new Exception($"SYNTAX ERROR: Unkown keyword: {token}.");
-            }
-        }
 
         private void stripNewFile_Click(object sender, EventArgs e)
         {
