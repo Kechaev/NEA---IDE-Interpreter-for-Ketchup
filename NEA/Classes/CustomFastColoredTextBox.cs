@@ -77,30 +77,19 @@ namespace NEA.Classes
             popUp.Hide();
         }
 
-        // Preset number by Microsoft (Windows API Message constant)
-        private const int EM_POSFROMCHAR = 0xD6; 
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern int SendMessage(IntPtr hWnd, int msg, IntPtr wParam, int lParam);
-
-        // https://github.com/dotnet/winforms/blob/62ebdb4b0d5cc7e163b8dc9331dc196e576bf162/src/System.Windows.Forms/src/System/Windows/Forms/Controls/RichTextBox/RichTextBox.cs#L2263C9-L2275C25
-        // GitHub source code for the GetPositionFromCharIndex method, from the WinForms official repo
-        // This is used in context with a RichTextBox, however since this is an overriden FastColoredTextBox
-        // We use DLL imports to deal with any unkown keywords
-        public unsafe Point GetPositionFromCharIndex(int index)
+        // Does not account for scrolling - FIX?
+        // Does account for size of text (zoom factor) due to this.Font being a parameter
+        public Point GetPositionFromCharIndex(int index)
         {
-            if (index < 0 || index > Text.Length)
-            {
-                return Point.Empty;
-            }
+            Graphics g = this.CreateGraphics();
+            
+            SizeF textSize = g.MeasureString(this.Text.Substring(0, index), this.Font);
 
-            // SendMessage returns an integer which encodes two 16-bit values
-            int result = SendMessage(Handle, EM_POSFROMCHAR, IntPtr.Zero, index);
-            // Mask out the lower 16-bits as the x coordinate
-            int x = result & 0xFFFF;
-            // LSL 16 and mask to get the upper 16-bits as the y coordinate
-            int y = (result >> 16) & 0xFFFF;
-            return new Point(x, y);
+            // Offset could be WRONG (0,0)
+            Rectangle textRect = new Rectangle(0, 0, (int)textSize.Width, (int)textSize.Height - 20);
+
+            Console.WriteLine(new Point(textRect.Width, textRect.Height));
+            return new Point(textRect.Width, textRect.Height);
         }
 
         public string[] GetintellisenseWords()
@@ -286,13 +275,15 @@ namespace NEA.Classes
                 popUp.Hide();
                 isPopUpShowing = false;
             }
-            if (identifierNames != null)
-            {
-                foreach (string identifier in identifierNames)
-                {
-                    RemoveIntellisenseWord(identifier);
-                }
-            }
+            
+            // Reset intellisenseWords
+            intellisenseWords = new string[] { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY",
+                                               "DIVIDE", "GET", "REMAINDER", "OF", "IF", "ELSE", "COUNT", "WITH",
+                                               "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR",
+                                               "EACH", "IN", "FUNCTION", "PROCEDURE", "INPUTS", "AS", "TO", "THEN",
+                                               "TRUE", "FALSE", "EQUAL", "GREATER", "LESS", "THAN", "INPUT", "MESSAGE",
+                                               "OR", "AND", "NOT", "END", "PRINT", "RETURN", "TIMES", "DIVIDED", "RAISE",
+                                               "POWER" };
 
             CheckForIdentifiers();
 
@@ -312,7 +303,7 @@ namespace NEA.Classes
             
             foreach (string word in intellisenseWords)
             {
-                if (word.StartsWith(wordTyping.ToUpper()))
+                if (word.ToUpper().StartsWith(wordTyping.ToUpper()))
                 {
                     tempWords.Add(new KeyValuePair<int, string>(1, word));
                 }
