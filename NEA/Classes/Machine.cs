@@ -28,6 +28,7 @@ using System.Runtime.InteropServices;
 using System.IO.IsolatedStorage;
 using System.Reflection;
 using System.Net.NetworkInformation;
+using System.Data;
 
 namespace NEA
 {
@@ -472,7 +473,7 @@ namespace NEA
             List<Token> tokensList = new List<Token>();
             char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^', ',' };
             string[] multiCharKeywords = { "=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
-            string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN" }; // Add lists and arrays
+            string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN", "LIST" }; // Add lists and arrays
 
             string[] subroutineNames = FindSubroutineNames();
             subroutineParametersCount = new int[subroutineNames.Length];
@@ -1088,39 +1089,36 @@ namespace NEA
         private string[] MapAssignment(string variable, List<Token> expression, string type)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
-            instrLine = "DECLARE_VAR " + counterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("DECLARE_VAR " + counterVar.ToString());
 
             instructions.AddRange(GetIntermediateFromExpression(expression));
 
-            instrLine = "STORE_VAR " + counterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("STORE_VAR " + counterVar.ToString());
 
-            instrLine = "ADJUST_TYPE " + type;
-            instructions.Add(instrLine);
+            instructions.Add("ADJUST_TYPE " + type);
 
             return instructions.ToArray();
         }
 
-        private string[] MapReassignment(string variable, List<Token> expression, string type)
+        private string[] MapListAssignment(string variable, List<List<Token>> listOfExpressions)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
-            instructions.AddRange(GetIntermediateFromExpression(expression));
+            instructions.Add("DECLARE_VAR " + counterVar.ToString());
 
-            instrLine = "STORE_VAR " + counterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("CREATE_LIST " + counterVar.ToString());
 
-            if (type != null)
+            foreach (List<Token> expression in listOfExpressions)
             {
-                instrLine = "ADJUST_TYPE " + type;
-                instructions.Add(instrLine);
+                instructions.AddRange(GetIntermediateFromExpression(expression));
+
+                instructions.Add("STORE_LIST_ITEM " + counterVar.ToString());
             }
+
+            instructions.Add("ADJUST_TYPE LIST");
 
             return instructions.ToArray();
         }
@@ -1128,14 +1126,11 @@ namespace NEA
         private string[] MapDeclaration(string variable, string type)
         {
             List<string> instructions = new List<string>();
-            string instrLine;
             counterVar = variablesDict[variable];
 
-            instrLine = "DECLARE_VAR " + counterVar.ToString();
-            instructions.Add(instrLine);
+            instructions.Add("DECLARE_VAR " + counterVar.ToString());
 
-            instrLine = "ADJUST_TYPE " + type;
-            instructions.Add(instrLine);
+            instructions.Add("ADJUST_TYPE " + type);
 
             return instructions.ToArray();
         }
@@ -1175,8 +1170,7 @@ namespace NEA
             string[] statements = TokensToIntermediate(mainBody, inFunction);
             instructions.AddRange(statements);
 
-            instrLine = "JUMP " + (localCounter - length).ToString();
-            instructions.Add(instrLine);
+            instructions.Add("JUMP " + (localCounter - length).ToString());
 
             int i;
 
@@ -1604,7 +1598,8 @@ namespace NEA
         {
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
-                                     TokenType.BOOL_LITERAL };
+                                     TokenType.BOOL_LITERAL, TokenType.SUB };
+            // Subtract to account for negative DEC or INT
             return literals.Contains(token.GetTokenType());
         }
 
@@ -1784,6 +1779,7 @@ namespace NEA
             string type, variableName, subroutineName;
             bool noType;
             List<Token> expression;
+            List<List<Token>> expressions;
             int j, k, l;
             int inputOffset;
             Token nextToken;
@@ -1965,46 +1961,86 @@ namespace NEA
                         }
                         // Get Variable Name & Expression
                         variableName = internalTokens[i + 1].GetLiteral();
-
-                        expression = new List<Token>();
+            
                         j = 1;
                         inputOffset = 0;
                         nextToken = internalTokens[i + j + 2];
-                        if (!IsSameLine(nextToken, token))
+                        expression = new List<Token>();
+                        expressions = new List<List<Token>>();
+                        if (Is(nextToken, TokenType.SQUARE_LEFT_BRACKET))
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
+                            // List
+                            nextToken = internalTokens[i + j + 3];
+                            if (!IsSameLine(nextToken, token))
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
+                            }
+                            areParamsToRead = true;
+                            readyForNextParam = true;
+                            for (j = 1; areParamsToRead; j++)
+                            {
+                                nextToken = internalTokens[i + j + 3];
+                                if (Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
+                                {
+                                    areParamsToRead = false;
+                                }
+                                else if (!IsEndOfToken(nextToken) && (IsVariable(nextToken) || IsLiteral(nextToken)) && readyForNextParam)
+                                {
+                                    // Collect an entire expression and continue on
+
+
+                                    readyForNextParam = false;
+                                }
+                                else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                                {
+                                    readyForNextParam = true;
+                                }
+                                else
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
+                                }
+                            }
                         }
-                        while (ValidLengthForIndexing(i + j + 2, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !Is(nextToken, TokenType.AS))
+                        else
                         {
-                            // Limitation: in an if statement the prompt cannot contain multiple strings or variables
-                            // Format without punctuation does not support this
-                            if (IsInput(nextToken))
+                            // Single element data type
+                            if (!IsSameLine(nextToken, token))
                             {
-                                if (!Is(internalTokens[i + j + 3], TokenType.WITH))
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
-                                }
-                                if (!Is(internalTokens[i + j + 4], TokenType.MESSAGE))
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
-                                }
-                                expression.Add(nextToken);
-                                j += 3;
-                                inputOffset += 2;
+                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
                             }
-                            else
+                            while (ValidLengthForIndexing(i + j + 2, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !Is(nextToken, TokenType.AS))
                             {
-                                expression.Add(nextToken);
-                                j++;
+                                // Limitation: in an if statement the prompt cannot contain multiple strings or variables
+                                // Format without punctuation does not support this
+                                if (IsInput(nextToken))
+                                {
+                                    if (!Is(internalTokens[i + j + 3], TokenType.WITH))
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
+                                    }
+                                    if (!Is(internalTokens[i + j + 4], TokenType.MESSAGE))
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
+                                    }
+                                    expression.Add(nextToken);
+                                    j += 3;
+                                    inputOffset += 2;
+                                }
+                                else
+                                {
+                                    expression.Add(nextToken);
+                                    j++;
+                                }
+                                nextToken = internalTokens[i + j + 2];
                             }
-                            nextToken = internalTokens[i + j + 2];
+                            j = expression.Count + inputOffset;
                         }
-                        j = expression.Count + inputOffset;
+                        
                         // Check for type declaration
                         nextToken = internalTokens[i + j + 2];
                         if (ValidLengthForIndexing(i + j + 3, internalTokens.Length) && !IsEndOfToken(nextToken) && Is(internalTokens[i + j + 3],TokenType.AS) && Is(internalTokens[i + j + 4],TokenType.DATA_TYPE))
                         {
-                            type = internalTokens[i + j + 4].GetLiteral();
+                            type = internalTokens[i + j + 4].GetLiteral().ToUpper();
                             noType = false;
                         }
                         else if (ValidLengthForIndexing(i + j + 3, internalTokens.Length) && !IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
@@ -2012,7 +2048,14 @@ namespace NEA
                             throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No data type mentioned after \"AS\" keyword.");
                         }
 
-                        intermediateList.AddRange(MapAssignment(variableName, expression, type));
+                        if (type == "LIST")
+                        {
+                            intermediateList.AddRange(MapListAssignment(variableName, expressions));
+                        }
+                        else
+                        {
+                            intermediateList.AddRange(MapAssignment(variableName, expression, type));
+                        }
                         i += j + 3;
                         if (!noType)
                         {
@@ -2523,19 +2566,6 @@ namespace NEA
                         }
                         subroutineName = nextToken.GetLiteral();
                         nextToken = internalTokens[i + 2];
-
-                        // Worded Parameter Syntax
-
-                        //if (!Is(nextToken, TokenType.WITH))
-                        //{
-                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No \"WITH\" keyword found after {subroutineName}.");
-                        //}
-                        //nextToken = internalTokens[i + 3];
-                        //if (!Is(nextToken, TokenType.INPUTS))
-                        //{
-                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No \"INPUTS\" keyword found after \"WITH\" keyword.");
-                        //}
-
                         if (!Is(nextToken, TokenType.LEFT_BRACKET))
                         {
                             throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
@@ -3361,15 +3391,23 @@ namespace NEA
                         var = localVariables[intOp];
                         if (var.IsDeclared())
                         {
-                            // Add detection for incorrect data type parse
-                            //if (var.GetDataType() == IdentifyDataType(stack.Peek()))
-                            //{
                             var.SetValue(stack.Pop());
-                            //}
-                            //else
-                            //{
-                            //    throw new Exception($"LOGIC ERROR: Attempted to convert {stack.Peek()} to {var.GetDataType()}.");
-                            //}
+                        }
+                        break;
+                    case "CREATE_LIST":
+                        intOp = Convert.ToInt32(operand);
+                        var = localVariables[intOp];
+                        if (var.IsDeclared())
+                        {
+                            var.CreateNewList();
+                        }
+                        break;
+                    case "STORE_LIST_ITEM":
+                        intOp = Convert.ToInt32(operand);
+                        var = localVariables[intOp];
+                        if (var.IsDeclared())
+                        {
+                            var.Add(stack.Pop());
                         }
                         break;
                     case "DECLARE_VAR":
@@ -3464,8 +3502,10 @@ namespace NEA
                     return DataType.INTEGER;
                 case "DECIMAL":
                     return DataType.DECIMAL;
-                case "BOOLEAN:":
+                case "BOOLEAN":
                     return DataType.BOOLEAN;
+                case "LIST":
+                    return DataType.LIST;
                 default:
                     throw new Exception("ERROR: Invalid data type parsed");
             }

@@ -115,6 +115,16 @@ namespace NEA.Classes
             this.value = value;
         }
 
+        public void CreateNewList()
+        {
+            listOfValues = new List<object>();
+        }
+
+        public void Add(object value)
+        {
+            listOfValues.Add(value);
+        }
+
         public int GetID()
         {
             return ID;
