@@ -88,7 +88,6 @@ namespace NEA.Classes
             // Offset could be WRONG (0,0)
             Rectangle textRect = new Rectangle(0, 0, (int)textSize.Width, (int)textSize.Height - 20);
 
-            Console.WriteLine(new Point(textRect.Width, textRect.Height));
             return new Point(textRect.Width, textRect.Height);
         }
 

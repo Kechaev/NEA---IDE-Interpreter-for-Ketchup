@@ -471,7 +471,7 @@ namespace NEA
         public Token[] Tokenize()
         {
             List<Token> tokensList = new List<Token>();
-            char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^', ',' };
+            char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^', ',', '[', ']' };
             string[] multiCharKeywords = { "=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
             string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN", "LIST" }; // Add lists and arrays
 
@@ -1967,9 +1967,11 @@ namespace NEA
                         nextToken = internalTokens[i + j + 2];
                         expression = new List<Token>();
                         expressions = new List<List<Token>>();
+                        Console.WriteLine($"GENERAL TRIGGER\nnextToken = {nextToken.GetTokenType()} | {nextToken.GetLiteral()}");
                         if (Is(nextToken, TokenType.SQUARE_LEFT_BRACKET))
                         {
                             // List
+                            Console.WriteLine("TRIGGERED");
                             nextToken = internalTokens[i + j + 3];
                             if (!IsSameLine(nextToken, token))
                             {
@@ -1987,7 +1989,21 @@ namespace NEA
                                 else if (!IsEndOfToken(nextToken) && (IsVariable(nextToken) || IsLiteral(nextToken)) && readyForNextParam)
                                 {
                                     // Collect an entire expression and continue on
+                                    while (ValidLengthForIndexing(i + j + 3, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !Is(nextToken, TokenType.COMMA))
+                                    {
+                                        Console.WriteLine($"Token: {nextToken.GetTokenType()}");
+                                        expression.Add(nextToken);
+                                        j++;
+                                        nextToken = internalTokens[i + j + 2];
+                                    }
+                                    j += expression.Count;
 
+                                    expressions.Add(expression);
+                                    Console.WriteLine("Added:");
+                                    foreach (Token t in expression)
+                                    {
+                                        Console.WriteLine($"- {t.GetTokenType()}");
+                                    }
 
                                     readyForNextParam = false;
                                 }
