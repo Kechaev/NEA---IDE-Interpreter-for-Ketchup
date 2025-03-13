@@ -85,10 +85,15 @@ namespace NEA.Classes
             
             SizeF textSize = g.MeasureString(this.Text.Substring(0, index), this.Font);
 
+            SizeF localTextSize = g.MeasureString(this.Lines[GetLineFromSelectedChar()], this.Font);
+
             // Offset could be WRONG (0,0)
             Rectangle textRect = new Rectangle(0, 0, (int)textSize.Width, (int)textSize.Height - 20);
 
-            return new Point(textRect.Width, textRect.Height);
+            // This allows us to ignore the width of all the other lines, other than the selected one
+            Rectangle localTextRect = new Rectangle(0, 0, (int)localTextSize.Width, (int)localTextSize.Height - 20);
+
+            return new Point(localTextRect.Width, textRect.Height);
         }
 
         public string[] GetintellisenseWords()
@@ -577,6 +582,23 @@ namespace NEA.Classes
             return linesList.ToArray();
         }
 
+        public int GetLineFromSelectedChar()
+        {
+            int selectionStart = this.SelectionStart;
+            int line = 0;
+
+            for (int i = 0; i < selectionStart; i++)
+            {
+                char c = this.Text[i];
+                if (c == '\n')
+                {
+                    line++;
+                }
+            }
+
+            return line;
+        }
+
         public int GetFirstCharIndexOfLine(int selectedLine)
         {
             int line = 0;
@@ -587,7 +609,6 @@ namespace NEA.Classes
                 if (c == '\n')
                 {
                     line++;
-
                 }
                 if (line == selectedLine)
                 {

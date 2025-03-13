@@ -1783,6 +1783,7 @@ namespace NEA
             int j, k, l;
             int inputOffset;
             Token nextToken;
+            Token prevToken = new Token(TokenType.EOF, "", -1);
             List<Token> body = new List<Token>();
             int currentLine;
             Token finalTokenOfLine;
@@ -1805,7 +1806,6 @@ namespace NEA
                     throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: Unkown token \"{internalTokens[i].GetLiteral()}\", unable to process.");
                 }
                 prevI = i;
-
                 Token token = internalTokens[i];
                 switch (token.GetTokenType())
                 {
@@ -1829,6 +1829,12 @@ namespace NEA
                             nextToken = internalTokens[i + j];
                             while (!IsEndOfToken(nextToken) && nextToken.GetLine() == token.GetLine())
                             {
+                                if (prevToken == nextToken)
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {prevToken.GetLine() + 1}: Incorrectly formatted PRINT statement");
+                                }
+                                prevToken = nextToken;
+
                                 if (IsVariable(nextToken) || IsLiteral(nextToken) || IsMathsOperator(nextToken) || IsBracket(nextToken) || IsBitwise(nextToken) || IsComparison(nextToken))
                                 {
                                     expression.Add(nextToken);
@@ -1981,13 +1987,16 @@ namespace NEA
                             readyForNextParam = true;
                             for (j = 1; areParamsToRead; j++)
                             {
+                                Console.WriteLine($"FOR LOOP {j}");
                                 nextToken = internalTokens[i + j + 3];
                                 if (Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
                                 {
+                                    Console.WriteLine("RIGHT BRACKET - Back out");
                                     areParamsToRead = false;
                                 }
                                 else if (!IsEndOfToken(nextToken) && (IsVariable(nextToken) || IsLiteral(nextToken)) && readyForNextParam)
                                 {
+                                    Console.WriteLine("WHILE LOOP");
                                     // Collect an entire expression and continue on
                                     while (ValidLengthForIndexing(i + j + 3, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !Is(nextToken, TokenType.COMMA))
                                     {
@@ -2002,7 +2011,7 @@ namespace NEA
                                     Console.WriteLine("Added:");
                                     foreach (Token t in expression)
                                     {
-                                        Console.WriteLine($"- {t.GetTokenType()}");
+                                        Console.WriteLine($"- {t.GetLiteral()}");
                                     }
 
                                     readyForNextParam = false;
