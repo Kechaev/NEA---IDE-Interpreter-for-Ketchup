@@ -1973,11 +1973,10 @@ namespace NEA
                         nextToken = internalTokens[i + j + 2];
                         expression = new List<Token>();
                         expressions = new List<List<Token>>();
-                        Console.WriteLine($"GENERAL TRIGGER\nnextToken = {nextToken.GetTokenType()} | {nextToken.GetLiteral()}");
                         if (Is(nextToken, TokenType.SQUARE_LEFT_BRACKET))
                         {
                             // List
-                            Console.WriteLine("TRIGGERED");
+                            type = "LIST";
                             nextToken = internalTokens[i + j + 3];
                             if (!IsSameLine(nextToken, token))
                             {
@@ -1991,33 +1990,25 @@ namespace NEA
                                 nextToken = internalTokens[i + j + 3];
                                 if (Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
                                 {
-                                    Console.WriteLine("RIGHT BRACKET - Back out");
-                                    areParamsToRead = false;
-                                }
+                                    areParamsToRead = false;                                }
                                 else if (!IsEndOfToken(nextToken) && (IsVariable(nextToken) || IsLiteral(nextToken)) && readyForNextParam)
                                 {
-                                    Console.WriteLine("WHILE LOOP");
-                                    // Collect an entire expression and continue on
-                                    while (ValidLengthForIndexing(i + j + 3, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !Is(nextToken, TokenType.COMMA))
+                                    while (!IsEndOfToken(nextToken) && !Is(nextToken, TokenType.COMMA) && !Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
                                     {
-                                        Console.WriteLine($"Token: {nextToken.GetTokenType()}");
+                                        Console.WriteLine($"next token = {nextToken.GetLiteral()}");
                                         expression.Add(nextToken);
                                         j++;
-                                        nextToken = internalTokens[i + j + 2];
+                                        nextToken = internalTokens[i + j + 3];
                                     }
-                                    j += expression.Count;
-
-                                    expressions.Add(expression);
-                                    Console.WriteLine("Added:");
-                                    foreach (Token t in expression)
-                                    {
-                                        Console.WriteLine($"- {t.GetLiteral()}");
-                                    }
-
+                                    expressions.Add(new List<Token>(expression));
+                                    expression.Clear();
+                                    j--;
+                                    Console.WriteLine("WAITING FOR COMMA");
                                     readyForNextParam = false;
                                 }
                                 else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
                                 {
+                                    Console.WriteLine("COMMA FOUND");
                                     readyForNextParam = true;
                                 }
                                 else
@@ -2075,6 +2066,7 @@ namespace NEA
 
                         if (type == "LIST")
                         {
+                            Console.WriteLine("Ran list assignment");
                             intermediateList.AddRange(MapListAssignment(variableName, expressions));
                         }
                         else
@@ -2915,7 +2907,6 @@ namespace NEA
         private string Fetch(string[] intermediateCode)
         {
             string line = intermediateCode[PC];
-            //MessageBox.Show($"Line: {line}\nPC = {PC}");
             PC++;
             return line;
         }
@@ -3400,7 +3391,22 @@ namespace NEA
                         var = localVariables[intOp];
                         if (var.IsDeclared() && !var.IsNull())
                         {
-                            stack.Push(localVariables[intOp].GetValue());
+                            if (localVariables[intOp].GetDataType() != DataType.LIST)
+                            {
+                                stack.Push(localVariables[intOp].GetValue());
+                            }
+                            else
+                            {
+                                List<object> listOfValues = localVariables[intOp].GetValuesList();
+                                string list = "[ ";
+                                foreach (object v in listOfValues)
+                                {
+                                    list += v + ", ";
+                                }
+                                list = list.Substring(0, list.Length - 2);
+                                list += " ]";
+                                stack.Push(list);
+                            }
                         }
                         else if (!var.IsDeclared())
                         {
