@@ -3513,6 +3513,7 @@ namespace NEA
                         Console.WriteLine($"Top of stack = {stack.Peek()}");
                         if (var.IsDeclared())
                         {
+                            Console.WriteLine($"Removing {stack.Peek()}");
                             var.Remove(stack.Pop());
                         }
                         break;

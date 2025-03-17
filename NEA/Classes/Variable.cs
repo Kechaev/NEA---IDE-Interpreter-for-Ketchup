@@ -127,7 +127,22 @@ namespace NEA.Classes
 
         public void Remove(object value)
         {
-            listOfValues.Remove(value);
+            bool found = false;
+            int toRemove = -1;
+            do
+            {
+                toRemove++;
+                if (listOfValues[toRemove].ToString() == value.ToString())
+                {
+                    found = true;
+                }
+            }
+            while (toRemove < listOfValues.Count - 1 && !found);
+            
+            if (found)
+            {
+                listOfValues.RemoveAt(toRemove);
+            }
         }
 
         public int GetID()
