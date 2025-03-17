@@ -37,6 +37,8 @@
             // 
             this.progressBar.ForeColor = System.Drawing.Color.Red;
             this.progressBar.Location = new System.Drawing.Point(45, 407);
+            this.progressBar.MarqueeAnimationSpeed = 5000;
+            this.progressBar.Maximum = 1000;
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(294, 36);
             this.progressBar.Step = 2;

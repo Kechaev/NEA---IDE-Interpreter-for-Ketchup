@@ -42,6 +42,8 @@ namespace NEA
             {"EXP", "Performs exponentiation on the top two items of the stack and pushes the result back onto the stack.\r\nExponentiation meaning raising the first number to the power of the second number." },
             {"MOD", "Performs the modulo operation on the top two items off the stack and pushes the result back onto the stack.\r\nThe modulo operator divides the first number by the second and returns the remainder." },
             {"RETURN", "Takes the top value of the stack and goes back to the main branch." },
+            {"STORE_LIST_ITEM", "Adds the item at the top of the stack to the list variable referenced." },
+            {"REMOVE_LIST_ITEM", "Removes the item at the top of the stack from the list variable referenced." },
             {"HALT", "Indicates the end of the program and stops the execution of the program." },
         };
         private ListBox lstBox;

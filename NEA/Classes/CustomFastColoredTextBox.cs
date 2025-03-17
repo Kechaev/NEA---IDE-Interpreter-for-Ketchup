@@ -249,8 +249,11 @@ namespace NEA.Classes
             int lastIndexOfQuote;
             int lastIndexOfLeftBracket;
             int lastIndexOfRightBracket;
+            int lastIndexOfSquareLeftBracket;
+            int lastIndexOfSquareRightBracket;
+            int lastIndexOfComma;
             int lastIndexOf;
-            if (this.SelectionStart > 0 && this.Text[this.SelectionStart - 1] != ' ' && this.Text[this.SelectionStart - 1] != '\t' && this.Text[this.SelectionStart - 1] != '\n' && this.Text[this.SelectionStart - 1] != '"' && this.Text[this.SelectionStart - 1] != '(' && this.Text[this.SelectionStart - 1] != ')')
+            if (this.SelectionStart > 0 && this.Text[this.SelectionStart - 1] != ' ' && this.Text[this.SelectionStart - 1] != '\t' && this.Text[this.SelectionStart - 1] != '\n' && this.Text[this.SelectionStart - 1] != '"' && this.Text[this.SelectionStart - 1] != '(' && this.Text[this.SelectionStart - 1] != ')' && this.Text[this.SelectionStart - 1] != '[' && this.Text[this.SelectionStart - 1] != ']' && this.Text[this.SelectionStart - 1] != ',')
             {
                 wordText = this.Text.Substring(0, this.SelectionStart);
                 lastIndexOfSpace = wordText.LastIndexOf(' ');
@@ -259,7 +262,10 @@ namespace NEA.Classes
                 lastIndexOfQuote = wordText.LastIndexOf('"');
                 lastIndexOfLeftBracket = wordText.LastIndexOf('(');
                 lastIndexOfRightBracket = wordText.LastIndexOf(')');
-                lastIndexOf = Math.Max(Math.Max(Math.Max(Math.Max(Math.Max(lastIndexOfRightBracket, lastIndexOfLeftBracket), lastIndexOfQuote), lastIndexOfSpace), lastIndexOfNewline), lastIndexOfTab);
+                lastIndexOfSquareLeftBracket = wordText.LastIndexOf('[');
+                lastIndexOfSquareRightBracket = wordText.LastIndexOf(']');
+                lastIndexOfComma = wordText.LastIndexOf(',');
+                lastIndexOf = Math.Max(Math.Max(Math.Max(Math.Max(Math.Max(Math.Max(Math.Max(Math.Max(lastIndexOfComma, lastIndexOfSquareLeftBracket), lastIndexOfSquareRightBracket), lastIndexOfRightBracket), lastIndexOfLeftBracket), lastIndexOfQuote), lastIndexOfSpace), lastIndexOfNewline), lastIndexOfTab);
                 if (lastIndexOf >= 0)
                 {
                     wordText = wordText.Substring(lastIndexOf + 1);

@@ -125,6 +125,11 @@ namespace NEA.Classes
             listOfValues.Add(value);
         }
 
+        public void Remove(object value)
+        {
+            listOfValues.Remove(value);
+        }
+
         public int GetID()
         {
             return ID;

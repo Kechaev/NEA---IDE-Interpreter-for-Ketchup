@@ -42,7 +42,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR",  "SQUARE_LEFT_BRACKET", "SQUARE_RIGHT_BRACKET",
-                                     "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER",
+                                     "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER", "REMOVE",
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
@@ -54,6 +54,7 @@ namespace NEA
             counterSubroutine = 0;
             subroutineDict = new Dictionary<string, int>();
             intermediateSubroutines = new List<string[]>();
+            listVariableNames = new List<string>();
             counter = 0;
             PC = 0;
             validProgram = true;
@@ -335,6 +336,8 @@ namespace NEA
                     return TokenType.RAISE;
                 case "POWER":
                     return TokenType.POWER;
+                case "REMOVE":
+                    return TokenType.REMOVE;
                 default:
                     throw new Exception($"SYNTAX ERROR: Unkown keyword: {token}.");
             }
@@ -451,7 +454,7 @@ namespace NEA
             string[] words = sourceCode.Split(seperators);
             for (int i = 0; i < words.Length - 1; i++)
             {
-                if (words[i] == "FUNCTION" && !keyword.Contains(words[i + 1]))
+                if ((words[i] == "FUNCTION" || words[i] == "PROCEDURE") && !keyword.Contains(words[i + 1]))
                 {
                     subroutineNames.Add(words[i + 1]);
                 }
@@ -627,49 +630,6 @@ namespace NEA
                         output.Add(stack.Pop().GetTokenType().ToString());
                     }
                 }
-                // DO THIS LATER 
-                // UNFINISHED
-                //else if (false/*/Is(token, TokenType.IS)/*/)
-                //{
-                //    if (i + 4 < tokens.Count)
-                //    {
-                //        Token nextToken = tokens[i + 1];
-                //        if (!Is(nextToken, TokenType.A))
-                //        {
-                //            throw new Exception($"DEV ERROR: Parsed \"A\" without enough tokens.");
-                //        }
-                //        nextToken = tokens[i + 2];
-                //        if (Is(nextToken, TokenType.MULTIPLE))
-                //        {
-                //            while ((stack.Count > 0) && ((Precedence(token) <= Precedence(stack.Peek())) || IsUnary(stack.Peek()) && (!Is(stack.Peek(), TokenType.LEFT_BRACKET)) && IsLeftAssociative(token)))
-                //            {
-                //                output.Add(stack.Pop().GetTokenType().ToString());
-                //            }
-                //            stack.Push(new Token(TokenType.MOD, "%", nextToken.GetLine()));
-                //            nextToken = tokens[i + 3];
-                //            if (!Is(nextToken, TokenType.OF))
-                //            {
-                //                throw new Exception($"DEV ERROR: Parsed \"OF\" without enough tokens.");
-                //            }
-                //            nextToken = tokens[i + 4];
-                //            if (IsLiteral(nextToken))
-                //            {
-                //                output.Add("LOAD_CONST " + nextToken.GetLiteral());
-                //            }
-                //        }
-                //        else if (Is(nextToken, TokenType.FACTOR))
-                //        {
-                //            // DONT FORGET TO PUT IT BACK ON THE OUTPUT
-                //            string instructionForLargerNumber = output[output.Count - 1];
-
-
-                //        }
-                //    }
-                //    else
-                //    {
-                //        throw new Exception($"DEV ERROR: Parsed \"IS\" without enough tokens.");
-                //    }
-                //}
             }
 
             while (stack.Count > 0)
@@ -1420,6 +1380,20 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        private string[] MapListSubtraction(string variable, Token[] expression)
+        {
+            List<string> instructions = new List<string>();
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instructions.Add("REMOVE_LIST_ITEM " + localCounterVar.ToString());
+
+            return instructions.ToArray();
+        }
+
         private string[] MapSubtraction(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1802,7 +1776,7 @@ namespace NEA
             int localCounter;
             List<Variable> arguements;
             List<bool> isLiteralList;
-            listVariableNames = new List<string>();
+            List<string> variableNames;
             #endregion
 
             while (i < internalTokens.Length)
@@ -2016,7 +1990,8 @@ namespace NEA
                                 nextToken = internalTokens[i + j + 3];
                                 if (Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
                                 {
-                                    areParamsToRead = false;                                }
+                                    areParamsToRead = false;
+                                }
                                 else if (!IsEndOfToken(nextToken) && (IsVariable(nextToken) || IsLiteral(nextToken)) && readyForNextParam)
                                 {
                                     while (!IsEndOfToken(nextToken) && !Is(nextToken, TokenType.COMMA) && !Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
@@ -2442,6 +2417,29 @@ namespace NEA
                         }
                         i += j + 2;
                         break;
+                    case TokenType.REMOVE:
+                        // Current Syntax:
+                        // REMOVE x FROM variable
+                        expression = new List<Token>();
+                        j = 1;
+                        nextToken = internalTokens[i + j];
+                        while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.FROM))
+                        {
+                            expression.Add(internalTokens[i + j]);
+                            j++;
+                            nextToken = internalTokens[i + j];
+                        }
+                        variableName = internalTokens[i + j + 1].GetLiteral();
+                        if (listVariableNames.Contains(variableName.ToUpper()))
+                        {
+                            intermediateList.AddRange(MapListSubtraction(variableName, expression.ToArray()));
+                        }
+                        else
+                        {
+                            throw new Exception($"LOGIC ERROR on Line {nextToken.GetLine() + 1}: Remove operation can only be done on a list variable. {variableName} is not a list.");
+                        }
+                        i += j + 2;
+                        break;
                     case TokenType.TAKE:
                         // Current Syntax:
                         // TAKE AWAY x FROM variable
@@ -2465,7 +2463,14 @@ namespace NEA
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"FROM\" keyword after {expression[expression.Count - 1].GetLiteral()}.");
                         }
                         variableName = internalTokens[i + j + 2].GetLiteral();
-                        intermediateList.AddRange(MapSubtraction(variableName, expression.ToArray()));
+                        if (listVariableNames.Contains(variableName.ToUpper()))
+                        {
+                            intermediateList.AddRange(MapListSubtraction(variableName, expression.ToArray()));
+                        }
+                        else
+                        {
+                            intermediateList.AddRange(MapSubtraction(variableName, expression.ToArray()));
+                        }
                         i += j + 3;
                         break;
                     case TokenType.MULTIPLICATION:
@@ -2603,7 +2608,7 @@ namespace NEA
                         break;
                     case TokenType.FUNCTION:
                         // Current Function Syntax
-                        // FUNCTION subroutine WITH INPUTS a
+                        // FUNCTION subroutine (a,...)
                         //   statements
                         // END FUNCTION
                         nextToken = internalTokens[i + 1];
@@ -2617,7 +2622,7 @@ namespace NEA
                         {
                             throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
                         }
-                        List<string> variableNames = new List<string>();
+                        variableNames = new List<string>();
                         areParamsToRead = true;
                         readyForNextParam = true;
                         for (j = 1; areParamsToRead; j++)
@@ -2642,26 +2647,9 @@ namespace NEA
                                 throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
                             }
                         }
-                        // Func(a,b,c,...)
-
-
-                        //nextToken = internalTokens[i + 2];
-                        //if (!Is(nextToken, TokenType.VARIABLE))
-                        //{
-                        //    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No variable name found after \"INPUTS\".");
-                        //}
-
                         nextToken = internalTokens[i + j + 2];
                         bodyStart = i + j + 2;
-                        //if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.AS) && !Is(internalTokens[i + 5], TokenType.DATA_TYPE))
-                        //{
-                        //    type = internalTokens[i + j + 3].GetLiteral();
-                        //    noType = false;
-                        //    bodyStart = i + j + 5;
-                        //}
                         bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
-
-                        //MessageBox.Show($"Added FUNCTION {internalTokens[i + 1].GetLiteral()}");
                         subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
 
                         List<Token> functionsTokens = new List<Token>();
@@ -2673,20 +2661,65 @@ namespace NEA
 
                         intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray(), true));
 
-                        //string output = "Subroutines\n";
-                        //int subCounter = 1;
+                        counterSubroutine++;
 
-                        //foreach (string[] subroutine in intermediateSubroutines)
-                        //{
-                        //    output += $"Subroutine {subCounter++}:\n\n";
-                        //    foreach (string line in subroutine)
-                        //    {
-                        //        output += $"{line}\n";
-                        //    }
-                        //    output += $"\n";
-                        //}
+                        // Incorrect calculation here
+                        i = bodyEnd + 2;
+                        break;
+                    case TokenType.PROCEDURE:
+                        // Current Function Syntax
+                        // PROCEDURE subroutine (a,...)
+                        //   statements
+                        // END FUNCTION
+                        nextToken = internalTokens[i + 1];
+                        if (!Is(nextToken, TokenType.SUBROUTINE_NAME))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No valid procedure name found after \"PROCEDURE\" keyword.");
+                        }
+                        subroutineName = nextToken.GetLiteral();
+                        nextToken = internalTokens[i + 2];
+                        if (!Is(nextToken, TokenType.LEFT_BRACKET))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
+                        }
+                        variableNames = new List<string>();
+                        areParamsToRead = true;
+                        readyForNextParam = true;
+                        for (j = 1; areParamsToRead; j++)
+                        {
+                            nextToken = internalTokens[i + j + 2];
+                            //MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
+                            if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                            {
+                                areParamsToRead = false;
+                            }
+                            else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                            {
+                                variableNames.Add(nextToken.GetLiteral());
+                                readyForNextParam = false;
+                            }
+                            else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                            {
+                                readyForNextParam = true;
+                            }
+                            else
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
+                            }
+                        }
+                        nextToken = internalTokens[i + j + 2];
+                        bodyStart = i + j + 2;
+                        bodyEnd = FindEndIndex(bodyStart, "PROCEDURE", internalTokens);
+                        subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
 
-                        //MessageBox.Show($"{output}");
+                        List<Token> procedureTokens = new List<Token>();
+
+                        for (int x = bodyStart; x < bodyEnd; x++)
+                        {
+                            procedureTokens.Add(internalTokens[x]);
+                        }
+
+                        intermediateSubroutines.Add(TokensToIntermediate(procedureTokens.ToArray(), true));
 
                         counterSubroutine++;
 
@@ -3433,7 +3466,10 @@ namespace NEA
                                 {
                                     list += v + ", ";
                                 }
-                                list = list.Substring(0, list.Length - 2);
+                                if (listOfValues.Count != 0)
+                                {
+                                    list = list.Substring(0, list.Length - 2);
+                                }
                                 list += " ]";
                                 stack.Push(list);
                             }
@@ -3469,6 +3505,15 @@ namespace NEA
                         if (var.IsDeclared())
                         {
                             var.Add(stack.Pop());
+                        }
+                        break;
+                    case "REMOVE_LIST_ITEM":
+                        intOp = Convert.ToInt32(operand);
+                        var = localVariables[intOp];
+                        Console.WriteLine($"Top of stack = {stack.Peek()}");
+                        if (var.IsDeclared())
+                        {
+                            var.Remove(stack.Pop());
                         }
                         break;
                     case "DECLARE_VAR":

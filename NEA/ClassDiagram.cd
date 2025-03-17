@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="NEA.Classes.CustomFastColoredTextBox">
+    <Position X="12" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAiQBBgAQQFEBoAAEAAIAApACAQgADpQIIgCAAIABgE=</HashCode>
+      <FileName>Classes\CustomFastColoredTextBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NEA.Classes.StackFrame">
+    <Position X="8" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAABAABAAQCAAAAIAAAEAAAAAAAAAAAAgACAAAQ=</HashCode>
+      <FileName>Classes\StackFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NEA.Classes.Token">
+    <Position X="8" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAEAAAAAACAAAAAAABAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Token.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NEA.Classes.Variable">
+    <Position X="10" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgIIAgIAIAAAggEUAgAAgAQAAAAFIGEIAAAAAAAABCA=</HashCode>
+      <FileName>Classes\Variable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NEA.Machine">
+    <Position X="4.5" Y="0.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>QEHwzkEANoFUKAfrxTWMlq6BlVBC6sdQF4hCAELEcoA=</HashCode>
+      <FileName>Classes\Machine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NEA.Program">
+    <Position X="2.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Classes\Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NEA.IDE_MainWindow">
+    <Position X="0.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>DZzoR29GIa5zIGPARyCElYFiYgBpoUCVnAI1GIBExRs=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="NEA.Classes.DataType">
+    <Position X="8" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAABIAAAQAAIAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\DataType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="NEA.Classes.TokenType">
+    <Position X="10" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQCBAgSQLiQNwoEAUESEmgAUjEtKIAAXAABhwQkEBBk=</HashCode>
+      <FileName>Classes\TokenType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

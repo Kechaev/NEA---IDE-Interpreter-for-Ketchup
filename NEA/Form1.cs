@@ -820,7 +820,7 @@ namespace NEA
             e.ChangedRange.SetStyle(GreyStyle, @"#.*");
             e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
             e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message|(?<=\binput\s+)with\b)(?!\S)");
-            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|raise)(?!\S)");
+            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|raise|remove)(?!\S)");
             e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times|not|and|or)(?!\S)");
             e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(integer|decimal|string|character|boolean|array|list)(?!\S)");
             e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by|the|power|(?<=\bpower\s+)of|divided)(?!\S)");
@@ -854,7 +854,7 @@ namespace NEA
             // REPEAT (num|var) TIMES
 
             // Variables have the following format [a-zA-Z_][a-zA-Z0-9_], not starting with a digit
-            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+[a-zA-Z_][a-zA-Z0-9_]*\s+from\s+[a-zA-Z0-9_]+\s+to\s+(([a-zA-Z0-9_]+\s+going\s+(up|down)\s+by\s+[a-zA-Z0-9_])|[a-zA-Z0-9_]+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*)?\)|if\s+.+then|repeat\s+[a-zA-Z0-9_]+\stimes|while\s+.+then|do)$", RegexOptions.IgnoreCase);
+            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+[a-zA-Z_][a-zA-Z0-9_]*\s+from\s+[a-zA-Z0-9_]+\s+to\s+(([a-zA-Z0-9_]+\s+going\s+(up|down)\s+by\s+[a-zA-Z0-9_])|[a-zA-Z0-9_]+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*)?\)|procedure\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*)?\)|if\s+.+then|repeat\s+[a-zA-Z0-9_]+\stimes|while\s+.+then|do)$", RegexOptions.IgnoreCase);
             Regex blockEndRegex = new Regex(@"^\s*end", RegexOptions.IgnoreCase);
             Regex blockElseRegex = new Regex(@"^\s*else", RegexOptions.IgnoreCase);
 

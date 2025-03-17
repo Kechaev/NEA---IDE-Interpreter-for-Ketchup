@@ -159,6 +159,7 @@
     <EmbeddedResource Include="TokenView.resx">
       <DependentUpon>TokenView.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="ClassDiagram.cd" />
     <None Include="NEA_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
