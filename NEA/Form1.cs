@@ -722,21 +722,6 @@ namespace NEA
             CloseAllForms();
         }
 
-        private void tsDebugTraceTable_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Trace Table");
-        }
-
-        private void tsDebugSyntaxCheck_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Check Syntax");
-        }
-
-        private void tsDebugBreakpoints_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Breakpoints");
-        }
-
         private void stripCopy_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;

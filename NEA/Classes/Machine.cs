@@ -121,7 +121,7 @@ namespace NEA
             intermediate = TokensToIntermediate(tokens, false);
 
             // Execution is done from the form
-            // To acommodate for outputs (& later inputs)
+            // To acommodate for outputs
         }
 
         #region Tokenization - Credit to Robert Nystrom (Crafting Interpreters)
@@ -253,14 +253,6 @@ namespace NEA
                     return TokenType.REMAINDER;
                 case "OF":
                     return TokenType.OF;
-                //case "IS":
-                //    return TokenType.IS;
-                //case "A":
-                //    return TokenType.A;
-                //case "FACTOR":
-                //    return TokenType.FACTOR;
-                //case "MULTIPLE":
-                //    return TokenType.MULTIPLE;
                 case "IF":
                     return TokenType.IF;
                 case "ELSE":
@@ -560,6 +552,7 @@ namespace NEA
         private Dictionary<string, int> variablesDict = new Dictionary<string, int>();
         private int counterVar, counterSubroutine;
         private int fixedLoopCounter;
+        private List<string> listVariableNames;
 
         #region Translation into Intermdiate
 
@@ -841,7 +834,6 @@ namespace NEA
             for (int i = 0; i < expression.Count; i++)
             {
                 Token token = expression[i];
-                Console.WriteLine($"Token = {token.GetLiteral()}\nIsnt STR_LIT = {!Is(token, TokenType.STR_LITERAL)}");
                 if (!Is(token, TokenType.STR_LITERAL))
                 {
                     begins.Add(i);
@@ -849,7 +841,6 @@ namespace NEA
 
                     while (i < expression.Count && inExpresison)
                     {
-                        Console.WriteLine(i);
                         token = expression[i];
                         // Avoid crash on first iteration (i = -1)
                         Token prevToken = expression[i];
@@ -908,7 +899,6 @@ namespace NEA
                 end = expression.Count;
             }
 
-            Console.WriteLine($"Start = {start}\nEnd = {end}");
             for (int i = start; i < end; i++)
             {
                 instructions.AddRange(GetInstructions(expression[i], ref i, expression));
@@ -1397,6 +1387,20 @@ namespace NEA
         #endregion
 
         #region Assignment with operations
+        private string[] MapListAddition(string variable, Token[] expression)
+        {
+            List<string> instructions = new List<string>();
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instructions.AddRange(ConvertToPostfix(expression.ToList()));
+
+            instructions.Add("STORE_LIST_ITEM " + localCounterVar.ToString());
+
+            return instructions.ToArray();
+        }
+
         private string[] MapAddition(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1776,7 +1780,9 @@ namespace NEA
                                                  TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.NOT_EQUAL };
             TokenType[] brackets = { TokenType.LEFT_BRACKET, TokenType.RIGHT_BRACKET };
 
-            string type, variableName, subroutineName;
+            string type;
+            string variableName;
+            string subroutineName;
             bool noType;
             List<Token> expression;
             List<List<Token>> expressions;
@@ -1796,6 +1802,7 @@ namespace NEA
             int localCounter;
             List<Variable> arguements;
             List<bool> isLiteralList;
+            listVariableNames = new List<string>();
             #endregion
 
             while (i < internalTokens.Length)
@@ -1816,7 +1823,7 @@ namespace NEA
                         // Reject:
                         // - End of file
                         // Accept:
-                        // - Variable
+                        // - Variable (Lists - prints them accordingly)
                         // - Any literal
                         // - An input
                         // - Left Bracket
@@ -1835,7 +1842,27 @@ namespace NEA
                                 }
                                 prevToken = nextToken;
 
-                                if (IsVariable(nextToken) || IsLiteral(nextToken) || IsMathsOperator(nextToken) || IsBracket(nextToken) || IsBitwise(nextToken) || IsComparison(nextToken))
+                                // List indexing
+                                if (IsVariable(nextToken) && Is(internalTokens[i + j + 1], TokenType.SQUARE_LEFT_BRACKET))
+                                {
+                                    nextToken = internalTokens[i + j + 2];
+                                    if (!IsLiteral(nextToken))
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine()}: {nextToken.GetLiteral()} must be a literal to index.");
+                                    }
+
+                                    expression = new List<Token>();
+                                    while (!IsEndOfToken(nextToken) && !Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
+                                    {
+                                        expression.Add(nextToken);
+                                        j++;
+                                        nextToken = internalTokens[i + j + 2];
+                                    }
+                                    // Index Offset
+                                    j += 3;
+                                }
+                                // Other elements
+                                else if (IsVariable(nextToken) || IsLiteral(nextToken) || IsMathsOperator(nextToken) || IsBracket(nextToken) || IsBitwise(nextToken) || IsComparison(nextToken))
                                 {
                                     expression.Add(nextToken);
                                     j++;
@@ -1986,7 +2013,6 @@ namespace NEA
                             readyForNextParam = true;
                             for (j = 1; areParamsToRead; j++)
                             {
-                                Console.WriteLine($"FOR LOOP {j}");
                                 nextToken = internalTokens[i + j + 3];
                                 if (Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
                                 {
@@ -1995,7 +2021,6 @@ namespace NEA
                                 {
                                     while (!IsEndOfToken(nextToken) && !Is(nextToken, TokenType.COMMA) && !Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
                                     {
-                                        Console.WriteLine($"next token = {nextToken.GetLiteral()}");
                                         expression.Add(nextToken);
                                         j++;
                                         nextToken = internalTokens[i + j + 3];
@@ -2003,12 +2028,10 @@ namespace NEA
                                     expressions.Add(new List<Token>(expression));
                                     expression.Clear();
                                     j--;
-                                    Console.WriteLine("WAITING FOR COMMA");
                                     readyForNextParam = false;
                                 }
                                 else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
                                 {
-                                    Console.WriteLine("COMMA FOUND");
                                     readyForNextParam = true;
                                 }
                                 else
@@ -2066,8 +2089,8 @@ namespace NEA
 
                         if (type == "LIST")
                         {
-                            Console.WriteLine("Ran list assignment");
                             intermediateList.AddRange(MapListAssignment(variableName, expressions));
+                            listVariableNames.Add(variableName.ToUpper());
                         }
                         else
                         {
@@ -2409,7 +2432,14 @@ namespace NEA
                             nextToken = internalTokens[i + j];
                         }
                         variableName = internalTokens[i + j + 1].GetLiteral();
-                        intermediateList.AddRange(MapAddition(variableName, expression.ToArray()));
+                        if (listVariableNames.Contains(variableName.ToUpper()))
+                        {
+                            intermediateList.AddRange(MapListAddition(variableName, expression.ToArray()));
+                        }
+                        else
+                        {
+                            intermediateList.AddRange(MapAddition(variableName, expression.ToArray()));
+                        }
                         i += j + 2;
                         break;
                     case TokenType.TAKE:

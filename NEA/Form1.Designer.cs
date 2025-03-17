@@ -47,12 +47,11 @@ namespace NEA
             this.tsViewConsoleView = new System.Windows.Forms.ToolStripMenuItem();
             this.tsIntermediateCodeView = new System.Windows.Forms.ToolStripMenuItem();
             this.tsTokenView = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsDebug = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsConsole = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsClear = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebugTraceTable = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebugSyntaxCheck = new System.Windows.Forms.ToolStripMenuItem();
             this.tsDebugBreakpoints = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsConsole = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsClear = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.stripUndo = new System.Windows.Forms.ToolStripButton();
             this.stripRedo = new System.Windows.Forms.ToolStripButton();
@@ -102,13 +101,11 @@ namespace NEA
             // 
             // menuStrip
             // 
-            this.menuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsFile,
             this.tsEdit,
             this.tsView,
-            this.tsDebug,
             this.tsConsole});
             resources.ApplyResources(this.menuStrip, "menuStrip");
             this.menuStrip.Name = "menuStrip";
@@ -207,33 +204,6 @@ namespace NEA
             resources.ApplyResources(this.tsTokenView, "tsTokenView");
             this.tsTokenView.Click += new System.EventHandler(this.tsTokenView_Click);
             // 
-            // tsDebug
-            // 
-            this.tsDebug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsDebugTraceTable,
-            this.tsDebugSyntaxCheck,
-            this.tsDebugBreakpoints});
-            this.tsDebug.Name = "tsDebug";
-            resources.ApplyResources(this.tsDebug, "tsDebug");
-            // 
-            // tsDebugTraceTable
-            // 
-            this.tsDebugTraceTable.Name = "tsDebugTraceTable";
-            resources.ApplyResources(this.tsDebugTraceTable, "tsDebugTraceTable");
-            this.tsDebugTraceTable.Click += new System.EventHandler(this.tsDebugTraceTable_Click);
-            // 
-            // tsDebugSyntaxCheck
-            // 
-            this.tsDebugSyntaxCheck.Name = "tsDebugSyntaxCheck";
-            resources.ApplyResources(this.tsDebugSyntaxCheck, "tsDebugSyntaxCheck");
-            this.tsDebugSyntaxCheck.Click += new System.EventHandler(this.tsDebugSyntaxCheck_Click);
-            // 
-            // tsDebugBreakpoints
-            // 
-            this.tsDebugBreakpoints.Name = "tsDebugBreakpoints";
-            resources.ApplyResources(this.tsDebugBreakpoints, "tsDebugBreakpoints");
-            this.tsDebugBreakpoints.Click += new System.EventHandler(this.tsDebugBreakpoints_Click);
-            // 
             // tsConsole
             // 
             this.tsConsole.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -246,6 +216,21 @@ namespace NEA
             this.tsClear.Name = "tsClear";
             resources.ApplyResources(this.tsClear, "tsClear");
             this.tsClear.Click += new System.EventHandler(this.tsClear_Click);
+            // 
+            // tsDebugTraceTable
+            // 
+            this.tsDebugTraceTable.Name = "tsDebugTraceTable";
+            resources.ApplyResources(this.tsDebugTraceTable, "tsDebugTraceTable");
+            // 
+            // tsDebugSyntaxCheck
+            // 
+            this.tsDebugSyntaxCheck.Name = "tsDebugSyntaxCheck";
+            resources.ApplyResources(this.tsDebugSyntaxCheck, "tsDebugSyntaxCheck");
+            // 
+            // tsDebugBreakpoints
+            // 
+            this.tsDebugBreakpoints.Name = "tsDebugBreakpoints";
+            resources.ApplyResources(this.tsDebugBreakpoints, "tsDebugBreakpoints");
             // 
             // toolStrip
             // 
@@ -453,8 +438,8 @@ namespace NEA
     "(?<range>:)\\s*(?<range>[^;]+);";
             resources.ApplyResources(this.txtCodeField, "txtCodeField");
             this.txtCodeField.BackBrush = null;
-            this.txtCodeField.CharHeight = 27;
-            this.txtCodeField.CharWidth = 14;
+            this.txtCodeField.CharHeight = 18;
+            this.txtCodeField.CharWidth = 10;
             this.txtCodeField.CommentPrefix = "#";
             this.txtCodeField.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtCodeField.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
@@ -561,7 +546,6 @@ namespace NEA
         private System.Windows.Forms.ToolStripMenuItem tsEditPaste;
         private System.Windows.Forms.ToolStripMenuItem tsView;
         private System.Windows.Forms.ToolStripMenuItem tsViewConsoleView;
-        private System.Windows.Forms.ToolStripMenuItem tsDebug;
         private System.Windows.Forms.ToolStripMenuItem tsDebugTraceTable;
         private System.Windows.Forms.ToolStripMenuItem tsDebugSyntaxCheck;
         private System.Windows.Forms.ToolStripMenuItem tsDebugBreakpoints;
