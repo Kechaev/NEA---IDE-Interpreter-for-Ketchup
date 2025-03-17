@@ -115,6 +115,11 @@ namespace NEA.Classes
             this.value = value;
         }
 
+        public void SetListValues(List<object> listOfValues)
+        {
+            this.listOfValues = listOfValues;
+        }
+
         public void CreateNewList()
         {
             listOfValues = new List<object>();

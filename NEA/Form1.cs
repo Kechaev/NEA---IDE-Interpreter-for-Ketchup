@@ -819,7 +819,7 @@ namespace NEA
             e.ChangedRange.ClearStyle(BlueStyle);
             e.ChangedRange.SetStyle(GreyStyle, @"#.*");
             e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
-            e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message|(?<=\binput\s+)with\b)(?!\S)");
+            e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message|(?<=\binput\s+)with\b|sort)(?!\S)");
             e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|raise|remove)(?!\S)");
             e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times|not|and|or)(?!\S)");
             e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(integer|decimal|string|character|boolean|array|list)(?!\S)");

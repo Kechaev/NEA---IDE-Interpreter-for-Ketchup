@@ -42,7 +42,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR",  "SQUARE_LEFT_BRACKET", "SQUARE_RIGHT_BRACKET",
-                                     "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER", "REMOVE",
+                                     "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER", "REMOVE", "SORT",
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
@@ -338,6 +338,8 @@ namespace NEA
                     return TokenType.POWER;
                 case "REMOVE":
                     return TokenType.REMOVE;
+                case "SORT":
+                    return TokenType.SORT;
                 default:
                     throw new Exception($"SYNTAX ERROR: Unkown keyword: {token}.");
             }
@@ -973,6 +975,18 @@ namespace NEA
             instructions.AddRange(GetIntermediateFromExpression(expression));
 
             instructions.Add("CALL PRINT");
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapSorting(string variable)
+        {
+            List<string> instructions = new List<string>();
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instructions.Add("SORT " + localCounterVar.ToString());
 
             return instructions.ToArray();
         }
@@ -2887,6 +2901,24 @@ namespace NEA
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements, isLiteralList));
                         i += j + 1 + 1;
                         break;
+                    case TokenType.SORT:
+                        // Current Syntax:
+                        // SORT list
+                        nextToken = internalTokens[i + 1];
+                        if (!IsVariable(nextToken))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"SORT\" not followed by a variable.");
+                        }
+                        variableName = nextToken.GetLiteral().ToUpper();
+                        if (!listVariableNames.Contains(variableName))
+                        {
+                            throw new Exception($"LOGIC ERROR on Line {nextToken.GetLine() + 1}: {variableName} is not a list variable. Cannot sort a non-list variable.");
+                        }
+
+                        intermediateList.AddRange(MapSorting(variableName));
+                        
+                        i += 2;
+                        break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
                         i++;
@@ -3461,17 +3493,17 @@ namespace NEA
                             else
                             {
                                 List<object> listOfValues = localVariables[intOp].GetValuesList();
-                                string list = "[ ";
+                                string listStr = "[ ";
                                 foreach (object v in listOfValues)
                                 {
-                                    list += v + ", ";
+                                    listStr += v + ", ";
                                 }
                                 if (listOfValues.Count != 0)
                                 {
-                                    list = list.Substring(0, list.Length - 2);
+                                    listStr = listStr.Substring(0, listStr.Length - 2);
                                 }
-                                list += " ]";
-                                stack.Push(list);
+                                listStr += " ]";
+                                stack.Push(listStr);
                             }
                         }
                         else if (!var.IsDeclared())
@@ -3521,6 +3553,15 @@ namespace NEA
                         intOp = Convert.ToInt32(operand);
                         localVariables[intOp].Declare();
                         localVariables[intOp].SetNull();
+                        break;
+                    case "SORT":
+                        intOp = Convert.ToInt32(operand);
+                        var = localVariables[intOp];
+                        List<object> list = var.GetValuesList();
+
+                        QuickSort(ref list, 0, list.Count - 1);
+
+                        var.SetListValues(list);
                         break;
                     case "JUMP":
                         intOp = Convert.ToInt32(operand);
@@ -3580,6 +3621,81 @@ namespace NEA
                 }
             }
         }
+
+        #region Quick Sort Algorithm
+        // Sort the items by value or ASCII value
+        private void QuickSort(ref List<object> list, int low, int high)
+        {
+            if (low >= high || low < 0)
+            {
+                return;
+            }
+
+            int partition = Partition(ref list, low, high);
+
+            QuickSort(ref list, low, partition - 1);
+            QuickSort(ref list, partition + 1, high);
+        }
+
+        private int Partition(ref List<object> list, int low, int high)
+        {
+            object pivot = list[high];
+
+            int i = low;
+
+            for (int j = low; j < high; j++)
+            {
+                if (GetSortingValue(list[j]) <= GetSortingValue(pivot))
+                {
+                    Swap(ref list, i, j);
+                    i++;
+                }
+            }
+
+            Swap(ref list, i, high);
+            return i;
+        }
+
+        private void Swap(ref List<object> list, int index1, int index2)
+        {
+            object temp = list[index1];
+            list[index1] = list[index2];
+            list[index2] = temp;
+        }
+
+        private double GetSortingValue(object obj)
+        {
+            if (obj is int)
+            {
+                return (int)obj;
+            }
+            if (obj is double)
+            {
+                return (double)obj;
+            }
+            if (obj is char)
+            {
+                return Convert.ToInt32(obj);
+            }
+            if (obj is string)
+            {
+                return Convert.ToInt32(obj.ToString()[0]);
+            }
+            if (obj is bool)
+            {
+                if ((bool)obj)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            throw new Exception($"MATHS ERROR: Unknown data type for {obj}");
+        }
+
+        #endregion
 
         private int GetLabelCounter(int labelNumber)
         {
