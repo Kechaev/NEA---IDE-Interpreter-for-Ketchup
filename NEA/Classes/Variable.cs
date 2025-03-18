@@ -23,6 +23,7 @@ namespace NEA.Classes
         
         public Variable(string name, List<object> listOfValues, bool isList)
         {
+            Console.WriteLine($"Making var\nList = {isList}");
             ID = counter++;
             this.name = name;
             if (isList)
@@ -179,11 +180,12 @@ namespace NEA.Classes
             {
                 throw new Exception($"LOGIC ERROR: Index out of bound. Tried to index {index + 1}. The index must be a positive number greater or equal to 1.");
             }
-            if (index >= listOfValues.Count)
+            if (index > listOfValues.Count)
             {
                 throw new Exception($"LOGIC ERROR: Index out of bound. Tried to index {index + 1}. The list's size is {listOfValues.Count}, you cannot index past this.");
             }
-            return listOfValues[index];
+            // 1-Based Indexing
+            return listOfValues[index - 1];
         }
 
         public List<object> GetValuesList()
@@ -199,6 +201,12 @@ namespace NEA.Classes
         public bool IsDeclared()
         {
             return declared;
+        }
+
+        public void MakeList()
+        {
+            isList = true;
+            type = DataType.LIST;
         }
 
         public void SetNull()

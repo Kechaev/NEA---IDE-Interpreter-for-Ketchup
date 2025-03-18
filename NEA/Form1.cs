@@ -72,47 +72,47 @@ namespace NEA
             machine = new Machine(txtCodeField.Text, txtConsole.Text);
 
             // Error Checking
-            try
-            {
-                machine.Interpret();
-                string[] intermediate = machine.GetIntermediateCode();
-                try
-                {
-                    executionLoop = new Thread(ExecutionLoop);
-                    executionLoop.Start();
-                }
-                catch (Exception e)
-                {
-                    // Failed to translate or execute
-                    // Show error
+            //try
+            //{
+            //    machine.Interpret();
+            //    string[] intermediate = machine.GetIntermediateCode();
+            //    try
+            //    {
+            //        executionLoop = new Thread(ExecutionLoop);
+            //        executionLoop.Start();
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        // Failed to translate or execute
+            //        // Show error
 
-                    this.Invoke(new MethodInvoker(delegate
-                    {
-                        ConsoleWrite(e.Message);
-                    }));
-                }
-            }
-            catch (Exception e)
-            {
-                // Failed to interpret
-                // Set the stripRun back to RunSymbol
-                // Show error
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    ConsoleWrite(e.Message);
-                }));
-                stripRun.Image = Properties.Resources.RunSymbolSmall;
-            }
+            //        this.Invoke(new MethodInvoker(delegate
+            //        {
+            //            ConsoleWrite(e.Message);
+            //        }));
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    // Failed to interpret
+            //    // Set the stripRun back to RunSymbol
+            //    // Show error
+            //    this.Invoke(new MethodInvoker(delegate
+            //    {
+            //        ConsoleWrite(e.Message);
+            //    }));
+            //    stripRun.Image = Properties.Resources.RunSymbolSmall;
+            //}
 
 
 
             //No Error Checking
-            //machine.Interpret();
+            machine.Interpret();
 
-            //string[] intermediate = machine.GetIntermediateCode();
+            string[] intermediate = machine.GetIntermediateCode();
 
-            //executionLoop = new Thread(ExecutionLoop);
-            //executionLoop.Start();
+            executionLoop = new Thread(ExecutionLoop);
+            executionLoop.Start();
         }
 
         private void ExecutionLoop()

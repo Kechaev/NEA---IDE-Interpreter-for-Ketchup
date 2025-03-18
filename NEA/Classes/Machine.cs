@@ -770,7 +770,9 @@ namespace NEA
 
         private void ProcessSimpleExpression(List<Token> expression, ref List<string> instructions)
         {
+            Console.WriteLine("Processing simple expression");
             int inputOffset = 0;
+            int indexOffset = 0;
 
             for (int i = 0; i < expression.Count; i++)
             {
@@ -780,10 +782,22 @@ namespace NEA
                     inputOffset++;
                 }
 
+                if (ValidLengthForIndexing(i + 3, expression.Count) && IsVariable(token) && Is(expression[i + 1], TokenType.SQUARE_LEFT_BRACKET))
+                {
+                    Console.WriteLine("Indexing spotted");
+                    do
+                    {
+                        i++;
+                        indexOffset++;
+                    }
+                    while (i < expression.Count && !Is(expression[i], TokenType.SQUARE_RIGHT_BRACKET));
+                    i -= indexOffset;
+                }
+
                 instructions.AddRange(GetInstructions(token, ref i, expression));
             }
 
-            for (int i = 0; i < expression.Count - inputOffset - 1; i++)
+            for (int i = 0; i < expression.Count - inputOffset - indexOffset - 1; i++)
             {
                 instructions.Add("ADD");
             }
@@ -878,14 +892,48 @@ namespace NEA
         // Returns the correct intermediate code instruction
         private List<string> GetInstructions(Token e, ref int i, List<Token> expression)
         {
+            Console.WriteLine($"expression length = {expression.Count}");
+            foreach (Token t in expression)
+            {
+                Console.Write(t.GetLiteral());
+            }
+            Console.WriteLine();
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
 
             List<string> instrLine = new List<string>();
+            Token nextToken;
 
-            if (e.GetTokenType() == TokenType.VARIABLE)
+            Console.WriteLine($"i = {i}");
+            Console.WriteLine($"expression[i] = {expression[i].GetLiteral()}");
+            Console.WriteLine($"Valid Length: {ValidLengthForIndexing(i + 3, expression.Count)}");
+            if (ValidLengthForIndexing(i + 3, expression.Count) && IsVariable(e) && Is(expression[i + 1],TokenType.SQUARE_LEFT_BRACKET))
+            {
+                string variableName = expression[i].GetLiteral();
+                i += 2;
+                nextToken = expression[i];
+                List<Token> indexingExpression = new List<Token>();
+                while (!Is(nextToken, TokenType.RIGHT_BRACKET) && i < expression.Count)
+                {
+                    indexingExpression.Add(expression[i]);
+                    i++;
+                    if (i < expression.Count)
+                    {
+                        nextToken = expression[i];
+                    }
+                }
+
+                Console.WriteLine("Getting indexing intermediate");
+                string[] indexingStatement = MapIndexing(variableName, indexingExpression);
+
+                foreach (string statement in indexingStatement)
+                {
+                    instrLine.Add(statement);
+                }
+            }
+            else if (e.GetTokenType() == TokenType.VARIABLE)
             {
                 instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
             }
@@ -939,7 +987,7 @@ namespace NEA
         }
         #endregion
 
-        #region Built-in Functions
+            #region Built-in Functions
         private string[] MapInputStatement(List<Token> promptExpression)
         {
             List<string> instructions = new List<string>();
@@ -990,16 +1038,30 @@ namespace NEA
 
             return instructions.ToArray();
         }
+
+        private string[] MapIndexing(string variable, List<Token> indexingExpression)
+        {
+            List<string> instructions = new List<string>();
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instructions.Add("LOAD_CONST " + localCounterVar.ToString());
+
+            instructions.AddRange(ConvertToPostfix(indexingExpression.ToList()));
+
+            instructions.Add("INDEX");
+
+            return instructions.ToArray();
+        }
         #endregion
 
         #region Functions
-
-        // Anything else required for functions
-
         private string[] MapSubroutineCall(string subroutineName, List<Variable> parameters, List<bool> isLiteral)
         {
             List<string> instructions = new List<string>();
 
+            // Loading all the parameters necessary for the subroutine
             for (int i = 0; i < parameters.Count; i++)
             {
                 Variable p = parameters[i];
@@ -1833,19 +1895,27 @@ namespace NEA
                                 // List indexing
                                 if (IsVariable(nextToken) && Is(internalTokens[i + j + 1], TokenType.SQUARE_LEFT_BRACKET))
                                 {
+                                    expression = new List<Token>();
+                                    expression.Add(nextToken);
                                     nextToken = internalTokens[i + j + 2];
                                     if (!IsLiteral(nextToken))
                                     {
                                         throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine()}: {nextToken.GetLiteral()} must be a literal to index.");
                                     }
-
-                                    expression = new List<Token>();
+                                    expression.Add(new Token(TokenType.SQUARE_LEFT_BRACKET, "[", nextToken.GetLine()));
                                     while (!IsEndOfToken(nextToken) && !Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
                                     {
                                         expression.Add(nextToken);
                                         j++;
                                         nextToken = internalTokens[i + j + 2];
                                     }
+                                    expression.Add(new Token(TokenType.SQUARE_RIGHT_BRACKET, "]", nextToken.GetLine()));
+
+                                    foreach (Token t in expression)
+                                    {
+                                        Console.WriteLine(t.GetLiteral());
+                                    }
+                                    // NEED TO REMOVE THE ADDs ON THE INDEXING
                                     // Index Offset
                                     j += 3;
                                 }
@@ -3025,6 +3095,8 @@ namespace NEA
 
         private void Execute(string opcode, string operand, string[] intermediateCode, ref TextBox console, bool inFunction)
         {
+            Variable var;
+            Variable[] localVariables = variables;
             // Opcodes not involving an operand in the instruction
             if (operand == null)
             {
@@ -3388,6 +3460,25 @@ namespace NEA
                             FetchExecute(intermediate, ref console, false);
                         }
                         break;
+                    case "INDEX":
+                        int index;
+                        try
+                        {
+                            index = Convert.ToInt32(stack.Pop());
+                        }
+                        catch
+                        {
+                            throw new Exception("LOGIC ERROR: Index was not a number.");
+                        }
+                        int variableIndex = Convert.ToInt32(stack.Pop());
+
+                        Console.WriteLine($"variable index = {variableIndex}");
+                        var = localVariables[variableIndex];
+
+                        Console.WriteLine(var.GetValueFromIndex(index));
+
+                        stack.Push(var.GetValueFromIndex(index));
+                        break;
                     case "HALT":
                         isRunning = false;
                         break;
@@ -3397,8 +3488,8 @@ namespace NEA
             else
             {
                 int intOp;
-                Variable var;
-                Variable[] localVariables = variables;
+                int index;
+                string listStr;
 
                 if (inFunction)
                 {
@@ -3431,7 +3522,7 @@ namespace NEA
                         else
                         {
                             // Custom Subroutine's Written by the User
-                            int index = subroutineDict[operand];
+                            index = subroutineDict[operand];
                             int parameterCount = subroutineParametersCount[subroutineDict[operand]];
                             // No values assigned to subroutineLocalVariableCounter ! ! !
                             int localVariablesCounter = subroutineLocalVariableCounter[subroutineDict[operand]];
@@ -3439,12 +3530,9 @@ namespace NEA
                             Variable[] parameters = new Variable[parameterCount];
                             // Find the number of local variables per subroutine
                             Variable[] local = new Variable[localVariablesCounter];
-                            //MessageBox.Show($"ParamCounter = {parameterCount}");
                             for (int i = 0; i < parameterCount; i++)
                             {
                                 object parameterValue = stack.Pop();
-
-                                // DO NOT CREATE DUPLICATE VARIABLES THIS MAKES EXECUTION MUCH HARDER
 
                                 parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", new List<object> { parameterValue }, false);
                                 parameters[i].Declare();
@@ -3459,20 +3547,6 @@ namespace NEA
                             }
                             StackFrame sf = new StackFrame(parameters, local, PC, true, intermediateSubroutines[index]);
                             callStack.Push(sf);
-
-                            string output = "StackFrame:\nParameters:\n";
-
-                            foreach (Variable v in parameters)
-                            {
-                                output += $"{v.GetName()} - {v.GetValue()}\n";
-                            }
-                            output += "Locals:\n";
-                            foreach (Variable v in local)
-                            {
-                                output += $"{v.GetName()} - {v.GetValue()}\n";
-                            }
-                            output += $"Return Address = {PC}";
-
                             PC = 0;
                             StartSubroutineExecution(intermediateSubroutines[index], ref console);
                         }
@@ -3482,7 +3556,6 @@ namespace NEA
                         break;
                     case "LOAD_VAR":
                         intOp = Convert.ToInt32(operand);
-                       
                         var = localVariables[intOp];
                         if (var.IsDeclared() && !var.IsNull())
                         {
@@ -3493,7 +3566,7 @@ namespace NEA
                             else
                             {
                                 List<object> listOfValues = localVariables[intOp].GetValuesList();
-                                string listStr = "[ ";
+                                listStr = "[ ";
                                 foreach (object v in listOfValues)
                                 {
                                     listStr += v + ", ";
@@ -3529,6 +3602,7 @@ namespace NEA
                         if (var.IsDeclared())
                         {
                             var.CreateNewList();
+                            var.MakeList();
                         }
                         break;
                     case "STORE_LIST_ITEM":
@@ -3665,34 +3739,27 @@ namespace NEA
 
         private double GetSortingValue(object obj)
         {
-            if (obj is int)
+            DataType type = IdentifyDataType(obj);
+
+            switch (type)
             {
-                return (int)obj;
-            }
-            if (obj is double)
-            {
-                return (double)obj;
-            }
-            if (obj is char)
-            {
-                return Convert.ToInt32(obj);
-            }
-            if (obj is string)
-            {
-                return Convert.ToInt32(obj.ToString()[0]);
-            }
-            if (obj is bool)
-            {
-                if ((bool)obj)
-                {
-                    return 1;
-                }
-                else
-                {
+                case DataType.INTEGER:
+                    return (int)obj;
+                case DataType.DECIMAL:
+                    return (double)obj;
+                case DataType.STRING:
+                    return Convert.ToInt32(obj.ToString()[0]);
+                case DataType.CHARACTER:
+                    return Convert.ToInt32(obj);
+                case DataType.BOOLEAN:
+                    if ((bool)obj)
+                    {
+                        return 1;
+                    }
                     return 0;
-                }
+                default:
+                    throw new Exception($"MATHS ERROR: Unknown data type for {obj}");
             }
-            throw new Exception($"MATHS ERROR: Unknown data type for {obj}");
         }
 
         #endregion
