@@ -42,7 +42,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR",  "SQUARE_LEFT_BRACKET", "SQUARE_RIGHT_BRACKET",
-                                     "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER", "REMOVE", "SORT",
+                                     "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER", "REMOVE", "SORT", "SWAP",
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
@@ -340,6 +340,8 @@ namespace NEA
                     return TokenType.REMOVE;
                 case "SORT":
                     return TokenType.SORT;
+                case "SWAP":
+                    return TokenType.SWAP;
                 default:
                     throw new Exception($"SYNTAX ERROR: Unkown keyword: {token}.");
             }
@@ -906,9 +908,6 @@ namespace NEA
             List<string> instrLine = new List<string>();
             Token nextToken;
 
-            Console.WriteLine($"i = {i}");
-            Console.WriteLine($"expression[i] = {expression[i].GetLiteral()}");
-            Console.WriteLine($"Valid Length: {ValidLengthForIndexing(i + 3, expression.Count)}");
             if (ValidLengthForIndexing(i + 3, expression.Count) && IsVariable(e) && Is(expression[i + 1],TokenType.SQUARE_LEFT_BRACKET))
             {
                 string variableName = expression[i].GetLiteral();
@@ -925,7 +924,6 @@ namespace NEA
                     }
                 }
 
-                Console.WriteLine("Getting indexing intermediate");
                 string[] indexingStatement = MapIndexing(variableName, indexingExpression);
 
                 foreach (string statement in indexingStatement)
@@ -1051,6 +1049,24 @@ namespace NEA
             instructions.AddRange(ConvertToPostfix(indexingExpression.ToList()));
 
             instructions.Add("INDEX");
+
+            return instructions.ToArray();
+        }
+
+        private string[] MapSwapping(string variable, List<Token> expression1, List<Token> expression2)
+        {
+            List<string> instructions = new List<string>();
+            counterVar = variablesDict[variable];
+
+            int localCounterVar = counterVar;
+
+            instructions.Add("LOAD_CONST " + localCounterVar.ToString());
+
+            instructions.AddRange(ConvertToPostfix(expression1.ToList()));
+
+            instructions.AddRange(ConvertToPostfix(expression2.ToList()));
+
+            instructions.Add("SWAP");
 
             return instructions.ToArray();
         }
@@ -2989,6 +3005,64 @@ namespace NEA
                         
                         i += 2;
                         break;
+                    case TokenType.SWAP:
+                        // Current Syntax:
+                        // SWAP index1 WITH index2 IN var
+                        j = 0;
+                        nextToken = internalTokens[i + j + 1];
+                        expression1 = new List<Token>();
+                        do
+                        {
+                            expression1.Add(nextToken);
+                            j++;
+                            nextToken = internalTokens[i + j + 1];
+                        }
+                        while (!Is(nextToken, TokenType.WITH) && ValidLengthForIndexing(i + j + 1, internalTokens.Length));
+
+                        Console.WriteLine("Expression1");
+                        foreach (Token t in expression1)
+                        {
+                            Console.WriteLine(t.GetLiteral());
+                        }
+
+                        nextToken = internalTokens[i + j + 1];
+                        if (!Is(nextToken, TokenType.WITH))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"WITH\" not found after the first index.");
+                        }
+
+                        k = 0;
+                        nextToken = internalTokens[i + j + k + 2];
+                        expression2 = new List<Token>();
+                        do
+                        {
+                            expression2.Add(nextToken);
+                            k++;
+                            nextToken = internalTokens[i + j + k + 2];
+                        }
+                        while (!Is(nextToken, TokenType.IN) && ValidLengthForIndexing(i + j + k + 2, internalTokens.Length));
+
+                        nextToken = internalTokens[i + j + k + 2];
+                        if (!Is(nextToken, TokenType.IN))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"IN\" not found after the second index.");
+                        }
+
+                        nextToken = internalTokens[i + j + k + 3];
+                        if (!IsVariable(nextToken))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Second index not followed by a variable.");
+                        }
+                        variableName = nextToken.GetLiteral().ToUpper();
+                        if (!listVariableNames.Contains(variableName))
+                        {
+                            throw new Exception($"LOGIC ERROR on Line {nextToken.GetLine() + 1}: {variableName} is not a list variable. Cannot sort a non-list variable.");
+                        }
+
+                        intermediateList.AddRange(MapSwapping(variableName, expression1, expression2));
+
+                        i += j + k + 4;
+                        break;
                     case TokenType.EOF:
                         intermediateList.Add("HALT");
                         i++;
@@ -3101,6 +3175,7 @@ namespace NEA
             if (operand == null)
             {
                 object object2, object1, result;
+                int variableIndex;
                 DataType type;
                 switch (opcode)
                 {
@@ -3470,7 +3545,7 @@ namespace NEA
                         {
                             throw new Exception("LOGIC ERROR: Index was not a number.");
                         }
-                        int variableIndex = Convert.ToInt32(stack.Pop());
+                        variableIndex = Convert.ToInt32(stack.Pop());
 
                         Console.WriteLine($"variable index = {variableIndex}");
                         var = localVariables[variableIndex];
@@ -3478,6 +3553,31 @@ namespace NEA
                         Console.WriteLine(var.GetValueFromIndex(index));
 
                         stack.Push(var.GetValueFromIndex(index));
+                        break;
+                    case "SWAP":
+                        int index1;
+                        try
+                        {
+                            index1 = Convert.ToInt32(stack.Pop());
+                        }
+                        catch
+                        {
+                            throw new Exception("LOGIC ERROR: Index was not a number.");
+                        }
+                        int index2;
+                        try
+                        {
+                            index2 = Convert.ToInt32(stack.Pop());
+                        }
+                        catch
+                        {
+                            throw new Exception("LOGIC ERROR: Index was not a number.");
+                        }
+                        variableIndex = Convert.ToInt32(stack.Pop());
+                        var = localVariables[variableIndex];
+                        object temp = var.GetValueFromIndex(index1);
+                        var.SetValueFromIndex(index1, var.GetValueFromIndex(index2));
+                        var.SetValueFromIndex(index2, temp);
                         break;
                     case "HALT":
                         isRunning = false;

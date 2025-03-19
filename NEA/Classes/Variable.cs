@@ -188,6 +188,23 @@ namespace NEA.Classes
             return listOfValues[index - 1];
         }
 
+        public void SetValueFromIndex(int index, object value)
+        {
+            if (!isList && !(IdentifyBestDataType() == DataType.STRING))
+            {
+                throw new Exception("LOGIC ERROR: Failed to index a non-list variable");
+            }
+            if (index < 0)
+            {
+                throw new Exception($"LOGIC ERROR: Index out of bound. Tried to index {index + 1}. The index must be a positive number greater or equal to 1.");
+            }
+            if (index > listOfValues.Count)
+            {
+                throw new Exception($"LOGIC ERROR: Index out of bound. Tried to index {index + 1}. The list's size is {listOfValues.Count}, you cannot index past this.");
+            }
+            listOfValues[index - 1] = value;
+        }
+
         public List<object> GetValuesList()
         {
             return listOfValues;
