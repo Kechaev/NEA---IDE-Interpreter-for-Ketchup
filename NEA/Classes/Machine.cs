@@ -42,7 +42,7 @@ namespace NEA
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR",  "SQUARE_LEFT_BRACKET", "SQUARE_RIGHT_BRACKET",
-                                     "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER", "REMOVE", "SORT", "SWAP",
+                                     "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER", "REMOVE", "SORT", "SWAP", "LENGTH",
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF"/*, "EON" /*/ };
         private int current, start, line, counter;
 
@@ -342,6 +342,8 @@ namespace NEA
                     return TokenType.SORT;
                 case "SWAP":
                     return TokenType.SWAP;
+                case "LENGTH":
+                    return TokenType.LENGTH;
                 default:
                     throw new Exception($"SYNTAX ERROR: Unkown keyword: {token}.");
             }
@@ -472,7 +474,6 @@ namespace NEA
             List<Token> tokensList = new List<Token>();
             char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^', ',', '[', ']' };
             string[] multiCharKeywords = { "=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
-            string[] dataTypes = { "STRING", "CHARACTER", "INTEGER", "DECIMAL", "BOOLEAN", "LIST" }; // Add lists and arrays
 
             string[] subroutineNames = FindSubroutineNames();
             subroutineParametersCount = new int[subroutineNames.Length];
@@ -514,10 +515,6 @@ namespace NEA
                             tokensList.Add(new Token(TokenType.EON, null, line));
                         }
                         tokensList.Add(new Token(type, word, line));
-                    }
-                    else if (dataTypes.Contains(word.ToUpper()))
-                    {
-                        tokensList.Add(new Token(TokenType.DATA_TYPE, word, line));
                     }
                     else if (subroutineNames.Contains(word))
                     {
@@ -891,15 +888,9 @@ namespace NEA
             }
         }
 
-        // Returns the correct intermediate code instruction
+        // Returns the intermediate code instruction
         private List<string> GetInstructions(Token e, ref int i, List<Token> expression)
         {
-            Console.WriteLine($"expression length = {expression.Count}");
-            foreach (Token t in expression)
-            {
-                Console.Write(t.GetLiteral());
-            }
-            Console.WriteLine();
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
                                      TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
                                      TokenType.BOOL_LITERAL };
@@ -931,15 +922,15 @@ namespace NEA
                     instrLine.Add(statement);
                 }
             }
-            else if (e.GetTokenType() == TokenType.VARIABLE)
+            else if (IsVariable(e))
             {
                 instrLine.Add("LOAD_VAR " + variablesDict[e.GetLiteral()]);
             }
-            else if (literals.Contains(e.GetTokenType()))
+            else if (IsLiteral(e))
             {
                 instrLine.Add("LOAD_CONST " + e.GetLiteral());
             }
-            else if (e.GetTokenType() == TokenType.INPUT)
+            else if (Is(e, TokenType.INPUT))
             {
                 List<Token> inputPrompt = new List<Token>();
 
@@ -961,7 +952,7 @@ namespace NEA
                     instrLine.Add(statement);
                 }
             }
-            else if (bitwiseOperations.Contains(e.GetTokenType()))
+            else if (IsBitwise(e))
             {
                 if (e.GetTokenType() == TokenType.AND)
                 {
@@ -1583,10 +1574,9 @@ namespace NEA
         #endregion
 
         #region Extra Token Utility
-
+        // Finds the index of the last token related to the structure in question
         private int FindEndIndex(int index, string structure, Token[] tokens)
         {
-            //MessageBox.Show($"FindEndIndex({index}, {structure}, {tokens[tokens.Length - 1].GetTokenType()})");
             string[] structures = { "IF", "COUNT", "WHILE", "DO", "REPEAT", "ELSE", "FUNCTION", "PROCEDURE" };
 
             int nestCounter = 1;
@@ -1639,31 +1629,37 @@ namespace NEA
             throw new Exception($"SYNTAX ERROR following {tokens[initialIndex].GetLine()}: No \"END {structure}\" command was found.");
         }
 
+        // Ensures that the if statement does not crash due to "index out of bound"
         private bool ValidLengthForIndexing(int index, int arrayLength)
         {
             return index < arrayLength;
         }
 
+        // Verifies that the tokens have not ended
         private bool IsEndOfToken(Token token)
         {
-            return token.GetTokenType() == TokenType.EOF || token.GetTokenType() == TokenType.EON;
+            return Is(token, TokenType.EOF) || Is(token, TokenType.EON);
         }
 
+        // Verifies that the token is an input
         private bool IsInput(Token token)
         {
-            return token.GetTokenType() == TokenType.INPUT;
+            return Is(token, TokenType.INPUT);
         }
 
+        // Verifies that the token is a subroutine name (call)
         private bool IsSubroutineCall(Token token)
         {
-            return token.GetTokenType() == TokenType.SUBROUTINE_NAME;
+            return Is(token, TokenType.SUBROUTINE_NAME);
         }
 
+        // Verifies that the token is a variable
         private bool IsVariable(Token token)
         {
-            return token.GetTokenType() == TokenType.VARIABLE;
+            return Is(token, TokenType.VARIABLE);
         }
 
+        // Verifies that the token is a literal (includes negative ints/decimals)
         private bool IsLiteral(Token token)
         {
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
@@ -1673,16 +1669,19 @@ namespace NEA
             return literals.Contains(token.GetTokenType());
         }
 
+        // Verifies that the token opens a bracketed expression
         private bool IsLeftBracket(Token token)
         {
-            return token.GetTokenType() == TokenType.LEFT_BRACKET;
+            return Is(token, TokenType.LEFT_BRACKET);
         }
         
+        // Verifies that the token is any "round" bracket (for BIDMAS)
         private bool IsBracket(Token token)
         {
-            return IsLeftBracket(token) || token.GetTokenType() == TokenType.RIGHT_BRACKET;
+            return IsLeftBracket(token) || Is(token, TokenType.RIGHT_BRACKET);
         }
 
+        // Verifies that the token is a mathematical operator
         private bool IsMathsOperator(Token token)
         {
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
@@ -1690,23 +1689,27 @@ namespace NEA
             return mathematicalOperations.Contains(token.GetTokenType());
         }
 
+        // Verifies that the token is ANY bitwise operator
         private bool IsBitwise(Token token)
         {
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
             return bitwiseOperations.Contains(token.GetTokenType());
         }
 
+        // Verifies that the token is a BINARY bitwise operator
         private bool IsBinaryBitwise(Token token)
         {
             TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR };
             return bitwiseOperations.Contains(token.GetTokenType());
         }
 
+        // Verifies that the token operates with one operand
         private bool IsUnary(Token token)
         {
             return token.GetTokenType() == TokenType.NOT || token.GetTokenType() == TokenType.SUB;
         }
 
+        // Verifies that the token operates with two operands
         private bool IsBinary(Token token)
         {
             TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
@@ -1714,6 +1717,7 @@ namespace NEA
             return IsBinaryBitwise(token) || mathematicalOperations.Contains(token.GetTokenType()) || IsComparison(token);
         }
 
+        // Verifies that the token is a comparison operator (returns bool)
         private bool IsComparison(Token token)
         {
             TokenType[] comparisonOperations = { TokenType.GREATER, TokenType.LESS, TokenType.EQUAL,
@@ -1721,16 +1725,19 @@ namespace NEA
             return comparisonOperations.Contains(token.GetTokenType());
         }
 
+        // Verifies that the two tokens are on the same line
         private bool IsSameLine(Token token1, Token token2)
         {
             return token1.GetLine() == token2.GetLine();
         }
 
+        // GOD FUNCTION: Verifies if a token is a certain TokenType (99+ references) 👍
         private bool Is(Token token, TokenType type)
         {
             return token.GetTokenType() == type;
         }
 
+        // Retrieves the last token in that line
         private Token GetLastTokenInLine(int line, Token[] internalTokens)
         {
             bool inLine = false;
@@ -1757,6 +1764,7 @@ namespace NEA
             throw new Exception($"DEV ERROR: No token found.");
         }
 
+        // Verifies that the variable has been declared previously
         private bool PreviouslyDeclared(string variableName, int upperRange, Token[] internalToken)
         {
             for (int i = 0; i < tokens.Length; i++)
@@ -1783,21 +1791,6 @@ namespace NEA
             for (int i = 0; i < upperRange; i++)
             {
                 if (Is(tokens[i],TokenType.DECLARATION) || Is(tokens[i], TokenType.ASSIGNMENT))
-                {
-                    if (tokens[i + 1].GetLiteral() == variableName)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        private bool DeclaredAfter(string variableName, int lowerRange, Token[] internalToken)
-        {
-            for (int i = lowerRange + 1; i < tokens.Length; i++)
-            {
-                if (Is(tokens[i], TokenType.DECLARATION) || Is(tokens[i], TokenType.ASSIGNMENT))
                 {
                     if (tokens[i + 1].GetLiteral() == variableName)
                     {
@@ -2149,18 +2142,6 @@ namespace NEA
                             }
                             j = expression.Count + inputOffset;
                         }
-                        
-                        // Check for type declaration
-                        nextToken = internalTokens[i + j + 2];
-                        if (ValidLengthForIndexing(i + j + 3, internalTokens.Length) && !IsEndOfToken(nextToken) && Is(internalTokens[i + j + 3],TokenType.AS) && Is(internalTokens[i + j + 4],TokenType.DATA_TYPE))
-                        {
-                            type = internalTokens[i + j + 4].GetLiteral().ToUpper();
-                            noType = false;
-                        }
-                        else if (ValidLengthForIndexing(i + j + 3, internalTokens.Length) && !IsEndOfToken(internalTokens[i + j + 3]) && IsSameLine(internalTokens[i + j + 3],token))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No data type mentioned after \"AS\" keyword.");
-                        }
 
                         if (type == "LIST")
                         {
@@ -2195,16 +2176,6 @@ namespace NEA
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Cannot create variable {variableName} more than once.");
                         }
 
-                        if (internalTokens[i + 2].GetTokenType() == TokenType.AS &&
-                                internalTokens[i + 3].GetTokenType() == TokenType.DATA_TYPE)
-                        {
-                            noType = false;
-                            type = internalTokens[i + 3].GetLiteral();
-                        }
-                        else if (internalTokens[i + 2].GetLine() == token.GetLine() && internalTokens[i + 2].GetTokenType() != TokenType.EOF)
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No data type specified.");
-                        }
                         intermediateList.AddRange(MapDeclaration(variableName, type));
                         i += 2;
                         if (!noType)
