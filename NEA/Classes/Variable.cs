@@ -42,7 +42,6 @@ namespace NEA.Classes
                 {
                     value = null;
                 }
-                type = IdentifyBestDataType();
                 declared = false;
                 this.isList = false;
             }
@@ -65,24 +64,22 @@ namespace NEA.Classes
 
         private DataType IdentifyBestDataType()
         {
-            try
-            {
-                Convert.ToBoolean(value);
+            if (value.ToString().ToUpper() == "TRUE" || value.ToString().ToUpper() == "FALSE")
+            { 
                 return DataType.BOOLEAN;
             }
-            catch
+            else
             {
                 try
                 {
-                    Convert.ToInt32(value);
-                    try
-                    {
-                        Convert.ToDouble(value);
-                        return DataType.DECIMAL;
-                    }
-                    catch
+                    double numericalValue = Convert.ToDouble(value);
+                    if (numericalValue == (int)numericalValue)
                     {
                         return DataType.INTEGER;
+                    }
+                    else
+                    {
+                        return DataType.DECIMAL;
                     }
                 }
                 catch
@@ -113,11 +110,15 @@ namespace NEA.Classes
         public void SetValue(object value)
         {
             this.value = value;
+            type = IdentifyBestDataType();
+            Console.WriteLine($"Type = {type}");
         }
 
         public void SetListValues(List<object> listOfValues)
         {
             this.listOfValues = listOfValues;
+            type = DataType.LIST;
+            Console.WriteLine(type);
         }
 
         public void CreateNewList()
@@ -218,7 +219,31 @@ namespace NEA.Classes
 
         public int GetLength()
         {
-            return listOfValues.Count;
+            if (type == DataType.LIST)
+            {
+                return listOfValues.Count;
+            }
+            if (type == DataType.STRING || type == DataType.CHARACTER)
+            {
+                return value.ToString().Length;
+            }
+            if (type == DataType.INTEGER)
+            {
+                // Returns number of digits in the integer
+                return (int)Math.Log10((double)value);
+            }
+            if (type == DataType.DECIMAL)
+            {
+                int counter = 0;
+                double decimalValue = (double)value;
+                while (decimalValue != (int)decimalValue)
+                {
+                    decimalValue *= 10;
+                    counter++;
+                }
+                return (int)Math.Log10(decimalValue) + 1;
+            }
+            throw new Exception($"LOGIC ERROR: Cannot get length from {name} of type {type}.");
         }
         #endregion
 
