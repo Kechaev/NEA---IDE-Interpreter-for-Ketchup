@@ -42,13 +42,16 @@ namespace NEA
         {
             System.Windows.Forms.Application.EnableVisualStyles();
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
+            // Select the code field for instantaneous typing
             txtCodeField.Select();
+            // Set up system for multiple code fields with the different tabs
             currentCodeField = txtCodeField;
             arrayCodeFields = new List<CustomFastColoredTextBox>();
             arrayCodeFields.Add(currentCodeField);
+            // File paths (multiple to accomidate for different tabs)
             currentFilePath = new List<string>();
             currentFilePath.Add(null);
+            // Boolean value preset assignment
             txtCodeField.AutoIndent = true;
             isSaved = true;
             isRunning = false;
@@ -103,8 +106,6 @@ namespace NEA
                 }));
                 stripRun.Image = Properties.Resources.RunSymbolSmall;
             }
-
-
 
             //No Error Checking
             //machine.Interpret();
@@ -182,6 +183,7 @@ namespace NEA
             }
         }
 
+        #region Utility
         private void Comment()
         {
             int index = txtCodeField.SelectionStart;
@@ -330,7 +332,9 @@ namespace NEA
         {
             txtConsole.Text = "";
         }
-        
+        #endregion
+
+        #region Button Click Events
         private void tsEditCopy_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
@@ -435,6 +439,98 @@ namespace NEA
         {
             Cut();
         }
+
+        private void stripCopy_Click(object sender, EventArgs e)
+        {
+            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
+            CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
+            if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
+            {
+                Clipboard.SetText(txtCodeField.SelectedText);
+            }
+            else if (!string.IsNullOrEmpty(txtConsole.SelectedText))
+            {
+                Clipboard.SetText(txtConsole.SelectedText);
+            }
+            else
+            {
+                MessageBox.Show("Please select some text to copy.");
+            }
+        }
+
+        private void btnCopy_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtConsole.SelectedText))
+            {
+                Clipboard.SetText(txtConsole.SelectedText);
+            }
+            else
+            {
+                Clipboard.SetText(txtConsole.Text);
+            }
+        }
+
+        private void btnCopyLastProgram_Click(object sender, EventArgs e)
+        {
+            string[] lines = txtConsole.Lines;
+            int i = lines.Length - 1;
+            bool searching = true;
+            for (; i >= 0 && searching; i--)
+            {
+                // Regex not working
+                Regex rg = new Regex(@"={3} (Unsaved Program \d+)|(.*\.ktch) - \d{2}:\d{2}:\d{2} ={3}");
+                Match match = rg.Match(lines[i]);
+                if (match.Success)
+                {
+                    searching = false;
+                }
+            }
+            i++;
+            if (!searching)
+            {
+                string output = "";
+                for (int j = lines.Length - 2; j > i; j--)
+                {
+                    output = lines[j] + "\n" + output;
+                }
+                Clipboard.SetText(output);
+            }
+            else
+            {
+                MessageBox.Show($"No text was copied");
+            }
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            ClearConsole();
+        }
+
+        private void stripNewFile_Click(object sender, EventArgs e)
+        {
+            tsFileNew_Click(sender, e);
+        }
+
+        private void stripOpenFile_Click(object sender, EventArgs e)
+        {
+            tsFileOpen_Click(sender, e);
+        }
+
+        private void stripSave_Click(object sender, EventArgs e)
+        {
+            tsFileSave_Click(sender, e);
+        }
+
+        private void stripSaveAs_Click(object sender, EventArgs e)
+        {
+            tsFileSaveAs_Click(sender, e);
+        }
+
+        private void stripPaste_Click(object sender, EventArgs e)
+        {
+            tsEditPaste_Click(sender, e);
+        }
+        #endregion
 
         #region Code Views
         private void tsIntermediateView_Click(object sender, EventArgs e)
@@ -694,6 +790,7 @@ namespace NEA
         #endregion
         #endregion
 
+        #region Closing
         private void CloseAllForms()
         {
             if (executionLoop != null && executionLoop.ThreadState == ThreadState.Suspended)
@@ -721,72 +818,7 @@ namespace NEA
             }
             CloseAllForms();
         }
-
-        private void stripCopy_Click(object sender, EventArgs e)
-        {
-            TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
-            CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
-            if (!string.IsNullOrEmpty(txtCodeField.SelectedText))
-            {
-                Clipboard.SetText(txtCodeField.SelectedText);
-            }
-            else if (!string.IsNullOrEmpty(txtConsole.SelectedText))
-            {
-                Clipboard.SetText(txtConsole.SelectedText);
-            }
-            else
-            {
-                MessageBox.Show("Please select some text to copy.");
-            }
-        }
-
-        private void btnCopy_Click(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtConsole.SelectedText))
-            {
-                Clipboard.SetText(txtConsole.SelectedText);
-            }
-            else
-            {
-                Clipboard.SetText(txtConsole.Text);
-            }
-        }
-
-        private void btnClear_Click(object sender, EventArgs e)
-        {
-            ClearConsole();
-        }
-
-        private void btnCopyLastProgram_Click(object sender, EventArgs e)
-        {
-            string[] lines = txtConsole.Lines;
-            int i = lines.Length - 1;
-            bool searching = true;
-            for (; i >= 0 && searching; i--)
-            {
-                // Regex not working
-                Regex rg = new Regex(@"={3} (Unsaved Program \d+)|(.*\.ktch) - \d{2}:\d{2}:\d{2} ={3}");
-                Match match = rg.Match(lines[i]);
-                if (match.Success)
-                {
-                    searching = false;
-                }
-            }
-            i++;
-            if (!searching)
-            {
-                string output = "";
-                for (int j = lines.Length - 2; j > i; j--)
-                {
-                    output = lines[j] + "\n" + output;
-                }
-                Clipboard.SetText(output);
-            }
-            else
-            {
-                MessageBox.Show($"No text was copied");
-            }
-        }
+        #endregion
 
         #region Syntax Highlighting
         Style GreyStyle = new TextStyle(Brushes.Gray, null, FontStyle.Italic);
@@ -1033,29 +1065,5 @@ namespace NEA
         }
         #endregion
 
-        private void stripNewFile_Click(object sender, EventArgs e)
-        {
-            tsFileNew_Click(sender, e);
-        }
-
-        private void stripOpenFile_Click(object sender, EventArgs e)
-        {
-            tsFileOpen_Click(sender, e);
-        }
-
-        private void stripSave_Click(object sender, EventArgs e)
-        {
-            tsFileSave_Click(sender, e);
-        }
-
-        private void stripSaveAs_Click(object sender, EventArgs e)
-        {
-            tsFileSaveAs_Click(sender, e);
-        }
-
-        private void stripPaste_Click(object sender, EventArgs e)
-        {
-            tsEditPaste_Click(sender, e);
-        }
     }
 }

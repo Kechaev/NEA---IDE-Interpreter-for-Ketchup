@@ -23,7 +23,6 @@ namespace NEA.Classes
         
         public Variable(string name, List<object> listOfValues, bool isList)
         {
-            Console.WriteLine($"Making var\nList = {isList}");
             ID = counter++;
             this.name = name;
             if (isList)
@@ -126,31 +125,6 @@ namespace NEA.Classes
             listOfValues = new List<object>();
         }
 
-        public void Add(object value)
-        {
-            listOfValues.Add(value);
-        }
-
-        public void Remove(object value)
-        {
-            bool found = false;
-            int toRemove = -1;
-            do
-            {
-                toRemove++;
-                if (listOfValues[toRemove].ToString() == value.ToString())
-                {
-                    found = true;
-                }
-            }
-            while (toRemove < listOfValues.Count - 1 && !found);
-            
-            if (found)
-            {
-                listOfValues.RemoveAt(toRemove);
-            }
-        }
-
         public int GetID()
         {
             return ID;
@@ -170,6 +144,7 @@ namespace NEA.Classes
             return value;
         }
 
+        #region List Methods
         public object GetValueFromIndex(int index)
         {
             if (!isList && !(IdentifyBestDataType() == DataType.STRING))
@@ -210,6 +185,44 @@ namespace NEA.Classes
             return listOfValues;
         }
 
+        public void Add(object value)
+        {
+            listOfValues.Add(value);
+        }
+
+        public void Remove(object value)
+        {
+            bool found = false;
+            int toRemove = -1;
+            do
+            {
+                toRemove++;
+                if (listOfValues[toRemove].ToString() == value.ToString())
+                {
+                    found = true;
+                }
+            }
+            while (toRemove < listOfValues.Count - 1 && !found);
+            
+            if (found)
+            {
+                listOfValues.RemoveAt(toRemove);
+            }
+        }
+
+        public void MakeList()
+        {
+            isList = true;
+            type = DataType.LIST;
+        }
+
+        public int GetLength()
+        {
+            return listOfValues.Count;
+        }
+        #endregion
+
+        #region Declaration
         public void Declare()
         {
             declared = true;
@@ -219,13 +232,9 @@ namespace NEA.Classes
         {
             return declared;
         }
+        #endregion
 
-        public void MakeList()
-        {
-            isList = true;
-            type = DataType.LIST;
-        }
-
+        #region Nullification
         public void SetNull()
         {
             value = null;
@@ -236,5 +245,6 @@ namespace NEA.Classes
         {
             return value == null && listOfValues == null;
         }
+        #endregion
     }
 }

@@ -507,6 +507,7 @@ namespace NEA
             this.Controls.Add(this.tableMain);
             this.MainMenuStrip = this.menuStrip;
             this.Name = "IDE_MainWindow";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.IDE_MainWindow_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCodeField_KeyDown);
             this.Leave += new System.EventHandler(this.tsFileExit_Click);

@@ -72,7 +72,7 @@ namespace NEA.Classes
                                                "EACH", "IN", "FUNCTION", "PROCEDURE", "INPUTS", "AS", "TO", "THEN", 
                                                "TRUE", "FALSE", "EQUAL", "GREATER", "LESS", "THAN", "INPUT", "MESSAGE", 
                                                "OR", "AND", "NOT", "END", "PRINT", "RETURN", "TIMES", "DIVIDED", "RAISE", 
-                                               "POWER" };
+                                               "POWER", "SWAP", "SORT", "LENGTH", "REMOVE" };
             popUp.Show();
             popUp.Hide();
         }
