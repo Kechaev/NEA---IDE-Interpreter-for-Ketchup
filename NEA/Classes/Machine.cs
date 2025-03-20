@@ -565,12 +565,13 @@ namespace NEA
 
         private string[] ConvertToPostfix(List<Token> tokens)
         {
+            Console.WriteLine(tokens.Count);
             List<string> output = new List<string>();
             Stack<Token> stack = new Stack<Token>();
 
             // Dealing with an expression beginning with a negative number
             // -1 expressed as 0 - 1
-            if (Is(tokens[0], TokenType.SUB))
+            if (ValidLengthForIndexing(0, tokens.Count) && Is(tokens[0], TokenType.SUB))
             {
                 output.Add("LOAD_CONST 0");
             }
@@ -1011,11 +1012,6 @@ namespace NEA
 
         private string[] MapPrintStatement(List<Token> expression)
         {
-            foreach (Token t in expression)
-            {
-                Console.WriteLine($"{t.GetLiteral() }");
-            }
-
             List<string> instructions = new List<string>();
 
             instructions.AddRange(GetIntermediateFromExpression(expression));
@@ -1071,6 +1067,10 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // In assignment the wrong variable is being assigned the length
+        //SET LIST TO[1, 2, 3]
+        //SET len TO LENGTH OF LIST
+        //PRINT len
         private string[] MapLengthStatement(string variable)
         {
             List<string> instructions = new List<string>();
@@ -1145,11 +1145,13 @@ namespace NEA
             List<string> instructions = new List<string>();
             counterVar = variablesDict[variable];
 
-            instructions.Add("DECLARE_VAR " + counterVar.ToString());
+            int localCounterVar = counterVar;
+
+            instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
 
             instructions.AddRange(GetIntermediateFromExpression(expression));
 
-            instructions.Add("STORE_VAR " + counterVar.ToString());
+            instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
             instructions.Add("ADJUST_TYPE " + type);
 
@@ -1161,15 +1163,17 @@ namespace NEA
             List<string> instructions = new List<string>();
             counterVar = variablesDict[variable];
 
-            instructions.Add("DECLARE_VAR " + counterVar.ToString());
+            int localCounterVar = counter;
 
-            instructions.Add("CREATE_LIST " + counterVar.ToString());
+            instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
+
+            instructions.Add("CREATE_LIST " + localCounterVar.ToString());
 
             foreach (List<Token> expression in listOfExpressions)
             {
                 instructions.AddRange(GetIntermediateFromExpression(expression));
 
-                instructions.Add("STORE_LIST_ITEM " + counterVar.ToString());
+                instructions.Add("STORE_LIST_ITEM " + localCounterVar.ToString());
             }
 
             instructions.Add("ADJUST_TYPE LIST");
@@ -2100,9 +2104,9 @@ namespace NEA
                         nextToken = internalTokens[i + j + 2];
                         expression = new List<Token>();
                         expressions = new List<List<Token>>();
+                        // List
                         if (Is(nextToken, TokenType.SQUARE_LEFT_BRACKET))
                         {
-                            // List
                             type = "LIST";
                             nextToken = internalTokens[i + j + 3];
                             if (!IsSameLine(nextToken, token))
@@ -2141,9 +2145,9 @@ namespace NEA
                                 }
                             }
                         }
+                        // Single element data type
                         else
                         {
-                            // Single element data type
                             if (!IsSameLine(nextToken, token))
                             {
                                 throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");

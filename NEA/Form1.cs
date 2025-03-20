@@ -75,45 +75,45 @@ namespace NEA
             machine = new Machine(txtCodeField.Text, txtConsole.Text);
 
             // Error Checking
-            try
-            {
-                machine.Interpret();
-                string[] intermediate = machine.GetIntermediateCode();
-                try
-                {
-                    executionLoop = new Thread(ExecutionLoop);
-                    executionLoop.Start();
-                }
-                catch (Exception e)
-                {
-                    // Failed to translate or execute
-                    // Show error
+            //try
+            //{
+            //    machine.Interpret();
+            //    string[] intermediate = machine.GetIntermediateCode();
+            //    try
+            //    {
+            //        executionLoop = new Thread(ExecutionLoop);
+            //        executionLoop.Start();
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        // Failed to translate or execute
+            //        // Show error
 
-                    this.Invoke(new MethodInvoker(delegate
-                    {
-                        ConsoleWrite(e.Message);
-                    }));
-                }
-            }
-            catch (Exception e)
-            {
-                // Failed to interpret
-                // Set the stripRun back to RunSymbol
-                // Show error
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    ConsoleWrite(e.Message);
-                }));
-                stripRun.Image = Properties.Resources.RunSymbolSmall;
-            }
+            //        this.Invoke(new MethodInvoker(delegate
+            //        {
+            //            ConsoleWrite(e.Message);
+            //        }));
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    // Failed to interpret
+            //    // Set the stripRun back to RunSymbol
+            //    // Show error
+            //    this.Invoke(new MethodInvoker(delegate
+            //    {
+            //        ConsoleWrite(e.Message);
+            //    }));
+            //    stripRun.Image = Properties.Resources.RunSymbolSmall;
+            //}
 
             //No Error Checking
-            //machine.Interpret();
+            machine.Interpret();
 
-            //string[] intermediate = machine.GetIntermediateCode();
+            string[] intermediate = machine.GetIntermediateCode();
 
-            //executionLoop = new Thread(ExecutionLoop);
-            //executionLoop.Start();
+            executionLoop = new Thread(ExecutionLoop);
+            executionLoop.Start();
         }
 
         private void ExecutionLoop()
@@ -851,11 +851,11 @@ namespace NEA
             e.ChangedRange.ClearStyle(BlueStyle);
             e.ChangedRange.SetStyle(GreyStyle, @"#.*");
             e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
-            e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message|(?<=\binput\s+)with\b|sort|swap)(?!\S)");
-            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|raise|remove)(?!\S)");
+            e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message|(?<=\binput\s+)with\b|length|(?<=\blength\s+)of\b|sort|swap)(?!\S)");
+            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|of|(?<=\bremainder\s+)from\b|raise|remove)(?!\S)");
             e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times|not|and|or)(?!\S)");
             e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(true|false)(?!\S)");
-            e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by|the|power|(?<=\bpower\s+)of|divided|in)(?!\S)");
+            e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by|the|power|of|divided|in)(?!\S)");
             e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
 
             UpdateCaretPosition();
