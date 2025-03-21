@@ -29,6 +29,7 @@ using System.IO.IsolatedStorage;
 using System.Reflection;
 using System.Net.NetworkInformation;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace NEA
 {
@@ -44,7 +45,10 @@ namespace NEA
                                      "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR",  "SQUARE_LEFT_BRACKET", "SQUARE_RIGHT_BRACKET",
                                      "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER", "REMOVE", "SORT", "SWAP", "LENGTH",
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF" };
-        private int current, start, line, counter;
+        private int current;
+        private int start;
+        private int line;
+        private int counter;
 
         public Machine(string sourceCode, string console)
         {
@@ -60,7 +64,6 @@ namespace NEA
             validProgram = true;
             stack = new Stack<object>();
             consoleText = console;
-
             fixedLoopCounter = 0;
         }
 
@@ -101,8 +104,22 @@ namespace NEA
         #region Tokenization - Credit to Robert Nystrom (Crafting Interpreters)
 
         // Tokenization heavily inspired by Nystrom's tokenization algorithms
+        // General concept of tokenization is inspired by the book
+        // However it is adapted to fit the Ketchup programming language
 
         #region Utility
+        // Rearranges the source code to move the function and procedure definitions to the start
+        // This allows the sequential reading and translation of the subroutines
+        private void RearrangeSourceCode()
+        {
+            Regex beginningFunction = new Regex(@"\bfunction\s+[a-zA-Z][a-zA-Z1-9_]*\(\s*([a-zA-Z][a-zA-Z1-9_]*\s*(,\s*[a-zA-Z][a-zA-Z1-9_]*)*)*\s*\)", RegexOptions.IgnoreCase);
+            Regex beginningProcedure = new Regex(@"\bprocedure\s+[a-zA-Z][a-zA-Z1-9_]*\(\s*([a-zA-Z][a-zA-Z1-9_]*\s*(,\s*[a-zA-Z][a-zA-Z1-9_]*)*)*\s*\)", RegexOptions.IgnoreCase);
+            Regex endFunction = new Regex(@"\bend\s*function", RegexOptions.IgnoreCase);
+            Regex endProcedure = new Regex(@"\bend\s*procedure", RegexOptions.IgnoreCase);
+
+
+        }
+
         private string[] FindLocalVariables(string subroutineName)
         {
             bool inFunction = false;
@@ -541,7 +558,6 @@ namespace NEA
 
             return tokensList.ToArray();
         }
-
         #endregion
 
         // Fields for Translation into Intermediate Code
@@ -551,7 +567,8 @@ namespace NEA
         private int[] subroutineParametersCount, subroutineLocalVariableCounter;
         private Variable[] variables;
         private Dictionary<string, int> variablesDict = new Dictionary<string, int>();
-        private int counterVar, counterSubroutine;
+        private int counterVar;
+        private int counterSubroutine;
         private int fixedLoopCounter;
         private List<string> listVariableNames;
 
@@ -565,7 +582,6 @@ namespace NEA
 
         private string[] ConvertToPostfix(List<Token> tokens)
         {
-            Console.WriteLine(tokens.Count);
             List<string> output = new List<string>();
             Stack<Token> stack = new Stack<Token>();
 
@@ -910,7 +926,7 @@ namespace NEA
                     {
                         nextToken = expression[i];
                     }
-                }
+                } 
 
                 string[] indexingStatement = MapIndexing(variableName, indexingExpression);
                 instrLine.AddRange(indexingStatement);
@@ -1153,8 +1169,6 @@ namespace NEA
 
             instructions.Add("STORE_VAR " + localCounterVar.ToString());
 
-            instructions.Add("ADJUST_TYPE " + type);
-
             return instructions.ToArray();
         }
 
@@ -1163,7 +1177,7 @@ namespace NEA
             List<string> instructions = new List<string>();
             counterVar = variablesDict[variable];
 
-            int localCounterVar = counter;
+            int localCounterVar = counterVar;
 
             instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
 
@@ -1176,8 +1190,6 @@ namespace NEA
                 instructions.Add("STORE_LIST_ITEM " + localCounterVar.ToString());
             }
 
-            instructions.Add("ADJUST_TYPE LIST");
-
             return instructions.ToArray();
         }
 
@@ -1186,9 +1198,9 @@ namespace NEA
             List<string> instructions = new List<string>();
             counterVar = variablesDict[variable];
 
-            instructions.Add("DECLARE_VAR " + counterVar.ToString());
+            int localCounterVar = counterVar;
 
-            instructions.Add("ADJUST_TYPE " + type);
+            instructions.Add("DECLARE_VAR " + localCounterVar.ToString());
 
             return instructions.ToArray();
         }
@@ -1947,6 +1959,11 @@ namespace NEA
                                         expression.Add(nextToken);
                                         j++;
                                         nextToken = internalTokens[i + j + 2];
+                                    }
+
+                                    if (!Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"]\" after indexing expression.");
                                     }
                                     expression.Add(new Token(TokenType.SQUARE_RIGHT_BRACKET, "]", nextToken.GetLine()));
 

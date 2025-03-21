@@ -154,13 +154,13 @@ namespace NEA.Classes
             }
             if (index < 0)
             {
-                throw new Exception($"LOGIC ERROR: Index out of bound. Tried to index {index + 1}. The index must be a positive number greater or equal to 1.");
+                throw new Exception($"LOGIC ERROR: Index out of bound. Tried to index {index}. The index must be a positive number greater or equal to 1.");
             }
             if (index > listOfValues.Count)
             {
-                throw new Exception($"LOGIC ERROR: Index out of bound. Tried to index {index + 1}. The list's size is {listOfValues.Count}, you cannot index past this.");
+                throw new Exception($"LOGIC ERROR: Index out of bound. Tried to index {index}. The list's size is {listOfValues.Count}, you cannot index past this.");
             }
-            // 1-Based Indexing
+            // Taking away 1 converts to 0-Based Indexing (from 1-Based Indexing)
             return listOfValues[index - 1];
         }
 

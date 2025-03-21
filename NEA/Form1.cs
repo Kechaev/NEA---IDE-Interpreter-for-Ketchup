@@ -75,45 +75,45 @@ namespace NEA
             machine = new Machine(txtCodeField.Text, txtConsole.Text);
 
             // Error Checking
-            //try
-            //{
-            //    machine.Interpret();
-            //    string[] intermediate = machine.GetIntermediateCode();
-            //    try
-            //    {
-            //        executionLoop = new Thread(ExecutionLoop);
-            //        executionLoop.Start();
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        // Failed to translate or execute
-            //        // Show error
+            try
+            {
+                machine.Interpret();
+                string[] intermediate = machine.GetIntermediateCode();
+                try
+                {
+                    executionLoop = new Thread(ExecutionLoop);
+                    executionLoop.Start();
+                }
+                catch (Exception e)
+                {
+                    // Failed to translate or execute
+                    // Show error
 
-            //        this.Invoke(new MethodInvoker(delegate
-            //        {
-            //            ConsoleWrite(e.Message);
-            //        }));
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    // Failed to interpret
-            //    // Set the stripRun back to RunSymbol
-            //    // Show error
-            //    this.Invoke(new MethodInvoker(delegate
-            //    {
-            //        ConsoleWrite(e.Message);
-            //    }));
-            //    stripRun.Image = Properties.Resources.RunSymbolSmall;
-            //}
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        ConsoleWrite(e.Message);
+                    }));
+                }
+            }
+            catch (Exception e)
+            {
+                // Failed to interpret
+                // Set the stripRun back to RunSymbol
+                // Show error
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    ConsoleWrite(e.Message);
+                }));
+                stripRun.Image = Properties.Resources.RunSymbolSmall;
+            }
 
             //No Error Checking
-            machine.Interpret();
+            //machine.Interpret();
 
-            string[] intermediate = machine.GetIntermediateCode();
+            //string[] intermediate = machine.GetIntermediateCode();
 
-            executionLoop = new Thread(ExecutionLoop);
-            executionLoop.Start();
+            //executionLoop = new Thread(ExecutionLoop);
+            //executionLoop.Start();
         }
 
         private void ExecutionLoop()
@@ -133,13 +133,20 @@ namespace NEA
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine("ERROR");
                     this.Invoke(new MethodInvoker(delegate
                     {
                         ConsoleWrite(e.Message);
                     }));
+                    stripRun.Image = Properties.Resources.RunSymbolSmall;
+                    isRunning = false;
+                    isThreadAborted = true;
+                    return;
                 }
 
-                this.Invoke(new MethodInvoker(delegate
+                //machine.FetchExecute(intermediateCode, ref txtConsole, false);
+
+                this.BeginInvoke(new MethodInvoker(delegate
                 {
                     txtConsole.SelectionStart = txtConsole.Text.Length;
                     txtConsole.ScrollToCaret();
@@ -165,7 +172,7 @@ namespace NEA
             {
                 isRunning = true;
                 stripRun.Image = Properties.Resources.EndSymbolSmall;
-                if (!isThreadAborted && unchangedCode)
+                if (!isThreadAborted && unchangedCode && executionLoop.ThreadState == ThreadState.Suspended)
                 {
                     executionLoop.Resume();
                 }
@@ -179,7 +186,11 @@ namespace NEA
                 isRunning = false;
                 isThreadAborted = false;
                 stripRun.Image = Properties.Resources.RunSymbolSmall;
-                executionLoop.Suspend();
+                Console.WriteLine($"{executionLoop.ThreadState}");
+                if (executionLoop.ThreadState != ThreadState.Stopped)
+                {
+                    executionLoop.Suspend();
+                }
             }
         }
 
@@ -325,7 +336,9 @@ namespace NEA
 
         public void ConsoleWrite(string text)
         {
+            Console.WriteLine(text);
             txtConsole.Text += text + "\r\n";
+            Console.WriteLine($"Actual Console\n{txtConsole.Text}");
         }
 
         public void ClearConsole()

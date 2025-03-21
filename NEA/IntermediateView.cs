@@ -44,6 +44,10 @@ namespace NEA
             {"RETURN", "Takes the top value of the stack and goes back to the main branch." },
             {"STORE_LIST_ITEM", "Adds the item at the top of the stack to the list variable referenced." },
             {"REMOVE_LIST_ITEM", "Removes the item at the top of the stack from the list variable referenced." },
+            {"CREATE_LIST", "Converts the variable referenced into a list, making it an empty list." },
+            {"SORT", "Sorts the list variable referenced and updates the order of the list to be sorted." },
+            {"LENGTH", "Pushes the length of the variable referenced." },
+            {"SWAP", "Takes the top 3 values of the stack, the top number references the list variable and the other two values represent the indexes to be sorted." },
             {"HALT", "Indicates the end of the program and stops the execution of the program." },
         };
         private ListBox lstBox;
