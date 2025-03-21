@@ -69,6 +69,7 @@ namespace NEA
 
         public void Interpret()
         {
+            RearrangeSourceCode();
             // Tokenization
             tokens = Tokenize();
 
@@ -117,7 +118,36 @@ namespace NEA
             Regex endFunction = new Regex(@"\bend\s*function", RegexOptions.IgnoreCase);
             Regex endProcedure = new Regex(@"\bend\s*procedure", RegexOptions.IgnoreCase);
 
+            string allText = sourceCode;
+            string[] lines = allText.Split('\n');
 
+            bool inFunction = false;
+
+            string modifiedText = "";
+            string mainText = "";
+
+            foreach (string line in lines)
+            {
+                if (!inFunction && (beginningFunction.IsMatch(line) ||  beginningProcedure.IsMatch(line)))
+                {
+                    inFunction = true;
+                    modifiedText += line + "\n";
+                }
+                else if (inFunction)
+                {
+                    modifiedText += line + "\n";
+                    if (inFunction && (endFunction.IsMatch(line) || endProcedure.IsMatch(line)))
+                    {
+                        inFunction = false;
+                    }
+                }
+                else
+                {
+                    mainText += line + "\n";
+                }
+            }
+
+            sourceCode = modifiedText + mainText;
         }
 
         private string[] FindLocalVariables(string subroutineName)
