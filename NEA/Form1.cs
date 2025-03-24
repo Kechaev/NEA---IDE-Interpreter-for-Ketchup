@@ -28,12 +28,13 @@ namespace NEA
         private Thread executionLoop;
         private Machine machine;
 
-        private bool isSaved;
+        //private bool isSaved;
         private static int NoOfRuns = 1;
 
         private List<CustomFastColoredTextBox> arrayCodeFields;
         private CustomFastColoredTextBox currentCodeField;
-        private List<string> currentFilePath;
+        private List<string> filePaths;
+        private List<bool> savedStatuses;
         private bool isRunning;
         private bool isThreadAborted;
         private bool unchangedCode;
@@ -48,12 +49,15 @@ namespace NEA
             currentCodeField = txtCodeField;
             arrayCodeFields = new List<CustomFastColoredTextBox>();
             arrayCodeFields.Add(currentCodeField);
-            // File paths (multiple to accomidate for different tabs)
-            currentFilePath = new List<string>();
-            currentFilePath.Add(null);
+            // File paths (multiple to accommodate for different tabs)
+            filePaths = new List<string>();
+            filePaths.Add(null);
+            // Saving status (multiple to accommodate for differnt tabs)
+            savedStatuses = new List<bool>();
+            savedStatuses.Add(true);
             // Boolean value preset assignment
             txtCodeField.AutoIndent = true;
-            isSaved = true;
+            //isSaved = true;
             isRunning = false;
             isThreadAborted = true;
             unchangedCode = false;
@@ -62,9 +66,9 @@ namespace NEA
         private void Run()
         {
             string name = $"Unsaved Program {NoOfRuns++}";
-            if (Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]) != null)
+            if (Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]) != null)
             {
-                name = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]);
+                name = Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]);
             }
             string time = DateTime.Now.ToLongTimeString();
 
@@ -133,7 +137,6 @@ namespace NEA
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("ERROR");
                     this.Invoke(new MethodInvoker(delegate
                     {
                         ConsoleWrite(e.Message);
@@ -143,8 +146,6 @@ namespace NEA
                     isThreadAborted = true;
                     return;
                 }
-
-                //machine.FetchExecute(intermediateCode, ref txtConsole, false);
 
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
@@ -186,7 +187,6 @@ namespace NEA
                 isRunning = false;
                 isThreadAborted = false;
                 stripRun.Image = Properties.Resources.RunSymbolSmall;
-                Console.WriteLine($"{executionLoop.ThreadState}");
                 if (executionLoop.ThreadState != ThreadState.Stopped)
                 {
                     executionLoop.Suspend();
@@ -336,9 +336,7 @@ namespace NEA
 
         public void ConsoleWrite(string text)
         {
-            Console.WriteLine(text);
             txtConsole.Text += text + "\r\n";
-            Console.WriteLine($"Actual Console\n{txtConsole.Text}");
         }
 
         public void ClearConsole()
@@ -421,7 +419,7 @@ namespace NEA
 
         private void tsFileExit_Click(object sender, EventArgs e)
         {
-            if (PromptToSaveChanges())
+            if (PromptToSaveChanges() != DialogResult.Cancel)
             {
                 CloseAllForms();
             }
@@ -615,28 +613,29 @@ namespace NEA
         #region File Interactions
         private void tsFileOpen_Click(object sender, EventArgs e)
         {
-            if (PromptToSaveChanges())
+            Console.WriteLine("Open called");
+            if (PromptToSaveChanges() != DialogResult.Cancel)
             {
                 DialogResult dialogResult = OpenFile();
-                if (currentFilePath != null && dialogResult == DialogResult.OK)
+                if (filePaths != null && dialogResult == DialogResult.OK)
                 {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
-                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
                 }
             }
         }
 
         private void tsFileSaveAs_Click(object sender, EventArgs e)
         {
-            if (currentFilePath[tabCodeControl.SelectedIndex] == null)
+            if (filePaths[tabCodeControl.SelectedIndex] == null)
             {
-                if (!isSaved)
+                if (!savedStatuses[tabCodeControl.SelectedIndex])
                 {
-                    SaveFileAs();
-                    if (currentFilePath != null)
+                    DialogResult dialogResult = SaveFileAs();
+                    if (dialogResult == DialogResult.OK)
                     {
-                        this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
-                        tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
+                        this.Text = $"Ketchup™️ IDE - {Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                        tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
                     }
                 }
             }
@@ -645,30 +644,30 @@ namespace NEA
                 DialogResult dialogResult = SaveFileAs();
                 if (dialogResult == DialogResult.OK)
                 {
-                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
                 }
             }
         }
 
         private void tsFileSave_Click(object sender, EventArgs e)
         {
-            if (currentFilePath[tabCodeControl.SelectedIndex] == null)
+            if (filePaths[tabCodeControl.SelectedIndex] == null)
             {
                 DialogResult dialogResult = SaveFileAs();
                 if (dialogResult == DialogResult.OK)
                 {
-                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
+                    tabCodeControl.TabPages[tabCodeControl.SelectedIndex].Text = Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5).ToString() + " ×";
                 }
             }
             else
             {
                 TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
                 CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
-                File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
-                isSaved = true;
-                if (currentFilePath != null)
+                File.WriteAllText(filePaths[tabCodeControl.SelectedIndex], txtCodeField.Text);
+                savedStatuses[tabCodeControl.SelectedIndex] = true;
+                if (filePaths != null)
                 {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
                 }
             }
         }
@@ -685,12 +684,12 @@ namespace NEA
             {
                 TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
                 CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
-                currentFilePath[tabCodeControl.SelectedIndex] = openFileDialog.FileName;
-                txtCodeField.Text = File.ReadAllText(currentFilePath[tabCodeControl.SelectedIndex]);
-                isSaved = true;
-                if (currentFilePath != null)
+                filePaths[tabCodeControl.SelectedIndex] = openFileDialog.FileName;
+                txtCodeField.Text = File.ReadAllText(filePaths[tabCodeControl.SelectedIndex]);
+                savedStatuses[tabCodeControl.SelectedIndex] = true;
+                if (filePaths != null)
                 {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
                 }
                 return DialogResult.OK;
             }
@@ -709,10 +708,10 @@ namespace NEA
             {
                 TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
                 CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
-                currentFilePath[tabCodeControl.SelectedIndex] = saveFileDialog.FileName;
-                File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
-                isSaved = true;
-                this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                filePaths[tabCodeControl.SelectedIndex] = saveFileDialog.FileName;
+                File.WriteAllText(filePaths[tabCodeControl.SelectedIndex], txtCodeField.Text);
+                savedStatuses[tabCodeControl.SelectedIndex] = true;
+                this.Text = $"Ketchup™️ IDE - {Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
                 return DialogResult.OK;
             }
             else
@@ -721,46 +720,61 @@ namespace NEA
             }
         }
 
-        private void SaveFile()
+        private bool SaveFile()
         {
             if (tabCodeControl.TabIndex > -1)
             {
-                if (currentFilePath[tabCodeControl.SelectedIndex] == null)
+                if (filePaths[tabCodeControl.SelectedIndex] == null)
                 {
-                    SaveFileAs();
-                    isSaved = true;
+                    DialogResult dialogResult = SaveFileAs();
+                    if (dialogResult == DialogResult.OK)
+                    {
+                        savedStatuses[tabCodeControl.SelectedIndex] = true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
                     TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
                     CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
-                    File.WriteAllText(currentFilePath[tabCodeControl.SelectedIndex], txtCodeField.Text);
-                    isSaved = true;
+                    File.WriteAllText(filePaths[tabCodeControl.SelectedIndex], txtCodeField.Text);
+                    savedStatuses[tabCodeControl.SelectedIndex] = true;
                 }
-                if (currentFilePath[tabCodeControl.SelectedIndex] != null && tabCodeControl.SelectedTab != null)
+                if (filePaths[tabCodeControl.SelectedIndex] != null && tabCodeControl.SelectedTab != null)
                 {
-                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(currentFilePath[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
+                    this.Text = $"Ketchup™️ IDE - {Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Remove(Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]).Length - 5, 5)}";
                 }
+                return true;
             }
-            
+            else
+            {
+                return false;
+            }
         }
 
-        private bool PromptToSaveChanges()
+        private DialogResult PromptToSaveChanges()
         {
-            if (!isSaved)
+            if (!savedStatuses[tabCodeControl.SelectedIndex])
             {
                 var result = MessageBox.Show($"Do you want to save changes?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
                 if (result == DialogResult.Yes)
                 {
-                    SaveFile();
+                    if (SaveFile())
+                    {
+                        return DialogResult.Yes;
+                    }
+                    return DialogResult.Cancel;
                 }
-                else if (result == DialogResult.Cancel)
+                else if (result == DialogResult.No)
                 {
-                    return false;
+                    return DialogResult.No;
                 }
             }
-            return true;
+            return DialogResult.None;
         }
 
         #region Tabs
@@ -778,7 +792,8 @@ namespace NEA
             newTxtCodeField.Font = new Font("Courier New", 12);
 
             arrayCodeFields.Add(newTxtCodeField);
-            currentFilePath.Add(null);
+            filePaths.Add(null);
+            savedStatuses.Add(true);
 
             tabPage.Controls.Add(newTxtCodeField);
 
@@ -789,6 +804,9 @@ namespace NEA
             tabCodeControl.SelectedTab = tabPage;
 
             this.Text = "Ketchup™️ IDE";
+
+            // Reset isSaved because of new file
+            savedStatuses[tabCodeControl.SelectedIndex] = true;
         }
 
         private void tabCodeControl_SelectedIndexChanged(object sender, EventArgs e)
@@ -798,9 +816,71 @@ namespace NEA
                 TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
                 CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
                 machine = new Machine(txtCodeField.Text, txtConsole.Text);
+                string savedCodeField = filePaths[tabCodeControl.SelectedIndex];
+                if (savedCodeField == txtCodeField.Text || savedCodeField == null && txtCodeField.Text == "")
+                {
+                    savedStatuses[tabCodeControl.SelectedIndex] = true;
+                }
+                else
+                {
+                    savedStatuses[tabCodeControl.SelectedIndex] = false;
+                }
+            }
+        }
+
+        #region Tab Deletion
+        private void tabCodeControl_MouseClick(object sender, MouseEventArgs e)
+        {
+            Graphics g = tabCodeControl.CreateGraphics();
+
+            int prevTabIndex = tabCodeControl.SelectedIndex;
+
+            if (tabCodeControl == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < tabCodeControl.TabCount; i++)
+            {
+                // Entire tab as a rectangle
+                Rectangle tabRect = tabCodeControl.GetTabRect(i);
+
+                TabPage tab = tabCodeControl.TabPages[i];
+
+                // Size of the text excluding the X
+                SizeF textSize = g.MeasureString(tab.Text.Substring(0, tab.Text.Length - 2), tabCodeControl.Font);
+
+                // Represents the clickable (to select) part of the tab
+                Rectangle textRect = new Rectangle(tabRect.X,tabRect.Y, (int)textSize.Width, tabRect.Height);
+
+                // If the click is not on the selecting area of the tab -> Delete the tab
+                if (!textRect.Contains(e.Location) && tabRect.Contains(e.Location))
+                {
+                    tabCodeControl.SelectedIndex = i;
+                    tabCodeControl_SelectedIndexChanged(sender, e);
+
+                    // Prompt to save
+                    if (!savedStatuses[tabCodeControl.SelectedIndex])
+                    {
+                        if (PromptToSaveChanges() != DialogResult.Cancel)
+                        {
+                            tabCodeControl.Controls.RemoveAt(i);
+                        }
+                    }
+                    // Is Saved - remove
+                    else
+                    {
+                        tabCodeControl.Controls.RemoveAt(i);
+                    }
+                    tabCodeControl.SelectedIndex = 0;
+                    break;
+                }
             }
         }
         #endregion
+
+        #endregion
+
         #endregion
 
         #region Closing
@@ -825,11 +905,38 @@ namespace NEA
 
         private void IDE_MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!PromptToSaveChanges())
+            bool allAreSaved = true;
+
+            foreach (bool b in savedStatuses)
             {
-                e.Cancel = true;
+                if (!b)
+                {
+                    allAreSaved = false;
+                }
             }
-            CloseAllForms();
+            if (!allAreSaved)
+            {
+                for (int i = tabCodeControl.TabCount - 1; i >= 0; i--)
+                {
+                    // Select the next tab
+                    tabCodeControl.SelectedIndex = i;
+
+                    if (!savedStatuses[tabCodeControl.SelectedIndex])
+                    {
+                        if (PromptToSaveChanges() == DialogResult.None)
+                        {
+                            e.Cancel = true;
+                            break;
+                        }
+                        tabCodeControl.Controls.RemoveAt(i);
+                    }
+                }
+            }
+
+            if (!e.Cancel)
+            {
+                CloseAllForms();
+            }
         }
         #endregion
 
@@ -846,7 +953,10 @@ namespace NEA
         private void txtCodeField_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
             unchangedCode = false;
-            isSaved = false;
+            if (savedStatuses != null)
+            {
+                savedStatuses[tabCodeControl.SelectedIndex] = false;
+            }
             // Regex explanation
             // \b - boundary character (beginning of a word)
             // (?i) - case insensitivity
@@ -1040,43 +1150,5 @@ namespace NEA
             return token1.GetLine() == token2.GetLine();
         }
         #endregion
-
-        #region Tab Deletion
-        private void tabCodeControl_MouseClick(object sender, MouseEventArgs e)
-        {
-            Graphics g = tabCodeControl.CreateGraphics();
-
-            if (tabCodeControl == null) return;
-
-            for (int i = 0; i < tabCodeControl.TabCount; i++)
-            {
-                // Entire tab as a rectangle
-                Rectangle tabRect = tabCodeControl.GetTabRect(i);
-
-                TabPage tab = tabCodeControl.TabPages[i];
-
-                // Size of the text excluding the X
-                SizeF textSize = g.MeasureString(tab.Text.Substring(0, tab.Text.Length - 2), tabCodeControl.Font);
-
-                // Represents the clickable (to select) part of the tab
-                Rectangle textRect = new Rectangle(tabRect.X,tabRect.Y, (int)textSize.Width, tabRect.Height);
-
-                // If the click is not on the selecting area of the tab -> Delete the tab
-                if (!textRect.Contains(e.Location) && tabRect.Contains(e.Location))
-                {
-                    int prevTabIndex = tabCodeControl.SelectedIndex;
-                    tabCodeControl.SelectedIndex = i;
-                    tabCodeControl_SelectedIndexChanged(sender, e);
-                    if (PromptToSaveChanges())
-                    {
-                        tabCodeControl.Controls.RemoveAt(i);
-                    }
-                    tabCodeControl.SelectedIndex = prevTabIndex;
-                    break;
-                }
-            }
-        }
-        #endregion
-
     }
 }
