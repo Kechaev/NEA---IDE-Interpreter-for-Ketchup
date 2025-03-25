@@ -862,7 +862,8 @@ namespace NEA
                     // Prompt to save
                     if (!savedStatuses[tabCodeControl.SelectedIndex])
                     {
-                        if (PromptToSaveChanges() != DialogResult.Cancel)
+                        DialogResult dialogResult = PromptToSaveChanges();
+                        if (dialogResult != DialogResult.Cancel && dialogResult != DialogResult.None)
                         {
                             tabCodeControl.Controls.RemoveAt(i);
                         }
@@ -872,7 +873,7 @@ namespace NEA
                     {
                         tabCodeControl.Controls.RemoveAt(i);
                     }
-                    tabCodeControl.SelectedIndex = 0;
+                    tabCodeControl.SelectedIndex = prevTabIndex;
                     break;
                 }
             }
@@ -923,10 +924,15 @@ namespace NEA
 
                     if (!savedStatuses[tabCodeControl.SelectedIndex])
                     {
-                        if (PromptToSaveChanges() == DialogResult.None)
+                        DialogResult dialogResult = PromptToSaveChanges();
+                        if (dialogResult == DialogResult.None)
                         {
                             e.Cancel = true;
                             break;
+                        }
+                        else if (dialogResult == DialogResult.Yes)
+                        {
+                            SaveFile();
                         }
                         tabCodeControl.Controls.RemoveAt(i);
                     }
@@ -975,9 +981,9 @@ namespace NEA
             e.ChangedRange.SetStyle(GreyStyle, @"#.*");
             e.ChangedRange.SetStyle(GreenStyle, "(\".*?\")", RegexOptions.Singleline);
             e.ChangedRange.SetStyle(PurpleStyle, @"\b(?i)(print|input|message|(?<=\binput\s+)with\b|length|(?<=\blength\s+)of\b|sort|swap)(?!\S)");
-            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|of|(?<=\bremainder\s+)from\b|raise|remove)(?!\S)");
+            e.ChangedRange.SetStyle(PinkStyle, @"\b(?i)(set|create|add|take|away|multiply|divide|get|remainder|(?<=\bget\s+)the\b|(?<=\bremainder\s+)from\b|(?<=\bremainder\s+)of\b|raise|remove)(?!\S)");
             e.ChangedRange.SetStyle(OrangeStyle, @"\b(?i)(count|while|do|repeat|if|else|function|procedure|then|as|times|not|and|or)(?!\S)");
-            e.ChangedRange.SetStyle(BlueStyle, @"\b(?i)(true|false)(?!\S)");
+            e.ChangedRange.SetStyle(BlueStyle, @"\b(true|false)", RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(CyanStyle, @"\b(?i)(to|from|with|going|up|down|by|the|power|of|divided|in)(?!\S)");
             e.ChangedRange.SetStyle(RedStyle, @"\b(?i)(end|return)(?!\S)");
 

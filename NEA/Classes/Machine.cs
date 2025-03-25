@@ -517,7 +517,7 @@ namespace NEA
         {
             List<Token> tokensList = new List<Token>();
             char[] singleCharKeyword = { ')', '(', '+', '-', '*', '/', '%', '^', ',', '[', ']' };
-            string[] multiCharKeywords = { "=", /*/ Temp /*/ "<>", ">", "<", ">=", "<=" };
+            string[] multiCharKeywords = { "=", "<>", ">", "<", ">=", "<=" };
 
             string[] subroutineNames = FindSubroutineNames();
             subroutineParametersCount = new int[subroutineNames.Length];
@@ -534,7 +534,6 @@ namespace NEA
                 else if (c == '\n')
                 {
                     line++;
-                    //tokensList.Add(new Token(TokenType.NEWLINE, "\n", line));
                 }
                 else if (c == '\t')
                 {
