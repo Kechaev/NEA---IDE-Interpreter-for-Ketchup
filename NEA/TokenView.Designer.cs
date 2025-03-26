@@ -31,7 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TokenView));
             this.tableMain = new System.Windows.Forms.TableLayoutPanel();
             this.lblName = new System.Windows.Forms.Label();
-            this.txtDescription = new System.Windows.Forms.TextBox();
             this.tableMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -40,44 +39,31 @@
             this.tableMain.ColumnCount = 1;
             this.tableMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableMain.Controls.Add(this.lblName, 0, 1);
-            this.tableMain.Controls.Add(this.txtDescription, 0, 2);
             this.tableMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableMain.Location = new System.Drawing.Point(5, 5);
             this.tableMain.Name = "tableMain";
-            this.tableMain.RowCount = 3;
+            this.tableMain.RowCount = 2;
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
-            this.tableMain.Size = new System.Drawing.Size(502, 685);
+            this.tableMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableMain.Size = new System.Drawing.Size(502, 510);
             this.tableMain.TabIndex = 0;
             // 
             // lblName
             // 
             this.lblName.AutoSize = true;
             this.lblName.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblName.Location = new System.Drawing.Point(3, 455);
+            this.lblName.Location = new System.Drawing.Point(3, 480);
             this.lblName.Name = "lblName";
             this.lblName.Size = new System.Drawing.Size(200, 29);
             this.lblName.TabIndex = 5;
             this.lblName.Text = "[Click on a token]";
             // 
-            // txtDescription
-            // 
-            this.txtDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtDescription.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtDescription.Location = new System.Drawing.Point(3, 488);
-            this.txtDescription.Multiline = true;
-            this.txtDescription.Name = "txtDescription";
-            this.txtDescription.ReadOnly = true;
-            this.txtDescription.Size = new System.Drawing.Size(496, 194);
-            this.txtDescription.TabIndex = 6;
-            // 
             // TokenView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 695);
+            this.ClientSize = new System.Drawing.Size(512, 520);
             this.Controls.Add(this.tableMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TokenView";
@@ -94,6 +80,5 @@
 
         private System.Windows.Forms.TableLayoutPanel tableMain;
         private System.Windows.Forms.Label lblName;
-        private System.Windows.Forms.TextBox txtDescription;
     }
 }

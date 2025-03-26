@@ -131,6 +131,7 @@ namespace NEA
             machine.SetRunningStatus(machine.GetValidity());
             while (machine.GetRunningStatus())
             {
+                // Execution Error Checking
                 try
                 {
                     machine.FetchExecute(intermediateCode, ref txtConsole, false);
@@ -146,6 +147,9 @@ namespace NEA
                     isThreadAborted = true;
                     return;
                 }
+
+                // Execution No Error Checking
+                //machine.FetchExecute(intermediateCode, ref txtConsole, false);
 
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
@@ -1015,7 +1019,7 @@ namespace NEA
             // REPEAT (num|var) TIMES
 
             // Variables have the following format [a-zA-Z_][a-zA-Z0-9_], not starting with a digit
-            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+[a-zA-Z_][a-zA-Z0-9_]*\s+from\s+[a-zA-Z0-9_]+\s+to\s+(([a-zA-Z0-9_]+\s+going\s+(up|down)\s+by\s+[a-zA-Z0-9_])|[a-zA-Z0-9_]+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*)?\)|procedure\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*)?\)|if\s+.+then|repeat\s+[a-zA-Z0-9_]+\stimes|while\s+.+then|do)$", RegexOptions.IgnoreCase);
+            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+[a-zA-Z_][a-zA-Z0-9_]*\s+from\s+[a-zA-Z0-9_]+\s+to\s+(([a-zA-Z0-9_]+\s+going\s+(up|down)\s+by\s+[a-zA-Z0-9_])|[a-zA-Z0-9_]+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)*[a-zA-Z_][a-zA-Z0-9_]*)?\)|procedure\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*)?\)|if\s+.+then|else\s+if\s+.+then|repeat\s+[a-zA-Z0-9_]+\stimes|while\s+.+then|do)$", RegexOptions.IgnoreCase);
             Regex blockEndRegex = new Regex(@"^\s*end", RegexOptions.IgnoreCase);
             Regex blockElseRegex = new Regex(@"^\s*else", RegexOptions.IgnoreCase);
 
@@ -1028,6 +1032,8 @@ namespace NEA
             else if (blockElseRegex.IsMatch(trimmedLine))
             {
                 e.Shift = -e.TabLength;
+                e.ShiftNextLines = -e.TabLength;
+                return;
             }
             else
             {

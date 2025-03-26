@@ -1678,11 +1678,6 @@ namespace NEA
                 }
             }
 
-            if (tokens[index + 1].GetLiteral() == null)
-            {
-                throw new Exception($"SYNTAX ERROR following {tokens[index].GetLine() + 1}: No structure specified after \"{tokens[index].GetLiteral()}\".");
-            }
-
             if (Is(tokens[index], TokenType.END) && tokens[index + 1].GetLiteral().ToUpper() == structure)
             {
                 return index;
@@ -2041,7 +2036,7 @@ namespace NEA
                                     arguementsStack = new Stack<Variable>();
                                     isLiteralArguementStack = new Stack<bool>();
                                     paramCounter = 0;
-                                    nextToken = internalTokens[i + 2];
+                                    nextToken = internalTokens[i + j + 1];
 
                                     if (!Is(nextToken, TokenType.LEFT_BRACKET))
                                     {
@@ -2049,7 +2044,7 @@ namespace NEA
                                     }
                                     areParamsToRead = true;
                                     readyForNextParam = true;
-                                    for (j = 1; areParamsToRead; j++)
+                                    for (; areParamsToRead; j++)
                                     {
                                         // Read as an expression until a comma then convert to instructions with Shunting Yard
                                         nextToken = internalTokens[i + j + 2];
@@ -2093,7 +2088,7 @@ namespace NEA
 
                                     intermediateList.AddRange(MapSubroutineCall(subroutineName, arguements, isLiteralList));
 
-                                    i += 2;
+                                    j += 2;
                                 }
                                 try
                                 {
@@ -3803,7 +3798,7 @@ namespace NEA
                         break;
                     case "JUMP":
                         intOp = Convert.ToInt32(operand);
-                        PC = GetLabelCounter(intOp);
+                        PC = GetLabelCounter(intOp, intermediateCode);
                         break;
                     case "JUMP_FALSE":
                         object value = stack.Pop();
@@ -3813,7 +3808,7 @@ namespace NEA
                             if (!toJump)
                             {
                                 intOp = Convert.ToInt32(operand);
-                                PC = GetLabelCounter(intOp);
+                                PC = GetLabelCounter(intOp, intermediateCode);
                             }
                         }
                         catch
@@ -3928,11 +3923,11 @@ namespace NEA
 
         #endregion
 
-        private int GetLabelCounter(int labelNumber)
+        private int GetLabelCounter(int labelNumber, string[] localIntermediateCode)
         {
-            for (int i = 0; i < intermediate.Length; i++)
+            for (int i = 0; i < localIntermediateCode.Length; i++)
             {
-                string line = intermediate[i];
+                string line = localIntermediateCode[i];
                 if (line.Split(' ')[0] == "LABEL")
                 {
                     if (line.Split(' ')[1] == labelNumber.ToString())
