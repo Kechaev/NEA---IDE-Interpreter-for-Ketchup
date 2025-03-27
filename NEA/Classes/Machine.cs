@@ -42,7 +42,7 @@ namespace NEA
         private string[] keyword = { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "THE", "REMAINDER", "OF",
                                      "MODULO", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION",
                                      "PROCEDURE", "INPUTS", "AS", "TO", "STR_LITERAL", "CHAR_LITERAL", "INT_LITERAL", "DEC_LITERAL", "BOOL_LITERAL", "TRUE", "FALSE",
-                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP", "IS", "A", "FACTOR",  "SQUARE_LEFT_BRACKET", "SQUARE_RIGHT_BRACKET",
+                                     "LEFT_BRACKET", "RIGHT_BRACKET", "ADD", "SUB", "MUL", "DIV", "MOD", "EXP",  "SQUARE_LEFT_BRACKET", "SQUARE_RIGHT_BRACKET",
                                      "MULTIPLE", "THEN", "NEWLINE", "TABSPACE", "TIMES", "DIVIDED", "RAISE", "POWER", "REMOVE", "SORT", "SWAP", "LENGTH",
                                      "INPUT", "MESSAGE", "PRINT", "AND", "OR", "NOT", "END", "RETURN", "EOF" };
         private int current;
@@ -157,7 +157,7 @@ namespace NEA
             List<string> variablesFound = new List<string>();
             for (int i = 0; i < tokens.Length - 1 && loop; i++)
             {
-                if (tokens[i].GetTokenType() == TokenType.FUNCTION && tokens[i + 1].GetLiteral().ToUpper() == subroutineName.ToUpper())
+                if ((tokens[i].GetTokenType() == TokenType.FUNCTION || tokens[i].GetTokenType() == TokenType.PROCEDURE) && tokens[i + 1].GetLiteral().ToUpper() == subroutineName.ToUpper())
                 {
                     inFunction = !inFunction;
                     if (inFunction == false)
@@ -2880,7 +2880,9 @@ namespace NEA
                             procedureTokens.Add(internalTokens[x]);
                         }
 
-                        intermediateSubroutines.Add(TokensToIntermediate(procedureTokens.ToArray(), true));
+                        List<string> subroutineIntermediate = TokensToIntermediate(procedureTokens.ToArray(), true).ToList();
+                        subroutineIntermediate.Add("RETURN");
+                        intermediateSubroutines.Add(subroutineIntermediate.ToArray());
 
                         counterSubroutine++;
 
@@ -3046,7 +3048,7 @@ namespace NEA
 
                         // Removed isLiteralList
                         intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements, isLiteralList));
-                        i += j + 1 + 1;
+                        i += j + 1; // + 1
                         break;
                     case TokenType.SORT:
                         // Current Syntax:
@@ -3679,6 +3681,8 @@ namespace NEA
                             // No values assigned to subroutineLocalVariableCounter ! ! !
                             int localVariablesCounter = subroutineLocalVariableCounter[subroutineDict[operand]];
                             // ! ! ! 
+                            Console.WriteLine(parameterCount);
+                            Console.WriteLine(localVariablesCounter);
                             Variable[] parameters = new Variable[parameterCount];
                             // Find the number of local variables per subroutine
                             Variable[] local = new Variable[localVariablesCounter];
@@ -3688,6 +3692,8 @@ namespace NEA
 
                                 parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", new List<object> { parameterValue }, false);
                                 parameters[i].Declare();
+                                Console.WriteLine(i.ToString());
+                                Console.WriteLine(local.Length);
                                 // Parameters are also considered local variables, therefore add them to variables too.
                                 local[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", new List<object> { parameterValue }, false);
                                 local[i].Declare();
