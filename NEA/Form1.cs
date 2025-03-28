@@ -131,25 +131,25 @@ namespace NEA
             machine.SetRunningStatus(machine.GetValidity());
             while (machine.GetRunningStatus())
             {
-                // Execution Error Checking
-                //try
-                //{
-                //    machine.FetchExecute(intermediateCode, ref txtConsole, false);
-                //}
-                //catch (Exception e)
-                //{
-                //    this.Invoke(new MethodInvoker(delegate
-                //    {
-                //        ConsoleWrite(e.Message);
-                //    }));
-                //    stripRun.Image = Properties.Resources.RunSymbolSmall;
-                //    isRunning = false;
-                //    isThreadAborted = true;
-                //    return;
-                //}
+                //Execution Error Checking
+                try
+                {
+                    machine.FetchExecute(intermediateCode, ref txtConsole, false);
+                }
+                catch (Exception e)
+                {
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        ConsoleWrite(e.Message);
+                    }));
+                    stripRun.Image = Properties.Resources.RunSymbolSmall;
+                    isRunning = false;
+                    isThreadAborted = true;
+                    return;
+                }
 
                 // Execution No Error Checking
-                machine.FetchExecute(intermediateCode, ref txtConsole, false);
+                //machine.FetchExecute(intermediateCode, ref txtConsole, false);
 
                 this.BeginInvoke(new MethodInvoker(delegate
                 {

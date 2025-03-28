@@ -1968,7 +1968,7 @@ namespace NEA
                                 prevToken = nextToken;
 
                                 // List indexing
-                                if (IsVariable(nextToken) && Is(internalTokens[i + j + 1], TokenType.SQUARE_LEFT_BRACKET))
+                                if (ValidLengthForIndexing(i + j + 1, internalTokens.Length) && IsVariable(nextToken) && Is(internalTokens[i + j + 1], TokenType.SQUARE_LEFT_BRACKET))
                                 {
                                     expression = new List<Token>();
                                     expression.Add(nextToken);
@@ -2222,6 +2222,67 @@ namespace NEA
                                     expression.Add(nextToken);
                                     j += 2;
                                     lengthOffset += 1;
+                                }
+                                else if (IsSubroutineCall(nextToken))
+                                {
+                                    subroutineName = nextToken.GetLiteral().ToUpper();
+
+                                    arguementsStack = new Stack<Variable>();
+                                    isLiteralArguementStack = new Stack<bool>();
+                                    paramCounter = 0;
+                                    nextToken = internalTokens[i + j + 3];
+
+                                    if (!Is(nextToken, TokenType.LEFT_BRACKET))
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
+                                    }
+                                    areParamsToRead = true;
+                                    readyForNextParam = true;
+                                    for (; areParamsToRead; j++)
+                                    {
+                                        // Read as an expression until a comma then convert to instructions with Shunting Yard
+                                        nextToken = internalTokens[i + j + 4];
+                                        if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                                        {
+                                            areParamsToRead = false;
+                                        }
+                                        else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
+                                        {
+                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
+                                            isLiteralArguementStack.Push(true);
+                                            readyForNextParam = false;
+                                        }
+                                        else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                                        {
+                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
+                                            isLiteralArguementStack.Push(false);
+                                            readyForNextParam = false;
+                                        }
+                                        else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                                        {
+                                            readyForNextParam = true;
+                                        }
+                                        else
+                                        {
+                                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetTokenType()}\" in the arguement.");
+                                        }
+                                    }
+
+                                    localCounter = FindLocalVariables(subroutineName).Length;
+                                    subroutineParametersCount[subroutineDict[subroutineName]] = paramCounter;
+                                    subroutineLocalVariableCounter[subroutineDict[subroutineName]] = localCounter;
+                                    arguements = new List<Variable>();
+                                    isLiteralList = new List<bool>();
+                                    while (arguementsStack.Count > 0)
+                                    {
+                                        arguements.Add(arguementsStack.Pop());
+                                        isLiteralList.Add(isLiteralArguementStack.Pop());
+
+                                    }
+
+                                    intermediateList.AddRange(MapSubroutineCall(subroutineName, arguements, isLiteralList));
+
+                                    j += 2;
                                 }
                                 else
                                 {
@@ -3681,8 +3742,6 @@ namespace NEA
                             // No values assigned to subroutineLocalVariableCounter ! ! !
                             int localVariablesCounter = subroutineLocalVariableCounter[subroutineDict[operand]];
                             // ! ! ! 
-                            Console.WriteLine(parameterCount);
-                            Console.WriteLine(localVariablesCounter);
                             Variable[] parameters = new Variable[parameterCount];
                             // Find the number of local variables per subroutine
                             Variable[] local = new Variable[localVariablesCounter];
@@ -3692,8 +3751,6 @@ namespace NEA
 
                                 parameters[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", new List<object> { parameterValue }, false);
                                 parameters[i].Declare();
-                                Console.WriteLine(i.ToString());
-                                Console.WriteLine(local.Length);
                                 // Parameters are also considered local variables, therefore add them to variables too.
                                 local[i] = new Variable($"subroutine{subroutineDict[operand]}Param{i}", new List<object> { parameterValue }, false);
                                 local[i].Declare();
@@ -3721,6 +3778,8 @@ namespace NEA
                             {
                                 stack.Push(localVariables[intOp].GetValue());
                             }
+                            // Adding a string formatted in the standard list output
+                            // When encountering a var that is a list
                             else
                             {
                                 List<object> listOfValues = localVariables[intOp].GetValuesList();
@@ -3819,7 +3878,7 @@ namespace NEA
                         }
                         catch
                         {
-                            throw new Exception($"DEV ERROR: When attempting \"JUMP_FALSE\" stack was not prepped. Top of stack was not a boolean value");
+                            throw new Exception($"DEV ERROR: When attempting \"JUMP_FALSE\" stack was not prepped. Top of stack was not a boolean value.");
                         }
                         break;
                     case "ADJUST_TYPE":
