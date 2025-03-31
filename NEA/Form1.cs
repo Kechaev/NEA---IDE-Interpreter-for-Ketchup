@@ -26,15 +26,18 @@ namespace NEA
     public partial class IDE_MainWindow : Form
     {
         private Thread executionLoop;
+        // Main object in which the user's program's logic is housed
         private Machine machine;
 
         //private bool isSaved;
         private static int NoOfRuns = 1;
 
+        // Lists of information for each tab
         private List<CustomFastColoredTextBox> arrayCodeFields;
-        private CustomFastColoredTextBox currentCodeField;
         private List<string> filePaths;
         private List<bool> savedStatuses;
+        private CustomFastColoredTextBox currentCodeField;
+        // Booleans for controlling execution
         private bool isRunning;
         private bool isThreadAborted;
         private bool unchangedCode;
@@ -63,8 +66,11 @@ namespace NEA
             unchangedCode = false;
         }
 
+        #region Running the user's program
+        // Main procedure for running a user's program
         private void Run()
         {
+            // Finding the name and time of running
             string name = $"Unsaved Program {NoOfRuns++}";
             if (Path.GetFileName(filePaths[tabCodeControl.SelectedIndex]) != null)
             {
@@ -74,6 +80,7 @@ namespace NEA
 
             txtConsole.Text += $"=== {name} - {time} ===\r\n";
 
+            // Getting the user's code from the current tab's FastColouredTextBoxs
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
             CustomFastColoredTextBox txtCodeField = currentTab.Controls[0] as CustomFastColoredTextBox;
             machine = new Machine(txtCodeField.Text, txtConsole.Text);
@@ -120,12 +127,15 @@ namespace NEA
             //executionLoop.Start();
         }
 
+        // Method for the thread to execute
         private void ExecutionLoop()
         {
             string[] intermediate = machine.GetIntermediateCode();
             StartExecution(intermediate);
         }
 
+        // Loops through the intermediate code and executes each instruction
+        // Checking for changes and making changes to the console, when updated
         public void StartExecution(string[] intermediateCode)
         {
             machine.SetRunningStatus(machine.GetValidity());
@@ -171,6 +181,7 @@ namespace NEA
             isThreadAborted = true;
         }
 
+        // Checking for the thread state and executing proceeding occurdingly
         private void ControlledRun()
         {
             if (!isRunning || executionLoop == null)
@@ -197,20 +208,21 @@ namespace NEA
                 }
             }
         }
+        #endregion
 
         #region Utility
+        // Turns the selected line(s) into comments
+        // Adding a # at the start of the line(s)
         private void Comment()
         {
             int index = txtCodeField.SelectionStart;
             int line = currentCodeField.GetLinesFromCharIndex(index);
             int firstCharOfLine = txtCodeField.GetFirstCharIndexOfLine(line);
             int lineLength;
-            bool isLastLine = false;
 
             if (line == txtCodeField.GetLinesFromTextBox().Length - 1)
             {
                 lineLength = txtCodeField.Text.Length - firstCharOfLine;
-                isLastLine = true;
             }
             else
             {
@@ -285,6 +297,8 @@ namespace NEA
             }
         }
 
+        // Removes the currently selected line (if selection length is 0)
+        // Removes the selected text (if selection length non-zero)
         private void Cut()
         {
             string[] lines = txtCodeField.Lines.ToArray();
@@ -310,6 +324,7 @@ namespace NEA
             }
         }
 
+        // Finds the position of the caret and sets the status strip to the new position
         private void UpdateCaretPosition()
         {
             int index = txtCodeField.SelectionStart;
@@ -338,11 +353,13 @@ namespace NEA
             statusColumnInfo.Text = $"Column: {column + 1}";
         }
 
+        // Updates the console with the added text
         public void ConsoleWrite(string text)
         {
             txtConsole.Text += text + "\r\n";
         }
 
+        // Resets the console to be an empty string
         public void ClearConsole()
         {
             txtConsole.Text = "";
@@ -350,6 +367,7 @@ namespace NEA
         #endregion
 
         #region Button Click Events
+        // Adds the selected text in either the code field or the console to the clipboard
         private void tsEditCopy_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
@@ -368,6 +386,7 @@ namespace NEA
             }
         }
 
+        // Pastes the text in the clipboard removing any selected text
         private void tsEditPaste_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
@@ -386,8 +405,6 @@ namespace NEA
                 txtCodeField.Text = txtCodeField.Text.Insert(selectionStart, toPaste);
 
                 txtCodeField.SelectionStart = selectionStart + toPaste.Length;
-
-                //txtCodeField.Select(selectionStart + toPaste.Length, 0);
             }
             else
             {
@@ -395,6 +412,7 @@ namespace NEA
             }
         }
 
+        // Reverts to the previous state of the selected code field
         private void stripUndo_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
@@ -402,6 +420,7 @@ namespace NEA
             txtCodeField.Undo();
         }
 
+        // Reverts the previous undo, returning the initial state of the selected code field
         private void stripRedo_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
@@ -409,18 +428,21 @@ namespace NEA
             txtCodeField.Redo();
         }
 
+        // Runs the program in the selected code field
         private void stripRun_Click(object sender, EventArgs e)
         {
             ControlledRun();
             unchangedCode = true;
         }
         
+        // Triggers comment event and caret update
         private void stripComment_Click(object sender, EventArgs e)
         {
             Comment();
             UpdateCaretPosition();
         }
 
+        // Exits the form with a prompt to save unsaved files
         private void tsFileExit_Click(object sender, EventArgs e)
         {
             if (PromptToSaveChanges() != DialogResult.Cancel)
@@ -429,6 +451,7 @@ namespace NEA
             }
         }
 
+        // Triggers shortcuts and caret update
         private void txtCodeField_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Z && e.Control && e.Shift)
@@ -450,11 +473,13 @@ namespace NEA
             }
         }
 
+        // Triggers cut method
         private void tsEditCut_Click(object sender, EventArgs e)
         {
             Cut();
         }
 
+        // Adds the selected text in either the code field or the console to the clipboard
         private void stripCopy_Click(object sender, EventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
@@ -473,6 +498,7 @@ namespace NEA
             }
         }
 
+        // Adds the selected text (or all the text) in the console to the clipboard
         private void btnCopy_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(txtConsole.SelectedText))
@@ -485,6 +511,7 @@ namespace NEA
             }
         }
 
+        // Adds the console outputs of the last program ran to the clipboard
         private void btnCopyLastProgram_Click(object sender, EventArgs e)
         {
             string[] lines = txtConsole.Lines;
@@ -516,41 +543,53 @@ namespace NEA
             }
         }
 
+        // Clears the console
         private void btnClear_Click(object sender, EventArgs e)
         {
             ClearConsole();
         }
 
+        // Creates a new tab and new file
         private void stripNewFile_Click(object sender, EventArgs e)
         {
             tsFileNew_Click(sender, e);
         }
 
+        // Triggers an open file event
         private void stripOpenFile_Click(object sender, EventArgs e)
         {
             tsFileOpen_Click(sender, e);
         }
 
+        // Triggers a save event
         private void stripSave_Click(object sender, EventArgs e)
         {
             tsFileSave_Click(sender, e);
         }
 
+        // Triggers a save as event
         private void stripSaveAs_Click(object sender, EventArgs e)
         {
             tsFileSaveAs_Click(sender, e);
         }
 
+        // Triggers a paste event
         private void stripPaste_Click(object sender, EventArgs e)
         {
             tsEditPaste_Click(sender, e);
         }
+
+        // Clears the console
+        private void tsClear_Click(object sender, EventArgs e)
+        {
+            ClearConsole();
+        }
         #endregion
 
         #region Code Views
+        // Opens a new window with a breakdown of the current code field into its intermediate level instructions
         private void tsIntermediateView_Click(object sender, EventArgs e)
         {
-            // List boxes
             if (txtCodeField.Text == "")
             {
                 MessageBox.Show("No program has been entered.\nCannot open Intermediate View.");
@@ -577,6 +616,7 @@ namespace NEA
             }
         }
 
+        // Opens a new window with a breakdown of the current code field into its tokens
         private void tsTokenView_Click(object sender, EventArgs e)
         {
             // Lists boxes
@@ -607,14 +647,11 @@ namespace NEA
                 }
             }
         }
-
-        private void tsClear_Click(object sender, EventArgs e)
-        {
-            ClearConsole();
-        }
         #endregion
 
         #region File Interactions
+        // Prompts an OpenFileDialog and opens the selected file in the selected code field
+        // Changes the name of the form
         private void tsFileOpen_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Open called");
@@ -629,6 +666,8 @@ namespace NEA
             }
         }
 
+        // Prompts a SaveAsDialog and saves the selected code field to the selected file path
+        // Changes the name of the form
         private void tsFileSaveAs_Click(object sender, EventArgs e)
         {
             if (filePaths[tabCodeControl.SelectedIndex] == null)
@@ -653,6 +692,8 @@ namespace NEA
             }
         }
 
+        // Prompts a SaveAsDialog and saves the selected code field to the selected file path
+        // Or saves to the predefined file path 
         private void tsFileSave_Click(object sender, EventArgs e)
         {
             if (filePaths[tabCodeControl.SelectedIndex] == null)
@@ -676,6 +717,7 @@ namespace NEA
             }
         }
 
+        // Opens the OpenFileDialog and prompts the user to selected a .ktch file
         private DialogResult OpenFile()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -700,6 +742,7 @@ namespace NEA
             return DialogResult.Cancel;
         }
 
+        // Opens the SaveFileDialog and prompts the user to save a .ktch file
         private DialogResult SaveFileAs()
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog()
@@ -724,6 +767,7 @@ namespace NEA
             }
         }
 
+        // Saves the selected code field's text to a predefined file path
         private bool SaveFile()
         {
             if (tabCodeControl.TabIndex > -1)
@@ -759,6 +803,8 @@ namespace NEA
             }
         }
 
+        // Prompts the user with "Unsaved Changes"
+        // Offers them to save their files
         private DialogResult PromptToSaveChanges()
         {
             if (!savedStatuses[tabCodeControl.SelectedIndex])
@@ -782,6 +828,7 @@ namespace NEA
         }
 
         #region Tabs
+        // Opens a new tab with a new file
         private void tsFileNew_Click(object sender, EventArgs e)
         {
             TabPage tabPage = new TabPage();
@@ -813,6 +860,7 @@ namespace NEA
             savedStatuses[tabCodeControl.SelectedIndex] = true;
         }
 
+        // Updates the code field and the appropriate code to load into the machine class
         private void tabCodeControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (tabCodeControl.SelectedIndex != -1)
@@ -832,7 +880,7 @@ namespace NEA
             }
         }
 
-        #region Tab Deletion
+        // Deletes tab if the × is clicked
         private void tabCodeControl_MouseClick(object sender, MouseEventArgs e)
         {
             Graphics g = tabCodeControl.CreateGraphics();
@@ -886,9 +934,8 @@ namespace NEA
 
         #endregion
 
-        #endregion
-
         #region Closing
+        // Aborts the thread and manually closes all open forms
         private void CloseAllForms()
         {
             if (executionLoop != null && executionLoop.ThreadState == ThreadState.Suspended)
@@ -908,6 +955,7 @@ namespace NEA
             }
         }
 
+        // Checks all tabs are saved, if not then prompts "Unsaved Changes" for each unsaved tab
         private void IDE_MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             bool allAreSaved = true;
@@ -960,6 +1008,7 @@ namespace NEA
         Style RedStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
         Style BlueStyle = new TextStyle(Brushes.DarkBlue, null, FontStyle.Regular);
 
+        // Defining which words/characters to colour
         private void txtCodeField_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
             unchangedCode = false;
@@ -967,6 +1016,7 @@ namespace NEA
             {
                 savedStatuses[tabCodeControl.SelectedIndex] = false;
             }
+
             // Regex explanation
             // \b - boundary character (beginning of a word)
             // (?i) - case insensitivity
@@ -996,6 +1046,7 @@ namespace NEA
         #endregion
 
         #region Indentation (Formatting)
+        // Defining what a line must look like to indent/unindent the next line (or the line itself)
         private void txtCodeField_AutoIndentNeeded(object sender, AutoIndentEventArgs e)
         {
             TabPage currentTab = tabCodeControl.SelectedTab as TabPage;
@@ -1007,19 +1058,19 @@ namespace NEA
             // \s* - accounts for tabspaces
             // COUNT statement format:
             // COUNT WITH var FROM (num|var) TO (num|var) (GOING (UP|DOWN) BY (num|var))?
-            // FUNCTION definition format:
+            // FUNCTION definition format: (Similar for PROCEDURE)
             // FUNCTION subroutineName (var,var,var)
             // subroutineName must begin with a letter or an underscore
             // The list of parameters must end with a single var with no comma after it
             // IF statement format:
-            // IF anything (SPECIFY) THEN
+            // IF anything THEN
             // ELSE statement format:
             // ELSE (IF anything THEN)?
             // REPEAT statement format:
             // REPEAT (num|var) TIMES
 
             // Variables have the following format [a-zA-Z_][a-zA-Z0-9_], not starting with a digit
-            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+[a-zA-Z_][a-zA-Z0-9_]*\s+from\s+[a-zA-Z0-9_]+\s+to\s+(([a-zA-Z0-9_]+\s+going\s+(up|down)\s+by\s+[a-zA-Z0-9_])|[a-zA-Z0-9_]+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)*[a-zA-Z_][a-zA-Z0-9_]*)?\)|procedure\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*)?\)|if\s+.+then|else\s+if\s+.+then|repeat\s+[a-zA-Z0-9_]+\stimes|while\s+.+then|do)$", RegexOptions.IgnoreCase);
+            Regex blockStartRegex = new Regex(@"^\s*(count\s+with\s+[a-zA-Z_][a-zA-Z0-9_]*\s+from\s+[a-zA-Z0-9_]+\s+to\s+(([a-zA-Z0-9_]+\s+going\s+(up|down)\s+by\s+[a-zA-Z0-9_])|[a-zA-Z0-9_]+)|function\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)*[a-zA-Z_][a-zA-Z0-9_]*)?\)|procedure\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\((([a-zA-Z_][a-zA-Z0-9_]*,)?[a-zA-Z_][a-zA-Z0-9_]*)?\)|if\s+.+then|repeat\s+[a-zA-Z0-9_]+\stimes|while\s+.+then|do)$", RegexOptions.IgnoreCase);
             Regex blockEndRegex = new Regex(@"^\s*end", RegexOptions.IgnoreCase);
             Regex blockElseRegex = new Regex(@"^\s*else", RegexOptions.IgnoreCase);
 
@@ -1032,24 +1083,15 @@ namespace NEA
             else if (blockElseRegex.IsMatch(trimmedLine))
             {
                 e.Shift = -e.TabLength;
-                e.ShiftNextLines = -e.TabLength;
                 return;
             }
-            else
+            else if (blockStartRegex.IsMatch(trimmedLine))
             {
-                int lineNumber = txtCodeField.Selection.Start.iLine;
-                if (lineNumber > 0)
-                {
-                    string prevLine = txtCodeField.Lines[lineNumber - 1].Trim();
-                    if (blockStartRegex.IsMatch(prevLine))
-                    {
-                        e.ShiftNextLines = e.TabLength;
-                        return;
-                    }
-                }
+                e.ShiftNextLines = e.TabLength;
             }
         }
 
+        // Automatically formats all the words/characters to follow the general rules of syntax for Ketchup
         private void stripFormat_Click(object sender, EventArgs e)
         {
             int selectionStart = txtCodeField.SelectionStart;
@@ -1139,11 +1181,14 @@ namespace NEA
             txtCodeField.SelectionLength = selectionLength;
         }
 
+        #region Utility
+        // Verifies that the token is a variable
         private bool IsVariable(Token token)
         {
             return token.GetTokenType() == TokenType.VARIABLE;
         }
 
+        // Verifies that the token is a literal
         private bool IsLiteral(Token token)
         {
             TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
@@ -1152,15 +1197,18 @@ namespace NEA
             return literals.Contains(token.GetTokenType());
         }
 
+        // GOD FUNCTION: Verifies if a token is a certain TokenType
         private bool Is(Token token, TokenType type)
         {
             return token.GetTokenType() == type;
         }
 
+        // Verifies that the two tokens are on the same line
         private bool IsSameLine(Token token1, Token token2)
         {
             return token1.GetLine() == token2.GetLine();
         }
+        #endregion
         #endregion
     }
 }

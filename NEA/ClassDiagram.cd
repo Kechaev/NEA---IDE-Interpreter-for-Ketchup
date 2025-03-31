@@ -1,65 +1,122 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="NEA.Classes.CustomFastColoredTextBox">
-    <Position X="12" Y="0.75" Width="1.5" />
+  <Class Name="NEA.Classes.CustomFastColoredTextBox" Collapsed="true">
+    <Position X="0.5" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>gAiQBBgAQQFEBoAAEAAIAApACAQgADpQIIgCAAIABgE=</HashCode>
       <FileName>Classes\CustomFastColoredTextBox.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="NEA.Classes.StackFrame">
-    <Position X="8" Y="3.5" Width="1.5" />
+  <Class Name="NEA.Classes.StackFrame" Collapsed="true">
+    <Position X="2.5" Y="1.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAABAABAABAAQCAAAAIAAAEAAAAAAAAAAAAgACAAAQ=</HashCode>
       <FileName>Classes\StackFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="NEA.Classes.Token">
-    <Position X="8" Y="0.75" Width="1.5" />
+  <Class Name="NEA.Classes.Token" Collapsed="true">
+    <Position X="2.5" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEAAAAEAAAAAACAAAAAAABAAAABAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Classes\Token.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="NEA.Classes.Variable">
-    <Position X="10" Y="0.75" Width="1.5" />
+  <Class Name="NEA.Classes.Variable" Collapsed="true">
+    <Position X="2.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AgIIAgIAIAAAggEUAgAAgAQAAAAFIGEIAAAAAAAABCA=</HashCode>
+      <HashCode>AgIIAgIAICAAhgEUBgAAhAQAAAAFIGEYAAAAAAAABCA=</HashCode>
       <FileName>Classes\Variable.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="NEA.Machine">
-    <Position X="4.5" Y="0.75" Width="3" />
+  <Class Name="NEA.Machine" Collapsed="true">
+    <Position X="2.5" Y="0.5" Width="3" />
     <TypeIdentifier>
-      <HashCode>QEHwzkEANoFUKAfrxTWMlq6BlVBC6sdQF4hCAELEcoA=</HashCode>
+      <HashCode>QEHwzkEANoFUKQfrxTWMlq6BjVBD6sdQ16hKAkLEcog=</HashCode>
       <FileName>Classes\Machine.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="NEA.Program">
-    <Position X="2.5" Y="0.75" Width="1.5" />
+  <Class Name="NEA.Program" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Classes\Program.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="NEA.IDE_MainWindow">
-    <Position X="0.5" Y="0.75" Width="1.5" />
+    <Position X="5.75" Y="0.5" Width="1.75" />
+    <Members>
+      <Field Name="btnClear" Hidden="true" />
+      <Field Name="btnCopy" Hidden="true" />
+      <Field Name="btnCopyLastProgram" Hidden="true" />
+      <Field Name="components" Hidden="true" />
+      <Method Name="Dispose" Hidden="true" />
+      <Method Name="InitializeComponent" Hidden="true" />
+      <Field Name="lblConsole" Hidden="true" />
+      <Field Name="menuStrip" Hidden="true" />
+      <Field Name="splitContainer" Hidden="true" />
+      <Field Name="statusBar" Hidden="true" />
+      <Field Name="statusColumnInfo" Hidden="true" />
+      <Field Name="statusLineInfo" Hidden="true" />
+      <Field Name="stripComment" Hidden="true" />
+      <Field Name="stripCopy" Hidden="true" />
+      <Field Name="stripFormat" Hidden="true" />
+      <Field Name="stripNewFile" Hidden="true" />
+      <Field Name="stripOpenFile" Hidden="true" />
+      <Field Name="stripPaste" Hidden="true" />
+      <Field Name="stripRedo" Hidden="true" />
+      <Field Name="stripRun" Hidden="true" />
+      <Field Name="stripSave" Hidden="true" />
+      <Field Name="stripSaveAs" Hidden="true" />
+      <Field Name="stripUndo" Hidden="true" />
+      <Field Name="tab0" Hidden="true" />
+      <Field Name="tabCodeControl" Hidden="true" />
+      <Field Name="tableCodeSpace" Hidden="true" />
+      <Field Name="tableConsole" Hidden="true" />
+      <Field Name="tableMain" Hidden="true" />
+      <Field Name="tabPage2" Hidden="true" />
+      <Field Name="toolStrip" Hidden="true" />
+      <Field Name="toolStripSeparator1" Hidden="true" />
+      <Field Name="toolStripSeparator2" Hidden="true" />
+      <Field Name="toolStripSeparator3" Hidden="true" />
+      <Field Name="toolStripSeparator4" Hidden="true" />
+      <Field Name="tsClear" Hidden="true" />
+      <Field Name="tsConsole" Hidden="true" />
+      <Field Name="tsDebugBreakpoints" Hidden="true" />
+      <Field Name="tsDebugSyntaxCheck" Hidden="true" />
+      <Field Name="tsDebugTraceTable" Hidden="true" />
+      <Field Name="tsEdit" Hidden="true" />
+      <Field Name="tsEditCopy" Hidden="true" />
+      <Field Name="tsEditCut" Hidden="true" />
+      <Field Name="tsEditPaste" Hidden="true" />
+      <Field Name="tsFile" Hidden="true" />
+      <Field Name="tsFileExit" Hidden="true" />
+      <Field Name="tsFileNew" Hidden="true" />
+      <Field Name="tsFileOpen" Hidden="true" />
+      <Field Name="tsFileSave" Hidden="true" />
+      <Field Name="tsFileSaveAs" Hidden="true" />
+      <Field Name="tsIntermediateCodeView" Hidden="true" />
+      <Field Name="tsTokenView" Hidden="true" />
+      <Field Name="tsView" Hidden="true" />
+      <Field Name="tsViewConsoleView" Hidden="true" />
+      <Field Name="txtCodeField" Hidden="true" />
+      <Field Name="txtConsole" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>DZzoR29GIa5zIGPARyCElYFiYgBpoUCVnAI1GIBExRs=</HashCode>
+      <HashCode>DZzoR29GIa5zIGPARyCElYFiYgBpoUCVnAI1GIBERRs=</HashCode>
       <FileName>Form1.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Enum Name="NEA.Classes.DataType">
-    <Position X="8" Y="7" Width="1.5" />
+  <Enum Name="NEA.Classes.DataType" Collapsed="true">
+    <Position X="4.25" Y="1.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAAAAAAAAABIAAAQAAIAAIAAAAAAAAAAA=</HashCode>
       <FileName>Classes\DataType.cs</FileName>
     </TypeIdentifier>
   </Enum>
-  <Enum Name="NEA.Classes.TokenType">
-    <Position X="10" Y="7" Width="1.5" />
+  <Enum Name="NEA.Classes.TokenType" Collapsed="true">
+    <Position X="4.25" Y="2" Width="1.25" />
     <TypeIdentifier>
-      <HashCode>CQCBAgSQLiQNwoEAUESEmgAUjEtKIAAXAABhwQkEBBk=</HashCode>
+      <HashCode>CQCBAgSQPiQNwoUAUESEmgAUjE9LIAAXAABgwQkEBBk=</HashCode>
       <FileName>Classes\TokenType.cs</FileName>
     </TypeIdentifier>
   </Enum>

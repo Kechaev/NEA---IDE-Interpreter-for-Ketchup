@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -28,21 +29,11 @@ namespace NEA.Classes
         private bool isFromMouseClick;
         private int suggestionCount = 5;
 
-        public string[] intellisenseWords;
+        public string[] suggestionDictionary;
         public int YOffset;
         public int XOffset;
 
         private List<string> identifierNames;
-
-        public int GetSuggestionCount()
-        {
-            return suggestionCount;
-        }
-
-        public void SetSuggestionCount(int count)
-        {
-            suggestionCount = count;
-        }
 
         public CustomFastColoredTextBox()
         {
@@ -56,17 +47,18 @@ namespace NEA.Classes
             listBox.Size = new Size(160, 54);
             tableLayout.Controls.Add(listBox);
 
+            // Adding events to newly created text box
             this.TextChanged += TextBox_TextChanged;
             this.KeyDown += TextBox_KeyDown;
             this.KeyPress += TextBox_KeyPress;
             this.SelectionChanged += TextBox_SelectionChanged;
 
+            // Events for interacting with the pop up
             listBox.Click += ListBox_Click;
             listBox.SelectedIndexChanged += ListBox_SelectedIndexChanged;
 
-            // Add support for variables and function names
-
-            intellisenseWords = new string[] { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY",
+            // Dictionary of potential words to suggest
+            suggestionDictionary = new string[] { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY",
                                                "DIVIDE", "GET", "REMAINDER", "OF", "IF", "ELSE", "COUNT", "WITH", 
                                                "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", 
                                                "EACH", "IN", "FUNCTION", "PROCEDURE", "INPUTS", "AS", "TO", "THEN", 
@@ -77,8 +69,8 @@ namespace NEA.Classes
             popUp.Hide();
         }
 
-        // Does not account for scrolling - FIX?
-        // Does account for size of text (zoom factor) due to this.Font being a parameter
+        // Get the pixel position of the character relative to the text box
+        // Uses SizeF on strings to calculate the length from line 0, char 0
         public Point GetPositionFromCharIndex(int index)
         {
             Graphics g = this.CreateGraphics();
@@ -87,41 +79,40 @@ namespace NEA.Classes
 
             SizeF localTextSize = g.MeasureString(this.Lines[GetLineFromSelectedChar()], this.Font);
 
-            // Offset could be WRONG (0,0)
             Rectangle textRect = new Rectangle(0, 0, (int)textSize.Width, (int)textSize.Height - 20);
 
             // This allows us to ignore the width of all the other lines, other than the selected one
             Rectangle localTextRect = new Rectangle(0, 0, (int)localTextSize.Width, (int)localTextSize.Height - 20);
 
-            return new Point(localTextRect.Width, textRect.Height);
+            // Taking away the vertical scroll of the text box to account for being on further lines (requiring scrolling from the top of the text box)
+            return new Point(localTextRect.Width, textRect.Height - this.VerticalScroll.Value);
         }
 
-        public string[] GetintellisenseWords()
-        {
-            return intellisenseWords;
-        }
-
+        // Adds a word to the suggestion dictionary
         public void AddIntellisenseWord(string word)
         {
-            string[] newWords = new string[intellisenseWords.Length + 1];
-            for (int i = 0; i < intellisenseWords.Length; i++)
+            string[] newWords = new string[suggestionDictionary.Length + 1];
+            for (int i = 0; i < suggestionDictionary.Length; i++)
             {
-                newWords[i] = intellisenseWords[i];
+                newWords[i] = suggestionDictionary[i];
             }
             newWords[newWords.Length - 1] = word;
-            intellisenseWords = new string[intellisenseWords.Length + 1]; 
-            intellisenseWords = newWords;
+            suggestionDictionary = new string[suggestionDictionary.Length + 1]; 
+            suggestionDictionary = newWords;
         }
 
+        // Removes a word from the suggestion dictionary
         public void RemoveIntellisenseWord(string word)
         {
-            List<string> intellisenseWordsList = intellisenseWords.ToList();
+            List<string> suggestionDictionaryList = suggestionDictionary.ToList();
 
-            intellisenseWordsList.ToList().Remove(word);
+            suggestionDictionaryList.ToList().Remove(word);
 
-            intellisenseWords = intellisenseWordsList.ToArray();
+            suggestionDictionary = suggestionDictionaryList.ToArray();
         }
 
+        // Removes the word currently being typed and checks for other words that are identifiers
+        // When found the identifiers are added to a list of identifers, separate from the suggestion dictionary
         private void CheckForIdentifiers()
         {
             char[] separators = new char[] { ' ', ',', '(', ')', '\n', '\t' };
@@ -164,6 +155,8 @@ namespace NEA.Classes
             identifierNames = noDuplicateList;
         }
 
+        // Verifies that a word is not a valid keyword
+        // Checks that it matches the pattern of a variable (starts lowercase)
         private bool IsValidIdentifier(string word)
         {
             string[] invalidWords = new string[] { ">=", "<=", "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY", "DIVIDE", "GET", "REMAINDER", "OF", "IF", "ELSE", "COUNT", "WITH", "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR", "EACH", "IN", "FUNCTION", "PROCEDURE", "INPUTS", "AS", "TO", "THEN", "TRUE", "FALSE", "EQUAL", "GREATER", "LESS", "THAN", "INPUT", "MESSAGE", "OR", "AND", "NOT", "END", "PRINT", "RETURN", "TIMES", "DIVIDED", "RAISE", "POWER", "[", "]", "(", ")", ",", "-", "+", "*", "/", "^", ">", "<", "=" };
@@ -179,6 +172,7 @@ namespace NEA.Classes
             return false;
         }
 
+        // Hides the pop up when the caret is moved off a certain word
         private void TextBox_SelectionChanged(object sender, EventArgs e)
         {
             popUp.Hide();
@@ -286,8 +280,8 @@ namespace NEA.Classes
                 isPopUpShowing = false;
             }
             
-            // Reset intellisenseWords
-            intellisenseWords = new string[] { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY",
+            // Reset suggestionDictionary
+            suggestionDictionary = new string[] { "CREATE", "SET", "ADD", "TAKE", "AWAY", "MULTIPLY",
                                                "DIVIDE", "GET", "REMAINDER", "OF", "IF", "ELSE", "COUNT", "WITH",
                                                "FROM", "GOING", "UP", "DOWN", "BY", "WHILE", "DO", "REPEAT", "FOR",
                                                "EACH", "IN", "FUNCTION", "PROCEDURE", "INPUTS", "AS", "TO", "THEN",
@@ -311,7 +305,7 @@ namespace NEA.Classes
 
             List<KeyValuePair<int, string>> tempWords = new List<KeyValuePair<int, string>>();
             
-            foreach (string word in intellisenseWords)
+            foreach (string word in suggestionDictionary)
             {
                 if (word.ToUpper().StartsWith(wordTyping.ToUpper()))
                 {
@@ -327,10 +321,10 @@ namespace NEA.Classes
                 // For small lengths of wordTyping use recursive algorithm
                 if (wordTypingLength < 3)
                 {
-                    foreach (string word in intellisenseWords)
+                    foreach (string word in suggestionDictionary)
                     {
                         distance = -1;
-                        if (word.Length < 3)
+                        if (word.Length < 5)
                         {
                             distance = LevenshteinRecursive(word, wordTyping.ToUpper());
                         }
@@ -343,7 +337,7 @@ namespace NEA.Classes
                 }
                 else if (wordTypingLength < 10)
                 {
-                    foreach (string word in intellisenseWords)
+                    foreach (string word in suggestionDictionary)
                     {
                         distance = -1;
                         if (word.Length < 10)
@@ -358,7 +352,7 @@ namespace NEA.Classes
                 foreach (var v in tempWords)
                 {
                     int currentDistance = v.Key;
-                    if (currentDistance < minimumDistance && currentDistance > 1)
+                    if (currentDistance < minimumDistance && currentDistance >= 1)
                     {
                         minimumDistance = v.Key;
                     }
@@ -373,7 +367,7 @@ namespace NEA.Classes
                 for (int i = 0; i < tempWords.Count; i++)
                 {
                     var v = tempWords[i];
-                    if (v.Key < minimumDistance + differenceAllowed || v.Key < 2)
+                    if (v.Key > minimumDistance + differenceAllowed || v.Key > 2) 
                     {
                         tempWords.Remove(v);
                     }
@@ -383,7 +377,7 @@ namespace NEA.Classes
             string[] outArray;
 
             // Sort the following using the key first and then by levenshtein distance
-            outArray = tempWords.OrderBy(o => o.Key).Take(suggestionCount).Select(s => s.Value).Distinct().ToArray();
+            outArray = tempWords.OrderBy(o => o.Key).ThenBy( n => Math.Abs(n.Value.Length - wordTypingLength)).Take(suggestionCount).Select(s => s.Value).Distinct().ToArray();
 
             listBox.Items.AddRange(outArray);
 

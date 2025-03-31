@@ -793,7 +793,6 @@ namespace NEA
             int totalTokens = expression.Count;
             IdentifyExpressions(expression, ref begins, ref ends, ref NoOfNonSimpleExpressionTokens);
             
-
             for (int i = 0; i < begins.Count; i++)
             {
                 List<Token> expressionForRPN = SubexpressionFrom(expression, begins[i], ends[i]);
@@ -2193,7 +2192,7 @@ namespace NEA
                             {
                                 throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
                             }
-                            while (ValidLengthForIndexing(i + j + 2, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !Is(nextToken, TokenType.AS))
+                            while (ValidLengthForIndexing(i + j + 2, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !IsEndOfToken(nextToken))
                             {
                                 // Limitation: in an if statement the prompt cannot contain multiple strings or variables
                                 // Format without punctuation does not support this
@@ -2371,6 +2370,7 @@ namespace NEA
                             j++;
                             nextToken = internalTokens[i + j + 1];
                         }
+
                         // Capture Main If Body
                         bodyStart = i + j + 2;
                         bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
@@ -2402,6 +2402,7 @@ namespace NEA
                                 j++;
                                 nextToken = internalTokens[i + j + 2];
                             }
+
                             // + 2 is used in this case because the program is checking for the next token after the final expression token
                             if (!Is(nextToken, TokenType.THEN))
                             {

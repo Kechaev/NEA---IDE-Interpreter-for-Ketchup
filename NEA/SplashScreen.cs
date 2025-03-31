@@ -28,7 +28,7 @@ namespace NEA
             }
             if (progressBar.Value == 500 && progressBar.Value <= 899)
             {
-                progressBar.Increment(2);
+                progressBar.Increment(1);
             }
             if (progressBar.Value == 900 && progressBar.Value <= 999)
             {
