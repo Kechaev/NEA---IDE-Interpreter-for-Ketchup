@@ -50,15 +50,19 @@ namespace NEA
         private int line;
         private int counter;
 
+        // Instantiation for the Machine class
         public Machine(string sourceCode, string console)
         {
+            // Resets variables for repeat use of the same Machine object
             Variable.ResetVariables();
+            // Setting the source code in the class
             this.sourceCode = sourceCode;
+            // Set up for variables
             callStack = new Stack<StackFrame>();
-            counterSubroutine = 0;
             subroutineDict = new Dictionary<string, int>();
             intermediateSubroutines = new List<string[]>();
             listVariableNames = new List<string>();
+            counterSubroutine = 0;
             counter = 0;
             PC = 0;
             validProgram = true;
@@ -67,6 +71,7 @@ namespace NEA
             fixedLoopCounter = 0;
         }
 
+        // Calls all the methods required for interpreting in the correct order
         public void Interpret()
         {
             RearrangeSourceCode();
@@ -86,16 +91,19 @@ namespace NEA
         }
 
         #region Machine Getters
+        // Returns the string array of all intermediate code
         public string[] GetIntermediateCode()
         {
             return intermediate;
         }
 
+        // Returns a list of string arrays for each set of intermediate code for each subroutine in the code
         public List<string[]> GetSubroutinesIntermediateCode()
         {
             return intermediateSubroutines;
         }
 
+        // Returns the dictionary of subroutine names and their ID
         public Dictionary<string, int> GetSubroutineDictionary()
         {
             return subroutineDict;
@@ -150,6 +158,7 @@ namespace NEA
             sourceCode = modifiedText + mainText;
         }
 
+        // Finds all the local variables inside a certain subroutine
         private string[] FindLocalVariables(string subroutineName)
         {
             bool inFunction = false;
@@ -174,6 +183,7 @@ namespace NEA
             return variablesFound.ToArray();
         }
 
+        // Returns the number of variables there are in the program
         private int GetNoVariables()
         {
             List<string> variables = new List<string>();
@@ -190,6 +200,7 @@ namespace NEA
             return variables.Count;
         }
 
+        // Returns the number of counting variables in Fixed-Length loops
         private int GetNoUnnamedVariables()
         {
             int counter = 0;
@@ -204,6 +215,7 @@ namespace NEA
             return counter;
         }
 
+        // Returns the next character in the source code
         private char Peek()
         {
             if (current >= sourceCode.Length)
@@ -213,6 +225,7 @@ namespace NEA
             return sourceCode[current];
         }
 
+        // Returns the second next character in the source code
         private char PeekNext()
         {
             if (current + 1 >= sourceCode.Length)
@@ -222,22 +235,26 @@ namespace NEA
             return sourceCode[current + 1];
         }
 
+        // Verifies that the character is a digit or a letter
         private bool IsAlphaNumeric(char c)
         {
             return IsDigit(c) || IsAlpha(c);
         }
 
+        // Verifies that the character is a letter
         private bool IsAlpha(char c)
         {
             return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
         }
 
+        // Verifies that the character is a digit
         private bool IsDigit(char c)
         {
             return char.IsDigit(c);
         }
 
         // Token definitions
+        // Returns the Token Type of the token given
         public TokenType GetTokenType(string token)
         {
             switch (token.ToUpper())
@@ -393,6 +410,8 @@ namespace NEA
             }
         }
 
+        // Adds each variable in the variableDictionary with a unique ID
+        // Including counting variables
         private void OrganiseVariables()
         {
             int counter = 0;
@@ -418,6 +437,7 @@ namespace NEA
             }
         }
 
+        // Returns the entire comparison operator ahead
         private string GetComparisonOperator()
         {
             while (IsComparisonOperatorChar(Peek()))
@@ -428,6 +448,7 @@ namespace NEA
             return sourceCode.Substring(start, current - start);
         }
 
+        // Returns the entire word ahead
         private string GetWord()
         {
             while (IsAlphaNumeric(Peek()))
@@ -438,6 +459,7 @@ namespace NEA
             return sourceCode.Substring(start, current - start);
         }
 
+        // Returns the entire number ahead (integer or decimal)
         private Token GetNumber()
         {
             TokenType type = TokenType.INT_LITERAL;
@@ -461,6 +483,7 @@ namespace NEA
             return new Token(type, value, line);
         }
 
+        // Returns the entire string ahead (string must begin and end with ")
         private Token GetString()
         {
             while (Peek() != '"' && current < sourceCode.Length)
@@ -484,6 +507,7 @@ namespace NEA
             return new Token(TokenType.STR_LITERAL, text, line);
         }
 
+        // Goes to the beginning of the next line, ignoring the rest of the current line
         private void SkipToEndOfLine()
         {
             while (Peek() != '\n' && current < sourceCode.Length)
@@ -492,11 +516,13 @@ namespace NEA
             }
         }
 
+        // Returns if a character is part of a comparison operator
         private bool IsComparisonOperatorChar(char c)
         {
             return c == '=' || c == '>' || c == '<';
         }
 
+        // Finds all subroutine names and separates them from variables
         public string[] FindSubroutineNames()
         {
             List<string> subroutineNames = new List<string>();
@@ -513,6 +539,8 @@ namespace NEA
         }
         #endregion
 
+        // Performs the entire tokenization of the source code
+        // Turning all the text into an array of tokens
         public Token[] Tokenize()
         {
             List<Token> tokensList = new List<Token>();
@@ -608,7 +636,7 @@ namespace NEA
         // Converts list of tokens
         // To intermediate code in postfix (RPN)
         // https://en.wikipedia.org/wiki/Shunting_yard_algorithm
-
+        // Adapted to accommodate for Tokens and boolean operations
         private string[] ConvertToPostfix(List<Token> tokens)
         {
             List<string> output = new List<string>();
@@ -682,6 +710,7 @@ namespace NEA
             return output.ToArray();
         }
 
+        // Returns the precedence of an operator
         private int Precedence(Token token)
         {
             switch (token.GetTokenType())
@@ -714,6 +743,7 @@ namespace NEA
             }
         }
 
+        // Returns if the operator is left associative
         private bool IsLeftAssociative(Token op)
         {
             switch (op.GetTokenType())
@@ -725,6 +755,8 @@ namespace NEA
             }
         }
 
+        #region Expressions
+        // Returns if an expression with operators is contained within the tokens
         private bool ContainsExpressions(List<Token> expression)
         {
             #region Operations Array Declarations
@@ -769,6 +801,7 @@ namespace NEA
             return false;
         }
 
+        // Returns the intermediate code for an entire expression
         private string[] GetIntermediateFromExpression(List<Token> expression)
         {
             List<string> instructions = new List<string>();
@@ -785,6 +818,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Processes the general expression with operators and text
         private void ProcessExpression(List<Token> expression, ref List<string> instruction)
         {
             List<int> begins = new List<int>();
@@ -803,6 +837,7 @@ namespace NEA
             AppendConcatenationOperators(ref instruction, NoOfNonSimpleExpressionTokens, totalTokens, begins.Count);
         }
 
+        // Processes a simpler expression without operators and only text
         private void ProcessSimpleExpression(List<Token> expression, ref List<string> instructions)
         {
             int inputOffset = 0;
@@ -842,6 +877,7 @@ namespace NEA
             }
         }
 
+        // Finds all the expressions within the tokens which contain operators
         private void IdentifyExpressions(List<Token> expression, ref List<int> begins, ref List<int> ends, ref int NoOfNonSimpleExpressionTokens)
         {
             bool inExpresison = false;
@@ -887,11 +923,13 @@ namespace NEA
             }
         }
 
+        // Returns a list of tokens between two points
         private List<Token> SubexpressionFrom(List<Token> expression, int start, int end)
         {
             return expression.GetRange(start, end - start);
         }
 
+        // Processes the tokens which do not contain operators in them
         private void ProcessNonExpressionParts(List<Token> expression, ref List<string> instructions, int index, List<int> begins, List<int> ends)
         {
             int start;
@@ -920,6 +958,7 @@ namespace NEA
             }
         }
 
+        // Puts on "ADD" instructions onto the stack to accommodate for concatenation of strings
         private void AppendConcatenationOperators(ref List<string> instructions, int NoOfNonSimpleExpressionTokens, int totalTokens, int NoOfExpressions)
         {
             for (int i = 0; i < totalTokens - NoOfNonSimpleExpressionTokens + NoOfExpressions - 1; i++)
@@ -927,6 +966,7 @@ namespace NEA
                 instructions.Add("ADD");
             }
         }
+        #endregion
 
         // Returns the intermediate code instruction
         private List<string> GetInstructions(Token e, ref int i, List<Token> expression)
@@ -1026,6 +1066,7 @@ namespace NEA
         #endregion
 
         #region Built-in Functions
+        // Maps the input statement using a low level function call (CALL INPUT)
         private string[] MapInputStatement(List<Token> promptExpression)
         {
             List<string> instructions = new List<string>();
@@ -1054,6 +1095,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps the print statement using a low level function call (CALL PRINT)
         private string[] MapPrintStatement(List<Token> expression)
         {
             List<string> instructions = new List<string>();
@@ -1065,6 +1107,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps sorting using a low level function (SORT)
         private string[] MapSorting(string variable)
         {
             List<string> instructions = new List<string>();
@@ -1077,6 +1120,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps indexing setting up a variable and an index
         private string[] MapIndexing(string variable, List<Token> indexingExpression)
         {
             List<string> instructions = new List<string>();
@@ -1093,6 +1137,9 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps swapping two indexes in a variable
+        // Setting up the variable and the two indexes
+        // Swapping them in low level
         private string[] MapSwapping(string variable, List<Token> expression1, List<Token> expression2)
         {
             List<string> instructions = new List<string>();
@@ -1111,10 +1158,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        // In assignment the wrong variable is being assigned the length
-        //SET LIST TO[1, 2, 3]
-        //SET len TO LENGTH OF LIST
-        //PRINT len
+        // Maps the get length statement using a low level function (LENGTH)
         private string[] MapLengthStatement(string variable)
         {
             List<string> instructions = new List<string>();
@@ -1129,6 +1173,8 @@ namespace NEA
         #endregion
 
         #region Functions
+        // Maps a function call (CALL subroutine)
+        // Feeds the parameters onto the stack for the subroutine to use
         private string[] MapSubroutineCall(string subroutineName, List<Variable> parameters, List<bool> isLiteral)
         {
             List<string> instructions = new List<string>();
@@ -1152,6 +1198,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Declares all parameters for the subroutine
         private string[] MapParameterDeclaration(List<Variable> parameters)
         {
             List<string> instructions = new List<string>();
@@ -1164,6 +1211,9 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps the return function
+        // Pushing the expression to return onto the stack
+        // Using it after the returning to the previous stack frame
         private string[] MapReturn(List<Token> expression)
         {
             List<string> instructions = new List<string>();
@@ -1172,18 +1222,12 @@ namespace NEA
 
             instructions.Add("RETURN");
 
-            // Question:
-            // What is the most optimal way to transfer a variable/value from within a function to outside of it.
-            // Using?:
-            // A register
-            // Pushing it to the stack
-            // other methods?
-
             return instructions.ToArray();
         }
         #endregion
 
         #region Assignment
+        // Maps normal variable assignment (single element)
         private string[] MapAssignment(string variable, List<Token> expression, string type)
         {
             List<string> instructions = new List<string>();
@@ -1200,6 +1244,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps list assignment
         private string[] MapListAssignment(string variable, List<List<Token>> listOfExpressions)
         {
             List<string> instructions = new List<string>();
@@ -1221,7 +1266,8 @@ namespace NEA
             return instructions.ToArray();
         }
 
-        private string[] MapDeclaration(string variable, string type)
+        // Maps declaration with assignment
+        private string[] MapDeclaration(string variable)
         {
             List<string> instructions = new List<string>();
             counterVar = variablesDict[variable];
@@ -1235,6 +1281,8 @@ namespace NEA
         #endregion
 
         #region If Statement
+        // Maps an if statement
+        // Connecting the boolean expressions with their bodies of code upon which they are executed on
         private string[] MapIfStatement(Token[] mainExpression, Token[] mainBody, List<Token[]> elseIfExpression, List<Token[]> elseIfBodies, bool isElse, Token[] elseBody, bool inFunction)
         {
             List<string> instructions = new List<string>();
@@ -1320,6 +1368,8 @@ namespace NEA
         #endregion
 
         #region Loops
+        // Maps for loop
+        // Considering if the step is negative or positive, adapting the intermediate code for this
         private string[] MapForLoop(string variable, Token[] startExpression, Token[] endExpression, Token[] stepExpression, bool negativeStep, Token[] body, bool inFunction)
         {
             List<string> instructions = new List<string>();
@@ -1379,6 +1429,8 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps a while loop
+        // Creating a boolean expression dependent label loop
         private string[] MapWhileLoop(Token[] expression, Token[] body, bool inFunction)
         {
             List<string> instructions = new List<string>();
@@ -1407,6 +1459,8 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps a do while loop
+        // Following the same logic as a while loop
         private string[] MapDoWhileLoop(Token[] expression, Token[] body, bool inFunction)
         {
             List<string> instructions = new List<string>();
@@ -1435,6 +1489,8 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps a fixed length loop
+        // Functioning similarly to a for loop
         private string[] MapFixedLengthLoop(string variable, Token[] expression,Token[] body, bool inFunction)
         {
             List<string> instructions = new List<string>();
@@ -1494,6 +1550,8 @@ namespace NEA
         #endregion
 
         #region Assignment with operations
+        // Maps list addition
+        // Using the low level STORE_LIST_ITEM instruction
         private string[] MapListAddition(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1508,6 +1566,8 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps addition assignment
+        // Adding a value to a variable and assigning their sum as the new variable
         private string[] MapAddition(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1527,6 +1587,8 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps removal from a list
+        // Removes an item with that value from the list
         private string[] MapListSubtraction(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1541,6 +1603,8 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps subtraction assignment
+        // Subtracting a value from a variable and assiging the result to the variable
         private string[] MapSubtraction(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1560,6 +1624,9 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // More niche and use cases
+
+        // Maps multiplication assignment
         private string[] MapMultiplication(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1579,6 +1646,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps division assignment
         private string[] MapDivision(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1598,6 +1666,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps modulo assignment
         private string[] MapModulo(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -1617,6 +1686,7 @@ namespace NEA
             return instructions.ToArray();
         }
 
+        // Maps exponential assignment
         private string[] MapExponentiation(string variable, Token[] expression)
         {
             List<string> instructions = new List<string>();
@@ -2073,6 +2143,7 @@ namespace NEA
                                         }
                                     }
 
+                                    // Sets up parameters and local variable for a subroutine call
                                     localCounter = FindLocalVariables(subroutineName).Length;
                                     subroutineParametersCount[subroutineDict[subroutineName]] = paramCounter;
                                     subroutineLocalVariableCounter[subroutineDict[subroutineName]] = localCounter;
@@ -2267,6 +2338,7 @@ namespace NEA
                                         }
                                     }
 
+                                    // Sets up parameters and local variables
                                     localCounter = FindLocalVariables(subroutineName).Length;
                                     subroutineParametersCount[subroutineDict[subroutineName]] = paramCounter;
                                     subroutineLocalVariableCounter[subroutineDict[subroutineName]] = localCounter;
@@ -2310,7 +2382,6 @@ namespace NEA
                         break;
                     case TokenType.DECLARATION:
                         type = "STRING";
-                        noType = true;
 
                         // Checking Valid Syntax - Not much to check here
                         nextToken = internalTokens[i + 1];
@@ -2326,12 +2397,8 @@ namespace NEA
                             throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Cannot create variable {variableName} more than once.");
                         }
 
-                        intermediateList.AddRange(MapDeclaration(variableName, type));
+                        intermediateList.AddRange(MapDeclaration(variableName));
                         i += 2;
-                        if (!noType)
-                        {
-                            i += 2;
-                        }
                         break;
                     case TokenType.IF:
                         // Correct Syntax:
@@ -2491,6 +2558,7 @@ namespace NEA
                             {
                                 throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"UP\" or \"DOWN\" keyword after \"GOING\".");
                             }
+                            // Assigns the negativeStep variable to false if counting UP and already set to true if DOWN
                             if (Is(nextToken, TokenType.UP))
                             {
                                 negativeStep = false;

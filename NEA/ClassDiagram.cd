@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
   <Class Name="NEA.Classes.CustomFastColoredTextBox" Collapsed="true">
-    <Position X="0.5" Y="2.25" Width="1.5" />
+    <Position X="5.75" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gAiQBBgAQQFEBoAAEAAIAApACAQgADpQIIgCAAIABgE=</HashCode>
+      <HashCode>gAiQBBgAQBFEBoAAEAAIAAJACAQgADoAIIgCAAIABAE=</HashCode>
       <FileName>Classes\CustomFastColoredTextBox.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -28,7 +28,7 @@
       <FileName>Classes\Variable.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="NEA.Machine" Collapsed="true">
+  <Class Name="NEA.Machine">
     <Position X="2.5" Y="0.5" Width="3" />
     <TypeIdentifier>
       <HashCode>QEHwzkEANoFUKQfrxTWMlq6BjVBD6sdQ16hKAkLEcog=</HashCode>
@@ -42,7 +42,7 @@
       <FileName>Classes\Program.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="NEA.IDE_MainWindow">
+  <Class Name="NEA.IDE_MainWindow" Collapsed="true">
     <Position X="5.75" Y="0.5" Width="1.75" />
     <Members>
       <Field Name="btnClear" Hidden="true" />
@@ -107,14 +107,14 @@
     </TypeIdentifier>
   </Class>
   <Enum Name="NEA.Classes.DataType" Collapsed="true">
-    <Position X="4.25" Y="1.25" Width="1.25" />
+    <Position X="7.75" Y="0.5" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAAAAAAAAABIAAAQAAIAAIAAAAAAAAAAA=</HashCode>
       <FileName>Classes\DataType.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="NEA.Classes.TokenType" Collapsed="true">
-    <Position X="4.25" Y="2" Width="1.25" />
+    <Position X="7.75" Y="1.25" Width="1.25" />
     <TypeIdentifier>
       <HashCode>CQCBAgSQPiQNwoUAUESEmgAUjE9LIAAXAABgwQkEBBk=</HashCode>
       <FileName>Classes\TokenType.cs</FileName>

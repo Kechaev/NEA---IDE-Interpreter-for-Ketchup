@@ -77,7 +77,7 @@ namespace NEA.Classes
             
             SizeF textSize = g.MeasureString(this.Text.Substring(0, index), this.Font);
 
-            SizeF localTextSize = g.MeasureString(this.Lines[GetLineFromSelectedChar()], this.Font);
+            SizeF localTextSize = g.MeasureString(this.Lines[GetLinesFromCharIndex(this.SelectionStart)], this.Font);
 
             Rectangle textRect = new Rectangle(0, 0, (int)textSize.Width, (int)textSize.Height - 20);
 
@@ -179,6 +179,7 @@ namespace NEA.Classes
             isPopUpShowing = false;
         }
 
+        // Exits out of the suggestion box when escape is clicked
         private void TextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (isFromReplaceTab)
@@ -197,6 +198,7 @@ namespace NEA.Classes
             }
         }
 
+        // Managing interactions with the suggestion box with arrow keys and tab (confirmation)
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (isPopUpShowing)
@@ -234,8 +236,10 @@ namespace NEA.Classes
             }
         }
 
+        // Shows the suggestion box and recalculates the identifiers
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
+            // Checking if a suggestion box should be shown
             string wordText;
             int lastIndexOfSpace;
             int lastIndexOfNewline;
@@ -297,6 +301,7 @@ namespace NEA.Classes
             }
         }
 
+        // Uses differnt algorithms to add keywords based on their relevence
         private bool PopulateListBox(string wordTyping)
         {
             listBox.Items.Clear();
@@ -384,6 +389,8 @@ namespace NEA.Classes
             return outArray.Length > 0;
         }
 
+        // When clicking to select a word in the suggestion box, that word is inputted into the code field
+        // If not clicked then do nothing in this method
         private void ListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (isFromMouseClick)
@@ -397,11 +404,15 @@ namespace NEA.Classes
             isFromMouseClick = false;
         }
 
+        // Change isFromMouseClick to true to help identify mouse clicks in other methods
         private void ListBox_Click(object sender, EventArgs e)
         {
             isFromMouseClick = true;
         }
-
+       
+        // Places the suggestion box in the correct position
+        // Preps the suggestion box
+        // Shows the suggestion box
         private void ShowAutoCompleteForm()
         {
             Point tmpPoint = this.PointToClient(this.Location);
@@ -413,6 +424,7 @@ namespace NEA.Classes
             this.Focus();
         }
 
+        // Replaces the word being typed with the keyword provided
         private void ReplaceCurrentWordWith(string word)
         {
             int selectionStart = this.SelectionStart;
@@ -517,16 +529,19 @@ namespace NEA.Classes
             return 1 + minimum;
         }
 
+        // Gets length (for Levenshtein Algorithm)
         static int Length(string word)
         {
             return word.Length;
         }
 
+        // Gets the first character from a word (string, not char)
         static string Head(string word)
         {
             return word[0].ToString();
         }
 
+        // Gets all the characters excluding the head
         static string Tail(string word)
         {
             string tail = "";
@@ -537,6 +552,8 @@ namespace NEA.Classes
             return tail;
         }
 
+        // Returns teh smallest value
+        // Math.Min equivalent for 3 parameters
         static int Min(int a, int b, int c)
         {
             return Math.Min(a, Math.Min(b, c));
@@ -544,6 +561,8 @@ namespace NEA.Classes
 
         // Personal implementation of the built in methods for RichTextBox
         // Which are not available for FastColoredTextBox
+
+        // Returns the line on which the char is located
         public int GetLinesFromCharIndex(int selectionStart)
         {
             string text = this.Text;
@@ -558,6 +577,7 @@ namespace NEA.Classes
             return line;
         }
 
+        // Returns all lines as an array of strings
         public string[] GetLinesFromTextBox()
         {
             List<string> linesList = new List<string>();
@@ -582,23 +602,7 @@ namespace NEA.Classes
             return linesList.ToArray();
         }
 
-        public int GetLineFromSelectedChar()
-        {
-            int selectionStart = this.SelectionStart;
-            int line = 0;
-
-            for (int i = 0; i < selectionStart; i++)
-            {
-                char c = this.Text[i];
-                if (c == '\n')
-                {
-                    line++;
-                }
-            }
-
-            return line;
-        }
-
+        // Returns the index of the first character in a line
         public int GetFirstCharIndexOfLine(int selectedLine)
         {
             int line = 0;
