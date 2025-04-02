@@ -1935,6 +1935,8 @@ namespace NEA
             return false;
         }
         #endregion
+        // Converting the tokens into intermediate code
+        // Recursive calls
 
         // Implemented:
         // PRINT (with Function calls)
@@ -3274,26 +3276,32 @@ namespace NEA
         private string consoleText;
 
         #region Execution
+        // Sets the running status
         public void SetRunningStatus(bool status)
         {
             isRunning = status;
         }
 
+        // Returns the running status
         public bool GetRunningStatus()
         {
             return isRunning;
         }
 
+        // Returns if the program is valid and is able to be run without errors
         public bool GetValidity()
         {
             return validProgram;
         }
 
+        // Returns the text in the internal virtual text box in this class
         public string GetConsoleText()
         {
             return consoleText;
         }
 
+        // The Fetch-Execute cycle
+        // Taking the instructions apart into opcode and operands
         public void FetchExecute(string[] intermediateCode, ref TextBox console, bool inFunction)
         {
             if (PC < intermediateCode.Length)
@@ -3330,6 +3338,7 @@ namespace NEA
             }
         }
 
+        // Fetches the next instructions
         private string Fetch(string[] intermediateCode)
         {
             string line = intermediateCode[PC];
@@ -3337,6 +3346,7 @@ namespace NEA
             return line;
         }
 
+        // Begins the Fetch-Execute cycle for a specific subroutine
         private void StartSubroutineExecution(string[] intermediateCode, ref TextBox console)
         {
             // Does a call stack contain a pointer to the subroutine it was called from?
@@ -3354,6 +3364,8 @@ namespace NEA
             // In that case return back to the previous subroutine from here
         }
 
+        // Executes the instruction given
+        // using the opcode (and operand)
         private void Execute(string opcode, string operand, string[] intermediateCode, ref TextBox console, bool inFunction)
         {
             Variable var;
@@ -4023,6 +4035,7 @@ namespace NEA
             return i;
         }
 
+        // Swapping two items in a list
         private void Swap(ref List<object> list, int index1, int index2)
         {
             object temp = list[index1];
@@ -4030,6 +4043,7 @@ namespace NEA
             list[index2] = temp;
         }
 
+        // Get a value to sort by
         private double GetSortingValue(object obj)
         {
             DataType type = IdentifyDataType(obj);
@@ -4057,6 +4071,7 @@ namespace NEA
 
         #endregion
 
+        // Finds the line to which the label jumps
         private int GetLabelCounter(int labelNumber, string[] localIntermediateCode)
         {
             for (int i = 0; i < localIntermediateCode.Length; i++)
@@ -4073,6 +4088,7 @@ namespace NEA
             return -1;
         }
 
+        // Returns the DataType of the string (e.g. "INTEGER" => DataType.Integer)
         private DataType GetDataType(string dataType)
         {
             switch (dataType)
@@ -4108,6 +4124,9 @@ namespace NEA
             return null;
         }
 
+        // Shows in input dialog
+        // Returning the Dialog Result from the user
+        // Along with the text typed in input box
         private static Tuple<DialogResult, string> ShowInputDialog(ref string prompt)
         {
             InputDialog inputDialog = new InputDialog(prompt);
@@ -4119,6 +4138,7 @@ namespace NEA
             return new Tuple<DialogResult, string>(dialogResult, input);
         }
 
+        // Returns the most optimal data type
         private DataType IdentifyDataType(object object1)
         {
             if (object1.ToString().ToUpper() == "TRUE" || object1.ToString().ToUpper() == "FALSE")
@@ -4160,6 +4180,7 @@ namespace NEA
             }
         }
 
+        // Returns the optimal data type between two variables value
         private DataType GetDataTypeFrom(object object1, object object2)
         {
             DataType t1 = IdentifyDataType(object1);
