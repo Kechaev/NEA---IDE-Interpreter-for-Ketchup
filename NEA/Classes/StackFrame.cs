@@ -15,6 +15,7 @@ namespace NEA.Classes
 
         private string[] intermediate;
 
+        // Creates a Stack Frame
         public StackFrame(Variable[] parameters, Variable[] localVariables, int returnAddress, bool isFunction, string[] intermediate)
         {
             this.parameters = parameters;
@@ -24,26 +25,31 @@ namespace NEA.Classes
             this.intermediate = intermediate;
         }
 
+        // Returns all the local variables
         public Variable[] GetLocalVariables()
         {
             return localVariables;
         }
 
+        // Returns all the parameters
         public Variable[] GetParameters()
         {
             return parameters;
         }
 
+        // Returns the return address
         public int GetReturnAddress()
         {
             return returnAddress;
         }
 
+        // Returns if the subroutine the stack frame represents is a function
         public bool IsFunction()
         {
             return isFunction;
         }
 
+        // Returns the intermediate code associated with the frame
         public string[] GetIntermediate()
         {
             return intermediate;

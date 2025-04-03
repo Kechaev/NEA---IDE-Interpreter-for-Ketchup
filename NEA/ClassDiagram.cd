@@ -8,20 +8,20 @@
     </TypeIdentifier>
   </Class>
   <Class Name="NEA.Classes.StackFrame" Collapsed="true">
-    <Position X="2.5" Y="1.25" Width="1.5" />
+    <Position X="5.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAABAABAABAAQCAAAAIAAAEAAAAAAAAAAAAgACAAAQ=</HashCode>
       <FileName>Classes\StackFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="NEA.Classes.Token" Collapsed="true">
-    <Position X="2.5" Y="2" Width="1.5" />
+    <Position X="5.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAEAAAAEAAAAAACAAAAAAABAAAABAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Classes\Token.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="NEA.Classes.Variable">
+  <Class Name="NEA.Classes.Variable" Collapsed="true">
     <Position X="5.75" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AgIIAgIAICAAhgEUBgAAhAQAAAAFIGEYAAAAAAAABCA=</HashCode>
