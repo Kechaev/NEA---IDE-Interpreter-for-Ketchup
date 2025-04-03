@@ -21,6 +21,7 @@ namespace NEA.Classes
         private bool declared;
         private bool isList;
         
+        // Creating variable whilst not knowing having a specific data type
         public Variable(string name, List<object> listOfValues, bool isList)
         {
             ID = counter++;
@@ -32,6 +33,7 @@ namespace NEA.Classes
                 declared = false;
                 this.isList = true;
             }
+            // Deal with non-list variables
             else
             {
                 if (listOfValues != null && listOfValues.Count > 0)
@@ -47,7 +49,7 @@ namespace NEA.Classes
             }
         }
 
-        // Do we need a specific data type declaration?
+        // Creating variable whilst knowing the specific data type
         public Variable(string name, object value, DataType type)
         {
             ID = counter++;
@@ -57,11 +59,13 @@ namespace NEA.Classes
             declared = false;
         }
 
+        // Resets the counter to 0
         public static void ResetVariables()
         {
             counter = 0;
         }
 
+        // Finds the most optimal data type for the variable based on its value
         private DataType IdentifyBestDataType()
         {
             if (value.ToString().ToUpper() == "TRUE" || value.ToString().ToUpper() == "FALSE")
@@ -97,45 +101,51 @@ namespace NEA.Classes
             }
         }
 
+        // Returns the data type of the variable
         public DataType GetDataType()
         {
             return type;
         }
 
+        // Sets the data type
         public void SetDataType(DataType type)
         {
             this.type = type;
         }
 
+        // Sets the value and recalculates the best data type
         public void SetValue(object value)
         {
             this.value = value;
             type = IdentifyBestDataType();
-            Console.WriteLine($"Type = {type}");
         }
 
+        // Sets a list of values and sets the type to LIST
         public void SetListValues(List<object> listOfValues)
         {
             this.listOfValues = listOfValues;
             type = DataType.LIST;
-            Console.WriteLine(type);
         }
 
+        // Resets the listOfValues
         public void CreateNewList()
         {
             listOfValues = new List<object>();
         }
 
+        // Returns the ID of the variable
         public int GetID()
         {
             return ID;
         }
 
+        // Returns the name of the variable
         public string GetName()
         {
             return name;
         }
             
+        // Returns the value of the variable (for non-list variables)
         public object GetValue()
         {
             if (isList)
@@ -146,6 +156,7 @@ namespace NEA.Classes
         }
 
         #region List Methods
+        // Returns the value stored at the index (1-based indexing)
         public object GetValueFromIndex(int index)
         {
             if (!isList && !(IdentifyBestDataType() == DataType.STRING))
@@ -164,6 +175,7 @@ namespace NEA.Classes
             return listOfValues[index - 1];
         }
 
+        // Sets the value of the element at the index provided
         public void SetValueFromIndex(int index, object value)
         {
             if (!isList && !(IdentifyBestDataType() == DataType.STRING))
@@ -181,16 +193,19 @@ namespace NEA.Classes
             listOfValues[index - 1] = value;
         }
 
+        // Returns the listOfValues
         public List<object> GetValuesList()
         {
             return listOfValues;
         }
 
+        // Adds an element to a llist
         public void Add(object value)
         {
             listOfValues.Add(value);
         }
 
+        // Removes an element with the value given
         public void Remove(object value)
         {
             bool found = false;
@@ -211,12 +226,14 @@ namespace NEA.Classes
             }
         }
 
+        // Instantiates a new list
         public void MakeList()
         {
             isList = true;
             type = DataType.LIST;
         }
 
+        // Returns the length (different behaviour depending on the data type)
         public int GetLength()
         {
             if (type == DataType.LIST)
@@ -248,11 +265,13 @@ namespace NEA.Classes
         #endregion
 
         #region Declaration
+        // Declares the variable
         public void Declare()
         {
             declared = true;
         }
 
+        // Returns if the variable is declared
         public bool IsDeclared()
         {
             return declared;
@@ -260,12 +279,14 @@ namespace NEA.Classes
         #endregion
 
         #region Nullification
+        // Sets the value to null
         public void SetNull()
         {
             value = null;
             listOfValues = null;
         }
 
+        // Returns if the value is null
         public bool IsNull()
         {
             return value == null && listOfValues == null;
