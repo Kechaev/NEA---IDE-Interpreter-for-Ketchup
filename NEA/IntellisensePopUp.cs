@@ -12,31 +12,11 @@ namespace NEA
 {
     public partial class popUp : Form
     {
+        // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
+        // Suggestion box, which pops when typing
         public popUp()
         {
             InitializeComponent();
-        }
-
-        protected override bool ShowWithoutActivation
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams baseParams = base.CreateParams;
-
-                const int WS_EX_NOACTIVATE = 0x08000000;
-                const int WS_EX_TOOLWINDOW = 0x00000080;
-                baseParams.ExStyle |= (int)(WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW);
-
-                return baseParams;
-            }
         }
     }
 }

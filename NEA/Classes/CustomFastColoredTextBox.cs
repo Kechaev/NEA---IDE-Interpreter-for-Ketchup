@@ -15,7 +15,12 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace NEA.Classes
 {
+    // Autocompletion box and tab to insert selected word
+    // Base events are taken from this StackOverflow post
+    // Implemented my own algorithm for detecting closest words, when words are not found
+    // with the same beginning string
     // https://stackoverflow.com/questions/40016018/c-sharp-make-an-autocomplete-to-a-richtextbox
+
     // Had to adapt FastColoredTextBox into a hybrid between itself and a RichTextBox
     // Required overriding and addition of methods native to RichTextBox
     // Added Levenshtein Algorithm for cases where there are no words with the same initial characters

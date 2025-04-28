@@ -92,14 +92,15 @@ namespace NEA
                 string[] intermediate = machine.GetIntermediateCode();
                 try
                 {
+                    // Creates a new Thread to run the user's program in
                     executionLoop = new Thread(ExecutionLoop);
+                    // Runs the user's program
                     executionLoop.Start();
                 }
                 catch (Exception e)
                 {
                     // Failed to translate or execute
-                    // Show error
-
+                    // Shows error
                     this.Invoke(new MethodInvoker(delegate
                     {
                         ConsoleWrite(e.Message);

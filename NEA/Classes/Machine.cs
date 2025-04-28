@@ -406,7 +406,7 @@ namespace NEA
                 case "LENGTH":
                     return TokenType.LENGTH;
                 default:
-                    throw new Exception($"SYNTAX ERROR: Unkown keyword: {token}.");
+                    throw new Exception($"SYNTAX ERROR: Unknown keyword: {token}.");
             }
         }
 
@@ -1935,6 +1935,7 @@ namespace NEA
             return false;
         }
         #endregion
+
         // Converting the tokens into intermediate code
         // Recursive calls
 
@@ -1948,7 +1949,7 @@ namespace NEA
         // WHILE Loop
         // DO-WHILE Loop
         // Fixed-Length Loop
-        // Addtion assignment
+        // Addition assignment
         // Subtraction assignment
         // Multiplication assignment
         // Division assignment
@@ -1958,47 +1959,73 @@ namespace NEA
         // Function call (independant of assignment and/or printing) - EFFECTIVELY NOT WORKING
         // EON (End of Nest)
         // EOF (End of File)
+
+        // Checks if the token type is a beginning token of assignment
+        private bool IsAssignment(TokenType type)
+        {
+            return type == TokenType.ASSIGNMENT || type == TokenType.DECLARATION;
+        }
+
+        // Checks if the token type is one beginning an if statement (IF)
+        private bool IsIfStatement(TokenType type)
+        {
+            return type == TokenType.IF;
+        }
+
+        // Checks if the token type is one beginning a loop
+        private bool IsLoop(TokenType type)
+        {
+            return type == TokenType.COUNT || type == TokenType.REPEAT || type == TokenType.WHILE || type == TokenType.DO;
+        }
+
+        // Checks if the token type is one beginning a built in function
+        private bool IsFunction(TokenType type)
+        {
+            return type == TokenType.PRINT || type == TokenType.RETURN || type == TokenType.SORT || type == TokenType.SWAP;
+        }
+
+        // Checks if the token type is one beginning an assignment operator
+        private bool IsAssignmentOperator(TokenType type)
+        {
+            return type == TokenType.ADDITION || type == TokenType.TAKE || type == TokenType.MULTIPLICATION || type == TokenType.DIVISION || type == TokenType.GET || type == TokenType.RAISE;
+        }
+
+        // Checks if the token type is one beginning a subroutine definition (FUNCTION, PROCEDURE)
+        private bool IsSubroutineDefinition(TokenType type)
+        {
+            return type == TokenType.FUNCTION || type == TokenType.PROCEDURE;
+        }
+
+        #region Variable Declarations for Intermediate Translations
+        // All global variables needed to run separate methods from the TokenToIntermediate method
+        private List<string> intermediateList = new List<string>();
+
+        private int i = 0;
+
+        private List<Token> expression, expression1, expression2, expression3;
+        private Token token;
+
+        private TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
+                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
+                                     TokenType.BOOL_LITERAL };
+        private TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
+                                                   TokenType.DIV, TokenType.MOD, TokenType.EXP };
+        private TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
+        private TokenType[] comparisonOperations = { TokenType.GREATER, TokenType.LESS, TokenType.EQUAL,
+                                                 TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.NOT_EQUAL };
+        private TokenType[] brackets = { TokenType.LEFT_BRACKET, TokenType.RIGHT_BRACKET };
+        #endregion
+
         private string[] TokensToIntermediate(Token[] internalTokens, bool inFunction)
         {
             #region Variable Setup
-            List<string> intermediateList = new List<string>();
             List<Token> internalTokensList = internalTokens.ToList();
 
             int i = 0;
-            TokenType[] literals = { TokenType.STR_LITERAL, TokenType.CHAR_LITERAL,
-                                     TokenType.INT_LITERAL, TokenType.DEC_LITERAL,
-                                     TokenType.BOOL_LITERAL };
-            TokenType[] mathematicalOperations = { TokenType.ADD, TokenType.SUB, TokenType.MUL,
-                                                   TokenType.DIV, TokenType.MOD, TokenType.EXP };
-            TokenType[] bitwiseOperations = { TokenType.AND, TokenType.OR, TokenType.NOT };
-            TokenType[] comparisonOperations = { TokenType.GREATER, TokenType.LESS, TokenType.EQUAL,
-                                                 TokenType.GREATER_EQUAL, TokenType.LESS_EQUAL, TokenType.NOT_EQUAL };
-            TokenType[] brackets = { TokenType.LEFT_BRACKET, TokenType.RIGHT_BRACKET };
 
-            string type;
-            string variableName;
-            string subroutineName;
-            bool noType;
-            List<Token> expression;
-            List<List<Token>> expressions;
-            int j, k, l;
-            int inputOffset;
-            int lengthOffset;
-            Token nextToken;
             Token prevToken = new Token(TokenType.EOF, "", -1);
             List<Token> body = new List<Token>();
-            int currentLine;
-            Token finalTokenOfLine;
             int prevI = -1;
-            int bodyStart, bodyEnd;
-            bool areParamsToRead = true, readyForNextParam = true;
-            Stack<Variable> arguementsStack;
-            Stack<bool> isLiteralArguementStack;
-            int paramCounter;
-            int localCounter;
-            List<Variable> arguements;
-            List<bool> isLiteralList;
-            List<string> variableNames;
             #endregion
 
             while (i < internalTokens.Length)
@@ -2006,1043 +2033,1042 @@ namespace NEA
                 // Catch a repeating reading of the same token
                 if (prevI == i)
                 {
-                    throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: Unkown token \"{internalTokens[i].GetLiteral()}\", unable to process.");
+                    throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: Unknown token \"{internalTokens[i].GetLiteral()}\", unable to process.");
                 }
                 prevI = i;
-                Token token = internalTokens[i];
-                switch (token.GetTokenType())
+                token = internalTokens[i];
+                TokenType tokenType = token.GetTokenType();
+                // Translates and finds errors for assignment instructions
+                if (IsAssignment(tokenType))
                 {
-                    case TokenType.PRINT:
-                        // Current Syntax
-                        // PRINT [expression]
-                        //
-                        // Reject:
-                        // - End of file
-                        // Accept:
-                        // - Variable (Lists - prints them accordingly)
-                        // - Any literal
-                        // - An input
-                        // - Left Bracket
-                        // - Function call
-                        nextToken = internalTokens[i + 1];
-                        if (!IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftAssociative(nextToken) || IsLeftBracket(nextToken) || IsUnary(nextToken) || IsSubroutineCall(nextToken))
+                    TranslateAssignment(tokenType, ref i, internalTokens);
+                }
+                // Translates and finds errors for if statement instructions
+                else if (IsIfStatement(tokenType))
+                {
+                    TranslateIfStatement(tokenType, ref i, internalTokens, inFunction);
+                }
+                // Translates and finds errors for loop instructions
+                else if (IsLoop(tokenType))
+                {
+                    TranslateLoops(tokenType, ref i, internalTokens, inFunction);
+                }
+                // Translates and finds errors for built in functions
+                else if (IsFunction(tokenType))
+                {
+                    TranslateBuiltInFunctions(tokenType, ref i, internalTokens, inFunction);
+                }
+                // Translates and finds errors for assignment operators
+                else if (IsAssignmentOperator(tokenType))
+                {
+                    TranslateAssignmentOperators(tokenType, ref i, internalTokens);
+                }
+                // transltaes and finds errors for subroutine definition
+                else if (IsSubroutineDefinition(tokenType))
+                {
+                    TranslateSubroutineDefinition(tokenType, ref i, internalTokens);
+                }
+                // Other Miscellaneous Translations
+                else
+                {
+                    TranslateMiscellaneous(tokenType, ref i, internalTokens);
+                }
+            }
+
+            return intermediateList.ToArray();
+        }
+
+        private void TranslateAssignment(TokenType tokenType, ref int i, Token[] internalTokens)
+        {
+            // Presets the default data type to string
+            string type = "STRING";
+            bool noType = true;
+
+            string variableName;
+            string subroutineName;
+            List<Token> expression;
+            List<List<Token>> expressions;
+            int j;
+            int inputOffset;
+            int lengthOffset;
+            Token nextToken;
+            Token prevToken = new Token(TokenType.EOF, "", -1);
+            List<Token> body = new List<Token>();
+            bool areParamsToRead = true, readyForNextParam = true;
+            Stack<Variable> arguementsStack;
+            Stack<bool> isLiteralArguementStack;
+            int paramCounter;
+            int localCounter;
+            List<Variable> arguements;
+            List<bool> isLiteralList;
+
+            switch (tokenType)
+            {
+                case TokenType.ASSIGNMENT:
+                    // Current Syntax
+                    // SET variable TO [expression]
+
+                    // Verify Valid Syntax
+
+                    // Checking for valid variable to which we are assigning
+                    nextToken = internalTokens[i + 1];
+                    if (!IsVariable(nextToken))
+                    {
+                        string literal = nextToken.GetLiteral();
+                        if (literal == null)
                         {
-                            expression = new List<Token>();
-                            j = 1;
-                            nextToken = internalTokens[i + j];
-                            while (!IsEndOfToken(nextToken) && nextToken.GetLine() == token.GetLine())
+                            if (i + 2 < internalTokens.Length)
                             {
-                                if (prevToken == nextToken)
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {prevToken.GetLine() + 1}: Incorrectly formatted PRINT statement");
-                                }
-                                prevToken = nextToken;
-
-                                // List indexing
-                                if (ValidLengthForIndexing(i + j + 1, internalTokens.Length) && IsVariable(nextToken) && Is(internalTokens[i + j + 1], TokenType.SQUARE_LEFT_BRACKET))
-                                {
-                                    expression = new List<Token>();
-                                    expression.Add(nextToken);
-                                    nextToken = internalTokens[i + j + 2];
-                                    if (!IsLiteral(nextToken) && !IsVariable(nextToken))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine()}: {nextToken.GetLiteral()} must be a literal or a variable to index.");
-                                    }
-                                    expression.Add(new Token(TokenType.SQUARE_LEFT_BRACKET, "[", nextToken.GetLine()));
-                                    while (!IsEndOfToken(nextToken) && !Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
-                                    {
-                                        expression.Add(nextToken);
-                                        j++;
-                                        nextToken = internalTokens[i + j + 2];
-                                    }
-
-                                    if (!Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"]\" after indexing expression.");
-                                    }
-                                    expression.Add(new Token(TokenType.SQUARE_RIGHT_BRACKET, "]", nextToken.GetLine()));
-
-                                    // Index Offset
-                                    j += 3;
-                                }
-                                // Other elements
-                                else if (IsVariable(nextToken) || IsLiteral(nextToken) || IsMathsOperator(nextToken) || IsBracket(nextToken) || IsBitwise(nextToken) || IsComparison(nextToken))
-                                {
-                                    expression.Add(nextToken);
-                                    j++;
-                                }
-                                // Limitation: in an if statement the prompt cannot contain multiple strings or variable - not necessarily an issue for a KS3 usage
-                                else if (IsInput(nextToken))
-                                {
-                                    // Correct Syntax:
-                                    // INPUT WITH MESSAGE
-                                    if (!Is(internalTokens[i + j + 1], TokenType.WITH))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
-                                    }
-                                    if (!Is(internalTokens[i + j + 2], TokenType.MESSAGE))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
-                                    }
-                                    expression.Add(nextToken);
-                                    // Increment by 2 more to skip filler "WITH MESSAGE"
-                                    // Continue onto the following string prompt
-                                    j += 3;
-                                }
-                                else if (IsLength(nextToken))
-                                {
-                                    // Correct Syntax:
-                                    // LENGTH OF var
-                                    if (!Is(internalTokens[i + j + 1], TokenType.OF))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"OF\" after \"LENGTH\".");
-                                    }
-                                    expression.Add(nextToken);
-                                    j += 2;
-                                }
-                                else if (IsSubroutineCall(nextToken))
-                                {
-                                    subroutineName = nextToken.GetLiteral().ToUpper();
-
-                                    arguementsStack = new Stack<Variable>();
-                                    isLiteralArguementStack = new Stack<bool>();
-                                    paramCounter = 0;
-                                    nextToken = internalTokens[i + j + 1];
-
-                                    if (!Is(nextToken, TokenType.LEFT_BRACKET))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
-                                    }
-                                    areParamsToRead = true;
-                                    readyForNextParam = true;
-                                    for (; areParamsToRead; j++)
-                                    {
-                                        // Read as an expression until a comma then convert to instructions with Shunting Yard
-                                        nextToken = internalTokens[i + j + 2];
-                                        if (Is(nextToken, TokenType.RIGHT_BRACKET))
-                                        {
-                                            areParamsToRead = false;
-                                        }
-                                        else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
-                                        {
-                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
-                                            isLiteralArguementStack.Push(true);
-                                            readyForNextParam = false;
-                                        }
-                                        else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
-                                        {
-                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
-                                            isLiteralArguementStack.Push(false);
-                                            readyForNextParam = false;
-                                        }
-                                        else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
-                                        {
-                                            readyForNextParam = true;
-                                        }
-                                        else
-                                        {
-                                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetTokenType()}\" in the arguement.");
-                                        }
-                                    }
-
-                                    // Sets up parameters and local variable for a subroutine call
-                                    localCounter = FindLocalVariables(subroutineName).Length;
-                                    subroutineParametersCount[subroutineDict[subroutineName]] = paramCounter;
-                                    subroutineLocalVariableCounter[subroutineDict[subroutineName]] = localCounter;
-                                    arguements = new List<Variable>();
-                                    isLiteralList = new List<bool>();
-                                    while (arguementsStack.Count > 0)
-                                    {
-                                        arguements.Add(arguementsStack.Pop());
-                                        isLiteralList.Add(isLiteralArguementStack.Pop());
-
-                                    }
-
-                                    intermediateList.AddRange(MapSubroutineCall(subroutineName, arguements, isLiteralList));
-
-                                    j += 2;
-                                }
-                                try
-                                {
-                                    nextToken = internalTokens[i + j];
-                                }
-                                catch
-                                {
-                                    nextToken = new Token(TokenType.EOF, null, -1);
-                                }
+                                literal = internalTokens[i + 2].GetLiteral();
                             }
                         }
-                        else
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No valid text expression following print command.");
-                        }
+                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No variable found after \"SET\". \"{literal}\" is a keyword in Ketchup and cannot be used as a variable name.");
+                    }
+                    nextToken = internalTokens[i + 2];
+                    if (nextToken.GetTokenType() != TokenType.TO)
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"TO\" keyword not found after variable.");
+                    }
+                    // Get Variable Name & Expression
+                    variableName = internalTokens[i + 1].GetLiteral();
 
-                        intermediateList.AddRange(MapPrintStatement(expression));
-                        // Set the counter to the end of the print statement
-                        i += j;
-                        break;
-                    case TokenType.ASSIGNMENT:
-                        // Current Syntax
-                        // SET variable TO [expression]
-                        type = "STRING";
-                        noType = true;
-
-                        // Verify Valid Syntax
-
-                        // Checking for valid variable to which we are assigning
-                        nextToken = internalTokens[i + 1];
-                        if (!IsVariable(nextToken))
-                        {
-                            string literal = nextToken.GetLiteral();
-                            if (literal == null)
-                            {
-                                if (i + 2 < internalTokens.Length)
-                                {
-                                    literal = internalTokens[i + 2].GetLiteral();
-                                }
-                            }    
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No variable found after \"SET\". \"{literal}\" is a keyword in Ketchup and cannot be used as a variable name.");
-                        }
-                        nextToken = internalTokens[i + 2];
-                        if (nextToken.GetTokenType() != TokenType.TO)
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"TO\" keyword not found after variable.");
-                        }
-                        // Get Variable Name & Expression
-                        variableName = internalTokens[i + 1].GetLiteral();
-            
-                        j = 1;
-                        inputOffset = 0;
-                        lengthOffset = 0;
-                        nextToken = internalTokens[i + j + 2];
-                        expression = new List<Token>();
-                        expressions = new List<List<Token>>();
-                        // List
-                        if (Is(nextToken, TokenType.SQUARE_LEFT_BRACKET))
-                        {
-                            type = "LIST";
-                            nextToken = internalTokens[i + j + 3];
-                            if (!IsSameLine(nextToken, token))
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
-                            }
-                            areParamsToRead = true;
-                            readyForNextParam = true;
-                            for (j = 1; areParamsToRead; j++)
-                            {
-                                nextToken = internalTokens[i + j + 3];
-                                if (Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
-                                {
-                                    areParamsToRead = false;
-                                }
-                                else if (!IsEndOfToken(nextToken) && (IsVariable(nextToken) || IsLiteral(nextToken)) && readyForNextParam)
-                                {
-                                    while (!IsEndOfToken(nextToken) && !Is(nextToken, TokenType.COMMA) && !Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
-                                    {
-                                        expression.Add(nextToken);
-                                        j++;
-                                        nextToken = internalTokens[i + j + 3];
-                                    }
-                                    expressions.Add(new List<Token>(expression));
-                                    expression.Clear();
-                                    j--;
-                                    readyForNextParam = false;
-                                }
-                                else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
-                                {
-                                    readyForNextParam = true;
-                                }
-                                else
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
-                                }
-                            }
-                        }
-                        // Single element data type
-                        else
-                        {
-                            if (!IsSameLine(nextToken, token))
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
-                            }
-                            while (ValidLengthForIndexing(i + j + 2, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !IsEndOfToken(nextToken))
-                            {
-                                // Limitation: in an if statement the prompt cannot contain multiple strings or variables
-                                // Format without punctuation does not support this
-                                if (IsInput(nextToken))
-                                {
-                                    if (!Is(internalTokens[i + j + 3], TokenType.WITH))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
-                                    }
-                                    if (!Is(internalTokens[i + j + 4], TokenType.MESSAGE))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
-                                    }
-                                    expression.Add(nextToken);
-                                    j += 3;
-                                    inputOffset += 2;
-                                }
-                                else if (IsLength(nextToken))
-                                {
-                                    // Correct Syntax:
-                                    // LENGTH OF var
-                                    if (!Is(internalTokens[i + j + 3], TokenType.OF))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"OF\" after \"LENGTH\".");
-                                    }
-                                    expression.Add(nextToken);
-                                    j += 2;
-                                    lengthOffset += 1;
-                                }
-                                else if (IsSubroutineCall(nextToken))
-                                {
-                                    subroutineName = nextToken.GetLiteral().ToUpper();
-
-                                    arguementsStack = new Stack<Variable>();
-                                    isLiteralArguementStack = new Stack<bool>();
-                                    paramCounter = 0;
-                                    nextToken = internalTokens[i + j + 3];
-
-                                    if (!Is(nextToken, TokenType.LEFT_BRACKET))
-                                    {
-                                        throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
-                                    }
-                                    areParamsToRead = true;
-                                    readyForNextParam = true;
-                                    for (; areParamsToRead; j++)
-                                    {
-                                        // Read as an expression until a comma then convert to instructions with Shunting Yard
-                                        nextToken = internalTokens[i + j + 4];
-                                        if (Is(nextToken, TokenType.RIGHT_BRACKET))
-                                        {
-                                            areParamsToRead = false;
-                                        }
-                                        else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
-                                        {
-                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
-                                            isLiteralArguementStack.Push(true);
-                                            readyForNextParam = false;
-                                        }
-                                        else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
-                                        {
-                                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
-                                            isLiteralArguementStack.Push(false);
-                                            readyForNextParam = false;
-                                        }
-                                        else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
-                                        {
-                                            readyForNextParam = true;
-                                        }
-                                        else
-                                        {
-                                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetTokenType()}\" in the arguement.");
-                                        }
-                                    }
-
-                                    // Sets up parameters and local variables
-                                    localCounter = FindLocalVariables(subroutineName).Length;
-                                    subroutineParametersCount[subroutineDict[subroutineName]] = paramCounter;
-                                    subroutineLocalVariableCounter[subroutineDict[subroutineName]] = localCounter;
-                                    arguements = new List<Variable>();
-                                    isLiteralList = new List<bool>();
-                                    while (arguementsStack.Count > 0)
-                                    {
-                                        arguements.Add(arguementsStack.Pop());
-                                        isLiteralList.Add(isLiteralArguementStack.Pop());
-
-                                    }
-
-                                    intermediateList.AddRange(MapSubroutineCall(subroutineName, arguements, isLiteralList));
-
-                                    j += 2;
-                                }
-                                else
-                                {
-                                    expression.Add(nextToken);
-                                    j++;
-                                }
-                                nextToken = internalTokens[i + j + 2];
-                            }
-                            j = expression.Count + inputOffset + lengthOffset;
-                        }
-
-                        if (type == "LIST")
-                        {
-                            intermediateList.AddRange(MapListAssignment(variableName, expressions));
-                            listVariableNames.Add(variableName.ToUpper());
-                        }
-                        else
-                        {
-                            intermediateList.AddRange(MapAssignment(variableName, expression, type));
-                        }
-                        i += j + 3;
-                        if (!noType)
-                        {
-                            i += 2;
-                        }
-                        break;
-                    case TokenType.DECLARATION:
-                        type = "STRING";
-
-                        // Checking Valid Syntax - Not much to check here
-                        nextToken = internalTokens[i + 1];
-                        if (!IsVariable(nextToken))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: When creating no variable was found.");
-                        }
-                        // Getting Variable Name
-                        variableName = nextToken.GetLiteral();
-
-                        if (PreviouslyDeclared(variableName, i, internalTokens))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Cannot create variable {variableName} more than once.");
-                        }
-
-                        intermediateList.AddRange(MapDeclaration(variableName));
-                        i += 2;
-                        break;
-                    case TokenType.IF:
-                        // Correct Syntax:
-                        // IF <condition> THEN
-                        // statement
-                        // END IF
-                        // ELSE IF <condition> THEN
-                        // statement
-                        // END IF
-                        // ELSE
-                        // statement
-                        // END IF
-
-                        // Declare necessary variables
-                        j = 0;
-                        #region Variable Declarations
-                        List<Token> mainExpression = new List<Token>();
-                        List<Token> mainBody = new List<Token>();
-                        List<Token[]> elseIfExpressions = new List<Token[]>();
-                        List<Token[]> elseIfBodies = new List<Token[]>();
-                        List<Token> elseBody = new List<Token>();
-                        expression = new List<Token>();
-                        #endregion
-                        // Check Valid Syntax - IF
-                        currentLine = token.GetLine();
-                        finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
-                        if (!Is(finalTokenOfLine, TokenType.THEN))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\" at the end.");
-                        }
-                        // Get Main If Expression
-                        nextToken = internalTokens[i + j + 1];
-                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token) && !Is(nextToken, TokenType.THEN))
-                        {
-                            mainExpression.Add(internalTokens[i + j + 1]);
-                            j++;
-                            nextToken = internalTokens[i + j + 1];
-                        }
-
-                        // Capture Main If Body
-                        bodyStart = i + j + 2;
-                        bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
-
-                        mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
-
-                        // Set i to next section
-                        i = bodyEnd;
-
-                        Token startToken = internalTokens[i];
-                        // Identify if Else If statement(s)
-                        while (!IsEndOfToken(startToken) && Is(startToken, TokenType.ELSE) && Is(internalTokens[i + 1], TokenType.IF))
-                        {
-                            // Verify Valid Syntax - ELSE IF
-                            currentLine = startToken.GetLine();
-                            finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
-                            if (!Is(finalTokenOfLine, TokenType.THEN))
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\".");
-                            }
-                            // Reset expression
-                            expression = new List<Token>();
-                            j = 0;
-                            // + 2 represents ELSE IF
-                            nextToken = internalTokens[i + j + 2];
-                            while (IsSameLine(nextToken, startToken) && !Is(nextToken, TokenType.THEN))
-                            {
-                                expression.Add(nextToken);
-                                j++;
-                                nextToken = internalTokens[i + j + 2];
-                            }
-
-                            // + 2 is used in this case because the program is checking for the next token after the final expression token
-                            if (!Is(nextToken, TokenType.THEN))
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"THEN\".");
-                            }
-                            // Capture Else If 1 Body
-                            bodyStart = i + j + 3;
-                            bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
-                            body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
-                            // Add body & expresison to lists
-                            elseIfBodies.Add(body.ToArray());
-                            elseIfExpressions.Add(expression.ToArray());
-                            // Set i to next section
-                            i = bodyEnd;
-                            // Needed for preparing the next iteration of ELSE IF
-                            startToken = internalTokens[i];
-                        }
-                        // Set up Else statement
-                        bool isElse = false;
-                        // Identify if Else statement is present
-                        if (!IsEndOfToken(internalTokens[i]) && Is(internalTokens[i], TokenType.ELSE))
-                        {
-                            isElse = true;
-                            bodyStart = i + 1;
-                            bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
-
-                            elseBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
-                            i = bodyEnd;
-                        }
-                        // Account for the final END IF
-                        // Irregardless of what terms were used
-                        i += 2;
-                        intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray(), inFunction));
-                        break; 
-                    case TokenType.COUNT:
-                        // Current Syntax:
-                        // COUNT WITH variable FROM begin TO limit (BY steps)
-                        // statement
-                        // END COUNT
-                        nextToken = internalTokens[i + 1];
-                        if (!Is(nextToken,TokenType.WITH))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" keyword.");
-                        }
-                        nextToken = internalTokens[i + 2];
-                        if (!Is(nextToken,TokenType.VARIABLE))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Missing variable from \"COUNT WITH\".");
-                        }
-                        nextToken = internalTokens[i + 3];
-                        if (!Is(nextToken,TokenType.FROM))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2].GetLine() + 1}: Missing \"FROM\" keyword.");
-                        }
-                        List<Token> expression1 = new List<Token>();
-                        j = 1;
+                    j = 1;
+                    inputOffset = 0;
+                    lengthOffset = 0;
+                    nextToken = internalTokens[i + j + 2];
+                    expression = new List<Token>();
+                    expressions = new List<List<Token>>();
+                    // List
+                    if (Is(nextToken, TokenType.SQUARE_LEFT_BRACKET))
+                    {
+                        type = "LIST";
                         nextToken = internalTokens[i + j + 3];
-                        while (IsSameLine(nextToken,token) && !Is(nextToken,TokenType.TO))
-                        {
-                            expression1.Add(internalTokens[i + j + 3]);
-                            j++;
-                            nextToken = internalTokens[i + j + 3];
-                        }
-                        nextToken = internalTokens[i + j + 3];
-                        if (!Is(nextToken,TokenType.TO))
-                        {
-                            throw new Exception($"SYNTAX ERROR on {internalTokens[i + j + 2].GetLine() + 1}: Missing \"TO\" keyword.");
-                        }
-                        List<Token> expression2 = new List<Token>();
-                        k = 1;
-                        while (IsSameLine(internalTokens[i + j + k + 3],token) && !Is(internalTokens[i + j + k + 3],TokenType.GOING))
-                        {
-                            expression2.Add(internalTokens[i + j + k + 3]);
-                            k++;
-                        }
-                        bool negativeStep = true;
-                        nextToken = internalTokens[i + j + k + 3];
-                        if (IsSameLine(nextToken, internalTokens[i + j + k + 2]))
-                        {
-                            if (!Is(nextToken, TokenType.GOING))
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"GOING\" keyword.");
-                            }
-                            nextToken = internalTokens[i + j + k + 4];
-                            if (!Is(nextToken, TokenType.UP) && !Is(nextToken, TokenType.DOWN))
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"UP\" or \"DOWN\" keyword after \"GOING\".");
-                            }
-                            // Assigns the negativeStep variable to false if counting UP and already set to true if DOWN
-                            if (Is(nextToken, TokenType.UP))
-                            {
-                                negativeStep = false;
-                            }
-                            nextToken = internalTokens[i + j + k + 5];
-                            if (!Is(nextToken, TokenType.BY))
-                            {
-                                if (negativeStep)
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"BY\" keyword after \"DOWN\" keyword.");
-                                }
-                                else
-                                {
-                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"BY\" keyword after \"UP\" keyword.");
-                                }
-                            }
-                        }
-                        l = 0;
-                        List<Token> expression3 = new List<Token>();
-                        if (!IsSameLine(internalTokens[i + j + k + 4],token))
-                        {
-                            negativeStep = false;
-                            expression3.Add(new Token(TokenType.INT_LITERAL, "1", token.GetLine()));
-                        }
-                        else
-                        {
-                            l = 1;
-                            while (internalTokens[i + j + k + l + 3].GetLine() == token.GetLine())
-                            {
-                                expression3.Add(internalTokens[i + j + k + l + 3]);
-                                l++;
-                            }
-                        }
-                        variableName = internalTokens[i + 2].GetLiteral();
-                        bodyStart = i + j + k + l + 3;
-                        bodyEnd = FindEndIndex(bodyStart, "COUNT", internalTokens);
-                        nextToken = internalTokens[bodyEnd + 1];
-                        body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
-
-                        intermediateList.AddRange(MapForLoop(variableName, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), negativeStep, body.ToArray(), inFunction));
-                        i = bodyEnd + 2;
-                        break;
-                    case TokenType.WHILE:
-                        // Current Syntax:
-                        // WHILE condition THEN
-                        // statements
-                        // END WHILE
-                        currentLine = token.GetLine();
-                        finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
-                        if (!Is(finalTokenOfLine, TokenType.THEN))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\".");
-                        }
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j];
-                        while (IsSameLine(nextToken,token) && !Is(nextToken,TokenType.THEN))
-                        {
-                            expression.Add(internalTokens[i + j]);
-                            j++;
-                            nextToken = internalTokens[i + j];
-                        }
-                        bodyStart = i + j + 1;
-                        bodyEnd = FindEndIndex(bodyStart, "WHILE", internalTokens);
-                        body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
-                        intermediateList.AddRange(MapWhileLoop(expression.ToArray(), body.ToArray(), inFunction));
-                        i = bodyEnd + 2;
-                        break;
-                    case TokenType.DO:
-                        // Current Syntax:
-                        // DO
-                        // statement
-                        // END DO
-                        // REPEAT IF condition
-                        nextToken = internalTokens[i + 1];
-                        bodyStart = i + 1;
-                        bodyEnd = FindEndIndex(bodyStart, "DO", internalTokens);
-                        body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
-                        i = bodyEnd + 2;
-                        nextToken = internalTokens[i];
-                        if (!Is(nextToken, TokenType.REPEAT))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No \"REPEAT\" keyword found after the body.");
-                        }
-                        nextToken = internalTokens[i + 1];
-                        if (!Is(nextToken, TokenType.IF))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No \"IF\" keyword found after \"REPEAT\".");
-                        }
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j + 1];
-                        while (nextToken.GetTokenType() != TokenType.EOF && internalTokens[i + j + 1].GetLine() == internalTokens[i].GetLine())
-                        {
-                            expression.Add(nextToken);
-                            j++;
-                            nextToken = internalTokens[i + j + 1];
-                        }
-                        intermediateList.AddRange(MapDoWhileLoop(expression.ToArray(), body.ToArray(), inFunction));
-                        i = i + j + 1;
-                        break;
-                    case TokenType.REPEAT:
-                        // Current Syntax:
-                        // REPEAT n TIMES
-                        // statement
-                        // END REPEAT
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j];
-                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token) && !Is(internalTokens[i + j], TokenType.TIMES))
-                        {
-                            expression.Add(internalTokens[i + j]);
-                            j++;
-                            nextToken = internalTokens[i + j];
-                        }
-                        if (!Is(internalTokens[i + j],TokenType.TIMES))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"TIMES\" keyword found after expression.");
-                        }
-                        bodyStart = i + j + 1;
-                        bodyEnd = FindEndIndex(bodyStart, "REPEAT", internalTokens);
-                        body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
-                        variableName = $"CounterVariable{fixedLoopCounter++}";
-                        intermediateList.AddRange(MapFixedLengthLoop(variableName, expression.ToArray(), body.ToArray(), inFunction));
-                        i = bodyEnd + 2;
-                        break;
-                    case TokenType.ADDITION:
-                        // Current Syntax:
-                        // ADD x TO variable
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j];
-                        while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.TO))
-                        {
-                            expression.Add(internalTokens[i + j]);
-                            j++;
-                            nextToken = internalTokens[i + j];
-                        }
-                        variableName = internalTokens[i + j + 1].GetLiteral();
-                        if (listVariableNames.Contains(variableName.ToUpper()))
-                        {
-                            intermediateList.AddRange(MapListAddition(variableName, expression.ToArray()));
-                        }
-                        else
-                        {
-                            intermediateList.AddRange(MapAddition(variableName, expression.ToArray()));
-                        }
-                        i += j + 2;
-                        break;
-                    case TokenType.REMOVE:
-                        // Current Syntax:
-                        // REMOVE x FROM variable
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j];
-                        while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.FROM))
-                        {
-                            expression.Add(internalTokens[i + j]);
-                            j++;
-                            nextToken = internalTokens[i + j];
-                        }
-                        variableName = internalTokens[i + j + 1].GetLiteral();
-                        if (listVariableNames.Contains(variableName.ToUpper()))
-                        {
-                            intermediateList.AddRange(MapListSubtraction(variableName, expression.ToArray()));
-                        }
-                        else
-                        {
-                            throw new Exception($"LOGIC ERROR on Line {nextToken.GetLine() + 1}: Remove operation can only be done on a list variable. {variableName} is not a list.");
-                        }
-                        i += j + 2;
-                        break;
-                    case TokenType.TAKE:
-                        // Current Syntax:
-                        // TAKE AWAY x FROM variable
-                        nextToken = internalTokens[i + 1];
-                        if (!Is(nextToken, TokenType.AWAY))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"AWAY\" keyword found after \"TAKE\".");
-                        }
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j + 1];
-                        while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.FROM))
-                        {
-                            expression.Add(internalTokens[i + j + 1]);
-                            j++;
-                            nextToken = internalTokens[i + j + 1];
-                        }
-                        nextToken = internalTokens[i + j + 1];
-                        if (!Is(internalTokens[i + j + 1], TokenType.FROM))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"FROM\" keyword after {expression[expression.Count - 1].GetLiteral()}.");
-                        }
-                        variableName = internalTokens[i + j + 2].GetLiteral();
-                        if (listVariableNames.Contains(variableName.ToUpper()))
-                        {
-                            intermediateList.AddRange(MapListSubtraction(variableName, expression.ToArray()));
-                        }
-                        else
-                        {
-                            intermediateList.AddRange(MapSubtraction(variableName, expression.ToArray()));
-                        }
-                        i += j + 3;
-                        break;
-                    case TokenType.MULTIPLICATION:
-                        // Current Syntax:
-                        // MULTIPLY variable BY x
-                        variableName = internalTokens[i + 1].GetLiteral();
-                        nextToken = internalTokens[i + 2];
-                        if (!Is(nextToken, TokenType.BY))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"BY\" keyword after {variableName}.");
-                        }
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j + 2];
-                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
-                        {
-                            expression.Add(nextToken);
-                            j++;
-                            nextToken = internalTokens[i + j + 2];
-                        }
-                        intermediateList.AddRange(MapMultiplication(variableName, expression.ToArray()));
-                        i += j + 2;
-                        break;
-                    case TokenType.DIVISION:
-                        // Current Syntax:
-                        // DIVIDE variable BY x
-                        variableName = internalTokens[i + 1].GetLiteral();
-                        nextToken = internalTokens[i + 2];
-                        if (!Is(nextToken, TokenType.BY))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"BY\" keyword after {variableName}.");
-                        }
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j + 2];
-                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
-                        {
-                            expression.Add(nextToken);
-                            j++;
-                            nextToken = internalTokens[i + j + 2];
-                        }
-                        intermediateList.AddRange(MapDivision(variableName, expression.ToArray()));
-                        i += j + 2;
-                        break;
-                    case TokenType.GET:
-                        // Current syntax
-                        // GET (THE) REMAINDER OF variable DIVDED BY expression
-                        // GET (THE) REMAINDER FROM x DIVIDED BY expression
-                        int theOffset = 0;
-                        nextToken = internalTokens[i + 1];
-                        if (!Is(nextToken, TokenType.THE))
-                        {
-                            theOffset = -1;
-                        }
-                        nextToken = internalTokens[i + 2 + theOffset];
-                        if (!Is(nextToken, TokenType.REMAINDER))
-                        {
-                            if (theOffset == 0)
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"REMAINDER\" keyword after \"THE\".");
-                            }
-                            else
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1 + theOffset].GetLine() + 1}: No \"REMAINDER\" keyword after \"GET\".");
-                            }
-                        }
-                        nextToken = internalTokens[i + 3 + theOffset];
-                        if (!Is(nextToken, TokenType.FROM) && !Is(nextToken, TokenType.OF))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2 + theOffset].GetLine() + 1}: No \"OF\" or \"FROM\" keyword after \"REMAINDER\".");
-                        }
-                        variableName = internalTokens[i + 4 + theOffset].GetLiteral();
-                        nextToken = internalTokens[i + 5 + theOffset];
-                        if (!Is(nextToken, TokenType.DIVIDED))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 4 + theOffset].GetLine() + 1}: No \"DIVIDED\" keyword after \"{variableName}\".");
-                        }
-                        nextToken = internalTokens[i + 6 + theOffset];
-                        if (!Is(nextToken, TokenType.BY))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 5 + theOffset].GetLine() + 1}: No \"BY\" keyword after \"DIVIDED\".");
-                        }
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j + 6 + theOffset];
-                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
-                        {
-                            expression.Add(nextToken);
-                            j++;
-                            nextToken = internalTokens[i + j + 6 + theOffset];
-                        }
-                        intermediateList.AddRange(MapModulo(variableName, expression.ToArray()));
-                        i += j + 6 + theOffset;
-                        break;
-                    case TokenType.RAISE:
-                        // Current Syntax:
-                        // RAISE variable TO THE POWER (OF) 2
-                        nextToken = internalTokens[i + 1];
-                        if (!Is(nextToken, TokenType.VARIABLE))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No variable found after \"RAISE\".");
-                        }
-                        variableName = internalTokens[i + 1].GetLiteral();
-                        nextToken = internalTokens[i + 2];
-                        if (!Is(nextToken, TokenType.TO))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"TO\" after \"{variableName}\".");
-                        }
-                        nextToken = internalTokens[i + 3];
-                        if (!Is(nextToken, TokenType.THE))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2].GetLine() + 1}: No \"THE\" keyword after \"TO\".");
-                        }
-                        nextToken = internalTokens[i + 4];
-                        if (!Is(nextToken, TokenType.POWER))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 3].GetLine() + 1}: No \"POWER\" keyword after \"THE\".");
-                        }
-                        nextToken = internalTokens[i + 5];
-                        if (!Is(nextToken, TokenType.OF))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 4].GetLine() + 1}: No \"OF\" keyword after \"POWER\".");
-                        }
-                        expression = new List<Token>();
-                        j = 1;
-                        nextToken = internalTokens[i + j + 5];
-                        while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
-                        {
-                            expression.Add(nextToken);
-                            j++;
-                            nextToken = internalTokens[i + j + 5];
-                        }
-                        intermediateList.AddRange(MapExponentiation(variableName, expression.ToArray()));
-                        i += j + 5;
-                        break;
-                    case TokenType.FUNCTION:
-                        // Current Function Syntax
-                        // FUNCTION subroutine (a,...)
-                        //   statements
-                        // END FUNCTION
-                        nextToken = internalTokens[i + 1];
-                        if (!Is(nextToken, TokenType.SUBROUTINE_NAME))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No valid function name found after \"FUNCTION\" keyword.");
-                        }
-                        subroutineName = nextToken.GetLiteral();
-                        nextToken = internalTokens[i + 2];
-                        if (!Is(nextToken, TokenType.LEFT_BRACKET))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
-                        }
-                        variableNames = new List<string>();
-                        areParamsToRead = true;
-                        readyForNextParam = true;
-                        for (j = 1; areParamsToRead; j++)
-                        {
-                            nextToken = internalTokens[i + j + 2];
-                            //MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
-                            if (Is(nextToken, TokenType.RIGHT_BRACKET))
-                            {
-                                areParamsToRead = false;
-                            }
-                            else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
-                            {
-                                variableNames.Add(nextToken.GetLiteral());
-                                readyForNextParam = false;
-                            }
-                            else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
-                            {
-                                readyForNextParam = true;
-                            }
-                            else
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
-                            }
-                        }
-                        nextToken = internalTokens[i + j + 2];
-                        bodyStart = i + j + 2;
-                        bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
-                        subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
-
-                        List<Token> functionsTokens = new List<Token>();
-
-                        for (int x = bodyStart; x < bodyEnd; x++)
-                        {
-                            functionsTokens.Add(internalTokens[x]);
-                        }
-
-                        intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray(), true));
-
-                        counterSubroutine++;
-
-                        // Incorrect calculation here
-                        i = bodyEnd + 2;
-                        break;
-                    case TokenType.PROCEDURE:
-                        // Current Function Syntax
-                        // PROCEDURE subroutine (a,...)
-                        //   statements
-                        // END FUNCTION
-                        nextToken = internalTokens[i + 1];
-                        if (!Is(nextToken, TokenType.SUBROUTINE_NAME))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No valid procedure name found after \"PROCEDURE\" keyword.");
-                        }
-                        subroutineName = nextToken.GetLiteral();
-                        nextToken = internalTokens[i + 2];
-                        if (!Is(nextToken, TokenType.LEFT_BRACKET))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
-                        }
-                        variableNames = new List<string>();
-                        areParamsToRead = true;
-                        readyForNextParam = true;
-                        for (j = 1; areParamsToRead; j++)
-                        {
-                            nextToken = internalTokens[i + j + 2];
-                            //MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
-                            if (Is(nextToken, TokenType.RIGHT_BRACKET))
-                            {
-                                areParamsToRead = false;
-                            }
-                            else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
-                            {
-                                variableNames.Add(nextToken.GetLiteral());
-                                readyForNextParam = false;
-                            }
-                            else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
-                            {
-                                readyForNextParam = true;
-                            }
-                            else
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
-                            }
-                        }
-                        nextToken = internalTokens[i + j + 2];
-                        bodyStart = i + j + 2;
-                        bodyEnd = FindEndIndex(bodyStart, "PROCEDURE", internalTokens);
-                        subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
-
-                        List<Token> procedureTokens = new List<Token>();
-
-                        for (int x = bodyStart; x < bodyEnd; x++)
-                        {
-                            procedureTokens.Add(internalTokens[x]);
-                        }
-
-                        List<string> subroutineIntermediate = TokensToIntermediate(procedureTokens.ToArray(), true).ToList();
-                        subroutineIntermediate.Add("RETURN");
-                        intermediateSubroutines.Add(subroutineIntermediate.ToArray());
-
-                        counterSubroutine++;
-
-                        // Incorrect calculation here
-                        i = bodyEnd + 2;
-                        break;
-                    case TokenType.RETURN:
-                        if (!inFunction)
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unable to return when outside of a function.");
-                        }
-
-                        // Capture expression
-                        expression = new List<Token>();
-                        j = 1;
-                        inputOffset = 0;
-                        nextToken = internalTokens[i + j];
                         if (!IsSameLine(nextToken, token))
                         {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Cannot \"RETURN\" nothing.");
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
                         }
-
-                        while (!IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j], nextToken))
+                        areParamsToRead = true;
+                        readyForNextParam = true;
+                        for (j = 1; areParamsToRead; j++)
+                        {
+                            nextToken = internalTokens[i + j + 3];
+                            if (Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
+                            {
+                                areParamsToRead = false;
+                            }
+                            else if (!IsEndOfToken(nextToken) && (IsVariable(nextToken) || IsLiteral(nextToken)) && readyForNextParam)
+                            {
+                                while (!IsEndOfToken(nextToken) && !Is(nextToken, TokenType.COMMA) && !Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
+                                {
+                                    expression.Add(nextToken);
+                                    j++;
+                                    nextToken = internalTokens[i + j + 3];
+                                }
+                                expressions.Add(new List<Token>(expression));
+                                expression.Clear();
+                                j--;
+                                readyForNextParam = false;
+                            }
+                            else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                            {
+                                readyForNextParam = true;
+                            }
+                            else
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
+                            }
+                        }
+                    }
+                    // Single element data type
+                    else
+                    {
+                        if (!IsSameLine(nextToken, token))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Variable {variableName} not set to anything.");
+                        }
+                        while (ValidLengthForIndexing(i + j + 2, internalTokens.Length) && !IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j + 2], token) && !IsEndOfToken(nextToken))
                         {
                             // Limitation: in an if statement the prompt cannot contain multiple strings or variables
                             // Format without punctuation does not support this
                             if (IsInput(nextToken))
                             {
+                                if (!Is(internalTokens[i + j + 3], TokenType.WITH))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
+                                }
+                                if (!Is(internalTokens[i + j + 4], TokenType.MESSAGE))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
+                                }
+                                expression.Add(nextToken);
+                                j += 3;
+                                inputOffset += 2;
+                            }
+                            else if (IsLength(nextToken))
+                            {
+                                // Correct Syntax:
+                                // LENGTH OF var
+                                if (!Is(internalTokens[i + j + 3], TokenType.OF))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"OF\" after \"LENGTH\".");
+                                }
+                                expression.Add(nextToken);
+                                j += 2;
+                                lengthOffset += 1;
+                            }
+                            else if (IsSubroutineCall(nextToken))
+                            {
+                                subroutineName = nextToken.GetLiteral().ToUpper();
+
+                                arguementsStack = new Stack<Variable>();
+                                isLiteralArguementStack = new Stack<bool>();
+                                paramCounter = 0;
+                                nextToken = internalTokens[i + j + 3];
+
+                                if (!Is(nextToken, TokenType.LEFT_BRACKET))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
+                                }
+                                areParamsToRead = true;
+                                readyForNextParam = true;
+                                for (; areParamsToRead; j++)
+                                {
+                                    // Read as an expression until a comma then convert to instructions with Shunting Yard
+                                    nextToken = internalTokens[i + j + 4];
+                                    if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                                    {
+                                        areParamsToRead = false;
+                                    }
+                                    else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
+                                    {
+                                        arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
+                                        isLiteralArguementStack.Push(true);
+                                        readyForNextParam = false;
+                                    }
+                                    else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                                    {
+                                        arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
+                                        isLiteralArguementStack.Push(false);
+                                        readyForNextParam = false;
+                                    }
+                                    else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                                    {
+                                        readyForNextParam = true;
+                                    }
+                                    else
+                                    {
+                                        throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetTokenType()}\" in the arguement.");
+                                    }
+                                }
+
+                                // Sets up parameters and local variables
+                                localCounter = FindLocalVariables(subroutineName).Length;
+                                subroutineParametersCount[subroutineDict[subroutineName]] = paramCounter;
+                                subroutineLocalVariableCounter[subroutineDict[subroutineName]] = localCounter;
+                                arguements = new List<Variable>();
+                                isLiteralList = new List<bool>();
+                                while (arguementsStack.Count > 0)
+                                {
+                                    arguements.Add(arguementsStack.Pop());
+                                    isLiteralList.Add(isLiteralArguementStack.Pop());
+
+                                }
+
+                                intermediateList.AddRange(MapSubroutineCall(subroutineName, arguements, isLiteralList));
+
+                                j += 2;
+                            }
+                            else
+                            {
+                                expression.Add(nextToken);
+                                j++;
+                            }
+                            nextToken = internalTokens[i + j + 2];
+                        }
+                        j = expression.Count + inputOffset + lengthOffset;
+                    }
+
+                    if (type == "LIST")
+                    {
+                        intermediateList.AddRange(MapListAssignment(variableName, expressions));
+                        listVariableNames.Add(variableName.ToUpper());
+                    }
+                    else
+                    {
+                        intermediateList.AddRange(MapAssignment(variableName, expression, type));
+                    }
+                    i += j + 3;
+                    if (!noType)
+                    {
+                        i += 2;
+                    }
+                    break;
+                case TokenType.DECLARATION:
+                    // Current Syntax
+                    // CREATE expression
+                    nextToken = internalTokens[i + 1];
+                    if (!IsVariable(nextToken))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: When creating no variable was found.");
+                    }
+                    // Getting Variable Name
+                    variableName = nextToken.GetLiteral();
+
+                    if (PreviouslyDeclared(variableName, i, internalTokens))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Cannot create variable {variableName} more than once.");
+                    }
+
+                    intermediateList.AddRange(MapDeclaration(variableName));
+                    i += 2;
+                    break;
+            }
+        }
+
+        private void TranslateAssignmentOperators(TokenType tokenType, ref int i, Token[] internalTokens)
+        {
+            string variableName;
+            List<Token> expression;
+            int j;
+            Token nextToken;
+            Token prevToken = new Token(TokenType.EOF, "", -1);
+            List<Token> body = new List<Token>();
+
+            switch (tokenType)
+            {
+                // General Assignment Operators
+                case TokenType.ADDITION:
+                    // Current Syntax:
+                    // ADD x TO variable
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j];
+                    while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.TO))
+                    {
+                        expression.Add(internalTokens[i + j]);
+                        j++;
+                        nextToken = internalTokens[i + j];
+                    }
+                    variableName = internalTokens[i + j + 1].GetLiteral();
+                    if (listVariableNames.Contains(variableName.ToUpper()))
+                    {
+                        intermediateList.AddRange(MapListAddition(variableName, expression.ToArray()));
+                    }
+                    else
+                    {
+                        intermediateList.AddRange(MapAddition(variableName, expression.ToArray()));
+                    }
+                    i += j + 2;
+                    break;
+                case TokenType.TAKE:
+                    // Current Syntax:
+                    // TAKE AWAY x FROM variable
+                    nextToken = internalTokens[i + 1];
+                    if (!Is(nextToken, TokenType.AWAY))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"AWAY\" keyword found after \"TAKE\".");
+                    }
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j + 1];
+                    while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.FROM))
+                    {
+                        expression.Add(internalTokens[i + j + 1]);
+                        j++;
+                        nextToken = internalTokens[i + j + 1];
+                    }
+                    nextToken = internalTokens[i + j + 1];
+                    if (!Is(internalTokens[i + j + 1], TokenType.FROM))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"FROM\" keyword after {expression[expression.Count - 1].GetLiteral()}.");
+                    }
+                    variableName = internalTokens[i + j + 2].GetLiteral();
+                    if (listVariableNames.Contains(variableName.ToUpper()))
+                    {
+                        intermediateList.AddRange(MapListSubtraction(variableName, expression.ToArray()));
+                    }
+                    else
+                    {
+                        intermediateList.AddRange(MapSubtraction(variableName, expression.ToArray()));
+                    }
+                    i += j + 3;
+                    break;
+                case TokenType.MULTIPLICATION:
+                    // Current Syntax:
+                    // MULTIPLY variable BY x
+                    variableName = internalTokens[i + 1].GetLiteral();
+                    nextToken = internalTokens[i + 2];
+                    if (!Is(nextToken, TokenType.BY))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"BY\" keyword after {variableName}.");
+                    }
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j + 2];
+                    while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
+                    {
+                        expression.Add(nextToken);
+                        j++;
+                        nextToken = internalTokens[i + j + 2];
+                    }
+                    intermediateList.AddRange(MapMultiplication(variableName, expression.ToArray()));
+                    i += j + 2;
+                    break;
+                case TokenType.DIVISION:
+                    // Current Syntax:
+                    // DIVIDE variable BY x
+                    variableName = internalTokens[i + 1].GetLiteral();
+                    nextToken = internalTokens[i + 2];
+                    if (!Is(nextToken, TokenType.BY))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"BY\" keyword after {variableName}.");
+                    }
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j + 2];
+                    while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
+                    {
+                        expression.Add(nextToken);
+                        j++;
+                        nextToken = internalTokens[i + j + 2];
+                    }
+                    intermediateList.AddRange(MapDivision(variableName, expression.ToArray()));
+                    i += j + 2;
+                    break;
+                case TokenType.GET:
+                    // Current syntax
+                    // GET (THE) REMAINDER OF variable DIVDED BY expression
+                    // GET (THE) REMAINDER FROM x DIVIDED BY expression
+                    int theOffset = 0;
+                    nextToken = internalTokens[i + 1];
+                    if (!Is(nextToken, TokenType.THE))
+                    {
+                        theOffset = -1;
+                    }
+                    nextToken = internalTokens[i + 2 + theOffset];
+                    if (!Is(nextToken, TokenType.REMAINDER))
+                    {
+                        if (theOffset == 0)
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"REMAINDER\" keyword after \"THE\".");
+                        }
+                        else
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1 + theOffset].GetLine() + 1}: No \"REMAINDER\" keyword after \"GET\".");
+                        }
+                    }
+                    nextToken = internalTokens[i + 3 + theOffset];
+                    if (!Is(nextToken, TokenType.FROM) && !Is(nextToken, TokenType.OF))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2 + theOffset].GetLine() + 1}: No \"OF\" or \"FROM\" keyword after \"REMAINDER\".");
+                    }
+                    variableName = internalTokens[i + 4 + theOffset].GetLiteral();
+                    nextToken = internalTokens[i + 5 + theOffset];
+                    if (!Is(nextToken, TokenType.DIVIDED))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 4 + theOffset].GetLine() + 1}: No \"DIVIDED\" keyword after \"{variableName}\".");
+                    }
+                    nextToken = internalTokens[i + 6 + theOffset];
+                    if (!Is(nextToken, TokenType.BY))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 5 + theOffset].GetLine() + 1}: No \"BY\" keyword after \"DIVIDED\".");
+                    }
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j + 6 + theOffset];
+                    while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
+                    {
+                        expression.Add(nextToken);
+                        j++;
+                        nextToken = internalTokens[i + j + 6 + theOffset];
+                    }
+                    intermediateList.AddRange(MapModulo(variableName, expression.ToArray()));
+                    i += j + 6 + theOffset;
+                    break;
+                case TokenType.RAISE:
+                    // Current Syntax:
+                    // RAISE variable TO THE POWER (OF) 2
+                    nextToken = internalTokens[i + 1];
+                    if (!Is(nextToken, TokenType.VARIABLE))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No variable found after \"RAISE\".");
+                    }
+                    variableName = internalTokens[i + 1].GetLiteral();
+                    nextToken = internalTokens[i + 2];
+                    if (!Is(nextToken, TokenType.TO))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: No \"TO\" after \"{variableName}\".");
+                    }
+                    nextToken = internalTokens[i + 3];
+                    if (!Is(nextToken, TokenType.THE))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2].GetLine() + 1}: No \"THE\" keyword after \"TO\".");
+                    }
+                    nextToken = internalTokens[i + 4];
+                    if (!Is(nextToken, TokenType.POWER))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 3].GetLine() + 1}: No \"POWER\" keyword after \"THE\".");
+                    }
+                    nextToken = internalTokens[i + 5];
+                    if (!Is(nextToken, TokenType.OF))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 4].GetLine() + 1}: No \"OF\" keyword after \"POWER\".");
+                    }
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j + 5];
+                    while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token))
+                    {
+                        expression.Add(nextToken);
+                        j++;
+                        nextToken = internalTokens[i + j + 5];
+                    }
+                    intermediateList.AddRange(MapExponentiation(variableName, expression.ToArray()));
+                    i += j + 5;
+                    break;
+                // Assignment Operator (Lists Only)
+                case TokenType.REMOVE:
+                    // Current Syntax:
+                    // REMOVE x FROM variable
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j];
+                    while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.FROM))
+                    {
+                        expression.Add(internalTokens[i + j]);
+                        j++;
+                        nextToken = internalTokens[i + j];
+                    }
+                    variableName = internalTokens[i + j + 1].GetLiteral();
+                    if (listVariableNames.Contains(variableName.ToUpper()))
+                    {
+                        intermediateList.AddRange(MapListSubtraction(variableName, expression.ToArray()));
+                    }
+                    else
+                    {
+                        throw new Exception($"LOGIC ERROR on Line {nextToken.GetLine() + 1}: Remove operation can only be done on a list variable. {variableName} is not a list.");
+                    }
+                    i += j + 2;
+                    break;
+            }
+        }
+
+        private void TranslateIfStatement(TokenType tokenType, ref int i, Token[] internalTokens, bool inFunction)
+        {
+            List<Token> internalTokensList = internalTokens.ToList();
+            List<Token> expression;
+            int j;
+            Token nextToken;
+            Token prevToken = new Token(TokenType.EOF, "", -1);
+            List<Token> body = new List<Token>();
+            int currentLine;
+            Token finalTokenOfLine;
+            int bodyStart, bodyEnd;
+
+            // Correct Syntax:
+            // IF <condition> THEN
+            // statement
+            // END IF
+            // ELSE IF <condition> THEN
+            // statement
+            // END IF
+            // ELSE
+            // statement
+            // END IF
+
+            // Declare necessary variables
+            j = 0;
+            #region Variable Declarations
+            List<Token> mainExpression = new List<Token>();
+            List<Token> mainBody = new List<Token>();
+            List<Token[]> elseIfExpressions = new List<Token[]>();
+            List<Token[]> elseIfBodies = new List<Token[]>();
+            List<Token> elseBody = new List<Token>();
+            expression = new List<Token>();
+            #endregion
+            // Check Valid Syntax - IF
+            currentLine = token.GetLine();
+            finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
+            if (!Is(finalTokenOfLine, TokenType.THEN))
+            {
+                throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\" at the end.");
+            }
+            // Get Main If Expression
+            nextToken = internalTokens[i + j + 1];
+            while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token) && !Is(nextToken, TokenType.THEN))
+            {
+                mainExpression.Add(internalTokens[i + j + 1]);
+                j++;
+                nextToken = internalTokens[i + j + 1];
+            }
+
+            // Capture Main If Body
+            bodyStart = i + j + 2;
+            bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
+
+            mainBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
+
+            // Set i to next section
+            i = bodyEnd;
+
+            Token startToken = internalTokens[i];
+            // Identify if Else If statement(s)
+            while (!IsEndOfToken(startToken) && Is(startToken, TokenType.ELSE) && Is(internalTokens[i + 1], TokenType.IF))
+            {
+                // Verify Valid Syntax - ELSE IF
+                currentLine = startToken.GetLine();
+                finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
+                if (!Is(finalTokenOfLine, TokenType.THEN))
+                {
+                    throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\".");
+                }
+                // Reset expression
+                expression = new List<Token>();
+                j = 0;
+                // + 2 represents ELSE IF
+                nextToken = internalTokens[i + j + 2];
+                while (IsSameLine(nextToken, startToken) && !Is(nextToken, TokenType.THEN))
+                {
+                    expression.Add(nextToken);
+                    j++;
+                    nextToken = internalTokens[i + j + 2];
+                }
+
+                // + 2 is used in this case because the program is checking for the next token after the final expression token
+                if (!Is(nextToken, TokenType.THEN))
+                {
+                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"THEN\".");
+                }
+                // Capture Else If 1 Body
+                bodyStart = i + j + 3;
+                bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
+                body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
+                // Add body & expresison to lists
+                elseIfBodies.Add(body.ToArray());
+                elseIfExpressions.Add(expression.ToArray());
+                // Set i to next section
+                i = bodyEnd;
+                // Needed for preparing the next iteration of ELSE IF
+                startToken = internalTokens[i];
+            }
+            // Set up Else statement
+            bool isElse = false;
+            // Identify if Else statement is present
+            if (!IsEndOfToken(internalTokens[i]) && Is(internalTokens[i], TokenType.ELSE))
+            {
+                isElse = true;
+                bodyStart = i + 1;
+                bodyEnd = FindEndIndex(bodyStart, "IF", internalTokens);
+
+                elseBody = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart);
+                i = bodyEnd;
+            }
+            // Account for the final END IF
+            // Irregardless of what terms were used
+            i += 2;
+            intermediateList.AddRange(MapIfStatement(mainExpression.ToArray(), mainBody.ToArray(), elseIfExpressions, elseIfBodies, isElse, elseBody.ToArray(), inFunction));
+        }
+
+        private void TranslateLoops(TokenType tokenType, ref int i, Token[] internalTokens, bool inFunction)
+        {
+            List<Token> internalTokensList = internalTokens.ToList();
+
+            string variableName;
+            List<Token> expression;
+            int j, k, l;
+            Token nextToken;
+            Token prevToken = new Token(TokenType.EOF, "", -1);
+            List<Token> body = new List<Token>();
+            int currentLine;
+            Token finalTokenOfLine;
+            int bodyStart, bodyEnd;
+
+            switch (tokenType)
+            {
+                case TokenType.COUNT:
+                    // Current Syntax:
+                    // COUNT WITH variable FROM begin TO limit (BY steps)
+                    // statement
+                    // END COUNT
+
+                    nextToken = internalTokens[i + 1];
+                    // Checking for mismatched tokens
+                    if (!Is(nextToken, TokenType.WITH))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" keyword.");
+                    }
+                    nextToken = internalTokens[i + 2];
+                    if (!Is(nextToken, TokenType.VARIABLE))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 1].GetLine() + 1}: Missing variable from \"COUNT WITH\".");
+                    }
+                    nextToken = internalTokens[i + 3];
+                    if (!Is(nextToken, TokenType.FROM))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + 2].GetLine() + 1}: Missing \"FROM\" keyword.");
+                    }
+                    // Finds expressions 
+                    List<Token> expression1 = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j + 3];
+                    while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.TO))
+                    {
+                        expression1.Add(internalTokens[i + j + 3]);
+                        j++;
+                        nextToken = internalTokens[i + j + 3];
+                    }
+                    nextToken = internalTokens[i + j + 3];
+                    if (!Is(nextToken, TokenType.TO))
+                    {
+                        throw new Exception($"SYNTAX ERROR on {internalTokens[i + j + 2].GetLine() + 1}: Missing \"TO\" keyword.");
+                    }
+                    List<Token> expression2 = new List<Token>();
+                    k = 1;
+                    while (IsSameLine(internalTokens[i + j + k + 3], token) && !Is(internalTokens[i + j + k + 3], TokenType.GOING))
+                    {
+                        expression2.Add(internalTokens[i + j + k + 3]);
+                        k++;
+                    }
+                    bool negativeStep = true;
+                    nextToken = internalTokens[i + j + k + 3];
+                    if (IsSameLine(nextToken, internalTokens[i + j + k + 2]))
+                    {
+                        if (!Is(nextToken, TokenType.GOING))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"GOING\" keyword.");
+                        }
+                        nextToken = internalTokens[i + j + k + 4];
+                        if (!Is(nextToken, TokenType.UP) && !Is(nextToken, TokenType.DOWN))
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"UP\" or \"DOWN\" keyword after \"GOING\".");
+                        }
+                        // Assigns the negativeStep variable to false if counting UP and already set to true if DOWN
+                        if (Is(nextToken, TokenType.UP))
+                        {
+                            negativeStep = false;
+                        }
+                        nextToken = internalTokens[i + j + k + 5];
+                        if (!Is(nextToken, TokenType.BY))
+                        {
+                            if (negativeStep)
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"BY\" keyword after \"DOWN\" keyword.");
+                            }
+                            else
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"BY\" keyword after \"UP\" keyword.");
+                            }
+                        }
+                    }
+                    l = 0;
+                    List<Token> expression3 = new List<Token>();
+                    if (!IsSameLine(internalTokens[i + j + k + 4], token))
+                    {
+                        negativeStep = false;
+                        expression3.Add(new Token(TokenType.INT_LITERAL, "1", token.GetLine()));
+                    }
+                    else
+                    {
+                        l = 1;
+                        while (internalTokens[i + j + k + l + 3].GetLine() == token.GetLine())
+                        {
+                            expression3.Add(internalTokens[i + j + k + l + 3]);
+                            l++;
+                        }
+                    }
+                    // Adjust the rest of the variables related to translation to intermediate
+                    variableName = internalTokens[i + 2].GetLiteral();
+                    bodyStart = i + j + k + l + 3;
+                    bodyEnd = FindEndIndex(bodyStart, "COUNT", internalTokens);
+                    nextToken = internalTokens[bodyEnd + 1];
+                    body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
+
+                    intermediateList.AddRange(MapForLoop(variableName, expression1.ToArray(), expression2.ToArray(), expression3.ToArray(), negativeStep, body.ToArray(), inFunction));
+                    i = bodyEnd + 2;
+                    break;
+                case TokenType.WHILE:
+                    // Current Syntax:
+                    // WHILE condition THEN
+                    // statements
+                    // END WHILE
+                    currentLine = token.GetLine();
+                    finalTokenOfLine = GetLastTokenInLine(currentLine, internalTokens);
+                    if (!Is(finalTokenOfLine, TokenType.THEN))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {finalTokenOfLine.GetLine() + 1}: Missing \"THEN\".");
+                    }
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j];
+                    while (IsSameLine(nextToken, token) && !Is(nextToken, TokenType.THEN))
+                    {
+                        expression.Add(internalTokens[i + j]);
+                        j++;
+                        nextToken = internalTokens[i + j];
+                    }
+                    bodyStart = i + j + 1;
+                    bodyEnd = FindEndIndex(bodyStart, "WHILE", internalTokens);
+                    body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
+                    intermediateList.AddRange(MapWhileLoop(expression.ToArray(), body.ToArray(), inFunction));
+                    i = bodyEnd + 2;
+                    break;
+                case TokenType.DO:
+                    // Current Syntax:
+                    // DO
+                    // statement
+                    // END DO
+                    // REPEAT IF condition
+                    nextToken = internalTokens[i + 1];
+                    bodyStart = i + 1;
+                    bodyEnd = FindEndIndex(bodyStart, "DO", internalTokens);
+                    body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
+                    i = bodyEnd + 2;
+                    nextToken = internalTokens[i];
+                    if (!Is(nextToken, TokenType.REPEAT))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No \"REPEAT\" keyword found after the body.");
+                    }
+                    nextToken = internalTokens[i + 1];
+                    if (!Is(nextToken, TokenType.IF))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i].GetLine() + 1}: No \"IF\" keyword found after \"REPEAT\".");
+                    }
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j + 1];
+                    while (nextToken.GetTokenType() != TokenType.EOF && internalTokens[i + j + 1].GetLine() == internalTokens[i].GetLine())
+                    {
+                        expression.Add(nextToken);
+                        j++;
+                        nextToken = internalTokens[i + j + 1];
+                    }
+                    intermediateList.AddRange(MapDoWhileLoop(expression.ToArray(), body.ToArray(), inFunction));
+                    i = i + j + 1;
+                    break;
+                case TokenType.REPEAT:
+                    // Current Syntax:
+                    // REPEAT n TIMES
+                    // statement
+                    // END REPEAT
+                    expression = new List<Token>();
+                    j = 1;
+                    nextToken = internalTokens[i + j];
+                    while (!IsEndOfToken(nextToken) && IsSameLine(nextToken, token) && !Is(internalTokens[i + j], TokenType.TIMES))
+                    {
+                        expression.Add(internalTokens[i + j]);
+                        j++;
+                        nextToken = internalTokens[i + j];
+                    }
+                    if (!Is(internalTokens[i + j], TokenType.TIMES))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {internalTokens[i + j].GetLine() + 1}: No \"TIMES\" keyword found after expression.");
+                    }
+                    bodyStart = i + j + 1;
+                    bodyEnd = FindEndIndex(bodyStart, "REPEAT", internalTokens);
+                    body = internalTokensList.GetRange(bodyStart, bodyEnd - bodyStart - 1);
+                    variableName = $"CounterVariable{fixedLoopCounter++}";
+                    intermediateList.AddRange(MapFixedLengthLoop(variableName, expression.ToArray(), body.ToArray(), inFunction));
+                    i = bodyEnd + 2;
+                    break;
+            }
+        }
+
+        private void TranslateSubroutineDefinition(TokenType tokenType, ref int i, Token[] internalTokens)
+        {
+            string subroutineName;
+            int j;
+            Token nextToken;
+            Token prevToken = new Token(TokenType.EOF, "", -1);
+            List<Token> body = new List<Token>();
+            int bodyStart, bodyEnd;
+            bool areParamsToRead = true, readyForNextParam = true;
+            List<string> variableNames;
+
+            // Generally process the subroutine definition
+            nextToken = internalTokens[i + 1];
+            if (!Is(nextToken, TokenType.SUBROUTINE_NAME))
+            {
+                if (Is(token, TokenType.FUNCTION))
+                {
+                    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No valid function name found after \"FUNCTION\" keyword.");
+                }
+                else
+                {
+                    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: No valid function name found after \"PROCEDURE\" keyword.");
+                }
+            }
+            subroutineName = nextToken.GetLiteral();
+            nextToken = internalTokens[i + 2];
+            if (!Is(nextToken, TokenType.LEFT_BRACKET))
+            {
+                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
+            }
+            variableNames = new List<string>();
+            areParamsToRead = true;
+            readyForNextParam = true;
+            for (j = 1; areParamsToRead; j++)
+            {
+                nextToken = internalTokens[i + j + 2];
+                //MessageBox.Show($"Token = {nextToken.GetLiteral()}\nType = {nextToken.GetTokenType()}\nReady: {readyForNextParam}\n\n{!IsEndOfToken(nextToken)}\n{IsVariable(nextToken)} {nextToken.GetTokenType()}\n{readyForNextParam}");
+                if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                {
+                    areParamsToRead = false;
+                }
+                else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                {
+                    variableNames.Add(nextToken.GetLiteral());
+                    readyForNextParam = false;
+                }
+                else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                {
+                    readyForNextParam = true;
+                }
+                else
+                {
+                    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetLiteral()}\" in the arguement.");
+                }
+            }
+            nextToken = internalTokens[i + j + 2];
+            bodyStart = i + j + 2;
+
+            // Complete translation with specifics to the type of subroutine
+            switch (tokenType)
+            {
+                case TokenType.FUNCTION:
+                    // Current Function Syntax
+                    // FUNCTION subroutine (a,...)
+                    //   statements
+                    // END FUNCTION
+
+                    bodyEnd = FindEndIndex(bodyStart, "FUNCTION", internalTokens);
+                    subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
+
+                    List<Token> functionsTokens = new List<Token>();
+
+                    for (int x = bodyStart; x < bodyEnd; x++)
+                    {
+                        functionsTokens.Add(internalTokens[x]);
+                    }
+
+                    intermediateSubroutines.Add(TokensToIntermediate(functionsTokens.ToArray(), true));
+
+                    counterSubroutine++;
+
+                    // Incorrect calculation here
+                    i = bodyEnd + 2;
+                    break;
+                case TokenType.PROCEDURE:
+                    // Current Function Syntax
+                    // PROCEDURE subroutine (a,...)
+                    //   statements
+                    // END FUNCTION
+
+                    bodyEnd = FindEndIndex(bodyStart, "PROCEDURE", internalTokens);
+                    subroutineDict.Add(subroutineName.ToUpper(), counterSubroutine);
+
+                    List<Token> procedureTokens = new List<Token>();
+
+                    for (int x = bodyStart; x < bodyEnd; x++)
+                    {
+                        procedureTokens.Add(internalTokens[x]);
+                    }
+
+                    List<string> subroutineIntermediate = TokensToIntermediate(procedureTokens.ToArray(), true).ToList();
+                    subroutineIntermediate.Add("RETURN");
+                    intermediateSubroutines.Add(subroutineIntermediate.ToArray());
+
+                    counterSubroutine++;
+
+                    // Incorrect calculation here
+                    i = bodyEnd + 2;
+                    break;
+            }
+        }
+
+        private void TranslateBuiltInFunctions(TokenType tokenType, ref int i, Token[] internalTokens, bool inFunction)
+        {
+            string variableName;
+            string subroutineName;
+            List<Token> expression;
+            int j, k, l;
+            int inputOffset;
+            Token nextToken;
+            Token prevToken = new Token(TokenType.EOF, "", -1);
+            List<Token> body = new List<Token>();
+            bool areParamsToRead = true, readyForNextParam = true;
+            Stack<Variable> arguementsStack;
+            Stack<bool> isLiteralArguementStack;
+            int paramCounter;
+            int localCounter;
+            List<Variable> arguements;
+            List<bool> isLiteralList;
+
+            switch (tokenType)
+            {
+                case TokenType.PRINT:
+                    // Current Syntax
+                    // PRINT [expression]
+                    //
+                    // Reject:
+                    // - End of file
+                    // Accept:
+                    // - Variable (Lists - prints them accordingly)
+                    // - Any literal
+                    // - An input
+                    // - Left Bracket
+                    // - Function call
+                    nextToken = internalTokens[i + 1];
+                    if (!IsEndOfToken(nextToken) && IsVariable(nextToken) || IsLiteral(nextToken) || IsInput(nextToken) || IsLeftAssociative(nextToken) || IsLeftBracket(nextToken) || IsUnary(nextToken) || IsSubroutineCall(nextToken))
+                    {
+                        expression = new List<Token>();
+                        j = 1;
+                        nextToken = internalTokens[i + j];
+                        while (!IsEndOfToken(nextToken) && nextToken.GetLine() == token.GetLine())
+                        {
+                            if (prevToken == nextToken)
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {prevToken.GetLine() + 1}: Incorrectly formatted PRINT statement");
+                            }
+                            prevToken = nextToken;
+
+                            // List indexing
+                            if (ValidLengthForIndexing(i + j + 1, internalTokens.Length) && IsVariable(nextToken) && Is(internalTokens[i + j + 1], TokenType.SQUARE_LEFT_BRACKET))
+                            {
+                                expression = new List<Token>();
+                                expression.Add(nextToken);
+                                nextToken = internalTokens[i + j + 2];
+                                if (!IsLiteral(nextToken) && !IsVariable(nextToken))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine()}: {nextToken.GetLiteral()} must be a literal or a variable to index.");
+                                }
+                                expression.Add(new Token(TokenType.SQUARE_LEFT_BRACKET, "[", nextToken.GetLine()));
+                                while (!IsEndOfToken(nextToken) && !Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
+                                {
+                                    expression.Add(nextToken);
+                                    j++;
+                                    nextToken = internalTokens[i + j + 2];
+                                }
+
+                                if (!Is(nextToken, TokenType.SQUARE_RIGHT_BRACKET))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"]\" after indexing expression.");
+                                }
+                                expression.Add(new Token(TokenType.SQUARE_RIGHT_BRACKET, "]", nextToken.GetLine()));
+
+                                // Index Offset
+                                j += 3;
+                            }
+                            // Other elements
+                            else if (IsVariable(nextToken) || IsLiteral(nextToken) || IsMathsOperator(nextToken) || IsBracket(nextToken) || IsBitwise(nextToken) || IsComparison(nextToken))
+                            {
+                                expression.Add(nextToken);
+                                j++;
+                            }
+                            // Limitation: in an if statement the prompt cannot contain multiple strings or variable - not necessarily an issue for a KS3 usage
+                            else if (IsInput(nextToken))
+                            {
+                                // Correct Syntax:
+                                // INPUT WITH MESSAGE
                                 if (!Is(internalTokens[i + j + 1], TokenType.WITH))
                                 {
                                     throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
@@ -3052,8 +3078,20 @@ namespace NEA
                                     throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
                                 }
                                 expression.Add(nextToken);
-                                j += 1;
-                                inputOffset += 2;
+                                // Increment by 2 more to skip filler "WITH MESSAGE"
+                                // Continue onto the following string prompt
+                                j += 3;
+                            }
+                            else if (IsLength(nextToken))
+                            {
+                                // Correct Syntax:
+                                // LENGTH OF var
+                                if (!Is(internalTokens[i + j + 1], TokenType.OF))
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"OF\" after \"LENGTH\".");
+                                }
+                                expression.Add(nextToken);
+                                j += 2;
                             }
                             else if (IsSubroutineCall(nextToken))
                             {
@@ -3062,7 +3100,7 @@ namespace NEA
                                 arguementsStack = new Stack<Variable>();
                                 isLiteralArguementStack = new Stack<bool>();
                                 paramCounter = 0;
-                                nextToken = internalTokens[i + 2];
+                                nextToken = internalTokens[i + j + 1];
 
                                 if (!Is(nextToken, TokenType.LEFT_BRACKET))
                                 {
@@ -3070,7 +3108,7 @@ namespace NEA
                                 }
                                 areParamsToRead = true;
                                 readyForNextParam = true;
-                                for (j = 1; areParamsToRead; j++)
+                                for (; areParamsToRead; j++)
                                 {
                                     // Read as an expression until a comma then convert to instructions with Shunting Yard
                                     nextToken = internalTokens[i + j + 2];
@@ -3099,170 +3137,292 @@ namespace NEA
                                         throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetTokenType()}\" in the arguement.");
                                     }
                                 }
-                            }
-                            else
-                            {
-                                expression.Add(nextToken);
-                                j++;
-                            }
-                            nextToken = internalTokens[i + j];
-                        }
-                        j = expression.Count + inputOffset;
-                        i += j + 1;
 
-                        intermediateList.AddRange(MapReturn(expression));
-                        break;
-                    case TokenType.SUBROUTINE_NAME:
-                        // Function Call
-                        // Current Syntax:
-                        // FunctionName (arg1,arg2,...)
-                        arguementsStack = new Stack<Variable>();
-                        isLiteralArguementStack = new Stack<bool>();
-                        nextToken = internalTokens[i + 1];
-                        paramCounter = 0;
+                                // Sets up parameters and local variable for a subroutine call
+                                localCounter = FindLocalVariables(subroutineName).Length;
+                                subroutineParametersCount[subroutineDict[subroutineName]] = paramCounter;
+                                subroutineLocalVariableCounter[subroutineDict[subroutineName]] = localCounter;
+                                arguements = new List<Variable>();
+                                isLiteralList = new List<bool>();
+                                while (arguementsStack.Count > 0)
+                                {
+                                    arguements.Add(arguementsStack.Pop());
+                                    isLiteralList.Add(isLiteralArguementStack.Pop());
 
-                        if (!Is(nextToken, TokenType.LEFT_BRACKET))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
-                        }
-                        areParamsToRead = true;
-                        readyForNextParam = true;
-                        for (j = 1; areParamsToRead; j++)
-                        {
-                            nextToken = internalTokens[i + j + 1];
-                            //MessageBox.Show($"Next token = {nextToken.GetTokenType()}");
-                            if (Is(nextToken, TokenType.RIGHT_BRACKET))
-                            {
-                                areParamsToRead = false;
-                            }
-                            else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
-                            {
-                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
-                                isLiteralArguementStack.Push(true);
-                                readyForNextParam = false;
-                            }
-                            else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
-                            {
-                                // Get the variable name and parse it through as the literal of localParam
-                                arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
-                                isLiteralArguementStack.Push(false);
-                                readyForNextParam = false;
-                            }
-                            else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
-                            {
-                                readyForNextParam = true;
-                            }
-                            else
-                            {
-                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken}\" in the arguement.");
-                            }
-                        }
+                                }
 
-                        //Variable arguement = new Variable($"localParameter{paramCounter++}", nextToken.GetLiteral());
-                        //arguements.Add(arguement);
-                        localCounter = FindLocalVariables(token.GetLiteral()).Length;
-                        //MessageBox.Show($"subroutine name = {token.GetLiteral()}");
-                        //MessageBox.Show($"Subroutine Index: {subroutineDict[token.GetLiteral().ToUpper()]}");
-                        //MessageBox.Show($"paramcounter = {paramCounter}");
-                        //MessageBox.Show($"local counter = {localCounter}");
-                        // Lock in bro
-                        subroutineParametersCount[subroutineDict[token.GetLiteral().ToUpper()]] = paramCounter;
-                        subroutineLocalVariableCounter[subroutineDict[token.GetLiteral().ToUpper()]] = localCounter;
-                        // Return address found in the stack frame
-                        // Which is referred to in the RETURN statement
-                        arguements = new List<Variable>();
-                        isLiteralList = new List<bool>();
-                        while (arguementsStack.Count > 0)
-                        {
-                            arguements.Add(arguementsStack.Pop());
-                            isLiteralList.Add(isLiteralArguementStack.Pop());
-                        }
+                                intermediateList.AddRange(MapSubroutineCall(subroutineName, arguements, isLiteralList));
 
-                        // Removed isLiteralList
-                        intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements, isLiteralList));
-                        i += j + 1; // + 1
-                        break;
-                    case TokenType.SORT:
-                        // Current Syntax:
-                        // SORT list
-                        nextToken = internalTokens[i + 1];
-                        if (!IsVariable(nextToken))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"SORT\" not followed by a variable.");
+                                j += 2;
+                            }
+                            try
+                            {
+                                nextToken = internalTokens[i + j];
+                            }
+                            catch
+                            {
+                                nextToken = new Token(TokenType.EOF, null, -1);
+                            }
                         }
-                        variableName = nextToken.GetLiteral().ToUpper();
-                        if (!listVariableNames.Contains(variableName))
-                        {
-                            throw new Exception($"LOGIC ERROR on Line {nextToken.GetLine() + 1}: {variableName} is not a list variable. Cannot sort a non-list variable.");
-                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: No valid text expression following print command.");
+                    }
 
-                        intermediateList.AddRange(MapSorting(variableName));
-                        
-                        i += 2;
-                        break;
-                    case TokenType.SWAP:
-                        // Current Syntax:
-                        // SWAP index1 WITH index2 IN var
-                        j = 0;
+                    intermediateList.AddRange(MapPrintStatement(expression));
+                    // Set the counter to the end of the print statement
+                    i += j;
+                    break;
+                case TokenType.SORT:
+                    // Current Syntax:
+                    // SORT list
+                    nextToken = internalTokens[i + 1];
+                    if (!IsVariable(nextToken))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"SORT\" not followed by a variable.");
+                    }
+                    variableName = nextToken.GetLiteral().ToUpper();
+                    if (!listVariableNames.Contains(variableName))
+                    {
+                        throw new Exception($"LOGIC ERROR on Line {nextToken.GetLine() + 1}: {variableName} is not a list variable. Cannot sort a non-list variable.");
+                    }
+
+                    intermediateList.AddRange(MapSorting(variableName));
+
+                    i += 2;
+                    break;
+                case TokenType.SWAP:
+                    // Current Syntax:
+                    // SWAP index1 WITH index2 IN var
+                    j = 0;
+                    nextToken = internalTokens[i + j + 1];
+                    expression1 = new List<Token>();
+                    do
+                    {
+                        expression1.Add(nextToken);
+                        j++;
                         nextToken = internalTokens[i + j + 1];
-                        expression1 = new List<Token>();
-                        do
+                    }
+                    while (!Is(nextToken, TokenType.WITH) && ValidLengthForIndexing(i + j + 1, internalTokens.Length));
+
+                    nextToken = internalTokens[i + j + 1];
+                    if (!Is(nextToken, TokenType.WITH))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"WITH\" not found after the first index.");
+                    }
+
+                    k = 0;
+                    nextToken = internalTokens[i + j + k + 2];
+                    expression2 = new List<Token>();
+                    do
+                    {
+                        expression2.Add(nextToken);
+                        k++;
+                        nextToken = internalTokens[i + j + k + 2];
+                    }
+                    while (!Is(nextToken, TokenType.IN) && ValidLengthForIndexing(i + j + k + 2, internalTokens.Length));
+
+                    nextToken = internalTokens[i + j + k + 2];
+                    if (!Is(nextToken, TokenType.IN))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"IN\" not found after the second index.");
+                    }
+
+                    nextToken = internalTokens[i + j + k + 3];
+                    if (!IsVariable(nextToken))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Second index not followed by a variable.");
+                    }
+                    variableName = nextToken.GetLiteral().ToUpper();
+                    if (!listVariableNames.Contains(variableName))
+                    {
+                        throw new Exception($"LOGIC ERROR on Line {nextToken.GetLine() + 1}: {variableName} is not a list variable. Cannot sort a non-list variable.");
+                    }
+
+                    intermediateList.AddRange(MapSwapping(variableName, expression1, expression2));
+
+                    i += j + k + 4;
+                    break;
+                case TokenType.RETURN:
+                    if (!inFunction)
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unable to return when outside of a function.");
+                    }
+
+                    // Capture expression
+                    expression = new List<Token>();
+                    j = 1;
+                    inputOffset = 0;
+                    nextToken = internalTokens[i + j];
+                    if (!IsSameLine(nextToken, token))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Cannot \"RETURN\" nothing.");
+                    }
+
+                    while (!IsEndOfToken(nextToken) && IsSameLine(internalTokens[i + j], nextToken))
+                    {
+                        // Limitation: in an if statement the prompt cannot contain multiple strings or variables
+                        // Format without punctuation does not support this
+                        if (IsInput(nextToken))
                         {
-                            expression1.Add(nextToken);
+                            if (!Is(internalTokens[i + j + 1], TokenType.WITH))
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"WITH\" after \"INPUT\".");
+                            }
+                            if (!Is(internalTokens[i + j + 2], TokenType.MESSAGE))
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Missing \"MESSAGE\" after \"WITH\".");
+                            }
+                            expression.Add(nextToken);
+                            j += 1;
+                            inputOffset += 2;
+                        }
+                        else if (IsSubroutineCall(nextToken))
+                        {
+                            subroutineName = nextToken.GetLiteral().ToUpper();
+
+                            arguementsStack = new Stack<Variable>();
+                            isLiteralArguementStack = new Stack<bool>();
+                            paramCounter = 0;
+                            nextToken = internalTokens[i + 2];
+
+                            if (!Is(nextToken, TokenType.LEFT_BRACKET))
+                            {
+                                throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
+                            }
+                            areParamsToRead = true;
+                            readyForNextParam = true;
+                            for (j = 1; areParamsToRead; j++)
+                            {
+                                // Read as an expression until a comma then convert to instructions with Shunting Yard
+                                nextToken = internalTokens[i + j + 2];
+                                if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                                {
+                                    areParamsToRead = false;
+                                }
+                                else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
+                                {
+                                    arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
+                                    isLiteralArguementStack.Push(true);
+                                    readyForNextParam = false;
+                                }
+                                else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                                {
+                                    arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
+                                    isLiteralArguementStack.Push(false);
+                                    readyForNextParam = false;
+                                }
+                                else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                                {
+                                    readyForNextParam = true;
+                                }
+                                else
+                                {
+                                    throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken.GetTokenType()}\" in the arguement.");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            expression.Add(nextToken);
                             j++;
-                            nextToken = internalTokens[i + j + 1];
                         }
-                        while (!Is(nextToken, TokenType.WITH) && ValidLengthForIndexing(i + j + 1, internalTokens.Length));
+                        nextToken = internalTokens[i + j];
+                    }
+                    j = expression.Count + inputOffset;
+                    i += j + 1;
 
-                        nextToken = internalTokens[i + j + 1];
-                        if (!Is(nextToken, TokenType.WITH))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"WITH\" not found after the first index.");
-                        }
-
-                        k = 0;
-                        nextToken = internalTokens[i + j + k + 2];
-                        expression2 = new List<Token>();
-                        do
-                        {
-                            expression2.Add(nextToken);
-                            k++;
-                            nextToken = internalTokens[i + j + k + 2];
-                        }
-                        while (!Is(nextToken, TokenType.IN) && ValidLengthForIndexing(i + j + k + 2, internalTokens.Length));
-
-                        nextToken = internalTokens[i + j + k + 2];
-                        if (!Is(nextToken, TokenType.IN))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: \"IN\" not found after the second index.");
-                        }
-
-                        nextToken = internalTokens[i + j + k + 3];
-                        if (!IsVariable(nextToken))
-                        {
-                            throw new Exception($"SYNTAX ERROR on Line {nextToken.GetLine() + 1}: Second index not followed by a variable.");
-                        }
-                        variableName = nextToken.GetLiteral().ToUpper();
-                        if (!listVariableNames.Contains(variableName))
-                        {
-                            throw new Exception($"LOGIC ERROR on Line {nextToken.GetLine() + 1}: {variableName} is not a list variable. Cannot sort a non-list variable.");
-                        }
-
-                        intermediateList.AddRange(MapSwapping(variableName, expression1, expression2));
-
-                        i += j + k + 4;
-                        break;
-                    case TokenType.EOF:
-                        intermediateList.Add("HALT");
-                        i++;
-                        break;
-                    case TokenType.EON:
-                        i++;
-                        break;
-                }
+                    intermediateList.AddRange(MapReturn(expression));
+                    break;
             }
+        }
 
-            return intermediateList.ToArray();
+        private void TranslateMiscellaneous(TokenType tokenType, ref int i, Token[] internalTokens)
+        {
+            int j;
+            Token nextToken;
+            Token prevToken = new Token(TokenType.EOF, "", -1);
+            List<Token> body = new List<Token>();
+            bool areParamsToRead = true, readyForNextParam = true;
+            Stack<Variable> arguementsStack;
+            Stack<bool> isLiteralArguementStack;
+            int paramCounter;
+            int localCounter;
+            List<Variable> arguements;
+            List<bool> isLiteralList;
+
+            switch (tokenType)
+            {
+                case TokenType.SUBROUTINE_NAME:
+                    // Function Call
+                    // Current Syntax:
+                    // FunctionName (arg1,arg2,...)
+                    arguementsStack = new Stack<Variable>();
+                    isLiteralArguementStack = new Stack<bool>();
+                    nextToken = internalTokens[i + 1];
+                    paramCounter = 0;
+
+                    if (!Is(nextToken, TokenType.LEFT_BRACKET))
+                    {
+                        throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Missing \"(\" after {token.GetLiteral()}");
+                    }
+                    areParamsToRead = true;
+                    readyForNextParam = true;
+                    for (j = 1; areParamsToRead; j++)
+                    {
+                        nextToken = internalTokens[i + j + 1];
+                        //MessageBox.Show($"Next token = {nextToken.GetTokenType()}");
+                        if (Is(nextToken, TokenType.RIGHT_BRACKET))
+                        {
+                            areParamsToRead = false;
+                        }
+                        else if (!IsEndOfToken(nextToken) && IsLiteral(nextToken) && readyForNextParam)
+                        {
+                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
+                            isLiteralArguementStack.Push(true);
+                            readyForNextParam = false;
+                        }
+                        else if (!IsEndOfToken(nextToken) && IsVariable(nextToken) && readyForNextParam)
+                        {
+                            // Get the variable name and parse it through as the literal of localParam
+                            arguementsStack.Push(new Variable($"localParameter{paramCounter++}", new List<object> { nextToken.GetLiteral() }, false));
+                            isLiteralArguementStack.Push(false);
+                            readyForNextParam = false;
+                        }
+                        else if (!IsEndOfToken(nextToken) && Is(nextToken, TokenType.COMMA) && !readyForNextParam)
+                        {
+                            readyForNextParam = true;
+                        }
+                        else
+                        {
+                            throw new Exception($"SYNTAX ERROR on Line {token.GetLine() + 1}: Unknown keyword \"{nextToken}\" in the arguement.");
+                        }
+                    }
+                    localCounter = FindLocalVariables(token.GetLiteral()).Length;
+                    subroutineParametersCount[subroutineDict[token.GetLiteral().ToUpper()]] = paramCounter;
+                    subroutineLocalVariableCounter[subroutineDict[token.GetLiteral().ToUpper()]] = localCounter;
+                    // Return address found in the stack frame
+                    // Which is referred to in the RETURN statement
+                    arguements = new List<Variable>();
+                    isLiteralList = new List<bool>();
+                    while (arguementsStack.Count > 0)
+                    {
+                        arguements.Add(arguementsStack.Pop());
+                        isLiteralList.Add(isLiteralArguementStack.Pop());
+                    }
+
+                    intermediateList.AddRange(MapSubroutineCall(token.GetLiteral().ToUpper(), arguements, isLiteralList));
+                    i += j + 1;
+                    break;
+                case TokenType.EOF:
+                    intermediateList.Add("HALT");
+                    i++;
+                    break;
+                case TokenType.EON:
+                    i++;
+                    break;
+            }
         }
         #endregion
 

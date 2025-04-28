@@ -50,7 +50,9 @@ namespace NEA
             {"SWAP", "Takes the top 3 values of the stack, the top number references the list variable and the other two values represent the indexes to be sorted." },
             {"HALT", "Indicates the end of the program and stops the execution of the program." },
         };
+
         private ListBox lstBox;
+
         public IntermediateView(string[] intermediate, List<string[]> subroutineIntermediate, Dictionary<string, int> subroutineDict)
         {
             InitializeComponent();
@@ -59,8 +61,10 @@ namespace NEA
             this.subroutineDict = subroutineDict;
         }
 
+        // Changes size and adds events to the list box
         private void IntermediateView_Load(object sender, EventArgs e)
         {
+            // Finds the max line length
             int maxLength = 0;
             
             foreach (string line in intermediate)
@@ -97,6 +101,7 @@ namespace NEA
             lstBox.EndUpdate();
             lstBox.SetSelected(0,false);
 
+            // Adds tabs for other subroutines
             for (int i = 0; i < subroutineIntermediate.Count; i++)
             {
                 TabPage tp = new TabPage($"Subroutine {KeyByValue(subroutineDict, i)}");
@@ -117,6 +122,7 @@ namespace NEA
             }
         }
 
+        // Removes underscore from the string provided
         private string RemoveUnderscore(string underscored)
         {
             string output = "";
@@ -134,6 +140,7 @@ namespace NEA
             return output;
         }
 
+        // Returns the key from the value in the dictionary
         private string KeyByValue(Dictionary<string, int> dictionary, int value)
         {
             foreach (KeyValuePair<string, int> pair in dictionary)
@@ -146,6 +153,7 @@ namespace NEA
             return null;
         }
 
+        // Changes the information displayed in the lblName and lblDescription to give info about the selected instruction
         private void lstBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ListBox lstBox = sender as ListBox;

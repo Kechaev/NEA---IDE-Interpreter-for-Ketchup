@@ -21,6 +21,7 @@ namespace NEA.Classes
             txtInputBox.Focus();
         }
 
+        // Changes the prompt label's visibility property depending on if there is text written in the textbox
         private void inputBox_TextChanged(object sender, EventArgs e)
         {
             if (txtInputBox.Text == "")
@@ -33,6 +34,7 @@ namespace NEA.Classes
             }
         }
 
+        // Reroutes ENTER and ESC to certain functions
         private void txtInputBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -47,6 +49,7 @@ namespace NEA.Classes
             }
         }
 
+        // Returns the text in the input box
         public string GetUserInput()
         {
             return txtInputBox.Text;

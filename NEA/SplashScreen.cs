@@ -18,6 +18,7 @@ namespace NEA
             progressBar.ForeColor = Color.Red;
         }
 
+        // Changes the speed of loading the progress bar
         private void timer_Tick(object sender, EventArgs e)
         {
             timer.Enabled = true;
